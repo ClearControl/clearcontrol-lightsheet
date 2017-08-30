@@ -56,14 +56,14 @@ public class LightSheetFastFusionProcessor extends
 
   private final BoundedVariable<Double> mTranslationSearchRadiusVariable =
                                                                          new BoundedVariable<Double>("TranslationSearchRadius",
-                                                                                       15.0);
+                                                                                                     15.0);
   private final BoundedVariable<Double> mRotationSearchRadiusVariable =
                                                                       new BoundedVariable<Double>("RotationSearchRadius",
-                                                                                    3.0);
+                                                                                                  3.0);
 
   private final BoundedVariable<Double> mSmoothingConstantVariable =
                                                                    new BoundedVariable<Double>("SmoothingConstant",
-                                                                                 0.05);
+                                                                                               0.05);
 
   private final Variable<Boolean> mTransformLockSwitchVariable =
                                                                new Variable<Boolean>("TransformLockSwitch",

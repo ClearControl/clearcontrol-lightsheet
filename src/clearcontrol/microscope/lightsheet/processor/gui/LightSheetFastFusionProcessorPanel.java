@@ -1,11 +1,11 @@
 package clearcontrol.microscope.lightsheet.processor.gui;
 
-import clearcontrol.core.variable.bounded.BoundedVariable;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsolePanel;
 import clearcontrol.gui.jfx.var.customvarpanel.CustomVariablePane;
@@ -53,13 +53,13 @@ public class LightSheetFastFusionProcessorPanel extends TabPane
                                                       pLightSheetFastFusionProcessor.getMaxNumberOfEvaluationsVariable();
 
     BoundedVariable<Double> lTranslationSearchRadiusVariable =
-                                                      pLightSheetFastFusionProcessor.getTranslationSearchRadiusVariable();
+                                                             pLightSheetFastFusionProcessor.getTranslationSearchRadiusVariable();
 
     BoundedVariable<Double> lRotationSearchRadiusVariable =
-                                                   pLightSheetFastFusionProcessor.getRotationSearchRadiusVariable();
+                                                          pLightSheetFastFusionProcessor.getRotationSearchRadiusVariable();
 
     BoundedVariable<Double> lSmoothingConstantVariable =
-                                                pLightSheetFastFusionProcessor.getSmoothingConstantVariable();
+                                                       pLightSheetFastFusionProcessor.getSmoothingConstantVariable();
 
     Variable<Boolean> lTransformLockSwitchVariable =
                                                    pLightSheetFastFusionProcessor.getTransformLockSwitchVariable();

@@ -2,7 +2,6 @@ package clearcontrol.microscope.lightsheet.adaptive.modules;
 
 import java.util.concurrent.Future;
 
-import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
@@ -22,17 +21,17 @@ public class AdaptationX extends StandardAdaptationModule implements
 {
 
   private final BoundedVariable<Double> mMinXVariable =
-                                               new BoundedVariable<Double>("MinX",
-                                                                    20.0);
+                                                      new BoundedVariable<Double>("MinX",
+                                                                                  20.0);
 
   private final BoundedVariable<Double> mMaxXVariable =
-                                               new BoundedVariable<Double>("MaxX",
-                                                                    20.0);
+                                                      new BoundedVariable<Double>("MaxX",
+                                                                                  20.0);
 
   /**
    * Instantiates a X focus adaptation module given the number of samples,
    * probability threshold, and image metric threshold
-   * 
+   *
    * @param pNumberOfSamples
    *          number of samples
    * @param pMinX
@@ -141,7 +140,7 @@ public class AdaptationX extends StandardAdaptationModule implements
 
   /**
    * Returns the minimum X value
-   * 
+   *
    * @return minimum X value
    */
   public BoundedVariable<Double> getMinXVariable()
@@ -151,7 +150,7 @@ public class AdaptationX extends StandardAdaptationModule implements
 
   /**
    * Returns the maximum X value
-   * 
+   *
    * @return maximum X value
    */
   public BoundedVariable<Double> getMaxXVariable()
