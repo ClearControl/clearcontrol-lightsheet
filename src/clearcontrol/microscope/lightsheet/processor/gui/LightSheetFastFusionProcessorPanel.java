@@ -5,6 +5,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsolePanel;
 import clearcontrol.gui.jfx.var.customvarpanel.CustomVariablePane;
@@ -51,14 +52,14 @@ public class LightSheetFastFusionProcessorPanel extends TabPane
     Variable<Integer> lMaxNumberOfEvaluationsVariable =
                                                       pLightSheetFastFusionProcessor.getMaxNumberOfEvaluationsVariable();
 
-    Variable<Double> lTranslationSearchRadiusVariable =
-                                                      pLightSheetFastFusionProcessor.getTranslationSearchRadiusVariable();
+    BoundedVariable<Double> lTranslationSearchRadiusVariable =
+                                                             pLightSheetFastFusionProcessor.getTranslationSearchRadiusVariable();
 
-    Variable<Double> lRotationSearchRadiusVariable =
-                                                   pLightSheetFastFusionProcessor.getRotationSearchRadiusVariable();
+    BoundedVariable<Double> lRotationSearchRadiusVariable =
+                                                          pLightSheetFastFusionProcessor.getRotationSearchRadiusVariable();
 
-    Variable<Double> lSmoothingConstantVariable =
-                                                pLightSheetFastFusionProcessor.getSmoothingConstantVariable();
+    BoundedVariable<Double> lSmoothingConstantVariable =
+                                                       pLightSheetFastFusionProcessor.getSmoothingConstantVariable();
 
     Variable<Boolean> lTransformLockSwitchVariable =
                                                    pLightSheetFastFusionProcessor.getTransformLockSwitchVariable();
