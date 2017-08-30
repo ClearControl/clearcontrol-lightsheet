@@ -8,6 +8,7 @@ import clearcl.ClearCLImage;
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
@@ -53,15 +54,15 @@ public class LightSheetFastFusionProcessor extends
                                                                   new Variable<Integer>("MaxNumberOfEvaluations",
                                                                                         200);
 
-  private final Variable<Double> mTranslationSearchRadiusVariable =
-                                                                  new Variable<Double>("TranslationSearchRadius",
+  private final BoundedVariable<Double> mTranslationSearchRadiusVariable =
+                                                                         new BoundedVariable<Double>("TranslationSearchRadius",
                                                                                        15.0);
-  private final Variable<Double> mRotationSearchRadiusVariable =
-                                                               new Variable<Double>("RotationSearchRadius",
+  private final BoundedVariable<Double> mRotationSearchRadiusVariable =
+                                                                      new BoundedVariable<Double>("RotationSearchRadius",
                                                                                     3.0);
 
-  private final Variable<Double> mSmoothingConstantVariable =
-                                                            new Variable<Double>("SmoothingConstant",
+  private final BoundedVariable<Double> mSmoothingConstantVariable =
+                                                                   new BoundedVariable<Double>("SmoothingConstant",
                                                                                  0.05);
 
   private final Variable<Boolean> mTransformLockSwitchVariable =
@@ -74,7 +75,7 @@ public class LightSheetFastFusionProcessor extends
 
   /**
    * Instantiates a lightsheet stack processor
-   * 
+   *
    * @param pProcessorName
    *          processor name
    * @param pLightSheetMicroscope
@@ -273,27 +274,27 @@ public class LightSheetFastFusionProcessor extends
 
   /**
    * Returns the variable holding the translation search radius.
-   * 
+   *
    * @return translation search radius variable.
    */
-  public Variable<Double> getTranslationSearchRadiusVariable()
+  public BoundedVariable<Double> getTranslationSearchRadiusVariable()
   {
     return mTranslationSearchRadiusVariable;
   }
 
   /**
    * Returns the variable holding the rotation search radius
-   * 
+   *
    * @return rotation search radius
    */
-  public Variable<Double> getRotationSearchRadiusVariable()
+  public BoundedVariable<Double> getRotationSearchRadiusVariable()
   {
     return mRotationSearchRadiusVariable;
   }
 
   /**
    * Returns the variable holding the number of optimization restarts
-   * 
+   *
    * @return number of optimization restarts variable
    */
   public Variable<Integer> getNumberOfRestartsVariable()
@@ -303,7 +304,7 @@ public class LightSheetFastFusionProcessor extends
 
   /**
    * Returns the max number of evaluations variable
-   * 
+   *
    * @return max number of evaluations variable
    */
   public Variable<Integer> getMaxNumberOfEvaluationsVariable()
@@ -313,10 +314,10 @@ public class LightSheetFastFusionProcessor extends
 
   /**
    * Returns the variable holding the smoothing constant
-   * 
+   *
    * @return smoothing constant variable
    */
-  public Variable<Double> getSmoothingConstantVariable()
+  public BoundedVariable<Double> getSmoothingConstantVariable()
   {
     return mSmoothingConstantVariable;
   }
@@ -324,7 +325,7 @@ public class LightSheetFastFusionProcessor extends
   /**
    * Returns the switch that decides whether to lock the transformation after a
    * certain number of time points has elapsed
-   * 
+   *
    * @return Transform lock switch variable
    */
   public Variable<Boolean> getTransformLockSwitchVariable()
@@ -335,7 +336,7 @@ public class LightSheetFastFusionProcessor extends
   /**
    * Returns the variable holding the number of timepoints until the
    * transformation should be 'locked' with more stringent temporal filtering
-   * 
+   *
    * @return transform lock timer variable
    */
   public Variable<Integer> getTransformLockThresholdVariable()
