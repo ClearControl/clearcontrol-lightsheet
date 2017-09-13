@@ -13,24 +13,25 @@ public class AdaptationXPanel extends StandardAdaptationModulePanel
   /**
    * Instantiates an adaptation X panel
    * 
-   * @param AdaptationX
+   * @param pAdaptationX
    *          adaptation X module
    */
-  public AdaptationXPanel(AdaptationX AdaptationX)
+  public AdaptationXPanel(AdaptationX pAdaptationX)
   {
-    super(AdaptationX);
+    super(pAdaptationX);
 
     addNumberTextFieldForVariable("Min X: ",
-                                  AdaptationX.getMinXVariable(),
+                                  pAdaptationX.getMinXVariable(),
                                   Double.NEGATIVE_INFINITY,
                                   Double.POSITIVE_INFINITY,
                                   1d);
 
     addNumberTextFieldForVariable("Max X: ",
-                                  AdaptationX.getMaxXVariable(),
+                                  pAdaptationX.getMaxXVariable(),
                                   Double.NEGATIVE_INFINITY,
                                   Double.POSITIVE_INFINITY,
                                   1d);
+
 
   }
 

@@ -1,5 +1,6 @@
 buildscript {
   repositories {
+    mavenLocal()
     mavenCentral()
   }
 }
@@ -89,6 +90,7 @@ dependencies
 
     // ClearControl:
     compile ('net.clearcontrol:clearcontrol:0.7.0')      {transitive= true; changing= true}
+
 }
 
 
@@ -103,7 +105,14 @@ repositories
     maven { url "http://mvnrepository.com/artifact" }
 
     // ClearControl:
+    maven { url  "http://maven.imagej.net/content/repositories/releases" }
+    maven { url  "http://maven.imagej.net/content/repositories/snapshots" }
     maven { url  "http://dl.bintray.com/clearcontrol/ClearControl"  }
+
+    //bio formats
+    maven { url "https://mvnrepository.com/artifact/org.jocl/jocl"}
+    maven { url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases" }
+    maven { url "http://artifacts.openmicroscopy.org/artifactory/maven/"}
 
     // ClearVolume: 
     maven { url "http://dl.bintray.com/clearvolume/ClearVolume" }
@@ -119,9 +128,6 @@ repositories
     //FontAwesome
     maven { url  "http://dl.bintray.com/jerady/maven" }
     
-    //Sqeazy:
-    maven {url  "http://dl.bintray.com/psteinb/maven" }
-
 }
 
 task sourcesJar(type: Jar, dependsOn:classes) {
