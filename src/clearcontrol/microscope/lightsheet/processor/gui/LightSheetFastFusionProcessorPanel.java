@@ -1,14 +1,13 @@
 package clearcontrol.microscope.lightsheet.processor.gui;
 
-import javafx.scene.Node;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsolePanel;
 import clearcontrol.gui.jfx.var.customvarpanel.CustomVariablePane;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
+import javafx.scene.Node;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 
 /**
  * Lightsheet fast fusion processor panel
@@ -83,13 +82,22 @@ public class LightSheetFastFusionProcessorPanel extends TabPane
                                                       1);
 
     lCustomVariablePane.addNumberTextFieldForVariable("Translation search radius",
-                                                      lTranslationSearchRadiusVariable);
+                                                      lTranslationSearchRadiusVariable,
+                                                      0d,
+                                                      1000d,
+                                                      1d);
 
     lCustomVariablePane.addNumberTextFieldForVariable("Rotation search radius",
-                                                      lRotationSearchRadiusVariable);
+                                                      lRotationSearchRadiusVariable,
+                                                      0d,
+                                                      1000d,
+                                                      1d);
 
     lCustomVariablePane.addNumberTextFieldForVariable("Smoothing constant",
-                                                      lSmoothingConstantVariable);
+                                                      lSmoothingConstantVariable,
+                                                      0d,
+                                                      1d,
+                                                      0.00001d);
 
     lCustomVariablePane.addCheckBoxForVariable("Transform lock switch",
                                                lTransformLockSwitchVariable);

@@ -21,10 +21,16 @@ public class AdaptationXPanel extends StandardAdaptationModulePanel
     super(AdaptationX);
 
     addNumberTextFieldForVariable("Min X: ",
-                                  AdaptationX.getMinXVariable());
+                                  AdaptationX.getMinXVariable(),
+                                  Double.NEGATIVE_INFINITY,
+                                  Double.POSITIVE_INFINITY,
+                                  1d);
 
     addNumberTextFieldForVariable("Max X: ",
-                                  AdaptationX.getMaxXVariable());
+                                  AdaptationX.getMaxXVariable(),
+                                  Double.NEGATIVE_INFINITY,
+                                  Double.POSITIVE_INFINITY,
+                                  1d);
 
   }
 

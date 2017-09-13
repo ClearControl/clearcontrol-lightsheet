@@ -88,7 +88,7 @@ dependencies
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     // ClearControl:
-    compile ('net.clearcontrol:ClearControl:0.6.0')      {transitive= true; changing= true}
+    compile ('net.clearcontrol:clearcontrol:0.7.0')      {transitive= true; changing= true}
 }
 
 
@@ -108,11 +108,19 @@ repositories
     // ClearVolume: 
     maven { url "http://dl.bintray.com/clearvolume/ClearVolume" }
 
+    //imglib2:
+    maven { url  "http://maven.imagej.net/content/repositories/releases" }
+    maven { url  "http://maven.imagej.net/content/repositories/snapshots" }
+    maven { url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/" }
+    
     //jfxtras:
     maven { url "https://mvnrepository.com/artifact/org.jfxtras/jfxtras-labs" }
     
     //FontAwesome
     maven { url  "http://dl.bintray.com/jerady/maven" }
+    
+    //Sqeazy:
+    maven {url  "http://dl.bintray.com/psteinb/maven" }
 
 }
 
