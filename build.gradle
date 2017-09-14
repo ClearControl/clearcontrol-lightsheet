@@ -18,7 +18,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'com.diffplug.gradle.spotless'
 //apply plugin: 'findbugs'
-apply plugin: "jacoco"
+//apply plugin: "jacoco"
 
 
 sourceSets {
@@ -89,7 +89,7 @@ dependencies
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     // ClearControl:
-    compile ('net.clearcontrol:clearcontrol:0.7.0')      {transitive= true; changing= true}
+    compile ('net.clearcontrol:clearcontrol:0.8.8')      {transitive= true; changing= true}
 
 }
 
@@ -110,7 +110,6 @@ repositories
     maven { url  "http://dl.bintray.com/clearcontrol/ClearControl"  }
 
     //bio formats
-    maven { url "https://mvnrepository.com/artifact/org.jocl/jocl"}
     maven { url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases" }
     maven { url "http://artifacts.openmicroscopy.org/artifactory/maven/"}
 
@@ -127,6 +126,10 @@ repositories
     
     //FontAwesome
     maven { url  "http://dl.bintray.com/jerady/maven" }
+    
+    //Sqeazy:
+    maven {url  "http://dl.bintray.com/sqeazy/maven" }
+
     
 }
 
@@ -209,6 +212,7 @@ spotless {
 //***********************************************************************************
 // JACOCO:
 
+/*
 jacocoTestCoverageVerification {
     violationRules {
         rule {
@@ -226,6 +230,7 @@ jacocoTestReport {
         html.destination "${buildDir}/jacoco.html"
     }
 }
+/**/
 
 
 
