@@ -18,7 +18,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'com.diffplug.gradle.spotless'
 //apply plugin: 'findbugs'
-apply plugin: "jacoco"
+//apply plugin: "jacoco"
 
 
 sourceSets {
@@ -89,7 +89,7 @@ dependencies
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     // ClearControl:
-    compile ('net.clearcontrol:clearcontrol:0.8.5')      {transitive= true; changing= true}
+    compile ('net.clearcontrol:clearcontrol:0.8.7')      {transitive= true; changing= true}
 
 }
 
@@ -212,6 +212,7 @@ spotless {
 //***********************************************************************************
 // JACOCO:
 
+/*
 jacocoTestCoverageVerification {
     violationRules {
         rule {
@@ -229,6 +230,7 @@ jacocoTestReport {
         html.destination "${buildDir}/jacoco.html"
     }
 }
+/**/
 
 
 
