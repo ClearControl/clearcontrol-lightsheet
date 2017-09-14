@@ -32,7 +32,6 @@ public class AdaptationXPanel extends StandardAdaptationModulePanel
                                   Double.POSITIVE_INFINITY,
                                   1d);
 
-
   }
 
 }

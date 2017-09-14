@@ -21,7 +21,7 @@ public class AdaptationZ extends StandardAdaptationModule implements
 
   private final Variable<Double> mDeltaZVariable =
                                                  new Variable<>("DeltaZ",
-                                                                      1.0);
+                                                                1.0);
 
   /**
    * Instantiates a Z focus adaptation module given the delta Z parameter,
