@@ -110,7 +110,6 @@ repositories
     maven { url  "http://dl.bintray.com/clearcontrol/ClearControl"  }
 
     //bio formats
-    maven { url "https://mvnrepository.com/artifact/org.jocl/jocl"}
     maven { url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases" }
     maven { url "http://artifacts.openmicroscopy.org/artifactory/maven/"}
 
@@ -127,6 +126,10 @@ repositories
     
     //FontAwesome
     maven { url  "http://dl.bintray.com/jerady/maven" }
+    
+    //Sqeazy:
+    maven {url  "http://dl.bintray.com/sqeazy/maven" }
+
     
 }
 
