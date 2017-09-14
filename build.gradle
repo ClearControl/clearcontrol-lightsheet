@@ -89,7 +89,7 @@ dependencies
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     // ClearControl:
-    compile ('net.clearcontrol:clearcontrol:0.8.7')      {transitive= true; changing= true}
+    compile ('net.clearcontrol:clearcontrol:0.8.8')      {transitive= true; changing= true}
 
 }
 
