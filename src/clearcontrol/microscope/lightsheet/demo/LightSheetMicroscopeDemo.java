@@ -76,8 +76,8 @@ public class LightSheetMicroscopeDemo implements
     int lMaxCameraResolution = 1024;
     long lImageResolution = 1024;
 
-    int lNumberOfLightSheets = 2;
-    int lNumberOfDetectionArms = 2;
+    int lNumberOfLightSheets = 1;
+    int lNumberOfDetectionArms = 1;
 
     float lDivisionTime = 11f;
 
