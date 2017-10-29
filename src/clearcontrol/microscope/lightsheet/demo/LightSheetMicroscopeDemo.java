@@ -339,6 +339,11 @@ public class LightSheetMicroscopeDemo extends Application implements
 
       lTimelapse.addFileStackSinkType(RawFileStackSink.class);
 
+      DepthOfFocusImagingEngine lDepthOfFocusImagingEngine = new DepthOfFocusImagingEngine(lLightSheetMicroscope);
+      lLightSheetMicroscope.addDevice(0, lDepthOfFocusImagingEngine);
+
+
+
       // Now that the microscope has been setup, we can connect the simulator to
       // it:
 
