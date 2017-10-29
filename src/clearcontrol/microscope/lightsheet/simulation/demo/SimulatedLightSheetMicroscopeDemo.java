@@ -3,11 +3,14 @@ package clearcontrol.microscope.lightsheet.simulation.demo;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 import clearcl.ClearCL;
 import clearcl.ClearCLContext;
 import clearcl.ClearCLDevice;
 import clearcl.backend.ClearCLBackends;
+import clearcontrol.core.concurrent.executors.AsynchronousExecutorFeature;
 import clearcontrol.core.concurrent.thread.ThreadSleep;
 import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.microscope.lightsheet.gui.LightSheetMicroscopeGUI;
@@ -15,116 +18,127 @@ import clearcontrol.microscope.lightsheet.simulation.LightSheetMicroscopeSimulat
 import clearcontrol.microscope.lightsheet.simulation.SimulatedLightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.simulation.SimulationUtils;
 
-import org.junit.Test;
-
 /**
  * Simulated lightsheet microscope demo
  *
  * @author royer
  */
-public class SimulatedLightSheetMicroscopeDemo
+public class SimulatedLightSheetMicroscopeDemo extends Application
+                                               implements
+                                               AsynchronousExecutorFeature
 {
 
-  /**
-   * Demo
-   * 
-   * @throws Exception
-   *           NA
-   */
-  @Test
-  public void demo() throws Exception
+  @Override
+  public void start(Stage pPrimaryStage)
   {
-    boolean lDummySimulation = false;
-    boolean lUniformFluorescence = false;
+    pPrimaryStage.show();
 
-    boolean l2DDisplayFlag = true;
-    boolean l3DDisplayFlag = true;
+    Runnable lRunnable = () -> {
 
-    int lMaxNumberOfStacks = 32;
+      boolean lDummySimulation = false;
+      boolean lUniformFluorescence = false;
 
-    int lMaxCameraResolution = 1024;
+      boolean l2DDisplayFlag = true;
+      boolean l3DDisplayFlag = true;
 
-    int lNumberOfLightSheets = 4;
-    int lNumberOfDetectionArms = 2;
+      int lMaxNumberOfStacks = 32;
 
-    float lDivisionTime = 11f;
+      int lMaxCameraResolution = 1024;
 
-    int lPhantomWidth = 320;
-    int lPhantomHeight = lPhantomWidth;
-    int lPhantomDepth = lPhantomWidth;
+      int lNumberOfLightSheets = 4;
+      int lNumberOfDetectionArms = 2;
 
-    ClearCL lClearCL = new ClearCL(ClearCLBackends.getBestBackend());
+      float lDivisionTime = 11f;
 
-    for (ClearCLDevice lClearCLDevice : lClearCL.getAllDevices())
-      System.out.println(lClearCLDevice.getName());
+      int lPhantomWidth = 320;
+      int lPhantomHeight = lPhantomWidth;
+      int lPhantomDepth = lPhantomWidth;
 
-    MachineConfiguration lMachineConfiguration =
-                                               MachineConfiguration.get();
+      ClearCL lClearCL =
+                       new ClearCL(ClearCLBackends.getBestBackend());
 
-    ClearCLContext lSimulationContext =
-                                      getClearCLDeviceByName(lClearCL,
-                                                             lMachineConfiguration.getStringProperty("clearcl.device.simulation",
-                                                                                                     "HD"));
+      for (ClearCLDevice lClearCLDevice : lClearCL.getAllDevices())
+        System.out.println(lClearCLDevice.getName());
 
-    ClearCLContext lMicroscopeContext =
-                                      getClearCLDeviceByName(lClearCL,
-                                                             lMachineConfiguration.getStringProperty("clearcl.device.fusion",
-                                                                                                     "HD"));
+      MachineConfiguration lMachineConfiguration =
+                                                 MachineConfiguration.get();
 
-    LightSheetMicroscopeSimulationDevice lSimulatorDevice =
-                                                          SimulationUtils.getSimulatorDevice(lSimulationContext,
-                                                                                             lNumberOfDetectionArms,
-                                                                                             lNumberOfLightSheets,
-                                                                                             lMaxCameraResolution,
-                                                                                             lDivisionTime,
-                                                                                             lPhantomWidth,
-                                                                                             lPhantomHeight,
-                                                                                             lPhantomDepth,
-                                                                                             lUniformFluorescence);
+      ClearCLContext lSimulationContext =
+                                        getClearCLDeviceByName(lClearCL,
+                                                               lMachineConfiguration.getStringProperty("clearcl.device.simulation",
+                                                                                                       "HD"));
 
-    SimulatedLightSheetMicroscope lMicroscope =
-                                              new SimulatedLightSheetMicroscope("SimulatedLightSheetMicroscope",
-                                                                                lMicroscopeContext,
-                                                                                lMaxNumberOfStacks,
-                                                                                1);
+      ClearCLContext lMicroscopeContext =
+                                        getClearCLDeviceByName(lClearCL,
+                                                               lMachineConfiguration.getStringProperty("clearcl.device.fusion",
+                                                                                                       "HD"));
 
-    lMicroscope.addSimulatedDevices(lDummySimulation,
-                                    true,
-                                    true,
-                                    lSimulatorDevice);
+      LightSheetMicroscopeSimulationDevice lSimulatorDevice =
+                                                            SimulationUtils.getSimulatorDevice(lSimulationContext,
+                                                                                               lNumberOfDetectionArms,
+                                                                                               lNumberOfLightSheets,
+                                                                                               lMaxCameraResolution,
+                                                                                               lDivisionTime,
+                                                                                               lPhantomWidth,
+                                                                                               lPhantomHeight,
+                                                                                               lPhantomDepth,
+                                                                                               lUniformFluorescence);
 
-    lMicroscope.addStandardDevices();
+      SimulatedLightSheetMicroscope lMicroscope =
+                                                new SimulatedLightSheetMicroscope("SimulatedLightSheetMicroscope",
+                                                                                  lMicroscopeContext,
+                                                                                  lMaxNumberOfStacks,
+                                                                                  1);
 
-    if (lMicroscope.open())
-      if (lMicroscope.start())
+      lMicroscope.addSimulatedDevices(lDummySimulation,
+                                      true,
+                                      true,
+                                      lSimulatorDevice);
+
+      lMicroscope.addStandardDevices();
+
+      if (lMicroscope.open())
+        if (lMicroscope.start())
+        {
+
+          LightSheetMicroscopeGUI lMicroscopeGUI =
+                                                 new LightSheetMicroscopeGUI(lMicroscope,
+                                                                             pPrimaryStage,
+                                                                             l2DDisplayFlag,
+                                                                             l3DDisplayFlag);
+
+          lMicroscopeGUI.setup();
+
+          assertTrue(lMicroscopeGUI.open());
+
+          ThreadSleep.sleep(1000, TimeUnit.MILLISECONDS);
+          lMicroscopeGUI.waitForVisible(true, 1L, TimeUnit.MINUTES);
+
+          lMicroscopeGUI.connectGUI();
+
+          lMicroscopeGUI.waitForVisible(false, null, null);
+
+          lMicroscopeGUI.disconnectGUI();
+          lMicroscopeGUI.close();
+
+          lMicroscope.stop();
+          lMicroscope.close();
+        }
+
+      try
       {
+        lSimulatorDevice.getSimulator().close();
 
-        LightSheetMicroscopeGUI lMicroscopeGUI =
-                                               new LightSheetMicroscopeGUI(lMicroscope,
-                                                                           l2DDisplayFlag,
-                                                                           l3DDisplayFlag);
-
-        lMicroscopeGUI.setup();
-
-        assertTrue(lMicroscopeGUI.open());
-
-        ThreadSleep.sleep(1000, TimeUnit.MILLISECONDS);
-        lMicroscopeGUI.waitForVisible(true, 1L, TimeUnit.MINUTES);
-
-        lMicroscopeGUI.connectGUI();
-
-        lMicroscopeGUI.waitForVisible(false, null, null);
-
-        lMicroscopeGUI.disconnectGUI();
-        lMicroscopeGUI.close();
-
-        lMicroscope.stop();
-        lMicroscope.close();
+        lClearCL.close();
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
       }
 
-    lSimulatorDevice.getSimulator().close();
+    };
 
-    lClearCL.close();
+    executeAsynchronously(lRunnable);
 
   }
 
@@ -138,4 +152,14 @@ public class SimulatedLightSheetMicroscopeDemo
     return lSimulationContext;
   }
 
+  /**
+   * Main
+   * 
+   * @param args
+   *          NA
+   */
+  public static void main(String[] args)
+  {
+    launch(args);
+  }
 }

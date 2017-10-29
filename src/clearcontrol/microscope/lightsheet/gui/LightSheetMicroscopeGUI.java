@@ -1,5 +1,7 @@
 package clearcontrol.microscope.lightsheet.gui;
 
+import javafx.stage.Stage;
+
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.gui.MicroscopeGUI;
 import clearcontrol.microscope.gui.halcyon.MicroscopeNodeType;
@@ -41,17 +43,21 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
    * 
    * @param pLightSheetMicroscope
    *          lightsheet microscope
+   * @param pPrimaryStage
+   *          JFX primary stage
    * @param p2DDisplay
    *          true -> setup 2D display
    * @param p3DDisplay
    *          true -> setup 3D display
    */
   public LightSheetMicroscopeGUI(LightSheetMicroscope pLightSheetMicroscope,
+                                 Stage pPrimaryStage,
                                  boolean p2DDisplay,
                                  boolean p3DDisplay)
   {
     super(pLightSheetMicroscope,
           LSMNodeType.values(),
+          pPrimaryStage,
           p2DDisplay,
           p3DDisplay);
 
