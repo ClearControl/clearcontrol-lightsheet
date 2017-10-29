@@ -7,6 +7,7 @@ import java.util.concurrent.TimeoutException;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.microscope.QueuePrinter;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
@@ -174,6 +175,8 @@ public class LightSheetTimelapse extends TimelapseBase implements
                                  lCxLyString);
             }
           }
+
+        new QueuePrinter(lQueueForView).printAll();
 
         mLightSheetMicroscope.playQueueAndWait(lQueueForView,
                                                cTimeOut,
