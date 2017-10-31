@@ -22,7 +22,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
- * @author haesleinhuepf
+ * The DepthOfFocuseImagingEngine allows taking images with several
+ * focus planes per light sheet position
+ *
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
+ * October 2017
  */
 public class DepthOfFocusImagingEngine extends TaskDevice implements
                                                           LoggingFeature,
@@ -116,7 +120,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                      0,
                                      mLightSheetMicroscope.getNumberOfLightSheets(),
                                      1);
-
   }
 
   @Override public boolean startTask()
@@ -219,6 +222,11 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
     double lStep = (lMaxDZ - lMinDZ) / (lNumberOfDSamples - 1);
 
+    RawFileStackSink sink = new RawFileStackSink();
+    sink.setLocation(mRootFolderVariable.get(), lDatasetname);
+    System.out.println(mRootFolderVariable.get() + lDatasetname);
+
+
     // Initialize ----------------------------------------------------
     FocusableImager
         imager = new FocusableImager(getLightSheetMicroscope(), lLightSheetIndex, lDetectionArmIndex, lExposureTimeInSeconds);
@@ -236,32 +244,17 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         imager.addImageRequest(lIZ, z);
       }
     }
-    //?
-    //lQueue.addVoxelDimMetaData(getLightSheetMicroscope(), 10);
-
-    // clean up ------------------------------------------------------
+    // save result ---------------------------------------------------
 
     final OffHeapPlanarStack
           lStack = imager.execute();
 
-
     if (lStack != null)
     {
-      //ContiguousMemoryInterface memory = lStack.getContiguousMemory();
-
-      // long lWidth = lStack.getWidth();
-      // long lHeight = lStack.getHeight();
-      // long lDepth = lStack.getDepth();
-
-      RawFileStackSink sink = new RawFileStackSink();
-      sink.setLocation(mRootFolderVariable.get(), lDatasetname);
-      System.out.println(mRootFolderVariable.get() + lDatasetname);
       sink.appendStack(lStack);
-
-      sink.close();
-
     }
 
+    sink.close();
     System.out.println("Bye.");
     return true;
   }

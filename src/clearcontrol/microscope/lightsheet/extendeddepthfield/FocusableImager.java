@@ -4,11 +4,31 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.stack.OffHeapPlanarStack;
 
-import java.io.File;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+
+/**
+ * The FocusableImager takes a LightSheetMicroscope and some configuration parameters.
+ * Afterwards it allow imaging given lightsheet / detection arm Z positions
+ * without programming overhead.
+ *
+ * Example pseudo code:
+ *
+ * imager = new FocusableImager(lightSheetMicroscope, ...)
+ *
+ * imager.addImageRequest(lightSheetZ - 1, detectionArmZ)
+ * imager.addImageRequest(lightSheetZ, detectionArmZ)
+ * imager.addImageRequest(lightSheetZ + 1, detectionArmZ)
+ *
+ * stack = imager.execute()
+ *
+ *
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
+ * October 2017
+ */
 public class FocusableImager
 {
   LightSheetMicroscope mLightSheetMicroscope;

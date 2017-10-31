@@ -18,6 +18,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
+/**
+ * This is the user interface for imaging exetended depth of field
+ *
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
+ * October 2017
+ */
 public class DepthOfFieldFocusImagingEngineToolbar extends
                                                    CustomGridPane
 {
@@ -125,30 +131,6 @@ public class DepthOfFieldFocusImagingEngineToolbar extends
 
       lRow++;
     }
-//
-//    {
-//      TextField
-//          lCalibrationDataNameTextField =
-//          new TextField(pCalibrationEngine.getCalibrationDataNameVariable()
-//                                          .get());
-//      lCalibrationDataNameTextField.setMaxWidth(Double.MAX_VALUE);
-//      lCalibrationDataNameTextField.textProperty()
-//                                   .addListener((obs, o, n) -> {
-//                                     String lName = n.trim();
-//                                     if (!lName.isEmpty())
-//                                       pCalibrationEngine.getCalibrationDataNameVariable()
-//                                                         .set(lName);
-//
-//                                   });
-//      GridPane.setColumnSpan(lCalibrationDataNameTextField, 3);
-//      GridPane.setFillWidth(lCalibrationDataNameTextField, true);
-//      GridPane.setHgrow(lCalibrationDataNameTextField,
-//                        Priority.ALWAYS);
-//      add(lCalibrationDataNameTextField, 0, lRow);
-//
-//      lRow++;
-//    }
-
     {
       Separator lSeparator = new Separator();
       lSeparator.setOrientation(Orientation.HORIZONTAL);
