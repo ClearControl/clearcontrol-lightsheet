@@ -118,8 +118,12 @@ public class FocusableImager
       return null;
     }
 
-    return (OffHeapPlanarStack) mLightSheetMicroscope.getCameraStackVariable(
+    OffHeapPlanarStack lResultingStack = (OffHeapPlanarStack) mLightSheetMicroscope.getCameraStackVariable(
         mDetectionArmIndex).get();
 
+    if (lResultingStack.getDepth() != mNumberOfExpectedImages) {
+      System.out.println("Warning: number of resulting image does not match the expected number. The stack may be corrupted.");
+    }
+    return lResultingStack;
   }
 }
