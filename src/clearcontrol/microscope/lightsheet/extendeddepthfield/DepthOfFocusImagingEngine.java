@@ -7,7 +7,6 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.cameras.StackCameraDeviceInterface;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.scripting.engine.ScriptingEngine;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -221,31 +219,11 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
     double lStep = (lMaxDZ - lMinDZ) / (lNumberOfDSamples - 1);
 
-    LightSheetMicroscopeQueue
-        lQueue =
-        getLightSheetMicroscope().requestQueue();
-
     // Initialize ----------------------------------------------------
-    lQueue.clearQueue();
-    // lQueue.zero();
+    FocusableImager
+        imager = new FocusableImager(getLightSheetMicroscope(), lLightSheetIndex, lDetectionArmIndex, lExposureTimeInSeconds);
 
-    lQueue.setFullROI();
-    lQueue.setCenteredROI((int)lImageWidth, (int)lImageHeight);
-    lQueue.setExp(lExposureTimeInSeconds);
-
-    // set to an initial state ---------------------------------------
-    lQueue.setI(lLightSheetIndex);
-    lQueue.setIX(lLightSheetIndex, 0);
-    lQueue.setIY(lLightSheetIndex, 0);
-    lQueue.setIZ(lLightSheetIndex, lMinDZ);
-
-    //lQueue.setIH(mLightSheetIndex, 0);
-
-    lQueue.setIZ(lLightSheetIndex, lMinDZ);
-    lQueue.setDZ(lDetectionArmIndex, lMinDZ);
-    lQueue.setC(lDetectionArmIndex, false);
-
-    lQueue.addCurrentStateToQueue();
+    imager.setFieldOfView((int)lImageWidth, (int)lImageHeight);
 
     // take images ---------------------------------------------------
     final TDoubleArrayList lDZList = new TDoubleArrayList();
@@ -255,61 +233,35 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       for (double z = lMinDZ; z <= lMaxDZ; z += lStep)
       {
         lDZList.add(z);
-
-        lQueue.setDZ(lDetectionArmIndex, z);
-        lQueue.setC(lDetectionArmIndex, true);
-
-        lQueue.setIZ(lLightSheetIndex, lIZ);
-
-        lQueue.addCurrentStateToQueue();
+        imager.addImageRequest(lIZ, z);
       }
     }
-    lQueue.addVoxelDimMetaData(getLightSheetMicroscope(), 10);
+    //?
+    //lQueue.addVoxelDimMetaData(getLightSheetMicroscope(), 10);
 
     // clean up ------------------------------------------------------
-    lQueue.setDZ(lDetectionArmIndex, lMinDZ);
-    lQueue.setC(lDetectionArmIndex, false);
 
-    lQueue.addCurrentStateToQueue();
+    final OffHeapPlanarStack
+          lStack = imager.execute();
 
-    lQueue.setTransitionTime(0.1);
 
-    lQueue.finalizeQueue();
-    // ---------------------------------------------------------------
-
-    // read out ------------------------------------------------------
-    getLightSheetMicroscope().useRecycler("adaptation", 1, 4, 4);
-    final Boolean
-        lPlayQueueAndWait =
-        getLightSheetMicroscope().playQueueAndWaitForStacks(lQueue,
-                                                            100
-                                                            + lQueue.getQueueLength(),
-                                                            TimeUnit.SECONDS);
-
-    if (lPlayQueueAndWait)
+    if (lStack != null)
     {
-      final OffHeapPlanarStack
-          lStack =
-          (OffHeapPlanarStack) getLightSheetMicroscope().getCameraStackVariable(
-              lDetectionArmIndex).get();
+      //ContiguousMemoryInterface memory = lStack.getContiguousMemory();
 
-      if (lStack != null)
-      {
-        //ContiguousMemoryInterface memory = lStack.getContiguousMemory();
+      // long lWidth = lStack.getWidth();
+      // long lHeight = lStack.getHeight();
+      // long lDepth = lStack.getDepth();
 
-        // long lWidth = lStack.getWidth();
-        // long lHeight = lStack.getHeight();
-        // long lDepth = lStack.getDepth();
+      RawFileStackSink sink = new RawFileStackSink();
+      sink.setLocation(mRootFolderVariable.get(), lDatasetname);
+      System.out.println(mRootFolderVariable.get() + lDatasetname);
+      sink.appendStack(lStack);
 
-        RawFileStackSink sink = new RawFileStackSink();
-        sink.setLocation(mRootFolderVariable.get(), lDatasetname);
-        System.out.println(mRootFolderVariable.get() + lDatasetname);
-        sink.appendStack(lStack);
+      sink.close();
 
-        sink.close();
-
-      }
     }
+
     System.out.println("Bye.");
     return true;
   }
