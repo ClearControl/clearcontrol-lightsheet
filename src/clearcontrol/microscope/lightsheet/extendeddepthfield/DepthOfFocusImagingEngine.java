@@ -9,6 +9,7 @@ import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.extendeddepthfield.iqm.ContrastEstimator;
 import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
@@ -17,7 +18,9 @@ import gnu.trove.list.array.TDoubleArrayList;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -252,6 +255,56 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     if (lStack != null)
     {
       sink.appendStack(lStack);
+
+      ContrastEstimator contrastEstimator = new ContrastEstimator(lStack);
+      double[] quality = contrastEstimator.getSignalRangeSize();
+
+      ArrayList<Double> sortedLightSheetPositions = new ArrayList<Double>();
+      HashMap<Double, Double> nextZPositions = new HashMap<Double, Double>();
+
+      int count = 0;
+      for (double lIZ = lMinIZ; lIZ <= lMaxDZ; lIZ += lStepIZ)
+      {
+        double maxRange = quality[count];
+        double bestDetectionZ = 0;
+        for (double z = lMinDZ; z <= lMaxDZ; z += lStep)
+        {
+          System.out.println("" + lIZ + "\t" + z + "\t" + quality[count]);
+          if (maxRange < quality[count]) {
+            maxRange = quality[count];
+            bestDetectionZ = z;
+          }
+          count++;
+        }
+        sortedLightSheetPositions.add(lIZ);
+        nextZPositions.put(lIZ, bestDetectionZ);
+      }
+
+
+
+      // take new images
+
+      FocusableImager preciseImager = new FocusableImager(getLightSheetMicroscope(), lLightSheetIndex, lDetectionArmIndex, lExposureTimeInSeconds);
+      preciseImager.setFieldOfView((int)lImageWidth, (int)lImageHeight);
+
+      for (Double lightsheetZ : sortedLightSheetPositions) {
+        double detectionZ = nextZPositions.get(lightsheetZ);
+        double radius = 10;
+        double step = 0.5;
+
+
+
+        for (double z = detectionZ - radius; z <= detectionZ + radius; z += step) {
+          preciseImager.addImageRequest(lightsheetZ, z);
+        }
+
+      }
+
+      OffHeapPlanarStack stack = preciseImager.execute();
+
+
+      sink.appendStack(stack);
+
     }
 
     sink.close();
