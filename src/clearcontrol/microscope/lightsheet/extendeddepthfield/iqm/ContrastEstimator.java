@@ -6,6 +6,7 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.integer.ShortType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
@@ -16,8 +17,7 @@ import net.imglib2.view.Views;
 public class ContrastEstimator
 {
   RandomAccessibleInterval<ShortType> image;
-  double[] contrastPerSlice = null;
-  double[] rangesPerSlice = null;
+  double[] standardDeviationPerSlice = null;
 
   public ContrastEstimator(StackInterface stack) {
     StackToImgConverter<ShortType> converter = new StackToImgConverter<>(stack);
@@ -25,55 +25,37 @@ public class ContrastEstimator
   }
 
   public double[] getContrastPerSlice() {
-    if (contrastPerSlice == null) {
+    if (standardDeviationPerSlice == null) {
       calculateContrast();
     }
-    return contrastPerSlice;
-  }
-  public double[] getSignalRangeSize() {
-    if (rangesPerSlice == null) {
-      calculateContrast();
-    }
-    return rangesPerSlice;
+    return standardDeviationPerSlice;
   }
 
   private synchronized void calculateContrast() {
     int numberOfSlices = (int)image.dimension(2);
-    contrastPerSlice = new double[numberOfSlices];
-    rangesPerSlice = new double[numberOfSlices];
+    standardDeviationPerSlice = new double[numberOfSlices];
+
     for (int z = 0; z < numberOfSlices; z++) {
       RandomAccessibleInterval<ShortType> slice = Views.hyperSlice(image, 2, z);
-      double min = 0;
-      double max = 0;
+
+      Cursor<ShortType> cursor = Views.iterable(slice).localizingCursor();
+
       double sum = 0;
-      double count = 0;
-
-      Cursor<ShortType> cursor = Views.iterable(slice).cursor();
-      if (cursor.hasNext()) {
-        double value = cursor.next().get();
-        min = value;
-        max = value;
-        sum = value;
-        count = 1;
-      }
+      long count = 0;
       while (cursor.hasNext()) {
-        double value = cursor.next().get();
-        if (min > value) {
-          min = value;
-        }
-        if (max < value) {
-          max = value;
-        }
-        sum += value;
-        count ++;
+        sum += cursor.next().get();
+        count++;
       }
-
-      double range = max - min;
       double mean = sum / count;
-      double contrast = range / mean;
 
-      rangesPerSlice[z] = range;
-      contrastPerSlice[z] = contrast;
+      sum = 0;
+      cursor.reset();
+      while (cursor.hasNext()) {
+        sum += Math.pow(cursor.next().get() - mean, 2);
+      }
+      double stdDev = sum / (count - 1);
+      System.out.println("z: " + z + " stddev:" + stdDev);
+      standardDeviationPerSlice[z] = stdDev;
     }
   }
 
