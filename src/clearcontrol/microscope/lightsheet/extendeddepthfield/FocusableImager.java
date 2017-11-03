@@ -98,6 +98,8 @@ public class FocusableImager
       return null;
     }
 
+    System.out.println("imaging... " + mNumberOfExpectedImages + " images...");
+
     mQueue.setDZ(mDetectionArmIndex, mInitialDetectionZ);
     mQueue.setC(mDetectionArmIndex, false);
 
@@ -124,6 +126,8 @@ public class FocusableImager
     if (lResultingStack.getDepth() != mNumberOfExpectedImages) {
       System.out.println("Warning: number of resulting image does not match the expected number. The stack may be corrupted.");
     }
+
+    System.out.println("imaging done...");
     return lResultingStack;
   }
 }

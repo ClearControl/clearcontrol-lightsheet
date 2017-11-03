@@ -52,6 +52,12 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                    Integer.MAX_VALUE,
                                    1);
 
+  private BoundedVariable<Integer>
+      mNumberOfPrecisionIncreasingIterations = new BoundedVariable<Integer>("Number of precision increasing iterations",
+  5,
+                                                                            0,Integer.MAX_VALUE,1);
+
+
   private final BoundedVariable<Double>
       mExposureVariableInSeconds =
       new BoundedVariable<Double>("Exposure time (s)",
@@ -66,6 +72,13 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   private Variable<File>
       mRootFolderVariable =
       new Variable("RootFolder", (Object) null);
+
+
+  class ImageRange{
+    double lightSheetPosition;
+    double[] detectionArmPositions;
+  }
+
 
   public BoundedVariable<Integer> getDetectionArmIndex()
   {
@@ -82,9 +95,16 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     return mNumberOfISamples;
   }
 
+
+
   public BoundedVariable<Integer> getNumberOfDSamples()
   {
     return mNumberOfDSamples;
+  }
+
+  public BoundedVariable<Integer> getNumberOfPrecisionIncreasingIterations()
+  {
+    return mNumberOfPrecisionIncreasingIterations;
   }
 
   public BoundedVariable<Double> getExposureVariable()
@@ -181,6 +201,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
     int lNumberOfISamples = mNumberOfISamples.get();
     int lNumberOfDSamples = mNumberOfDSamples.get();
+    int lNumberOfPrecisionIncreasingIterations = mNumberOfPrecisionIncreasingIterations.get();
 
     long
         lImageWidth = (Long)
@@ -217,13 +238,12 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         lLightSheetDevice.getZVariable();
     double lMinIZ = lZVariable.getMin().doubleValue();
     double lMaxIZ = lZVariable.getMax().doubleValue();
-
     double lStepIZ = (lMaxIZ - lMinIZ) / (lNumberOfISamples - 1);
 
     double lMinDZ = lDetectionFocusZVariable.getMin().doubleValue();
     double lMaxDZ = lDetectionFocusZVariable.getMax().doubleValue();
 
-    double lStep = (lMaxDZ - lMinDZ) / (lNumberOfDSamples - 1);
+    //double lStep = (lMaxDZ - lMinDZ) / (lNumberOfDSamples - 1);
 
     RawFileStackSink sink = new RawFileStackSink();
     sink.setLocation(mRootFolderVariable.get(), lDatasetname);
@@ -239,60 +259,85 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     // take images ---------------------------------------------------
     final TDoubleArrayList lDZList = new TDoubleArrayList();
 
-    for (double lIZ = lMinIZ; lIZ <= lMaxDZ; lIZ += lStepIZ)
+
+    ImageRange[] imageRanges = new ImageRange[lNumberOfISamples];
+
+
+    int count = 0;
+    for (double lIZ = lMinIZ; lIZ <= lMaxIZ + 0.0001; lIZ += lStepIZ)
     {
+      ImageRange imageRange = new ImageRange();
+      imageRange.lightSheetPosition = lIZ;
+      imageRange.detectionArmPositions = new double[lNumberOfDSamples];
+
+      double lStep = (lMaxDZ - lMinDZ) / (lNumberOfDSamples - 1);
+      int dCount = 0;
       for (double z = lMinDZ; z <= lMaxDZ; z += lStep)
       {
-        lDZList.add(z);
-        imager.addImageRequest(lIZ, z);
+        imageRange.detectionArmPositions[dCount] = z;
+        dCount ++;
       }
+
+      imageRanges[count] = imageRange;
+      count++;
     }
-    // save result ---------------------------------------------------
 
-    final OffHeapPlanarStack
-          lStack = imager.execute();
+    OffHeapPlanarStack
+        lStack = takeImages(imager, imageRanges);
 
-    if (lStack != null)
+    int iterationcount = 0;
+    while (lStack != null)
     {
       sink.appendStack(lStack);
 
+
       ContrastEstimator contrastEstimator = new ContrastEstimator(lStack);
-      double[] quality = contrastEstimator.getSignalRangeSize();
+      double[] quality = contrastEstimator.getContrastPerSlice();
 
       ArrayList<Double> sortedLightSheetPositions = new ArrayList<Double>();
       HashMap<Double, Double> nextZPositions = new HashMap<Double, Double>();
 
-      int count = 0;
-      for (double lIZ = lMinIZ; lIZ <= lMaxDZ; lIZ += lStepIZ)
+      count = 0;
+      for (ImageRange imageRange : imageRanges)
       {
-        double maxRange = quality[count];
+        double maxQuality = quality[count];
         double bestDetectionZ = 0;
-        for (double z = lMinDZ; z <= lMaxDZ; z += lStep)
+
+        for (double z : imageRange.detectionArmPositions)
         {
-          System.out.println("" + lIZ + "\t" + z + "\t" + quality[count]);
-          if (maxRange < quality[count]) {
-            maxRange = quality[count];
+          System.out.println("" + imageRange.lightSheetPosition + "\t" + z + "\t" + quality[count]);
+          if (maxQuality < quality[count]) {
+            maxQuality = quality[count];
             bestDetectionZ = z;
           }
           count++;
         }
-        sortedLightSheetPositions.add(lIZ);
-        nextZPositions.put(lIZ, bestDetectionZ);
+
+        double oldRange = imageRange.detectionArmPositions[lNumberOfDSamples - 1] - imageRange.detectionArmPositions[0];
+        double newRange = oldRange / 2;
+
+        double zStep = newRange / (lNumberOfDSamples - 1);
+
+        int dCount = 0;
+        for (double z = bestDetectionZ - newRange / 2; z <= bestDetectionZ + newRange / 2; z += zStep) {
+          imageRange.detectionArmPositions[dCount] = Math.max(Math.min(z, lMaxDZ), lMinDZ);
+          dCount++;
+        }
       }
 
 
 
-      // take new images
 
+
+      // take new images
       FocusableImager preciseImager = new FocusableImager(getLightSheetMicroscope(), lLightSheetIndex, lDetectionArmIndex, lExposureTimeInSeconds);
       preciseImager.setFieldOfView((int)lImageWidth, (int)lImageHeight);
 
+      /*
       for (Double lightsheetZ : sortedLightSheetPositions) {
         double detectionZ = nextZPositions.get(lightsheetZ);
         double radius = 10;
         double step = 0.5;
-
-
 
         for (double z = detectionZ - radius; z <= detectionZ + radius; z += step) {
           preciseImager.addImageRequest(lightsheetZ, z);
@@ -301,15 +346,43 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       }
 
       OffHeapPlanarStack stack = preciseImager.execute();
+      */
 
+      //sink.appendStack(lStack);
+      iterationcount  ++;
+      if (iterationcount > lNumberOfPrecisionIncreasingIterations) {
 
-      sink.appendStack(stack);
+        break;
+      }
 
+      lStack = takeImages(preciseImager, imageRanges);
     }
 
     sink.close();
     System.out.println("Bye.");
     return true;
+  }
+
+  private OffHeapPlanarStack takeImages(FocusableImager imager, ImageRange[] imageRanges) throws
+                                                                                          InterruptedException,
+                                                                                          ExecutionException,
+                                                                                          TimeoutException
+  {
+    int count = 0;
+    for (ImageRange imageRange : imageRanges)
+    {
+      System.out.println(count);
+      count++;
+
+      for (double z : imageRange.detectionArmPositions) {
+        imager.addImageRequest(imageRange.lightSheetPosition, z);
+      }
+    }
+    // save result ---------------------------------------------------
+
+    final OffHeapPlanarStack
+        lStack = imager.execute();
+    return lStack;
   }
 
   /**

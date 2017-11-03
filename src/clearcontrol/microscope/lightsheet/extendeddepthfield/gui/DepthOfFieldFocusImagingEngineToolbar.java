@@ -53,6 +53,12 @@ public class DepthOfFieldFocusImagingEngineToolbar extends
     }
 
     {
+      addIntegerField(pDepthOfFieldImagingEngine.getNumberOfPrecisionIncreasingIterations(),
+                      lRow);
+      lRow++;
+    }
+
+    {
       addDoubleField(pDepthOfFieldImagingEngine.getExposureVariable(), lRow);
       lRow++;
     }
