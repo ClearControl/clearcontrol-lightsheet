@@ -103,13 +103,15 @@ public class LightSheetFastFusionProcessor extends
                                              mLightSheetMicroscope.getNumberOfLightSheets(),
                                              mLightSheetMicroscope.getNumberOfDetectionArms());
 
-    info("Received stack for processing: %s", pStack);
 
     if (isPassThrough(pStack))
     {
-      // info("pass-through mode on, passing stack untouched: %s",
-      // pStack);
+      info("pass-through mode on, passing stack untouched: %s", pStack);
       return pStack;
+    }
+    else
+    {
+      info("Received stack for processing: %s", pStack);
     }
 
     if (mEngine.isDownscale())
