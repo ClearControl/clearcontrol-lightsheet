@@ -342,7 +342,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
 
       // take new images
-      FocusableImager preciseImager = new FocusableImager(getLightSheetMicroscope(), lLightSheetIndex, lDetectionArmIndex, lExposureTimeInSeconds);
+      FocusableImager preciseImager = new FocusableImager(getLightSheetMicroscope(), 0, 3, lDetectionArmIndex, lExposureTimeInSeconds);
       preciseImager.setFieldOfView((int)lImageWidth, (int)lImageHeight);
 
       /*
