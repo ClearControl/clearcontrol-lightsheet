@@ -35,17 +35,19 @@ public class FocusableImager
 
   LightSheetMicroscopeQueue mQueue;
 
-  int mLightSheetIndex;
+  int mLightSheetMinIndex;
+  int mLightSheetMaxIndex;
   int mDetectionArmIndex;
 
   int mNumberOfExpectedImages = 0;
   double mInitialDetectionZ = 0;
 
-  public FocusableImager(LightSheetMicroscope pLightSheetMicroscope, int pLightSheetIndex, int pDetectionArm, double pExposureTimeInSeconds)
+  public FocusableImager(LightSheetMicroscope pLightSheetMicroscope, int pLightSheetMinIndex, int pLightSheetMaxIndex, int pDetectionArm, double pExposureTimeInSeconds)
   {
     mLightSheetMicroscope = pLightSheetMicroscope;
     mQueue = mLightSheetMicroscope.requestQueue();
-    mLightSheetIndex = pLightSheetIndex;
+    mLightSheetMinIndex = pLightSheetMinIndex;
+    mLightSheetMaxIndex = pLightSheetMaxIndex;
     mDetectionArmIndex = pDetectionArm;
 
     mQueue.clearQueue();
@@ -70,9 +72,11 @@ public class FocusableImager
   {
     if (mNumberOfExpectedImages == 0)
     {
-      mQueue.setI(mLightSheetIndex);
-      mQueue.setIX(mLightSheetIndex, 0);
-      mQueue.setIY(mLightSheetIndex, 0);
+      for (int i = mLightSheetMinIndex; i < mLightSheetMaxIndex; i++) {
+        mQueue.setI(i, true);
+        mQueue.setIX(i, 0);
+        mQueue.setIY(i, 0);
+      }
 
       mInitialDetectionZ = detectionZ;
       mQueue.setDZ(mDetectionArmIndex, detectionZ);
@@ -81,7 +85,10 @@ public class FocusableImager
     }
 
     mQueue.setDZ(mDetectionArmIndex, detectionZ);
-    mQueue.setIZ(mLightSheetIndex, illuminationZ); // !!!! vv
+
+    for (int i = mLightSheetMinIndex; i < mLightSheetMaxIndex; i++) {
+      mQueue.setIZ(i, illuminationZ);
+    }
     mQueue.setC(mDetectionArmIndex, true);
     mQueue.addCurrentStateToQueue();
 

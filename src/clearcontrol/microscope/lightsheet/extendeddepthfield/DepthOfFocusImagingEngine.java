@@ -36,7 +36,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                                           VisualConsoleInterface
 {
   private BoundedVariable<Integer> mDetectionArmIndex;
-  private BoundedVariable<Integer> mLightSheetIndex;
+//  private BoundedVariable<Integer> mLightSheetIndex;
   private BoundedVariable<Integer>
       mNumberOfISamples =
       new BoundedVariable<Integer>("Number of illumination samples",
@@ -87,11 +87,11 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   {
     return mDetectionArmIndex;
   }
-
-  public BoundedVariable<Integer> getLightSheetIndex()
-  {
-    return mLightSheetIndex;
-  }
+//
+//  public BoundedVariable<Integer> getLightSheetIndex()
+//  {
+//    return mLightSheetIndex;
+//  }
 
   public BoundedVariable<Integer> getNumberOfISamples()
   {
@@ -145,12 +145,12 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                      mLightSheetMicroscope.getNumberOfDetectionArms(),
                                      1);
 
-    mLightSheetIndex =
-        new BoundedVariable<Integer>("Light sheet",
-                                     0,
-                                     0,
-                                     mLightSheetMicroscope.getNumberOfLightSheets(),
-                                     1);
+//    mLightSheetIndex =
+//        new BoundedVariable<Integer>("Light sheet",
+//                                     0,
+//                                     0,
+//                                     mLightSheetMicroscope.getNumberOfLightSheets(),
+//                                     1);
   }
 
   @Override public boolean startTask()
@@ -205,7 +205,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       return false;/**/
 
     int lDetectionArmIndex = mDetectionArmIndex.get();
-    int lLightSheetIndex = mLightSheetIndex.get();
+//    int lLightSheetIndex = mLightSheetIndex.get();
 
     int lNumberOfISamples = mNumberOfISamples.get();
     int lNumberOfDSamples = mNumberOfDSamples.get();
@@ -239,7 +239,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         lLightSheetDevice =
         getLightSheetMicroscope().getDeviceLists()
                                  .getDevice(LightSheetInterface.class,
-                                            lLightSheetIndex);
+                                            0);
 
     BoundedVariable<Number>
         lZVariable =
@@ -261,7 +261,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
     // Initialize ----------------------------------------------------
     FocusableImager
-        imager = new FocusableImager(getLightSheetMicroscope(), lLightSheetIndex, lDetectionArmIndex, lExposureTimeInSeconds);
+        imager = new FocusableImager(getLightSheetMicroscope(), 0, 3, lDetectionArmIndex, lExposureTimeInSeconds);
 
     imager.setFieldOfView((int)lImageWidth, (int)lImageHeight);
 

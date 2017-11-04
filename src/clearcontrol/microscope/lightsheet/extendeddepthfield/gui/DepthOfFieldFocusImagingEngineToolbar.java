@@ -37,10 +37,10 @@ public class DepthOfFieldFocusImagingEngineToolbar extends
       lRow++;
     }
 
-    {
-      addIntegerField(pDepthOfFieldImagingEngine.getLightSheetIndex(), lRow);
-      lRow++;
-    }
+//    {
+//      addIntegerField(pDepthOfFieldImagingEngine.getLightSheetIndex(), lRow);
+//      lRow++;
+//    }
 
     {
       addIntegerField(pDepthOfFieldImagingEngine.getNumberOfISamples(), lRow);
