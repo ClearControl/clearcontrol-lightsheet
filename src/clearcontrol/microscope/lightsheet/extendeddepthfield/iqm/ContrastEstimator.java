@@ -1,5 +1,7 @@
 package clearcontrol.microscope.lightsheet.extendeddepthfield.iqm;
 
+import clearcontrol.ip.iqm.DCTS2D;
+import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.imglib2.StackToImgConverter;
 import net.imglib2.Cursor;
@@ -17,11 +19,14 @@ import net.imglib2.view.Views;
 public class ContrastEstimator
 {
   RandomAccessibleInterval<ShortType> image;
+  StackInterface mStack;
   double[] standardDeviationPerSlice = null;
 
   public ContrastEstimator(StackInterface stack) {
-    StackToImgConverter<ShortType> converter = new StackToImgConverter<>(stack);
-    image = converter.getRandomAccessibleInterval();
+    mStack = stack;
+    //StackToImgConverter<ShortType> converter = new StackToImgConverter<>(stack);
+    //image = converter.getRandomAccessibleInterval();
+
   }
 
   public double[] getContrastPerSlice() {
@@ -32,6 +37,11 @@ public class ContrastEstimator
   }
 
   private synchronized void calculateContrast() {
+    DCTS2D lDCTS2D = new DCTS2D();
+
+    standardDeviationPerSlice =
+        lDCTS2D.computeImageQualityMetric((OffHeapPlanarStack) mStack);
+    /*
     int numberOfSlices = (int)image.dimension(2);
     standardDeviationPerSlice = new double[numberOfSlices];
 
@@ -57,6 +67,7 @@ public class ContrastEstimator
       System.out.println("z: " + z + " stddev:" + stdDev);
       standardDeviationPerSlice[z] = stdDev;
     }
+    */
   }
 
 
