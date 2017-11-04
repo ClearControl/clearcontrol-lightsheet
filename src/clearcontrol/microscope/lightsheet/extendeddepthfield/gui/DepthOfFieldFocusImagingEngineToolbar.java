@@ -59,6 +59,14 @@ public class DepthOfFieldFocusImagingEngineToolbar extends
     }
 
     {
+      addDoubleField(pDepthOfFieldImagingEngine.getMinimumRange(),
+                      lRow);
+      lRow++;
+    }
+
+
+
+    {
       addDoubleField(pDepthOfFieldImagingEngine.getExposureVariable(), lRow);
       lRow++;
     }

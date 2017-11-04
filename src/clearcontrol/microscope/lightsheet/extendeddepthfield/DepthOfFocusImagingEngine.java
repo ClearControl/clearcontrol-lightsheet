@@ -64,7 +64,10 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                   1.0,
                                   0.0,
                                   Double.POSITIVE_INFINITY,
-                                  0.0);
+                                  0.1);
+
+  private final BoundedVariable<Double> mMinimumRange = new BoundedVariable<Double>("Minimum Range", 10.0, 0.0, Double.POSITIVE_INFINITY, 1.0);
+
 
   private Variable<String>
       mDataSetNamePostfixVariable =
@@ -110,6 +113,11 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   public BoundedVariable<Double> getExposureVariable()
   {
     return mExposureVariableInSeconds;
+  }
+
+  public BoundedVariable<Double> getMinimumRange()
+  {
+    return mMinimumRange;
   }
 
   public Variable<String> getDataSetNamePostfixVariable()
@@ -249,6 +257,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     sink.setLocation(mRootFolderVariable.get(), lDatasetname);
     System.out.println(mRootFolderVariable.get() + lDatasetname);
 
+    double lMinimumRange = mMinimumRange.get()
 
     // Initialize ----------------------------------------------------
     FocusableImager
@@ -315,6 +324,9 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
         double oldRange = imageRange.detectionArmPositions[lNumberOfDSamples - 1] - imageRange.detectionArmPositions[0];
         double newRange = oldRange / 2;
+        if (newRange < lMinimumRange) {
+          newRange = lMinimumRange;
+        }
 
         double zStep = newRange / (lNumberOfDSamples - 1);
 
