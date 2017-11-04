@@ -61,7 +61,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   private final BoundedVariable<Double>
       mExposureVariableInSeconds =
       new BoundedVariable<Double>("Exposure time (s)",
-                                  1.0,
+                                  0.1,
                                   0.0,
                                   Double.POSITIVE_INFINITY,
                                   0.1);
@@ -76,10 +76,11 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       mRootFolderVariable =
       new Variable("RootFolder", (Object) null);
 
+  private Variable<Boolean> mDetectionArmFixedVariable = new Variable<Boolean>("DetectionArmFixed", true);
 
   class ImageRange{
-    double lightSheetPosition;
-    double[] detectionArmPositions;
+    double fixedPosition;
+    double[] movingPositions;
   }
 
 
@@ -128,6 +129,10 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   public Variable<File> getRootFolderVariable()
   {
     return mRootFolderVariable;
+  }
+
+  public Variable<Boolean> getDetectionArmFixedVariable() {
+    return mDetectionArmFixedVariable;
   }
 
   private final LightSheetMicroscope mLightSheetMicroscope;
@@ -207,8 +212,13 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     int lDetectionArmIndex = mDetectionArmIndex.get();
 //    int lLightSheetIndex = mLightSheetIndex.get();
 
-    int lNumberOfISamples = mNumberOfISamples.get();
-    int lNumberOfDSamples = mNumberOfDSamples.get();
+
+    int lNumberOfMovingSamples = mNumberOfISamples.get();
+    int lNumberOfFixedSamples = mNumberOfDSamples.get();
+    if (!mDetectionArmFixedVariable.get()) {
+      lNumberOfMovingSamples = mNumberOfDSamples.get();
+      lNumberOfFixedSamples = mNumberOfISamples.get();
+    }
     int lNumberOfPrecisionIncreasingIterations = mNumberOfPrecisionIncreasingIterations.get();
 
     long
@@ -242,15 +252,24 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                             0);
 
     BoundedVariable<Number>
-        lZVariable =
+        lLightsheetZVariable =
         lLightSheetDevice.getZVariable();
-    double lMinIZ = lZVariable.getMin().doubleValue();
-    double lMaxIZ = lZVariable.getMax().doubleValue();
-    double lStepIZ = (lMaxIZ - lMinIZ) / (lNumberOfISamples - 1);
 
-    double lMinDZ = lDetectionFocusZVariable.getMin().doubleValue();
-    double lMaxDZ = lDetectionFocusZVariable.getMax().doubleValue();
 
+    double lMinMovingZ = lLightsheetZVariable.getMin().doubleValue();
+    double lMaxMovingZ = lLightsheetZVariable.getMax().doubleValue();
+
+    double lMinFixedZ = lDetectionFocusZVariable.getMin().doubleValue();
+    double lMaxFixedZ = lDetectionFocusZVariable.getMax().doubleValue();
+
+    if (!mDetectionArmFixedVariable.get())
+    {
+      lMinMovingZ = lDetectionFocusZVariable.getMin().doubleValue();
+      lMaxMovingZ = lDetectionFocusZVariable.getMax().doubleValue();
+
+      lMinFixedZ = lLightsheetZVariable.getMin().doubleValue();
+      lMaxFixedZ = lLightsheetZVariable.getMax().doubleValue();
+    }
     //double lStep = (lMaxDZ - lMinDZ) / (lNumberOfDSamples - 1);
 
     RawFileStackSink sink = new RawFileStackSink();
@@ -269,21 +288,23 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     final TDoubleArrayList lDZList = new TDoubleArrayList();
 
 
-    ImageRange[] imageRanges = new ImageRange[lNumberOfISamples];
+    ImageRange[] imageRanges = new ImageRange[lNumberOfMovingSamples];
 
+
+    double lStepMovingZ = (lMaxMovingZ - lMinMovingZ) / (lNumberOfMovingSamples - 1);
+    double lStepFixedZ = (lMaxFixedZ - lMinFixedZ) / (lNumberOfFixedSamples - 1);
 
     int count = 0;
-    for (double lIZ = lMinIZ; lIZ <= lMaxIZ + 0.0001; lIZ += lStepIZ)
+    for (double lFixedZ = lMinFixedZ; lFixedZ <= lMaxMovingZ + 0.0001; lFixedZ += lStepMovingZ)
     {
       ImageRange imageRange = new ImageRange();
-      imageRange.lightSheetPosition = lIZ;
-      imageRange.detectionArmPositions = new double[lNumberOfDSamples];
+      imageRange.fixedPosition = lFixedZ;
+      imageRange.movingPositions = new double[lNumberOfFixedSamples];
 
-      double lStep = (lMaxDZ - lMinDZ) / (lNumberOfDSamples - 1);
       int dCount = 0;
-      for (double z = lMinDZ; z <= lMaxDZ; z += lStep)
+      for (double lMovingZ = lMinMovingZ; lMovingZ <= lMaxMovingZ + 0.00001; lMovingZ += lStepMovingZ)
       {
-        imageRange.detectionArmPositions[dCount] = z;
+        imageRange.movingPositions[dCount] = lMovingZ;
         dCount ++;
       }
 
@@ -312,9 +333,10 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         double maxQuality = quality[count];
         double bestDetectionZ = 0;
 
-        for (double z : imageRange.detectionArmPositions)
+        for (double z : imageRange.movingPositions)
         {
-          System.out.println("" + imageRange.lightSheetPosition + "\t" + z + "\t" + quality[count]);
+          System.out.println("" + imageRange.fixedPosition
+                             + "\t" + z + "\t" + quality[count]);
           if (maxQuality < quality[count]) {
             maxQuality = quality[count];
             bestDetectionZ = z;
@@ -322,17 +344,17 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
           count++;
         }
 
-        double oldRange = imageRange.detectionArmPositions[lNumberOfDSamples - 1] - imageRange.detectionArmPositions[0];
+        double oldRange = imageRange.movingPositions[lNumberOfFixedSamples - 1] - imageRange.movingPositions[0];
         double newRange = oldRange / 2;
         if (newRange < lMinimumRange) {
           newRange = lMinimumRange;
         }
 
-        double zStep = newRange / (lNumberOfDSamples - 1);
+        lStepFixedZ = newRange / (lNumberOfFixedSamples - 1);
 
         int dCount = 0;
-        for (double z = bestDetectionZ - newRange / 2; z <= bestDetectionZ + newRange / 2; z += zStep) {
-          imageRange.detectionArmPositions[dCount] = Math.max(Math.min(z, lMaxDZ), lMinDZ);
+        for (double z = bestDetectionZ - newRange / 2; z <= bestDetectionZ + newRange / 2 + 0.0001; z += lStepFixedZ) {
+          imageRange.movingPositions[dCount] = Math.max(Math.min(z, lMaxFixedZ), lMinFixedZ);
           dCount++;
         }
       }
@@ -386,8 +408,12 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       System.out.println(count);
       count++;
 
-      for (double z : imageRange.detectionArmPositions) {
-        imager.addImageRequest(imageRange.lightSheetPosition, z);
+      for (double movingPosition : imageRange.movingPositions) {
+        if (mDetectionArmFixedVariable.get()) {
+          imager.addImageRequest(imageRange.fixedPosition, movingPosition);
+        } else {
+          imager.addImageRequest(movingPosition, imageRange.fixedPosition);
+        }
       }
     }
     // save result ---------------------------------------------------

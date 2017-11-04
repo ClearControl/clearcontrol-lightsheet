@@ -4,6 +4,7 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.cameras.StackCameraDeviceInterface;
 import clearcontrol.devices.cameras.gui.CameraResolutionGrid;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
+import clearcontrol.gui.jfx.var.checkbox.VariableCheckBox;
 import clearcontrol.gui.jfx.var.combo.ClassComboBoxVariable;
 import clearcontrol.gui.jfx.var.file.VariableFileChooser;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
@@ -13,6 +14,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -85,6 +87,26 @@ public class DepthOfFieldFocusImagingEngineToolbar extends
       this.add(lRootFolderChooser.getTextField(), 1, lRow);
       this.add(lRootFolderChooser.getButton(), 3, lRow);
 
+      lRow++;
+    }
+
+
+    {
+      VariableCheckBox lDetectionArmFixed =
+          new VariableCheckBox("",
+                               pDepthOfFieldImagingEngine.getDetectionArmFixedVariable());
+
+      Label lInterleavedAcquisitionLabel =
+          new Label("Detection arm fixed (otherwise: light sheet fixed)");
+
+      GridPane.setHalignment(lDetectionArmFixed.getCheckBox(),
+                             HPos.RIGHT);
+      GridPane.setColumnSpan(lDetectionArmFixed.getCheckBox(),
+                             1);
+      GridPane.setColumnSpan(lInterleavedAcquisitionLabel, 3);
+
+      add(lDetectionArmFixed.getCheckBox(), 0, lRow);
+      add(lInterleavedAcquisitionLabel, 1, lRow);
       lRow++;
     }
 
