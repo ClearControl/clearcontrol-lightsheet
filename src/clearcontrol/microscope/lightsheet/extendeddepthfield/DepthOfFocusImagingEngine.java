@@ -257,7 +257,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     sink.setLocation(mRootFolderVariable.get(), lDatasetname);
     System.out.println(mRootFolderVariable.get() + lDatasetname);
 
-    double lMinimumRange = mMinimumRange.get()
+    double lMinimumRange = mMinimumRange.get();
 
     // Initialize ----------------------------------------------------
     FocusableImager
