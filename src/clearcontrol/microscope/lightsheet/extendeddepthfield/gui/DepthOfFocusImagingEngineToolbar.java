@@ -10,6 +10,7 @@ import clearcontrol.gui.jfx.var.file.VariableFileChooser;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
 import clearcontrol.gui.jfx.var.textfield.StringVariableTextField;
 import clearcontrol.microscope.lightsheet.extendeddepthfield.DepthOfFocusImagingEngine;
+import eu.hansolo.enzo.simpleindicator.SimpleIndicator;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -35,14 +36,77 @@ public class DepthOfFocusImagingEngineToolbar extends
     int lRow = 0;
 
     {
+      SimpleIndicator lAcquisitionStateIndicator = new SimpleIndicator();
+      lAcquisitionStateIndicator.indicatorStyleProperty().set(SimpleIndicator.IndicatorStyle.RED);
+      pDepthOfFieldImagingEngine.getIsRunningVariable().addSetListener((o, n) -> {
+        lAcquisitionStateIndicator.onProperty().set(n);
+      });
+
+      lAcquisitionStateIndicator.setMinSize(50, 50);
+
+      GridPane.setRowSpan(lAcquisitionStateIndicator, 2);
+
+      add(lAcquisitionStateIndicator, 0, 0);
+    }
+
+    {
+      Button lStart = new Button("Start");
+      lStart.setAlignment(Pos.CENTER);
+      lStart.setMaxWidth(Double.MAX_VALUE);
+      lStart.setOnAction((e) -> {
+        pDepthOfFieldImagingEngine.startTask();
+      });
+      //GridPane.setColumnSpan(lStart, 2);
+      GridPane.setHgrow(lStart, Priority.ALWAYS);
+      add(lStart, 1, lRow);
+
+      lRow++;
+    }
+
+    {
+      Button lStop = new Button("Stop");
+      lStop.setAlignment(Pos.CENTER);
+      lStop.setMaxWidth(Double.MAX_VALUE);
+      lStop.setOnAction((e) -> {
+        pDepthOfFieldImagingEngine.stopTask();
+      });
+      //GridPane.setColumnSpan(lStop, 2);
+      GridPane.setHgrow(lStop, Priority.ALWAYS);
+      add(lStop, 1, lRow);
+
+      lRow++;
+    }
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 4);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+    {
       addIntegerField(pDepthOfFieldImagingEngine.getDetectionArmIndex(), lRow);
       lRow++;
     }
 
-//    {
-//      addIntegerField(pDepthOfFieldImagingEngine.getLightSheetIndex(), lRow);
-//      lRow++;
-//    }
+    {
+      VariableCheckBox lDetectionArmFixed =
+          new VariableCheckBox("",
+                               pDepthOfFieldImagingEngine.getDetectionArmFixedVariable());
+
+      Label lInterleavedAcquisitionLabel =
+          new Label("Detection arm position fixed \n(otherwise: light sheet position fixed)");
+
+      GridPane.setHalignment(lDetectionArmFixed.getCheckBox(),
+                             HPos.RIGHT);
+      GridPane.setColumnSpan(lDetectionArmFixed.getCheckBox(),
+                             1);
+      GridPane.setColumnSpan(lInterleavedAcquisitionLabel, 3);
+
+      add(lInterleavedAcquisitionLabel, 0, lRow);
+      add(lDetectionArmFixed.getCheckBox(), 1, lRow);
+      lRow++;
+    }
 
     {
       addIntegerField(pDepthOfFieldImagingEngine.getNumberOfISamples(), lRow);
@@ -91,24 +155,6 @@ public class DepthOfFocusImagingEngineToolbar extends
     }
 
 
-    {
-      VariableCheckBox lDetectionArmFixed =
-          new VariableCheckBox("",
-                               pDepthOfFieldImagingEngine.getDetectionArmFixedVariable());
-
-      Label lInterleavedAcquisitionLabel =
-          new Label("Detection arm fixed (otherwise: light sheet fixed)");
-
-      GridPane.setHalignment(lDetectionArmFixed.getCheckBox(),
-                             HPos.RIGHT);
-      GridPane.setColumnSpan(lDetectionArmFixed.getCheckBox(),
-                             1);
-      GridPane.setColumnSpan(lInterleavedAcquisitionLabel, 3);
-
-      add(lDetectionArmFixed.getCheckBox(), 0, lRow);
-      add(lInterleavedAcquisitionLabel, 1, lRow);
-      lRow++;
-    }
 
     {
       StringVariableTextField
@@ -161,47 +207,14 @@ public class DepthOfFocusImagingEngineToolbar extends
       GridPane.setHalignment(lGridPane, HPos.CENTER);
       GridPane.setHgrow(lGridPane, Priority.ALWAYS);
       GridPane.setColumnSpan(lGridPane, 3);
-      add(lGridPane, 0, lRow);
+      GridPane.setRowSpan(lGridPane, 5);
+      add(lGridPane, 2, 3);
 
       // setGridLinesVisible(true);
 
       lRow++;
     }
-    {
-      Separator lSeparator = new Separator();
-      lSeparator.setOrientation(Orientation.HORIZONTAL);
-      GridPane.setColumnSpan(lSeparator, 4);
-      add(lSeparator, 0, lRow);
-      lRow++;
-    }
 
-    {
-      Button lStart = new Button("Start");
-      lStart.setAlignment(Pos.CENTER);
-      lStart.setMaxWidth(Double.MAX_VALUE);
-      lStart.setOnAction((e) -> {
-        pDepthOfFieldImagingEngine.startTask();
-      });
-      GridPane.setColumnSpan(lStart, 2);
-      GridPane.setHgrow(lStart, Priority.ALWAYS);
-      add(lStart, 0, lRow);
-
-      lRow++;
-    }
-
-    {
-      Button lStop = new Button("Stop");
-      lStop.setAlignment(Pos.CENTER);
-      lStop.setMaxWidth(Double.MAX_VALUE);
-      lStop.setOnAction((e) -> {
-        pDepthOfFieldImagingEngine.stopTask();
-      });
-      GridPane.setColumnSpan(lStop, 2);
-      GridPane.setHgrow(lStop, Priority.ALWAYS);
-      add(lStop, 0, lRow);
-
-      lRow++;
-    }
   }
 
   private void addIntegerField(BoundedVariable<Integer> variable, int lRow) {
