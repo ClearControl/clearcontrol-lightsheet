@@ -479,22 +479,23 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         if (mDetectionArmFixedVariable.get())
         {
           mLogFileWriter.write("Image at "
-                               + lImageRange.mFixedPosition
-                               + "/"
-                               + lMovingPosition
-                               + "\n");
-          pImager.addImageRequest(lImageRange.mFixedPosition,
-                                  lMovingPosition);
-        }
-        else
-        {
-          mLogFileWriter.write("Image at "
                                + lMovingPosition
                                + "/"
                                + lImageRange.mFixedPosition
                                + "\n");
           pImager.addImageRequest(lMovingPosition,
                                   lImageRange.mFixedPosition);
+
+        }
+        else
+        {
+          mLogFileWriter.write("Image at "
+                               + lImageRange.mFixedPosition
+                               + "/"
+                               + lMovingPosition
+                               + "\n");
+          pImager.addImageRequest(lImageRange.mFixedPosition,
+                                  lMovingPosition);
         }
       }
     }
