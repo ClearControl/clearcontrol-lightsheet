@@ -295,11 +295,11 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     double lStepFixedZ = (lMaxFixedZ - lMinFixedZ) / (lNumberOfFixedSamples - 1);
 
     int count = 0;
-    for (double lFixedZ = lMinFixedZ; lFixedZ <= lMaxMovingZ + 0.0001; lFixedZ += lStepMovingZ)
+    for (double lFixedZ = lMinFixedZ; lFixedZ <= lMaxFixedZ + 0.0001; lFixedZ += lStepFixedZ)
     {
       ImageRange imageRange = new ImageRange();
       imageRange.fixedPosition = lFixedZ;
-      imageRange.movingPositions = new double[lNumberOfFixedSamples];
+      imageRange.movingPositions = new double[lNumberOfMovingSamples];
 
       int dCount = 0;
       for (double lMovingZ = lMinMovingZ; lMovingZ <= lMaxMovingZ + 0.00001; lMovingZ += lStepMovingZ)
@@ -333,28 +333,28 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         double maxQuality = quality[count];
         double bestDetectionZ = 0;
 
-        for (double z : imageRange.movingPositions)
+        for (double lMovingZ : imageRange.movingPositions)
         {
           System.out.println("" + imageRange.fixedPosition
-                             + "\t" + z + "\t" + quality[count]);
+                             + "\t" + lMovingZ + "\t" + quality[count]);
           if (maxQuality < quality[count]) {
             maxQuality = quality[count];
-            bestDetectionZ = z;
+            bestDetectionZ = lMovingZ;
           }
           count++;
         }
 
-        double oldRange = imageRange.movingPositions[lNumberOfFixedSamples - 1] - imageRange.movingPositions[0];
+        double oldRange = imageRange.movingPositions[lNumberOfMovingSamples - 1] - imageRange.movingPositions[0];
         double newRange = oldRange / 2;
         if (newRange < lMinimumRange) {
           newRange = lMinimumRange;
         }
 
-        lStepFixedZ = newRange / (lNumberOfFixedSamples - 1);
+        lStepMovingZ = newRange / (lNumberOfMovingSamples - 1);
 
         int dCount = 0;
-        for (double z = bestDetectionZ - newRange / 2; z <= bestDetectionZ + newRange / 2 + 0.0001; z += lStepFixedZ) {
-          imageRange.movingPositions[dCount] = Math.max(Math.min(z, lMaxFixedZ), lMinFixedZ);
+        for (double lMovingZ = bestDetectionZ - newRange / 2; lMovingZ <= bestDetectionZ + newRange / 2 + 0.0001; lMovingZ += lStepMovingZ) {
+          imageRange.movingPositions[dCount] = Math.max(Math.min(lMovingZ, lMaxMovingZ), lMinMovingZ);
           dCount++;
         }
       }
