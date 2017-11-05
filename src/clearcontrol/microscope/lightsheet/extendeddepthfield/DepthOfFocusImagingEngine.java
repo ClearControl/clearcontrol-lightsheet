@@ -257,6 +257,24 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         lLightsheetZVariable =
         lLightSheetDevice.getZVariable();
 
+
+    // Open Image Sink and log file
+    RawFileStackSink lSink = new RawFileStackSink();
+    lSink.setLocation(mRootFolderVariable.get(), lDatasetname);
+    File
+        lLogFile =
+        new File(mRootFolderVariable.get() + "\\" + lDatasetname,
+                 "log.txt");
+
+    lLogFile.getParentFile().mkdir();
+
+    mLogFileWriter = new BufferedWriter(new FileWriter(lLogFile));
+
+    mLogFileWriter.write("Start " + new SimpleDateFormat(
+        "yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date()) + "\n");
+    System.out.println(mRootFolderVariable.get() + lDatasetname);
+
+    // define ranges where to take images
     double lMinMovingZ = lLightsheetZVariable.getMin().doubleValue();
     double lMaxMovingZ = lLightsheetZVariable.getMax().doubleValue();
 
@@ -276,37 +294,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       lMaxFixedZ = lLightsheetZVariable.getMax().doubleValue();
     }
 
-    RawFileStackSink lSink = new RawFileStackSink();
-    lSink.setLocation(mRootFolderVariable.get(), lDatasetname);
-    File
-        lLogFile =
-        new File(mRootFolderVariable.get() + "\\" + lDatasetname,
-                 "log.txt");
-
-    lLogFile.getParentFile().mkdir();
-
-    mLogFileWriter = new BufferedWriter(new FileWriter(lLogFile));
-
-    mLogFileWriter.write("Start " + new SimpleDateFormat(
-        "yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date()) + "\n");
-    System.out.println(mRootFolderVariable.get() + lDatasetname);
-
     double lMinimumRange = mMinimumRange.get();
-
-    // Initialize ----------------------------------------------------
-    FocusableImager
-        lInitialImager =
-        new FocusableImager(getLightSheetMicroscope(),
-                            0,
-                            3,
-                            lDetectionArmIndex,
-                            lExposureTimeInSeconds);
-
-    lInitialImager.setFieldOfView((int) lImageWidth,
-                                  (int) lImageHeight);
-
-    // take images ---------------------------------------------------
-    final TDoubleArrayList lDZList = new TDoubleArrayList();
 
     ImageRange[]
         lImageRanges =
@@ -320,6 +308,22 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         (lMaxFixedZ - lMinFixedZ) / (lNumberOfFixedSamples - 1);
 
     int lFixedCount = 0;
+
+    // setup imager
+    FocusableImager
+        lInitialImager =
+        new FocusableImager(getLightSheetMicroscope(),
+                            0,
+                            3,
+                            lDetectionArmIndex,
+                            lExposureTimeInSeconds);
+
+    lInitialImager.setFieldOfView((int) lImageWidth,
+                                  (int) lImageHeight);
+
+
+    // define ImageRange: For all detection arm positions take
+    // images for all light sheet positions (or vise versa)
     for (double lFixedZ = lMinFixedZ; lFixedZ <= lMaxFixedZ + 0.0001;
          lFixedZ +=
              lStepFixedZ)
@@ -343,6 +347,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       lFixedCount++;
     }
 
+    // Get the first image stack for analysis / optimisation
     OffHeapPlanarStack
         lStack =
         takeImages(lInitialImager, lImageRanges);
@@ -350,8 +355,10 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     int lIterationCount = 0;
     while (lStack != null)
     {
+      // save result images to disc
       lSink.appendStack(lStack);
 
+      // Analyse images: get quality per slice
       DiscreteConsinusTransformEntropyPerSliceEstimator
           lImageQualityEstimator =
           new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
@@ -367,6 +374,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
             lQualityPerSliceMeasurementsArray[lFixedCount];
         double lBestMovingZ = 0;
 
+        // determine moving slice in focus
         for (double lMovingZ : lImageRange.mMovingPositions)
         {
           info(""
@@ -395,6 +403,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                              + lBestMovingZ
                              + "\n");
 
+        // setup a new range for this particular fixed slice
         double
             lOldRange =
             lImageRange.mMovingPositions[lNumberOfMovingSamples - 1]
@@ -435,6 +444,17 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
       mLogFileWriter.write("ITERATION " + lIterationCount + "\n");
 
+      // Cancel if user wants it or if iterations exceeded
+      lIterationCount++;
+      if (lIterationCount > lNumberOfPrecisionIncreasingIterations)
+      {
+        break;
+      }
+      if (isStopRequested()) {
+        warning("Cancelled by user");
+        break;
+      }
+
       // take new images
       FocusableImager
           lPreciseImager =
@@ -446,16 +466,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       lPreciseImager.setFieldOfView((int) lImageWidth,
                                     (int) lImageHeight);
 
-      lIterationCount++;
-      if (lIterationCount > lNumberOfPrecisionIncreasingIterations)
-      {
-        break;
-      }
-
-      if (isStopRequested()) {
-        warning("Cancelled by user");
-        break;
-      }
       lStack = takeImages(lPreciseImager, lImageRanges);
     }
 
@@ -472,6 +482,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                                                    TimeoutException,
                                                                    IOException
   {
+    // Request for all images defined in the ImageRange
     for (ImageRange lImageRange : pImageRanges)
     {
       for (double lMovingPosition : lImageRange.mMovingPositions)
@@ -499,8 +510,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         }
       }
     }
-    // save result ---------------------------------------------------
 
+    // Actually run the imaging here
     mLogFileWriter.write("Start imaging " + new SimpleDateFormat(
         "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
     final OffHeapPlanarStack lStack = pImager.execute();
