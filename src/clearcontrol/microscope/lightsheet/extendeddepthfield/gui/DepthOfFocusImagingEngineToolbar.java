@@ -26,10 +26,10 @@ import javafx.scene.layout.Priority;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * October 2017
  */
-public class DepthOfFieldFocusImagingEngineToolbar extends
+public class DepthOfFocusImagingEngineToolbar extends
                                                    CustomGridPane
 {
-  public DepthOfFieldFocusImagingEngineToolbar(
+  public DepthOfFocusImagingEngineToolbar(
       DepthOfFocusImagingEngine pDepthOfFieldImagingEngine)
   {
     int lRow = 0;
@@ -185,6 +185,20 @@ public class DepthOfFieldFocusImagingEngineToolbar extends
       GridPane.setColumnSpan(lStart, 2);
       GridPane.setHgrow(lStart, Priority.ALWAYS);
       add(lStart, 0, lRow);
+
+      lRow++;
+    }
+
+    {
+      Button lStop = new Button("Stop");
+      lStop.setAlignment(Pos.CENTER);
+      lStop.setMaxWidth(Double.MAX_VALUE);
+      lStop.setOnAction((e) -> {
+        pDepthOfFieldImagingEngine.stopTask();
+      });
+      GridPane.setColumnSpan(lStop, 2);
+      GridPane.setHgrow(lStop, Priority.ALWAYS);
+      add(lStop, 0, lRow);
 
       lRow++;
     }

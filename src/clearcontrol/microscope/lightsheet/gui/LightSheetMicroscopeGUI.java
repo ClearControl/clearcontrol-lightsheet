@@ -14,7 +14,7 @@ import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterf
 import clearcontrol.microscope.lightsheet.component.detection.gui.DetectionArmPanel;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.gui.LightSheetPanel;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.gui.DepthOfFieldFocusImagingEngineToolbar;
+import clearcontrol.microscope.lightsheet.extendeddepthfield.gui.DepthOfFocusImagingEngineToolbar;
 import clearcontrol.microscope.lightsheet.extendeddepthfield.DepthOfFocusImagingEngine;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
 import clearcontrol.microscope.lightsheet.interactive.gui.InteractiveAcquisitionToolbar;
@@ -111,7 +111,7 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          MicroscopeNodeType.Acquisition);
 
     addToolbarMappingEntry(DepthOfFocusImagingEngine.class,
-                         DepthOfFieldFocusImagingEngineToolbar.class);
+                         DepthOfFocusImagingEngineToolbar.class);
 
   }
 
