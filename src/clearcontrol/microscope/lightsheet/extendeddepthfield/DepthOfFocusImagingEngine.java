@@ -15,8 +15,7 @@ import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import gnu.trove.list.array.TDoubleArrayList;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,7 +66,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                   0.1);
 
   private final BoundedVariable<Double> mMinimumRange = new BoundedVariable<Double>("Minimum Range", 10.0, 0.0, Double.POSITIVE_INFINITY, 1.0);
-
+  private BufferedWriter logFileStream;
 
   private Variable<String>
       mDataSetNamePostfixVariable =
@@ -235,8 +234,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
     //String lFoldername = "C:/structure/temp/images/";
     String
-        lDatasetname =
-        getDataSetNamePostfixVariable().get() + new SimpleDateFormat("yyyy.MM.dd HH-mm-ss").format(new Date());
+        lDatasetname = "" +
+         new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-00-").format(new Date()) + getDataSetNamePostfixVariable().get();
 
     BoundedVariable<Number>
         lDetectionFocusZVariable =
@@ -274,6 +273,13 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
     RawFileStackSink sink = new RawFileStackSink();
     sink.setLocation(mRootFolderVariable.get(), lDatasetname);
+    File logFile = new File(mRootFolderVariable.get() + "\\" + lDatasetname, "log.txt");
+
+    logFile.getParentFile().mkdir();
+
+    logFileStream = new BufferedWriter(new FileWriter(logFile));
+
+    logFileStream.write("Start " + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date()) + "\n" );
     System.out.println(mRootFolderVariable.get() + lDatasetname);
 
     double lMinimumRange = mMinimumRange.get();
@@ -331,18 +337,21 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       for (ImageRange imageRange : imageRanges)
       {
         double maxQuality = quality[count];
-        double bestDetectionZ = 0;
+        double bestMovingZ = 0;
 
         for (double lMovingZ : imageRange.movingPositions)
         {
           System.out.println("" + imageRange.fixedPosition
                              + "\t" + lMovingZ + "\t" + quality[count]);
+          logFileStream.write("Quality " + imageRange.fixedPosition
+                              + "\t" + lMovingZ + "\t" + quality[count] + "\n");
           if (maxQuality < quality[count]) {
             maxQuality = quality[count];
-            bestDetectionZ = lMovingZ;
+            bestMovingZ = lMovingZ;
           }
           count++;
         }
+        logFileStream.write("Best moving position " + bestMovingZ + "\n");
 
         double oldRange = imageRange.movingPositions[lNumberOfMovingSamples - 1] - imageRange.movingPositions[0];
         double newRange = oldRange / 2;
@@ -352,8 +361,10 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
         lStepMovingZ = newRange / (lNumberOfMovingSamples - 1);
 
+        logFileStream.write("Fixed " + imageRange.fixedPosition + " new moving range " + (bestMovingZ - newRange / 2) + " - " + bestMovingZ + newRange / 2 + "\n");
+
         int dCount = 0;
-        for (double lMovingZ = bestDetectionZ - newRange / 2; lMovingZ <= bestDetectionZ + newRange / 2 + 0.0001; lMovingZ += lStepMovingZ) {
+        for (double lMovingZ = bestMovingZ - newRange / 2; lMovingZ <= bestMovingZ + newRange / 2 + 0.0001; lMovingZ += lStepMovingZ) {
           imageRange.movingPositions[dCount] = Math.max(Math.min(lMovingZ, lMaxMovingZ), lMinMovingZ);
           dCount++;
         }
@@ -361,6 +372,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
 
 
+      logFileStream.write("ITERATION " + iterationcount + "\n");
 
 
       // take new images
@@ -393,6 +405,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     }
 
     sink.close();
+    logFileStream.close();
     System.out.println("Bye.");
     return true;
   }
@@ -400,8 +413,10 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   private OffHeapPlanarStack takeImages(FocusableImager imager, ImageRange[] imageRanges) throws
                                                                                           InterruptedException,
                                                                                           ExecutionException,
-                                                                                          TimeoutException
+                                                                                          TimeoutException,
+                                                                                          IOException
   {
+
     int count = 0;
     for (ImageRange imageRange : imageRanges)
     {
@@ -410,16 +425,20 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
       for (double movingPosition : imageRange.movingPositions) {
         if (mDetectionArmFixedVariable.get()) {
+          logFileStream.write("Image at " + imageRange.fixedPosition + "/" + movingPosition + "\n");
           imager.addImageRequest(imageRange.fixedPosition, movingPosition);
         } else {
+          logFileStream.write("Image at " + movingPosition + "/" + imageRange.fixedPosition + "\n");
           imager.addImageRequest(movingPosition, imageRange.fixedPosition);
         }
       }
     }
     // save result ---------------------------------------------------
 
+    logFileStream.write("Start imaging " + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())  + "\n");
     final OffHeapPlanarStack
         lStack = imager.execute();
+    logFileStream.write("Stop imaging " + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())  + "\n");
     return lStack;
   }
 
