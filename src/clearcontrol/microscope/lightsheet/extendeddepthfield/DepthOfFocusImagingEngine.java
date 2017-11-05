@@ -25,9 +25,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
- * The DepthOfFocuseImagingEngine allows taking images with several
- * focus planes per light sheet position
- * <p>
+ * The DepthOfFocusImagingEngine allows taking images with several
+ * focus planes per light sheet position and vice versa.
+ *
+ * Initially, n light sheet positions are imaged; with m detection arm
+ * positions each. Afterwards, within the m images, the one with the
+ * highest quality measurement is defined as the one in focus. In the
+ * following step, again m detection arm positons are imaged, but the
+ * range becomes smaller. After 3-4 iterations, the minimum range
+ * should be reached. Adaption according to the detection arm position
+ * in focus is done at every single step.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * October 2017
  */
