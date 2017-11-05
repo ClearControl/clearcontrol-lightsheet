@@ -69,7 +69,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                   0.1,
                                   0.0,
                                   Double.POSITIVE_INFINITY,
-                                  0.1);
+                                  0.001);
 
   private final BoundedVariable<Double>
       mMinimumRange =
