@@ -306,7 +306,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
     ImageRange[]
         lImageRanges =
-        new ImageRange[lNumberOfMovingSamples];
+        new ImageRange[lNumberOfFixedSamples];
 
     double
         lStepMovingZ =
