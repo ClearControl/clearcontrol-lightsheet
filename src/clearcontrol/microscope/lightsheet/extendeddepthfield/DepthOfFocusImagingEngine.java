@@ -50,14 +50,14 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   private BoundedVariable<Integer>
       mNumberOfISamples =
       new BoundedVariable<Integer>("Number of illumination samples",
-                                   10,
+                                   100,
                                    0,
                                    Integer.MAX_VALUE,
                                    1);
   private BoundedVariable<Integer>
       mNumberOfDSamples =
       new BoundedVariable<Integer>("Number of detection samples",
-                                   10,
+                                   11,
                                    0,
                                    Integer.MAX_VALUE,
                                    1);
@@ -97,7 +97,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
   private Variable<Boolean>
       mDetectionArmFixedVariable =
-      new Variable<Boolean>("DetectionArmFixed", true);
+      new Variable<Boolean>("DetectionArmFixed", false);
 
   class ImageRange
   {
@@ -278,8 +278,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
     mLogFileWriter = new BufferedWriter(new FileWriter(lLogFile));
 
-    mLogFileWriter.write("Start " + new SimpleDateFormat(
-        "yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date()) + "\n");
     System.out.println(mRootFolderVariable.get() + lDatasetname);
 
     // define ranges where to take images
@@ -315,7 +313,27 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         lStepFixedZ =
         (lMaxFixedZ - lMinFixedZ) / (lNumberOfFixedSamples - 1);
 
-    int lFixedCount = 0;
+    int lQualitySampleIndex = 0;
+
+    mLogFileWriter.write("Dataset " + mRootFolderVariable.get() + "\\" + lDatasetname);
+    mLogFileWriter.write("Detection arm index: " + lDetectionArmIndex );
+    mLogFileWriter.write("Number of " + (mDetectionArmFixedVariable.get()?"detection arm":"light sheet") + " samples: " + lNumberOfFixedSamples);
+    mLogFileWriter.write("Number of " + (!mDetectionArmFixedVariable.get()?"detection arm":"light sheet") + " samples: " + lNumberOfMovingSamples);
+    mLogFileWriter.write("Detection arm fixed: " + mDetectionArmFixedVariable.get());
+    mLogFileWriter.write("Number of iterations: " + lNumberOfPrecisionIncreasingIterations);
+    mLogFileWriter.write("Minimum range: " + lMinimumRange);
+    mLogFileWriter.write("Minimum fixed Z: " + lMinFixedZ);
+    mLogFileWriter.write("Maximum fixed Z: " + lMaxFixedZ);
+    mLogFileWriter.write("Minimum moving Z: " + lMinMovingZ);
+    mLogFileWriter.write("Maximum moving Z: " + lMaxMovingZ);
+
+    mLogFileWriter.write("Image width: " + lImageWidth);
+    mLogFileWriter.write("Image height: " + lImageHeight);
+    mLogFileWriter.write("Exposure time (sec): " + lExposureTimeInSeconds);
+
+    mLogFileWriter.write("Start " + new SimpleDateFormat(
+        "yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date()) + "\n");
+
 
     // setup imager
     FocusableImager
@@ -351,8 +369,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         lMovingCount++;
       }
 
-      lImageRanges[lFixedCount] = imageRange;
-      lFixedCount++;
+      lImageRanges[lQualitySampleIndex] = imageRange;
+      lQualitySampleIndex++;
     }
 
     // Get the first image stack for analysis / optimisation
@@ -374,13 +392,18 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
           lQualityPerSliceMeasurementsArray =
           lImageQualityEstimator.getQualityArray();
 
-      lFixedCount = 0;
+
+      lQualitySampleIndex = 0;
       for (ImageRange lImageRange : lImageRanges)
       {
         double
             lMaxQuality =
-            lQualityPerSliceMeasurementsArray[lFixedCount];
+            lQualityPerSliceMeasurementsArray[lQualitySampleIndex];
         double lBestMovingZ = 0;
+
+
+        mLogFileWriter.write("Start analysing quality " + new SimpleDateFormat(
+            "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
 
         // determine moving slice in focus
         for (double lMovingZ : lImageRange.mMovingPositions)
@@ -390,23 +413,26 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                + "\t"
                + lMovingZ
                + "\t"
-               + lQualityPerSliceMeasurementsArray[lFixedCount]);
-          mLogFileWriter.write("Quality "
+               + lQualityPerSliceMeasurementsArray[lQualitySampleIndex]);
+          mLogFileWriter.write("Quality[" + lQualitySampleIndex + "] "
                                + lImageRange.mFixedPosition
                                + "\t"
                                + lMovingZ
                                + "\t"
-                               + lQualityPerSliceMeasurementsArray[lFixedCount]
+                               + lQualityPerSliceMeasurementsArray[lQualitySampleIndex]
                                + "\n");
           if (lMaxQuality
-              < lQualityPerSliceMeasurementsArray[lFixedCount])
+              < lQualityPerSliceMeasurementsArray[lQualitySampleIndex])
           {
             lMaxQuality =
-                lQualityPerSliceMeasurementsArray[lFixedCount];
+                lQualityPerSliceMeasurementsArray[lQualitySampleIndex];
             lBestMovingZ = lMovingZ;
           }
-          lFixedCount++;
+          lQualitySampleIndex++;
         }
+
+        mLogFileWriter.write("Finished analysing quality " + new SimpleDateFormat(
+            "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
         mLogFileWriter.write("Best moving position "
                              + lBestMovingZ
                              + "\n");
@@ -504,7 +530,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                + "\n");
           pImager.addImageRequest(lMovingPosition,
                                   lImageRange.mFixedPosition);
-
         }
         else
         {
@@ -523,7 +548,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     mLogFileWriter.write("Start imaging " + new SimpleDateFormat(
         "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
     final OffHeapPlanarStack lStack = pImager.execute();
-    mLogFileWriter.write("Stop imaging " + new SimpleDateFormat(
+    mLogFileWriter.write("Finished imaging " + new SimpleDateFormat(
         "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
     return lStack;
   }
