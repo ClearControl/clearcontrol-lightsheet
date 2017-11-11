@@ -76,7 +76,8 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
   public LightSheetFastFusionEngine(ClearCLContext pContext,
                                     VisualConsoleInterface pVisualConsoleInterface,
                                     int pNumberOfLightSheets,
-                                    int pNumberOfDetectionArms)
+                                    int pNumberOfDetectionArms,
+                                    boolean doBackgroundSubtraction)
   {
     super(pContext);
     mVisualConsoleInterface = pVisualConsoleInterface;
@@ -174,8 +175,11 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     float[] lKernelSigmasFusion = new float[]
     { 15, 15, 5 };
 
-    float[] lKernelSigmasBackground = new float[]
-    { 30, 30, 10 };
+    float[] lKernelSigmasBackground = null;
+    if (doBackgroundSubtraction)
+    {
+      lKernelSigmasBackground = new float[] { 30, 30, 10 };
+    }
 
     if (pNumberOfLightSheets == 1)
     {
@@ -304,18 +308,37 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     // "C0",
     // "C1adjusted"));
 
-    addTasks(CompositeTasks.fuseWithSmoothWeights("fused-preliminary",
-                                                  ImageChannelDataType.Float,
-                                                  pKernelSigmasFusion,
-                                                  true,
-                                                  "C0",
-                                                  "C1adjusted"));
+    if (pKernelSigmasBackground == null)
+    {
 
-    addTasks(CompositeTasks.subtractBlurredCopyFromFloatImage("fused-preliminary",
-                                                              "fused",
-                                                              pKernelSigmasBackground,
-                                                              true,
-                                                              ImageChannelDataType.UnsignedInt16));
+      addTasks(CompositeTasks.fuseWithSmoothWeights(
+          "fused",
+          ImageChannelDataType.Float,
+          pKernelSigmasFusion,
+          true,
+          "C0",
+          "C1adjusted"));
+
+    }
+    else
+    {
+
+      addTasks(CompositeTasks.fuseWithSmoothWeights(
+          "fused-preliminary",
+          ImageChannelDataType.Float,
+          pKernelSigmasFusion,
+          true,
+          "C0",
+          "C1adjusted"));
+
+      addTasks(CompositeTasks.subtractBlurredCopyFromFloatImage(
+          "fused-preliminary",
+          "fused",
+          pKernelSigmasBackground,
+          true,
+          ImageChannelDataType.UnsignedInt16));
+
+    }
   }
 
   protected void setupFourLightsheetsOneDetectionArm()

@@ -73,6 +73,9 @@ public class LightSheetFastFusionProcessor extends
                                                                   new Variable<Integer>("TransformLockThreshold",
                                                                                         20);
 
+  private final Variable<Boolean> mBackgroundSubtractionSwitchVariable =
+      new Variable<Boolean>("BackgroundSubtractionSwitch", false);
+
   /**
    * Instantiates a lightsheet stack processor
    *
@@ -101,7 +104,8 @@ public class LightSheetFastFusionProcessor extends
               new LightSheetFastFusionEngine(getContext(),
                                              (VisualConsoleInterface) this,
                                              mLightSheetMicroscope.getNumberOfLightSheets(),
-                                             mLightSheetMicroscope.getNumberOfDetectionArms());
+                                             mLightSheetMicroscope.getNumberOfDetectionArms(),
+                                             mBackgroundSubtractionSwitchVariable.get());
 
 
     if (isPassThrough(pStack))
@@ -344,6 +348,10 @@ public class LightSheetFastFusionProcessor extends
   public Variable<Integer> getTransformLockThresholdVariable()
   {
     return mTransformLockThresholdVariable;
+  }
+
+  public Variable<Boolean> getBackgroundSubtractionSwitchVariable() {
+    return mBackgroundSubtractionSwitchVariable;
   }
 
 }
