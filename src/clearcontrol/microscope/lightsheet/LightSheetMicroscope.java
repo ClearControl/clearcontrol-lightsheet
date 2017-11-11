@@ -14,6 +14,7 @@ import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterfa
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
+import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
@@ -56,6 +57,7 @@ public class LightSheetMicroscope extends
                                                             this,
                                                             pStackFusionContext);
 
+
     addDevice(0, mStackFusionProcessor);
 
     mStackProcessingPipeline.addStackProcessor(mStackFusionProcessor,
@@ -63,6 +65,12 @@ public class LightSheetMicroscope extends
                                                32,
                                                32);
 
+    OfflineFastFusionProcessor lOfflineFusionProcessor =
+        new OfflineFastFusionProcessor("Offline Fusion Stack Processor",
+                                       this,
+                                       pStackFusionContext);
+
+    addDevice(0, lOfflineFusionProcessor);
   }
 
   @Override
