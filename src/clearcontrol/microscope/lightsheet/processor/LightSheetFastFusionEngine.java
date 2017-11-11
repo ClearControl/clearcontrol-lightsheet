@@ -15,17 +15,8 @@ import fastfuse.FastFusionEngine;
 import fastfuse.FastFusionEngineInterface;
 import fastfuse.FastFusionMemoryPool;
 import fastfuse.registration.AffineMatrix;
-import fastfuse.tasks.CompositeTasks;
-import fastfuse.tasks.DownsampleXYbyHalfTask;
+import fastfuse.tasks.*;
 import fastfuse.tasks.DownsampleXYbyHalfTask.Type;
-import fastfuse.tasks.FlipTask;
-import fastfuse.tasks.GaussianBlurTask;
-import fastfuse.tasks.IdentityTask;
-import fastfuse.tasks.MemoryReleaseTask;
-import fastfuse.tasks.RegistrationListener;
-import fastfuse.tasks.RegistrationTask;
-import fastfuse.tasks.TaskInterface;
-import fastfuse.tasks.TenengradFusionTask;
 
 /**
  * Lightsheet fast fusion engine
@@ -310,14 +301,17 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
 
     if (pKernelSigmasBackground == null)
     {
+      addTasks(CompositeTasks.fuseWithSmoothWeights("fused-preliminary",
+                                                                      ImageChannelDataType.Float,
+                                                    pKernelSigmasFusion,
+                                                                      true,
+                                                                      "C0",
+                                                                      "C1adjusted"));
 
-      addTasks(CompositeTasks.fuseWithSmoothWeights(
-          "fused",
-          ImageChannelDataType.Float,
-          pKernelSigmasFusion,
-          true,
-          "C0",
-          "C1adjusted"));
+      addTask(new NonnegativeSubtractionTask("fused-preliminary",
+                                                               0,
+                                                               "fused",
+                                                               ImageChannelDataType.UnsignedInt16));
 
     }
     else

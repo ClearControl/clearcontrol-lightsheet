@@ -146,7 +146,6 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     if (isStopRequested())
       return false;
 
-    FastFusionEngine lFastFusionEngine = new FastFusionEngine(mContext);
     String
         lDatasetname = getDataSetNamePostfixVariable().get();
 
@@ -161,10 +160,13 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     boolean lSubtractBackground = mBackgroundSubtractionSwitchVariable.get();
 
     int lStackIndex = 0;
-
     assert lRootFolder != null;
     assert lRootFolder.isDirectory();
 
+
+    FastFusionEngine lFastFusionEngine = new LightSheetFastFusionEngine(mContext, null, 4,2, lSubtractBackground);
+    //FastFusionEngine(mContext);
+    /*
     long
         lMaxMemoryInBytes =
         (long) (lMemRatio * mContext.getDevice()
@@ -282,13 +284,19 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     }
     else
     {
-      lFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("fused",
-                                                    ImageChannelDataType.UnsignedInt16,
+
+      lFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("fused-preliminary",
+                                                    ImageChannelDataType.Float,
                                                     lKernelSigmasFusion,
                                                     true,
                                                     "C0",
                                                     "C1adjusted"));
-    }
+
+      lFastFusionEngine.addTask(new NonnegativeSubtractionTask("fused-preliminary",
+                                             0,
+                                             "fused",
+                                             ImageChannelDataType.UnsignedInt16));
+    }*/
 
     BasicRecycler<StackInterface, StackRequest>
         stackRecycler =
