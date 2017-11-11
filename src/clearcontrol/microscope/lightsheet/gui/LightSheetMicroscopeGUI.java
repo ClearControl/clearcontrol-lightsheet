@@ -113,6 +113,9 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
     addToolbarMappingEntry(DepthOfFocusImagingEngine.class,
                          DepthOfFocusImagingEngineToolbar.class);
 
+    addPanelMappingEntry(LightSheetFastFusionProcessor.class,
+                         LightSheetFastFusionProcessorPanel.class,
+                         MicroscopeNodeType.Other);
   }
 
   @Override
