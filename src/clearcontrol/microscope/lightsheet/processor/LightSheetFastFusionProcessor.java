@@ -104,8 +104,9 @@ public class LightSheetFastFusionProcessor extends
               new LightSheetFastFusionEngine(getContext(),
                                              (VisualConsoleInterface) this,
                                              mLightSheetMicroscope.getNumberOfLightSheets(),
-                                             mLightSheetMicroscope.getNumberOfDetectionArms(),
-                                             mBackgroundSubtractionSwitchVariable.get());
+                                             mLightSheetMicroscope.getNumberOfDetectionArms());
+    mEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
+    mEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(), mLightSheetMicroscope.getNumberOfDetectionArms() );
 
 
     if (isPassThrough(pStack))

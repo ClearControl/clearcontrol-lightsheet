@@ -38,6 +38,12 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                              .getBooleanProperty("fastfuse.register",
                                                                                  true);
 
+
+  private volatile boolean mBackgroundSubtraction =
+      MachineConfiguration.get()
+                          .getBooleanProperty("fastfuse.backgroundsubtraction",
+                                              false);
+
   private volatile boolean mDownscale =
                                       MachineConfiguration.get()
                                                           .getBooleanProperty("fastfuse.downscale",
@@ -67,8 +73,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
   public LightSheetFastFusionEngine(ClearCLContext pContext,
                                     VisualConsoleInterface pVisualConsoleInterface,
                                     int pNumberOfLightSheets,
-                                    int pNumberOfDetectionArms,
-                                    boolean doBackgroundSubtraction)
+                                    int pNumberOfDetectionArms)
   {
     super(pContext);
     mVisualConsoleInterface = pVisualConsoleInterface;
@@ -152,11 +157,15 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     }
 
     // setting up pool with max pool size:
-    long lMaxMemoryInBytes =
-                           (long) (mMemRatio
-                                   * pContext.getDevice()
-                                             .getGlobalMemorySizeInBytes());
+    long lMaxMemoryInBytes = (long) (mMemRatio * pContext.getDevice().getGlobalMemorySizeInBytes());
     FastFusionMemoryPool.getInstance(pContext, lMaxMemoryInBytes);
+
+    setup(pNumberOfLightSheets, pNumberOfDetectionArms);
+  }
+
+  public void setup(int pNumberOfLightSheets, int pNumberOfDetectionArms) {
+    this.reset(true);
+    this.getTasks().clear();
 
     int[] lKernelSizesRegistration = new int[]
     { 3, 3, 3 };
@@ -167,7 +176,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     { 15, 15, 5 };
 
     float[] lKernelSigmasBackground = null;
-    if (doBackgroundSubtraction)
+    if (mBackgroundSubtraction)
     {
       lKernelSigmasBackground = new float[] { 30, 30, 10 };
     }
@@ -658,6 +667,28 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
   public void setRegistration(boolean pRegistration)
   {
     mRegistration = pRegistration;
+  }
+
+
+  /**
+   * Is background subtraction turned on?
+   *
+   * @return true if registration is turned on
+   */
+  public boolean isSubtractingBackground()
+  {
+    return mBackgroundSubtraction;
+  }
+
+  /**
+   * Sets the background subtraction flag
+   *
+   * @param pBackgroundSubtraction
+   *          registration flag
+   */
+  public void setSubtractingBackground(boolean pBackgroundSubtraction)
+  {
+    mBackgroundSubtraction = pBackgroundSubtraction;
   }
 
   /**
