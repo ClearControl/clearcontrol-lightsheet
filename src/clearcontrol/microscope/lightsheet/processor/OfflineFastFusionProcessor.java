@@ -11,21 +11,16 @@ import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.ContiguousOffHeapPlanarStackFactory;
-import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import clearcontrol.stack.sourcesink.source.RawFileStackSource;
-import coremem.enums.NativeTypeEnum;
 import coremem.recycling.BasicRecycler;
 import fastfuse.FastFusionEngine;
-import fastfuse.FastFusionMemoryPool;
-import fastfuse.registration.AffineMatrix;
 import fastfuse.tasks.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -40,6 +35,8 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
   LightSheetMicroscope mLightSheetMicroscope;
 
   ClearCLContext mContext;
+
+  LightSheetFastFusionEngine mFastFusionEngine;
 
   private Variable<String>
       mDataSetNamePostfixVariable =
@@ -62,12 +59,39 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
   private final Variable<Boolean> mRegistrionSwitchVariable =
       new Variable<Boolean>("RegistrationSwitch", true);
 
+  private final Variable<Integer> mNumberOfRestartsVariable =
+      new Variable<Integer>("NumberOfRestarts",
+                            5);
+
+  private final Variable<Integer> mMaxNumberOfEvaluationsVariable =
+      new Variable<Integer>("MaxNumberOfEvaluations",
+                            200);
+
+  private final BoundedVariable<Double> mTranslationSearchRadiusVariable =
+      new BoundedVariable<Double>("TranslationSearchRadius",
+                                  15.0);
+  private final BoundedVariable<Double> mRotationSearchRadiusVariable =
+      new BoundedVariable<Double>("RotationSearchRadius",
+                                  3.0);
+
+  private final BoundedVariable<Double> mSmoothingConstantVariable =
+      new BoundedVariable<Double>("SmoothingConstant",
+                                  0.05);
+
+  private final Variable<Boolean> mTransformLockSwitchVariable =
+      new Variable<Boolean>("TransformLockSwitch",
+                            true);
+
+  private final Variable<Integer> mTransformLockThresholdVariable =
+      new Variable<Integer>("TransformLockThreshold",
+                            20);
+
   private final Variable<Boolean> mBackgroundSubtractionSwitchVariable =
       new Variable<Boolean>("BackgroundSubtractionSwitch", false);
 
   private RegistrationTask mRegistrationTask;
 
-
+  // Todo: determine following list from the selected folder
   private String[]
       names =
       { "C0L0",
@@ -79,20 +103,23 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
         "C1L2",
         "C1L3" };
 
-  public Variable<String> getDataSetNamePostfixVariable()
-  {
-    return mDataSetNamePostfixVariable;
-  }
 
-  public Variable<File> getRootFolderVariable()
-  {
-    return mRootFolderVariable;
-  }
+
+
+
+
+
+
+
+
+
   public OfflineFastFusionProcessor(String pName, LightSheetMicroscope pLightSheetMicroscope, ClearCLContext pContext)
   {
     super(pName);
     mLightSheetMicroscope = pLightSheetMicroscope;
     mContext = pContext;
+
+    mFastFusionEngine = new LightSheetFastFusionEngine(mContext, null, mLightSheetMicroscope.getNumberOfLightSheets(), mLightSheetMicroscope.getNumberOfDetectionArms());
   }
 
   @Override public boolean startTask()
@@ -151,20 +178,17 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
 
     File lRootFolder = getRootFolderVariable().get();
 
-    double lMemRatio = mMemRatioVariable.get();
+    mFastFusionEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
+    mFastFusionEngine.setRegistration(mRegistrionSwitchVariable.get());
+    mFastFusionEngine.setDownscale(mDownscaleSwitchVariable.get());
+    mFastFusionEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(), mLightSheetMicroscope.getNumberOfDetectionArms());
 
-    boolean lDownscale = mDownscaleSwitchVariable.get();
-
-    boolean lRegistration = mRegistrionSwitchVariable.get();
-
-    boolean lSubtractBackground = mBackgroundSubtractionSwitchVariable.get();
 
     int lStackIndex = 0;
     assert lRootFolder != null;
     assert lRootFolder.isDirectory();
 
 
-    FastFusionEngine lFastFusionEngine = new LightSheetFastFusionEngine(mContext, null, 4,2, lSubtractBackground);
     //FastFusionEngine(mContext);
     /*
     long
@@ -183,7 +207,7 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     float[] lKernelSigmasBackground = new float[] { 30, 30, 10 };
 
     if (lDownscale)
-      lFastFusionEngine.addTasks(DownsampleXYbyHalfTask.applyAndReleaseInputs(
+      mFastFusionEngine.addTasks(DownsampleXYbyHalfTask.applyAndReleaseInputs(
           DownsampleXYbyHalfTask.Type.Median,
           "d",
           "C0L0",
@@ -195,7 +219,7 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
           "C1L2",
           "C1L3"));
     else
-      lFastFusionEngine.addTasks(IdentityTask.withSuffix("d",
+      mFastFusionEngine.addTasks(IdentityTask.withSuffix("d",
                                        "C0L0",
                                        "C0L1",
                                        "C0L2",
@@ -211,7 +235,7 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
         ImageChannelDataType.Float :
         ImageChannelDataType.UnsignedInt16;
 
-    lFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("C0",
+    mFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("C0",
                                                   lInitialFusionDataType,
                                                   lKernelSigmasFusion,
                                                   true,
@@ -220,7 +244,7 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
                                                   "C0L2d",
                                                   "C0L3d"));
 
-    lFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("C1",
+    mFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("C1",
                                                   lInitialFusionDataType,
                                                   lKernelSigmasFusion,
                                                   true,
@@ -243,7 +267,7 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
                                                            1,
                                                            1),
                                                        true);
-      lFastFusionEngine.addTasks(lRegistrationTaskList);
+      mFastFusionEngine.addTasks(lRegistrationTaskList);
       // extract registration task from list
       for (TaskInterface lTask : lRegistrationTaskList)
         if (lTask instanceof RegistrationTask)
@@ -254,8 +278,8 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     }
     else
     {
-      lFastFusionEngine.addTask(FlipTask.flipX("C1", "C1adjusted"));
-      lFastFusionEngine.addTask(new MemoryReleaseTask("C1adjusted", "C1"));
+      mFastFusionEngine.addTask(FlipTask.flipX("C1", "C1adjusted"));
+      mFastFusionEngine.addTask(new MemoryReleaseTask("C1adjusted", "C1"));
     }
 
     // addTasks(CompositeTasks.fuseWithSmoothWeights("fused",
@@ -267,7 +291,7 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
 
     if (lSubtractBackground)
     {
-      lFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights(
+      mFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights(
           "fused-preliminary",
           ImageChannelDataType.Float,
           lKernelSigmasFusion,
@@ -275,7 +299,7 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
           "C0",
           "C1adjusted"));
 
-      lFastFusionEngine.addTasks(CompositeTasks.subtractBlurredCopyFromFloatImage(
+      mFastFusionEngine.addTasks(CompositeTasks.subtractBlurredCopyFromFloatImage(
           "fused-preliminary",
           "fused",
           lKernelSigmasBackground,
@@ -285,14 +309,14 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     else
     {
 
-      lFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("fused-preliminary",
+      mFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("fused-preliminary",
                                                     ImageChannelDataType.Float,
                                                     lKernelSigmasFusion,
                                                     true,
                                                     "C0",
                                                     "C1adjusted"));
 
-      lFastFusionEngine.addTask(new NonnegativeSubtractionTask("fused-preliminary",
+      mFastFusionEngine.addTask(new NonnegativeSubtractionTask("fused-preliminary",
                                              0,
                                              "fused",
                                              ImageChannelDataType.UnsignedInt16));
@@ -316,22 +340,23 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
           rawFileStackSource.getStack(names[i], lStackIndex);
 
 
-      lFastFusionEngine.passImage(names[i], stack.getContiguousMemory(),
-                ImageChannelDataType.UnsignedInt16,
-                stack.getDimensions());
+      mFastFusionEngine.passImage(names[i], stack.getContiguousMemory(),
+                                  ImageChannelDataType.UnsignedInt16,
+                                  stack.getDimensions());
     }
-    lFastFusionEngine.executeAllTasks();
+    mFastFusionEngine.executeAllTasks();
 
-    lFastFusionEngine.waitFusionTasksToComplete();
+    mFastFusionEngine.waitFusionTasksToComplete();
 
-    for (String name : lFastFusionEngine.getAvailableImagesSlotKeys()) {
+    for (String name : mFastFusionEngine.getAvailableImagesSlotKeys()) {
       System.out.println("available: " + name);
     }
+    System.out.println("tasks " + mFastFusionEngine.getTasks().size());
 
     RawFileStackSink sink = new RawFileStackSink();
     sink.setLocation(lRootFolder, lDatasetname);
 
-    ClearCLImage lFusedImage = lFastFusionEngine.getImage("fused");
+    ClearCLImage lFusedImage = mFastFusionEngine.getImage("fused");
 
     StackInterface lFusedStack = /*
     if (lFusedImage.getChannelDataType() == ImageChannelDataType.Float)
@@ -395,4 +420,107 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     return ScriptingEngine.isCancelRequestedStatic()
            || getStopSignalVariable().get();
   }
+
+
+
+
+
+  public Variable<String> getDataSetNamePostfixVariable()
+  {
+    return mDataSetNamePostfixVariable;
+  }
+
+  public Variable<File> getRootFolderVariable()
+  {
+    return mRootFolderVariable;
+  }
+
+
+  /**
+   * Returns the variable holding the translation search radius.
+   *
+   * @return translation search radius variable.
+   */
+  public BoundedVariable<Double> getTranslationSearchRadiusVariable()
+  {
+    return mTranslationSearchRadiusVariable;
+  }
+
+  /**
+   * Returns the variable holding the rotation search radius
+   *
+   * @return rotation search radius
+   */
+  public BoundedVariable<Double> getRotationSearchRadiusVariable()
+  {
+    return mRotationSearchRadiusVariable;
+  }
+
+  /**
+   * Returns the variable holding the number of optimization restarts
+   *
+   * @return number of optimization restarts variable
+   */
+  public Variable<Integer> getNumberOfRestartsVariable()
+  {
+    return mNumberOfRestartsVariable;
+  }
+
+  /**
+   * Returns the max number of evaluations variable
+   *
+   * @return max number of evaluations variable
+   */
+  public Variable<Integer> getMaxNumberOfEvaluationsVariable()
+  {
+    return mMaxNumberOfEvaluationsVariable;
+  }
+
+  /**
+   * Returns the variable holding the smoothing constant
+   *
+   * @return smoothing constant variable
+   */
+  public BoundedVariable<Double> getSmoothingConstantVariable()
+  {
+    return mSmoothingConstantVariable;
+  }
+
+  /**
+   * Returns the switch that decides whether to lock the transformation after a
+   * certain number of time points has elapsed
+   *
+   * @return Transform lock switch variable
+   */
+  public Variable<Boolean> getTransformLockSwitchVariable()
+  {
+    return mTransformLockSwitchVariable;
+  }
+
+  /**
+   * Returns the variable holding the number of timepoints until the
+   * transformation should be 'locked' with more stringent temporal filtering
+   *
+   * @return transform lock timer variable
+   */
+  public Variable<Integer> getTransformLockThresholdVariable()
+  {
+    return mTransformLockThresholdVariable;
+  }
+
+  public Variable<Boolean> getBackgroundSubtractionSwitchVariable() {
+    return mBackgroundSubtractionSwitchVariable;
+  }
+  public Variable<Boolean> getDownscaleSwitchVariable() {
+    return mDownscaleSwitchVariable;
+  }
+  public Variable<Boolean> getRegistrationSwitchVariable() {
+    return mRegistrionSwitchVariable;
+  }
+
+
+
+
+
+
 }
