@@ -104,15 +104,6 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
         "C1L3" };
 
 
-
-
-
-
-
-
-
-
-
   public OfflineFastFusionProcessor(String pName, LightSheetMicroscope pLightSheetMicroscope, ClearCLContext pContext)
   {
     super(pName);
@@ -188,140 +179,6 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     assert lRootFolder != null;
     assert lRootFolder.isDirectory();
 
-
-    //FastFusionEngine(mContext);
-    /*
-    long
-        lMaxMemoryInBytes =
-        (long) (lMemRatio * mContext.getDevice()
-                                    .getGlobalMemorySizeInBytes());
-    FastFusionMemoryPool.getInstance(mContext, lMaxMemoryInBytes);
-
-    int[] lKernelSizesRegistration = new int[] { 3, 3, 3 };
-    float[]
-        lKernelSigmasRegistration =
-        new float[] { 0.5f, 0.5f, 0.5f };
-
-    float[] lKernelSigmasFusion = new float[] { 15, 15, 5 };
-
-    float[] lKernelSigmasBackground = new float[] { 30, 30, 10 };
-
-    if (lDownscale)
-      mFastFusionEngine.addTasks(DownsampleXYbyHalfTask.applyAndReleaseInputs(
-          DownsampleXYbyHalfTask.Type.Median,
-          "d",
-          "C0L0",
-          "C0L1",
-          "C0L2",
-          "C0L3",
-          "C1L0",
-          "C1L1",
-          "C1L2",
-          "C1L3"));
-    else
-      mFastFusionEngine.addTasks(IdentityTask.withSuffix("d",
-                                       "C0L0",
-                                       "C0L1",
-                                       "C0L2",
-                                       "C0L3",
-                                       "C1L0",
-                                       "C1L1",
-                                       "C1L2",
-                                       "C1L3"));
-
-    ImageChannelDataType
-        lInitialFusionDataType =
-        lRegistration ?
-        ImageChannelDataType.Float :
-        ImageChannelDataType.UnsignedInt16;
-
-    mFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("C0",
-                                                  lInitialFusionDataType,
-                                                  lKernelSigmasFusion,
-                                                  true,
-                                                  "C0L0d",
-                                                  "C0L1d",
-                                                  "C0L2d",
-                                                  "C0L3d"));
-
-    mFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("C1",
-                                                  lInitialFusionDataType,
-                                                  lKernelSigmasFusion,
-                                                  true,
-                                                  "C1L0d",
-                                                  "C1L1d",
-                                                  "C1L2d",
-                                                  "C1L3d"));
-
-    if (lRegistration)
-    {
-      List<TaskInterface>
-          lRegistrationTaskList =
-          CompositeTasks.registerWithBlurPreprocessing("C0",
-                                                       "C1",
-                                                       "C1adjusted",
-                                                       lKernelSigmasRegistration,
-                                                       lKernelSizesRegistration,
-                                                       AffineMatrix.scaling(
-                                                           -1,
-                                                           1,
-                                                           1),
-                                                       true);
-      mFastFusionEngine.addTasks(lRegistrationTaskList);
-      // extract registration task from list
-      for (TaskInterface lTask : lRegistrationTaskList)
-        if (lTask instanceof RegistrationTask)
-        {
-          mRegistrationTask = (RegistrationTask) lTask;
-          break;
-        }
-    }
-    else
-    {
-      mFastFusionEngine.addTask(FlipTask.flipX("C1", "C1adjusted"));
-      mFastFusionEngine.addTask(new MemoryReleaseTask("C1adjusted", "C1"));
-    }
-
-    // addTasks(CompositeTasks.fuseWithSmoothWeights("fused",
-    // ImageChannelDataType.UnsignedInt16,
-    // pKernelSigmasFusion,
-    // true,
-    // "C0",
-    // "C1adjusted"));
-
-    if (lSubtractBackground)
-    {
-      mFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights(
-          "fused-preliminary",
-          ImageChannelDataType.Float,
-          lKernelSigmasFusion,
-          true,
-          "C0",
-          "C1adjusted"));
-
-      mFastFusionEngine.addTasks(CompositeTasks.subtractBlurredCopyFromFloatImage(
-          "fused-preliminary",
-          "fused",
-          lKernelSigmasBackground,
-          true,
-          ImageChannelDataType.UnsignedInt16));
-    }
-    else
-    {
-
-      mFastFusionEngine.addTasks(CompositeTasks.fuseWithSmoothWeights("fused-preliminary",
-                                                    ImageChannelDataType.Float,
-                                                    lKernelSigmasFusion,
-                                                    true,
-                                                    "C0",
-                                                    "C1adjusted"));
-
-      mFastFusionEngine.addTask(new NonnegativeSubtractionTask("fused-preliminary",
-                                             0,
-                                             "fused",
-                                             ImageChannelDataType.UnsignedInt16));
-    }*/
-
     BasicRecycler<StackInterface, StackRequest>
         stackRecycler =
         new BasicRecycler(new ContiguousOffHeapPlanarStackFactory(),
@@ -358,44 +215,14 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
 
     ClearCLImage lFusedImage = mFastFusionEngine.getImage("fused");
 
-    StackInterface lFusedStack = /*
-    if (lFusedImage.getChannelDataType() == ImageChannelDataType.Float)
-    {
-     lFusedStack = new OffHeapPlanarStack(true,
-                            0,
-                            NativeTypeEnum.Float,
-                            1,
-                            new long[] { lFusedImage.getWidth(),
-                                         lFusedImage.getHeight(),
-                                         lFusedImage.getDepth() });
-    } else if (lFusedImage.getChannelDataType() == ImageChannelDataType.UnsignedInt16) {
-      lFusedStack = new OffHeapPlanarStack(true,
-                                           0,
-                                           NativeTypeEnum.UnsignedByte,
-                                           1,
-                                           new long[] { lFusedImage.getWidth(),
-                                                        lFusedImage.getHeight(),
-                                                        lFusedImage.getDepth() });
-    }
-    */
-        stackRecycler.getOrWait(1000,
+    StackInterface lFusedStack = stackRecycler.getOrWait(1000,
                                  TimeUnit.SECONDS,
                                  StackRequest.build(lFusedImage.getDimensions()));
-
-    System.out.println("ow: " + lFusedImage.getWidth());
-    System.out.println("oh: " + lFusedImage.getHeight());
-    System.out.println("od: " + lFusedImage.getDepth());
-    System.out.println("ot: " + lFusedImage.getChannelDataType());
-    System.out.println("tw: " + lFusedStack.getWidth());
-    System.out.println("th: " + lFusedStack.getHeight());
-    System.out.println("td: " + lFusedStack.getDepth());
-    System.out.println("tt: " + lFusedStack.getDataType());
 
     lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
 
     sink.appendStack(lFusedStack);
     sink.close();
-
 
     return true;
   }
@@ -511,9 +338,11 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
   public Variable<Boolean> getBackgroundSubtractionSwitchVariable() {
     return mBackgroundSubtractionSwitchVariable;
   }
+
   public Variable<Boolean> getDownscaleSwitchVariable() {
     return mDownscaleSwitchVariable;
   }
+
   public Variable<Boolean> getRegistrationSwitchVariable() {
     return mRegistrionSwitchVariable;
   }
