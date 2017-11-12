@@ -152,20 +152,19 @@ public class OfflineFastFusionEngine extends TaskDevice implements
     if (isStopRequested())
       return false;
 
-
     File lRootFolder = getRootFolderVariable().get();
 
-    String
-        lDatasetname = lRootFolder.getName();
+    String lDatasetname = lRootFolder.getName();
 
     lRootFolder = lRootFolder.getParentFile();
 
-
-    mFastFusionEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
+    mFastFusionEngine.setSubtractingBackground(
+        mBackgroundSubtractionSwitchVariable.get());
     mFastFusionEngine.setRegistration(mRegistrationSwitchVariable.get());
     mFastFusionEngine.setDownscale(mDownscaleSwitchVariable.get());
 
-    mFastFusionEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(), mLightSheetMicroscope.getNumberOfDetectionArms());
+    mFastFusionEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(),
+                            mLightSheetMicroscope.getNumberOfDetectionArms());
 
     if (mRegistrationSwitchVariable.get())
     {
@@ -196,7 +195,6 @@ public class OfflineFastFusionEngine extends TaskDevice implements
                            getSmoothingConstantVariable().get().doubleValue());
     }
 
-    int lStackIndex = 0;
     assert lRootFolder != null;
     assert lRootFolder.isDirectory();
 
@@ -206,44 +204,51 @@ public class OfflineFastFusionEngine extends TaskDevice implements
                           10,
                           10,
                           true);
+
     RawFileStackSource
         rawFileStackSource =
         new RawFileStackSource(stackRecycler);
 
-    for (int i = 0; i < names.length; i++)
+    for (int timePoint = getFirstTimePointToFuse().get(); timePoint<= getLastTimePointToFuse().get(); timePoint++)
     {
-      rawFileStackSource.setLocation(lRootFolder, lDatasetname);
+      long lTimeMillis = System.currentTimeMillis();
+
+      for (int i = 0; i < names.length; i++)
+      {
+        rawFileStackSource.setLocation(lRootFolder, lDatasetname);
+        StackInterface
+            stack =
+            rawFileStackSource.getStack(names[i], timePoint);
+
+        mFastFusionEngine.passImage(names[i], stack.getContiguousMemory(),
+                                    ImageChannelDataType.UnsignedInt16,
+                                    stack.getDimensions());
+      }
+      mFastFusionEngine.executeAllTasks();
+
+      mFastFusionEngine.waitFusionTasksToComplete();
+
+      for (String name : mFastFusionEngine.getAvailableImagesSlotKeys())
+      {
+        info("available image: " + name);
+      }
+      RawFileStackSink sink = new RawFileStackSink();
+      sink.setLocation(lRootFolder, lDatasetname);
+
+      ClearCLImage lFusedImage = mFastFusionEngine.getImage("fused");
+
       StackInterface
-          stack =
-          rawFileStackSource.getStack(names[i], lStackIndex);
+          lFusedStack =
+          stackRecycler.getOrWait(1000, TimeUnit.SECONDS, StackRequest.build(lFusedImage.getDimensions()));
 
+      lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
 
-      mFastFusionEngine.passImage(names[i], stack.getContiguousMemory(),
-                                  ImageChannelDataType.UnsignedInt16,
-                                  stack.getDimensions());
+      sink.appendStack(lFusedStack);
+      sink.close();
+
+      mFastFusionEngine.reset(true);
+      info("Fusion of time point " + timePoint + " took " + ((System.currentTimeMillis() -  lTimeMillis)/1000) + " sec" );
     }
-    mFastFusionEngine.executeAllTasks();
-
-    mFastFusionEngine.waitFusionTasksToComplete();
-
-    for (String name : mFastFusionEngine.getAvailableImagesSlotKeys()) {
-      System.out.println("available: " + name);
-    }
-    System.out.println("tasks " + mFastFusionEngine.getTasks().size());
-
-    RawFileStackSink sink = new RawFileStackSink();
-    sink.setLocation(lRootFolder, lDatasetname);
-
-    ClearCLImage lFusedImage = mFastFusionEngine.getImage("fused");
-
-    StackInterface lFusedStack = stackRecycler.getOrWait(1000,
-                                 TimeUnit.SECONDS,
-                                 StackRequest.build(lFusedImage.getDimensions()));
-
-    lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
-
-    sink.appendStack(lFusedStack);
-    sink.close();
 
     return true;
   }
