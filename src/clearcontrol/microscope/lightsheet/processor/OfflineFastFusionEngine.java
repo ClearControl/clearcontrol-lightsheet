@@ -13,10 +13,10 @@ import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.ContiguousOffHeapPlanarStackFactory;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
+import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import clearcontrol.stack.sourcesink.source.RawFileStackSource;
 import coremem.recycling.BasicRecycler;
-import fastfuse.FastFusionEngine;
 import fastfuse.tasks.*;
 
 import java.io.File;
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeoutException;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * November 2017
  */
-public class OfflineFastFusionProcessor extends TaskDevice implements
+public class OfflineFastFusionEngine extends TaskDevice implements
                                                            LoggingFeature,
                                                            VisualConsoleInterface {
   LightSheetMicroscope mLightSheetMicroscope;
@@ -38,25 +38,21 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
 
   LightSheetFastFusionEngine mFastFusionEngine;
 
-  private Variable<String>
-      mDataSetNamePostfixVariable =
-      new Variable<String>("Test");
   private Variable<File>
       mRootFolderVariable =
       new Variable("RootFolder", (Object) null);
 
-  private BoundedVariable<Double> mMemRatioVariable =
-      new BoundedVariable<Double>("MemRatio",
-      0.8,
-      0.0,
-          1.0,
-      0.1);
+
+
+
+  private BoundedVariable<Integer> mFirstTimePointToFuse = new BoundedVariable<Integer>("First time point", 0, 0, Integer.MAX_VALUE, 1);
+  private BoundedVariable<Integer> mLastTimePointToFuse = new BoundedVariable<Integer>("Last time point", 0, 0, Integer.MAX_VALUE, 1);
 
 
   private final Variable<Boolean> mDownscaleSwitchVariable =
       new Variable<Boolean>("DownscaleSwitch", true);
 
-  private final Variable<Boolean> mRegistrionSwitchVariable =
+  private final Variable<Boolean> mRegistrationSwitchVariable =
       new Variable<Boolean>("RegistrationSwitch", true);
 
   private final Variable<Integer> mNumberOfRestartsVariable =
@@ -78,14 +74,6 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
       new BoundedVariable<Double>("SmoothingConstant",
                                   0.05);
 
-  private final Variable<Boolean> mTransformLockSwitchVariable =
-      new Variable<Boolean>("TransformLockSwitch",
-                            true);
-
-  private final Variable<Integer> mTransformLockThresholdVariable =
-      new Variable<Integer>("TransformLockThreshold",
-                            20);
-
   private final Variable<Boolean> mBackgroundSubtractionSwitchVariable =
       new Variable<Boolean>("BackgroundSubtractionSwitch", false);
 
@@ -104,7 +92,7 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
         "C1L3" };
 
 
-  public OfflineFastFusionProcessor(String pName, LightSheetMicroscope pLightSheetMicroscope, ClearCLContext pContext)
+  public OfflineFastFusionEngine(String pName, LightSheetMicroscope pLightSheetMicroscope, ClearCLContext pContext)
   {
     super(pName);
     mLightSheetMicroscope = pLightSheetMicroscope;
@@ -168,16 +156,45 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     File lRootFolder = getRootFolderVariable().get();
 
     String
-        lDatasetname = lRootFolder.getName();//getDataSetNamePostfixVariable().get();
+        lDatasetname = lRootFolder.getName();
 
     lRootFolder = lRootFolder.getParentFile();
 
 
     mFastFusionEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
-    mFastFusionEngine.setRegistration(mRegistrionSwitchVariable.get());
+    mFastFusionEngine.setRegistration(mRegistrationSwitchVariable.get());
     mFastFusionEngine.setDownscale(mDownscaleSwitchVariable.get());
+
     mFastFusionEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(), mLightSheetMicroscope.getNumberOfDetectionArms());
 
+    if (mRegistrationSwitchVariable.get())
+    {
+
+      mFastFusionEngine.getRegistrationTask()
+                       .getParameters()
+                       .setNumberOfRestarts(
+                           getNumberOfRestartsVariable().get().intValue());
+
+      mFastFusionEngine.getRegistrationTask()
+                       .getParameters()
+                       .setTranslationSearchRadius(
+                           getTranslationSearchRadiusVariable().get().doubleValue());
+
+      mFastFusionEngine.getRegistrationTask()
+                       .getParameters()
+                       .setRotationSearchRadius(
+                           getRotationSearchRadiusVariable().get().doubleValue());
+
+      mFastFusionEngine.getRegistrationTask()
+                       .getParameters()
+                       .setMaxNumberOfEvaluations((int) getMaxNumberOfEvaluationsVariable()
+                           .get()
+                           .intValue());
+
+      mFastFusionEngine.getRegistrationTask()
+                       .setSmoothingConstant(
+                           getSmoothingConstantVariable().get().doubleValue());
+    }
 
     int lStackIndex = 0;
     assert lRootFolder != null;
@@ -252,15 +269,6 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
            || getStopSignalVariable().get();
   }
 
-
-
-
-
-  public Variable<String> getDataSetNamePostfixVariable()
-  {
-    return mDataSetNamePostfixVariable;
-  }
-
   public Variable<File> getRootFolderVariable()
   {
     return mRootFolderVariable;
@@ -317,28 +325,6 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     return mSmoothingConstantVariable;
   }
 
-  /**
-   * Returns the switch that decides whether to lock the transformation after a
-   * certain number of time points has elapsed
-   *
-   * @return Transform lock switch variable
-   */
-  public Variable<Boolean> getTransformLockSwitchVariable()
-  {
-    return mTransformLockSwitchVariable;
-  }
-
-  /**
-   * Returns the variable holding the number of timepoints until the
-   * transformation should be 'locked' with more stringent temporal filtering
-   *
-   * @return transform lock timer variable
-   */
-  public Variable<Integer> getTransformLockThresholdVariable()
-  {
-    return mTransformLockThresholdVariable;
-  }
-
   public Variable<Boolean> getBackgroundSubtractionSwitchVariable() {
     return mBackgroundSubtractionSwitchVariable;
   }
@@ -348,10 +334,18 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
   }
 
   public Variable<Boolean> getRegistrationSwitchVariable() {
-    return mRegistrionSwitchVariable;
+    return mRegistrationSwitchVariable;
   }
 
+  public BoundedVariable<Integer> getFirstTimePointToFuse()
+  {
+    return mFirstTimePointToFuse;
+  }
 
+  public BoundedVariable<Integer> getLastTimePointToFuse()
+  {
+    return mLastTimePointToFuse;
+  }
 
 
 
