@@ -164,10 +164,14 @@ public class OfflineFastFusionProcessor extends TaskDevice implements
     if (isStopRequested())
       return false;
 
-    String
-        lDatasetname = getDataSetNamePostfixVariable().get();
 
     File lRootFolder = getRootFolderVariable().get();
+
+    String
+        lDatasetname = lRootFolder.getName();//getDataSetNamePostfixVariable().get();
+
+    lRootFolder = lRootFolder.getParentFile();
+
 
     mFastFusionEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
     mFastFusionEngine.setRegistration(mRegistrionSwitchVariable.get());
