@@ -1,6 +1,6 @@
 package clearcontrol.microscope.lightsheet.gui;
 
-import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionProcessor;
+import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.gui.OfflineFastFusionPanel;
 import javafx.stage.Stage;
 
@@ -120,9 +120,8 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          MicroscopeNodeType.Other);
 
 
-    addPanelMappingEntry(OfflineFastFusionProcessor.class,
-                         OfflineFastFusionPanel.class,
-                         MicroscopeNodeType.Other);
+    addToolbarMappingEntry(OfflineFastFusionEngine.class,
+                         OfflineFastFusionPanel.class);
 
 
   }
