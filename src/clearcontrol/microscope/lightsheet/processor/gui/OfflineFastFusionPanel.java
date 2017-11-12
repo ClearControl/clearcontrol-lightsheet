@@ -1,14 +1,19 @@
 package clearcontrol.microscope.lightsheet.processor.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
+import clearcontrol.gui.jfx.var.checkbox.VariableCheckBox;
 import clearcontrol.gui.jfx.var.file.VariableFileChooser;
 import clearcontrol.gui.jfx.var.textfield.StringVariableTextField;
+import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionProcessor;
 import eu.hansolo.enzo.simpleindicator.SimpleIndicator;
+import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
@@ -16,11 +21,14 @@ import javafx.scene.layout.Priority;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * November 2017
  */
-public class OfflineFastFusionPanel extends CustomGridPane
+public class OfflineFastFusionPanel extends
+                                    CustomGridPane
 {
+
   public OfflineFastFusionPanel(
       OfflineFastFusionProcessor pOfflineFastFusionProcessor)
   {
+
     int lRow = 0;
     {
       SimpleIndicator lAcquisitionStateIndicator = new SimpleIndicator();
@@ -104,5 +112,89 @@ public class OfflineFastFusionPanel extends CustomGridPane
 
       lRow++;
     }
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 4);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+
+
+    {
+      Label lInterleavedAcquisitionLabel =
+          new Label("Fusion/Registration parameters (important parameters on top)");
+
+      GridPane.setHalignment(lInterleavedAcquisitionLabel,
+                             HPos.RIGHT);
+      GridPane.setColumnSpan(lInterleavedAcquisitionLabel,
+                             3);
+
+      add(lInterleavedAcquisitionLabel, 0, lRow);
+      lRow++;
+    }
+
+
+
+    {
+      VariableCheckBox lDetectionArmFixed =
+          new VariableCheckBox("",
+                               pOfflineFastFusionProcessor.getBackgroundSubtractionSwitchVariable());
+
+      Label lInterleavedAcquisitionLabel =
+          new Label("Background subtraction");
+
+      GridPane.setHalignment(lDetectionArmFixed.getCheckBox(),
+                             HPos.RIGHT);
+      GridPane.setColumnSpan(lDetectionArmFixed.getCheckBox(),
+                             1);
+      GridPane.setColumnSpan(lInterleavedAcquisitionLabel, 3);
+
+      add(lInterleavedAcquisitionLabel, 0, lRow);
+      add(lDetectionArmFixed.getCheckBox(), 1, lRow);
+      lRow++;
+    }
+
+    {
+      VariableCheckBox lDetectionArmFixed =
+          new VariableCheckBox("",
+                               pOfflineFastFusionProcessor.getDownscaleSwitchVariable());
+
+      Label lInterleavedAcquisitionLabel =
+          new Label("Downscaling");
+
+      GridPane.setHalignment(lDetectionArmFixed.getCheckBox(),
+                             HPos.RIGHT);
+      GridPane.setColumnSpan(lDetectionArmFixed.getCheckBox(),
+                             1);
+      GridPane.setColumnSpan(lInterleavedAcquisitionLabel, 3);
+
+      add(lInterleavedAcquisitionLabel, 0, lRow);
+      add(lDetectionArmFixed.getCheckBox(), 1, lRow);
+      lRow++;
+    }
+
+    {
+      VariableCheckBox lRegistrationSwitch =
+          new VariableCheckBox("",
+                               pOfflineFastFusionProcessor.getRegistrationSwitchVariable());
+
+      Label lRegistrationLabel =
+          new Label("Registration");
+
+      GridPane.setHalignment(lRegistrationSwitch.getCheckBox(),
+                             HPos.RIGHT);
+      GridPane.setColumnSpan(lRegistrationSwitch.getCheckBox(),
+                             1);
+      GridPane.setColumnSpan(lRegistrationLabel, 3);
+
+      add(lRegistrationLabel, 0, lRow);
+      add(lRegistrationSwitch.getCheckBox(), 1, lRow);
+      lRow++;
+    }
+
+
+
   }
 }
