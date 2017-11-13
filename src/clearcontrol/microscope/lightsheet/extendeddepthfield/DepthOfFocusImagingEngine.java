@@ -179,21 +179,21 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         new BoundedVariable<Integer>("Detection arm",
                                      0,
                                      0,
-                                     mLightSheetMicroscope.getNumberOfDetectionArms(),
+                                     mLightSheetMicroscope.getNumberOfDetectionArms() - 1,
                                      1);
 
     mLightSheetMinIndex =
         new BoundedVariable<Integer>("Light sheet start",
                                      0,
                                      0,
-                                     mLightSheetMicroscope.getNumberOfDetectionArms(),
+                                     mLightSheetMicroscope.getNumberOfLightSheets() - 1,
                                      1);
 
     mLightSheetMaxIndex =
         new BoundedVariable<Integer>("Light sheet end",
-                                     mLightSheetMicroscope.getNumberOfLightSheets(),
+                                     mLightSheetMicroscope.getNumberOfLightSheets() - 1,
                                      0,
-                                     mLightSheetMicroscope.getNumberOfLightSheets(),
+                                     mLightSheetMicroscope.getNumberOfLightSheets() - 1,
                                      1);
 
 
