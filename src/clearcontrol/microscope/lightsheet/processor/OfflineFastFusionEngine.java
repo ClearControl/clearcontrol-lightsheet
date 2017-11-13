@@ -260,7 +260,7 @@ public class OfflineFastFusionEngine extends TaskDevice implements
       sink.appendStack(lFusedStack);
       sink.close();
 
-      mFastFusionEngine.reset(true);
+      mFastFusionEngine.reset(false);
       info("Fusion of time point " + timePoint + " took " + ((System.currentTimeMillis() -  lTimeMillis)/1000) + " sec" );
     }
 
