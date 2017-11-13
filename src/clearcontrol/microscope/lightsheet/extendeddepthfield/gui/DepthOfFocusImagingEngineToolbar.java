@@ -88,6 +88,14 @@ public class DepthOfFocusImagingEngineToolbar extends
       addIntegerField(pDepthOfFieldImagingEngine.getDetectionArmIndex(), lRow);
       lRow++;
     }
+    {
+      addIntegerField(pDepthOfFieldImagingEngine.getLightSheetMinIndex(), lRow);
+      lRow++;
+    }
+    {
+      addIntegerField(pDepthOfFieldImagingEngine.getLightSheetMaxIndex(), lRow);
+      lRow++;
+    }
 
     {
       VariableCheckBox lDetectionArmFixed =

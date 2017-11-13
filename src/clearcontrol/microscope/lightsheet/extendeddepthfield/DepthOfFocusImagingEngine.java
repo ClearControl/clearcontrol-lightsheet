@@ -46,6 +46,11 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   private final static double sDoubleTolerance = 0.0001;
 
   private BoundedVariable<Integer> mDetectionArmIndex;
+  private BoundedVariable<Integer> mLightSheetMinIndex;
+  private BoundedVariable<Integer> mLightSheetMaxIndex;
+
+
+
   //  private BoundedVariable<Integer> mLightSheetIndex;
   private BoundedVariable<Integer>
       mNumberOfISamples =
@@ -110,6 +115,18 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     return mDetectionArmIndex;
   }
 
+
+  public BoundedVariable<Integer> getLightSheetMinIndex()
+  {
+    return mLightSheetMinIndex;
+  }
+
+
+  public BoundedVariable<Integer> getLightSheetMaxIndex()
+  {
+    return mLightSheetMaxIndex;
+  }
+
   public BoundedVariable<Integer> getNumberOfISamples()
   {
     return mNumberOfISamples;
@@ -164,6 +181,22 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                      0,
                                      mLightSheetMicroscope.getNumberOfDetectionArms(),
                                      1);
+
+    mLightSheetMinIndex =
+        new BoundedVariable<Integer>("Light sheet start",
+                                     0,
+                                     0,
+                                     mLightSheetMicroscope.getNumberOfDetectionArms(),
+                                     1);
+
+    mLightSheetMaxIndex =
+        new BoundedVariable<Integer>("Light sheet end",
+                                     mLightSheetMicroscope.getNumberOfLightSheets(),
+                                     0,
+                                     mLightSheetMicroscope.getNumberOfLightSheets(),
+                                     1);
+
+
   }
 
   @Override public boolean startTask()
@@ -218,6 +251,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       return false;
 
     int lDetectionArmIndex = mDetectionArmIndex.get();
+    int lLightSheetMinIndex = mLightSheetMinIndex.get();
+    int lLightSheetMaxIndex = mLightSheetMaxIndex.get();
 
     int lNumberOfMovingSamples = mNumberOfISamples.get();
     int lNumberOfFixedSamples = mNumberOfDSamples.get();
@@ -339,8 +374,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     FocusableImager
         lInitialImager =
         new FocusableImager(getLightSheetMicroscope(),
-                            0,
-                            3,
+                            lLightSheetMinIndex,
+                            lLightSheetMaxIndex,
                             lDetectionArmIndex,
                             lExposureTimeInSeconds);
 
@@ -493,8 +528,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       FocusableImager
           lPreciseImager =
           new FocusableImager(getLightSheetMicroscope(),
-                              0,
-                              3,
+                              lLightSheetMinIndex,
+                              lLightSheetMaxIndex,
                               lDetectionArmIndex,
                               lExposureTimeInSeconds);
       lPreciseImager.setFieldOfView((int) lImageWidth,
