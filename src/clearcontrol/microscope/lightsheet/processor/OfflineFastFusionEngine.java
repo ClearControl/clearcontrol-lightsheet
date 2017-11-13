@@ -150,7 +150,10 @@ public class OfflineFastFusionEngine extends TaskDevice implements
                           IOException
   {
     if (isStopRequested())
+    {
       return false;
+    }
+
 
     File lRootFolder = getRootFolderVariable().get();
 
@@ -211,6 +214,11 @@ public class OfflineFastFusionEngine extends TaskDevice implements
 
     for (int timePoint = getFirstTimePointToFuse().get(); timePoint<= getLastTimePointToFuse().get(); timePoint++)
     {
+      if (isStopRequested())
+      {
+        break;
+      }
+
       long lTimeMillis = System.currentTimeMillis();
 
       for (int i = 0; i < names.length; i++)
@@ -223,6 +231,12 @@ public class OfflineFastFusionEngine extends TaskDevice implements
         mFastFusionEngine.passImage(names[i], stack.getContiguousMemory(),
                                     ImageChannelDataType.UnsignedInt16,
                                     stack.getDimensions());
+      }
+
+      if (isStopRequested())
+      {
+        mFastFusionEngine.reset(true);
+        break;
       }
       mFastFusionEngine.executeAllTasks();
 
