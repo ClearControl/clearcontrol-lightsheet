@@ -71,6 +71,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       mRow++;
     }
 
+    /*
     {
       VariableCheckBox lFuseStacksPerCameraOnlyCheckBox =
                                                         new VariableCheckBox("Fuse stacks per camera only",
@@ -90,7 +91,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
 
       mRow++;
     }
-
+*/
   }
 
 }
