@@ -228,16 +228,41 @@ public class OfflineFastFusionEngine extends TaskDevice implements
             stack =
             rawFileStackSource.getStack(names[i], timePoint);
 
+        info("Stack " + names[i]);
+        info("pixel size x" + stack.getMetaData().getVoxelDimX());
+        info("pixel size y" + stack.getMetaData().getVoxelDimY());
+        info("pixel size z" + stack.getMetaData().getVoxelDimZ());
+
+        double lVoxelSizeX = stack.getMetaData().getVoxelDimX();
+        double lVoxelSizeZ = stack.getMetaData().getVoxelDimZ();
+
         mFastFusionEngine.passImage(names[i], stack.getContiguousMemory(),
                                     ImageChannelDataType.UnsignedInt16,
                                     stack.getDimensions());
+
+        if (mDownscaleSwitchVariable.get()) {
+          lVoxelSizeX = lVoxelSizeX * 2;
+        }
+
+        if (mRegistrationSwitchVariable.get())
+        {
+
+          float lZAspectRatio =
+              (float) (lVoxelSizeZ
+                       / lVoxelSizeX);
+
+          mFastFusionEngine.getRegistrationTask().getParameters().setScaleZ(lZAspectRatio);
+                           
+        }
+
+        if (isStopRequested())
+        {
+          mFastFusionEngine.reset(true);
+          break;
+        }
+
       }
 
-      if (isStopRequested())
-      {
-        mFastFusionEngine.reset(true);
-        break;
-      }
       mFastFusionEngine.executeAllTasks();
 
       mFastFusionEngine.waitFusionTasksToComplete();

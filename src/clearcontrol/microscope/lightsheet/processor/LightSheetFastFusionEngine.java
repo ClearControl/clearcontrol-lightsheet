@@ -231,6 +231,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                       float[] pKernelSigmasBackground)
   {
     if (isDownscale())
+    {
       addTasks(DownsampleXYbyHalfTask.applyAndReleaseInputs(Type.Median,
                                                             "d",
                                                             "C0L0",
@@ -241,7 +242,9 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                             "C1L1",
                                                             "C1L2",
                                                             "C1L3"));
+    }
     else
+    {
       addTasks(IdentityTask.withSuffix("d",
                                        "C0L0",
                                        "C0L1",
@@ -251,7 +254,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                        "C1L1",
                                        "C1L2",
                                        "C1L3"));
-
+    }
     ImageChannelDataType lInitialFusionDataType =
                                                 isRegistration() ? ImageChannelDataType.Float
                                                                  : ImageChannelDataType.UnsignedInt16;
@@ -597,6 +600,9 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
         float lZAspectRatio =
                             (float) (lStackMetaData.getVoxelDimZ()
                                      / lStackMetaData.getVoxelDimX());
+
+        System.out.println("RegistrationTask: Setting aspect ratio: " + lZAspectRatio);
+
         mRegistrationTask.getParameters().setScaleZ(lZAspectRatio);
 
         mRegistrationTask.addListener(this);
