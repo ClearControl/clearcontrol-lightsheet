@@ -100,14 +100,17 @@ public class LightSheetFastFusionProcessor extends
   {
 
     if (mEngine == null)
+    {
       mEngine =
-              new LightSheetFastFusionEngine(getContext(),
-                                             (VisualConsoleInterface) this,
-                                             mLightSheetMicroscope.getNumberOfLightSheets(),
-                                             mLightSheetMicroscope.getNumberOfDetectionArms());
-    mEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
-    mEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(), mLightSheetMicroscope.getNumberOfDetectionArms() );
-
+          new LightSheetFastFusionEngine(getContext(),
+                                         (VisualConsoleInterface) this,
+                                         mLightSheetMicroscope.getNumberOfLightSheets(),
+                                         mLightSheetMicroscope.getNumberOfDetectionArms());
+      mEngine.setSubtractingBackground(
+          mBackgroundSubtractionSwitchVariable.get());
+      mEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(),
+                    mLightSheetMicroscope.getNumberOfDetectionArms());
+    }
 
     if (isPassThrough(pStack))
     {
