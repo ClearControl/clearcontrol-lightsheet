@@ -176,8 +176,6 @@ public class LightSheetTimelapse extends TimelapseBase implements
             }
           }
 
-        new QueuePrinter(lQueueForView).printAll();
-
         mLightSheetMicroscope.playQueueAndWait(lQueueForView,
                                                cTimeOut,
                                                TimeUnit.SECONDS);
