@@ -18,6 +18,7 @@ import clearcontrol.devices.stages.StageType;
 import clearcontrol.devices.stages.devices.sim.StageDeviceSimulator;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationRH;
 import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationX;
 import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZ;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
@@ -310,6 +311,13 @@ public class SimulatedLightSheetMicroscope extends
                                             2e-5,
                                             0.010,
                                             0.5));
+        lAdaptiveEngine.add(new AdaptationRH(7,
+                                             3,
+                                             1.66,
+                                             0.95,
+                                             2e-5,
+                                             0.010,
+                                             0.5));
         lAdaptiveEngine.add(new AdaptationX(11,
                                             50,
                                             200,
