@@ -54,6 +54,8 @@ public class SimulatedLightSheetMicroscopeDemo extends Application
       int lPhantomHeight = lPhantomWidth;
       int lPhantomDepth = lPhantomWidth;
 
+      int lNumberOfControlPlanes = 7;
+
       ClearCL lClearCL =
                        new ClearCL(ClearCLBackends.getBestBackend());
 
