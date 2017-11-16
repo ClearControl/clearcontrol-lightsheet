@@ -95,7 +95,7 @@ public class SimulatedLightSheetMicroscopeDemo extends Application
                                       true,
                                       lSimulatorDevice);
 
-      lMicroscope.addStandardDevices();
+      lMicroscope.addStandardDevices(lNumberOfControlPlanes);
 
       if (lMicroscope.open())
         if (lMicroscope.start())

@@ -277,7 +277,7 @@ public class SimulatedLightSheetMicroscope extends
    * Timelapse
    */
   @SuppressWarnings("unchecked")
-  public void addStandardDevices()
+  public void addStandardDevices(int pNumberOfControlPlanes)
   {
 
     // Adding calibrator:
@@ -294,7 +294,7 @@ public class SimulatedLightSheetMicroscope extends
       InterpolatedAcquisitionState lAcquisitionState =
                                                      new InterpolatedAcquisitionState("default",
                                                                                       this);
-      lAcquisitionState.setupControlPlanes(7,
+      lAcquisitionState.setupControlPlanes(pNumberOfControlPlanes,
                                            ControlPlaneLayout.Circular);
       lAcquisitionState.copyCurrentMicroscopeSettings();
       lAcquisitionStateManager.setCurrentState(lAcquisitionState);
