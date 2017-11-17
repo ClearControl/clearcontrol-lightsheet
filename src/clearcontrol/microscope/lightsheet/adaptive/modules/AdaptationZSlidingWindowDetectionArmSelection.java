@@ -246,13 +246,18 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
     {
       int
           lSlidingWindowEnd =
-          Math.min(cpi + (int) (lSlidingWindowWidth * 1.5) - 1,
+          Math.min(cpi + (int) (lSlidingWindowWidth * 0.5),
                    lNumberOfControlPlanes - 1);
       int
           lSlidingWindowStart =
           Math.max(lSlidingWindowEnd - lSlidingWindowWidth + 1, 0);
 
-      //info("Sliding window: " + lSlidingWindowStart + " - " + lSlidingWindowEnd);
+      if (lSlidingWindowEnd - lSlidingWindowStart + 1 != lSlidingWindowWidth) {
+        lSlidingWindowEnd = Math.min(lSlidingWindowStart + lSlidingWindowWidth - 1,
+                                    lNumberOfControlPlanes - 1);
+      }
+
+      //info("Sliding window "+ cpi + ": " + lSlidingWindowStart + " - " + lSlidingWindowEnd);
       lSelectedDetectionsArms[cpi] =
           findPopularDetectionArm(popularDetectionArms,
                                   lNumberOfDetectionArms,
@@ -348,6 +353,7 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
         if (mFirstAndLastControlPlaneZero.get() && (cpi == 0 || cpi == lNumberOfControlPlanes - 1)) {
           pStateToUpdate.getInterpolationTables()
                         .add(mLightSheetDOF, cpi, l, 0);
+          info("Set first/last control plane to zero adaptation as configured.");
         }
         else
         {
