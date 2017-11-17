@@ -8,7 +8,7 @@ import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZSlidingWin
  * @author Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * November 2017
  */
-public class AdaptationZSlidingWindowDetectionArmSelectorPanel extends StandardAdaptationModulePanel
+public class AdaptationZSlidingWindowDetectionArmSelectionPanel extends StandardAdaptationModulePanel
 {
 
   /**
@@ -17,7 +17,7 @@ public class AdaptationZSlidingWindowDetectionArmSelectorPanel extends StandardA
    * @param pAdaptationZSlidingWindowDetectionArmSelection
    *          adaptation module for Z
    */
-  public AdaptationZSlidingWindowDetectionArmSelectorPanel(AdaptationZSlidingWindowDetectionArmSelection pAdaptationZSlidingWindowDetectionArmSelection)
+  public AdaptationZSlidingWindowDetectionArmSelectionPanel(AdaptationZSlidingWindowDetectionArmSelection pAdaptationZSlidingWindowDetectionArmSelection)
   {
     super(pAdaptationZSlidingWindowDetectionArmSelection);
 
