@@ -19,7 +19,7 @@ import java.util.concurrent.Future;
  * @author Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * November 2017
  */
-public class AdaptationRH extends StandardAdaptationModule implements
+public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdaptationModule implements
                                                            AdaptationModuleInterface<InterpolatedAcquisitionState>
 {
 
@@ -30,9 +30,11 @@ public class AdaptationRH extends StandardAdaptationModule implements
                      1.0);
 
 
-  private final BoundedVariable<Integer> mBlockSizeVariable =
-      new BoundedVariable<Integer>("MinimumBlockSizeVariable",
+  private final BoundedVariable<Integer> mSlidingWindowWidthVariable =
+      new BoundedVariable<Integer>("SlidingWindowWidth",
                                    1, 0, Integer.MAX_VALUE);
+
+  private final Variable<Boolean> mFirstAndLastControlPlaneZero = new Variable<Boolean>("pFirstAndLastControlPlaneZero", true);
 
   /**
    * Instantiates a Z focus adaptation module given the delta Z parameter,
@@ -51,15 +53,16 @@ public class AdaptationRH extends StandardAdaptationModule implements
    * @param pLaserPower
    *          laser power
    */
-  public AdaptationRH(int pNumberOfSamples,
-                     int pBlockSize,
-                     double pDeltaZ,
-                     double pProbabilityThreshold,
-                     double pImageMetricThreshold,
-                     double pExposureInSeconds,
-                     double pLaserPower)
+  public AdaptationZSlidingWindowDetectionArmSelection(int pNumberOfSamples,
+                                                       int pSlidingWindowWidth,
+                                                       boolean pFirstAndLastControlPlaneZero,
+                                                       double pDeltaZ,
+                                                       double pProbabilityThreshold,
+                                                       double pImageMetricThreshold,
+                                                       double pExposureInSeconds,
+                                                       double pLaserPower)
   {
-    super("Z (With RHs detection arm picking)",
+    super("Z (With smooth detection arm voting)",
           LightSheetDOF.IZ,
           pNumberOfSamples,
           pProbabilityThreshold,
@@ -67,7 +70,9 @@ public class AdaptationRH extends StandardAdaptationModule implements
           pExposureInSeconds,
           pLaserPower);
     getDeltaZVariable().set(pDeltaZ);
-    mBlockSizeVariable.set(pBlockSize);
+    mSlidingWindowWidthVariable.set(pSlidingWindowWidth);
+
+    mFirstAndLastControlPlaneZero.set(pFirstAndLastControlPlaneZero);
 
   }
 
@@ -202,7 +207,7 @@ public class AdaptationRH extends StandardAdaptationModule implements
         selectedDetectionArms[cpi][l] = lSelectedDetectionArm;
       }
 
-      info("Chosen detection arms for control plane " + cpi + ": " + Arrays.toString(selectedDetectionArms[cpi]));
+      info("Best detection arms for control plane " + cpi + ": " + Arrays.toString(selectedDetectionArms[cpi]));
     }
 
 
@@ -225,7 +230,7 @@ public class AdaptationRH extends StandardAdaptationModule implements
           mostPopularDetectionArm = i;
         }
       }
-      info("Most popular detection arm in control plane " + cpi + " was " + mostPopularDetectionArm);
+
       popularDetectionArms[cpi] = mostPopularDetectionArm;
     }
 
@@ -235,20 +240,40 @@ public class AdaptationRH extends StandardAdaptationModule implements
     // the idea is to make the chosen detection arms equal in larger regions of the sample. The scope should not switch
     // between cameras from control plane to control plane. It should in principle image the half sample with one
     // camera and the other half with the other camera.
-    int blockSize = mBlockSizeVariable.get();
+    int lSlidingWindowWidth = mSlidingWindowWidthVariable.get();
+    int[] lSelectedDetectionsArms  = new int[lNumberOfControlPlanes];
+    for (int cpi = 0; cpi < lNumberOfControlPlanes; cpi++)
+    {
+      int
+          lSlidingWindowEnd =
+          Math.min(cpi + (int) (lSlidingWindowWidth * 1.5) - 1,
+                   lNumberOfControlPlanes - 1);
+      int
+          lSlidingWindowStart =
+          Math.max(lSlidingWindowEnd - lSlidingWindowWidth + 1, 0);
+
+      //info("Sliding window: " + lSlidingWindowStart + " - " + lSlidingWindowEnd);
+      lSelectedDetectionsArms[cpi] =
+          findPopularDetectionArm(popularDetectionArms,
+                                  lNumberOfDetectionArms,
+                                  lSlidingWindowStart,
+                                  lSlidingWindowEnd);
+    }
+    info("Selected detection arms: " + Arrays.toString(lSelectedDetectionsArms));
 
     //int mostPopularDetectionArmInFirstBlock = findPopularDetectionArm(popularDetectionArms, lNumberOfDetectionArms, 0, blockSize);
 
-    int formerBlockIndex = -1;
-
-    int lSelectedDetectionArm = 0;
+    //int lSelectedDetectionArm = 0;
     for (int cpi = 0; cpi < lNumberOfControlPlanes; cpi++)
     {
-      int blockIndex = cpi / blockSize;
-      if (blockIndex != formerBlockIndex) {
-        //get popular detection arm index for this block
-        lSelectedDetectionArm = findPopularDetectionArm(popularDetectionArms, cpi, Math.min(lNumberOfControlPlanes, cpi + blockSize - 1));
-      }
+      ///int blockIndex = cpi / blockSize;
+      //if (blockIndex != formerBlockIndex) {
+      //get popular detection arm index for this block
+      //int blockStart = cpi;
+
+      int
+          lSelectedDetectionArm = lSelectedDetectionsArms[cpi];
+      //info("Selected detection arm: " + lSelectedDetectionArm);
 
       for (int l = 0; l < lNumberOfLightSheets; l++)
       {
@@ -260,8 +285,7 @@ public class AdaptationRH extends StandardAdaptationModule implements
           continue;
         }
 
-        double lCorrection = (pFlipCorrectionSign ? -1 : 1)
-                             * lResult.argmax;
+        double lCorrection = (pFlipCorrectionSign ? -1 : 1) * lResult.argmax;
 
         boolean lProbabilityInsufficient =
             lResult.probability < getProbabilityThresholdVariable().get();
@@ -271,32 +295,36 @@ public class AdaptationRH extends StandardAdaptationModule implements
 
         if (lMetricMaxInsufficient)
         {
-          warning("Metric maximum too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
-                  lResult.metricmax,
-                  getImageMetricThresholdVariable().get(),
-                  cpi,
-                  l);
+          warning(
+              "Metric maximum too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
+              lResult.metricmax,
+              getImageMetricThresholdVariable().get(),
+              cpi,
+              l);
         }
 
         if (lProbabilityInsufficient)
         {
-          warning("Probability too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
-                  lResult.probability,
-                  getProbabilityThresholdVariable().get(),
-                  cpi,
-                  l);
+          warning(
+              "Probability too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
+              lResult.probability,
+              getProbabilityThresholdVariable().get(),
+              cpi,
+              l);
         }
 
-        boolean lMissingInfo = lMetricMaxInsufficient
-                               || lProbabilityInsufficient;
+        boolean
+            lMissingInfo =
+            lMetricMaxInsufficient || lProbabilityInsufficient;
 
         if (lMissingInfo)
         {
           lCorrection =
-              computeCorrectionBasedOnNeighbooringControlPlanes(pRelativeCorrection,
-                                                                pStateToUpdate,
-                                                                cpi,
-                                                                l);
+              computeCorrectionBasedOnNeighbooringControlPlanes(
+                  pRelativeCorrection,
+                  pStateToUpdate,
+                  cpi,
+                  l);
         }
 
         info("Applying correction: %g \n", lCorrection);
@@ -308,23 +336,34 @@ public class AdaptationRH extends StandardAdaptationModule implements
                                      9,
                                      l,
                                      cpi,
-                                     String.format("argmax=%g\nmetricmax=%g\nprob=%g\ncorr=%g\nmissing=%s\nselected=%d",
-                                                   lResult.argmax,
-                                                   lResult.metricmax,
-                                                   lResult.probability,
-                                                   lCorrection,
-                                                   lMissingInfo,
-                                                   lSelectedDetectionArm));
+                                     String.format(
+                                         "argmax=%g\nmetricmax=%g\nprob=%g\ncorr=%g\nmissing=%s\nselected=%d",
+                                         lResult.argmax,
+                                         lResult.metricmax,
+                                         lResult.probability,
+                                         lCorrection,
+                                         lMissingInfo,
+                                         lSelectedDetectionArm));
 
+        if (mFirstAndLastControlPlaneZero.get() && (cpi == 0 || cpi == lNumberOfControlPlanes - 1)) {
+          pStateToUpdate.getInterpolationTables()
+                        .add(mLightSheetDOF, cpi, l, 0);
+        }
+        else
+        {
+          pStateToUpdate.getInterpolationTables()
+                        .add(mLightSheetDOF, cpi, l, lCorrection);
+        }
 
-
-
+        /*
+        // ?
         if (pRelativeCorrection)
           pStateToUpdate.getInterpolationTables()
                         .add(mLightSheetDOF, cpi, l, lCorrection);
         else
           pStateToUpdate.getInterpolationTables()
                         .set(mLightSheetDOF, cpi, l, lCorrection);
+         */
       }
     }
   }
@@ -339,9 +378,10 @@ public class AdaptationRH extends StandardAdaptationModule implements
     return mDeltaZVariable;
   }
 
-  private int findPopularDetectionArm(int[] popularDetectionArms, int start, int end) {
-    int[] countPerArm = new int[end - start + 1];
-    for (int detectionArm : popularDetectionArms) {
+  private int findPopularDetectionArm(int[] popularDetectionArms, int pNumberOfDetectionArms, int start, int end) {
+    int[] countPerArm = new int[pNumberOfDetectionArms];
+    for (int i = start; i <= end; i++) {
+      int detectionArm = popularDetectionArms[i];
       countPerArm[detectionArm]++;
     }
 
@@ -358,8 +398,13 @@ public class AdaptationRH extends StandardAdaptationModule implements
   }
 
 
-  public BoundedVariable<Integer> getBlockSizeVariable()
+  public BoundedVariable<Integer> getSlidingWindowWidthVariable()
   {
-    return mBlockSizeVariable;
+    return mSlidingWindowWidthVariable;
+  }
+
+  public Variable<Boolean> getFirstAndLastControlPlaneZero()
+  {
+    return mFirstAndLastControlPlaneZero;
   }
 }
