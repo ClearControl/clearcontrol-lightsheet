@@ -75,7 +75,12 @@ public class FocusableImager implements LoggingFeature
   {
     if (mNumberOfExpectedImages == 0)
     {
-      for (int i = mLightSheetMinIndex; i < mLightSheetMaxIndex; i++)
+
+      for (int i = 0; i <= 3; i++)
+      {
+        mQueue.setI(i, false);
+      }
+      for (int i = mLightSheetMinIndex; i <= mLightSheetMaxIndex; i++)
       {
         mQueue.setI(i, true);
         mQueue.setIX(i, 0);
@@ -90,7 +95,7 @@ public class FocusableImager implements LoggingFeature
 
     mQueue.setDZ(mDetectionArmIndex, detectionZ);
 
-    for (int i = mLightSheetMinIndex; i < mLightSheetMaxIndex; i++)
+    for (int i = mLightSheetMinIndex; i <= mLightSheetMaxIndex; i++)
     {
       mQueue.setIZ(i, illuminationZ);
     }
