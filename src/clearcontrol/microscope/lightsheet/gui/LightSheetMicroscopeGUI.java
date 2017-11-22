@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.gui;
 
+import clearcontrol.microscope.lightsheet.extendeddepthfield.gui.DepthOfFocusImagingEnginePanel;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.gui.OfflineFastFusionPanel;
 import javafx.stage.Stage;
@@ -114,6 +115,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 
     addToolbarMappingEntry(DepthOfFocusImagingEngine.class,
                          DepthOfFocusImagingEngineToolbar.class);
+
+    addPanelMappingEntry(DepthOfFocusImagingEnginePanel.class,
+                         DepthOfFocusImagingEngine.class,
+                         MicroscopeNodeType.Acquisition);
 
     addPanelMappingEntry(LightSheetFastFusionProcessor.class,
                          LightSheetFastFusionProcessorPanel.class,

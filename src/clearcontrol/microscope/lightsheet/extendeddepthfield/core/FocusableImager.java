@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.extendeddepthfield;
+package clearcontrol.microscope.lightsheet.extendeddepthfield.core;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -36,6 +36,8 @@ public class FocusableImager implements LoggingFeature
 
   int mLightSheetMinIndex;
   int mLightSheetMaxIndex;
+
+
   int mDetectionArmIndex;
 
   int mNumberOfExpectedImages = 0;
@@ -152,5 +154,11 @@ public class FocusableImager implements LoggingFeature
 
     info("imaging done...");
     return lResultingStack;
+  }
+
+
+  public int getDetectionArmIndex()
+  {
+    return mDetectionArmIndex;
   }
 }

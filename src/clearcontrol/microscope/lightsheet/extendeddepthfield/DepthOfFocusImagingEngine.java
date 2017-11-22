@@ -12,6 +12,8 @@ import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.extendeddepthfield.core.FocusableImager;
+import clearcontrol.microscope.lightsheet.extendeddepthfield.core.ImageRange;
 import clearcontrol.microscope.lightsheet.extendeddepthfield.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
@@ -71,7 +73,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   private BoundedVariable<Integer>
       mNumberOfISamples =
       new BoundedVariable<Integer>("Number of illumination samples",
-                                   100,
+                                   7,
                                    0,
                                    Integer.MAX_VALUE,
                                    1);
@@ -111,12 +113,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   private Variable<Boolean>
       mDetectionArmFixedVariable =
       new Variable<Boolean>("DetectionArmFixed", false);
-
-  class ImageRange
-  {
-    double mFixedPosition;
-    double[] mMovingPositions;
-  }
 
 
   public BoundedVariable<Integer> getLightSheetMinIndex()
@@ -167,13 +163,22 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   }
 
   private final LightSheetMicroscope mLightSheetMicroscope;
-  private final ClearCLContext mContext;
+  final LightSheetFastFusionEngine mFastFusionEngine;
 
   public DepthOfFocusImagingEngine(ClearCLContext pContext, LightSheetMicroscope pLightSheetMicroscope)
   {
     super("EDF Imaging");
     mLightSheetMicroscope = pLightSheetMicroscope;
-    mContext = pContext;
+
+    mFastFusionEngine = new LightSheetFastFusionEngine(pContext, null, 1, mLightSheetMicroscope.getNumberOfDetectionArms());
+
+    mFastFusionEngine.setSubtractingBackground(false);
+    mFastFusionEngine.setRegistration(true);
+    mFastFusionEngine.setDownscale(true);
+
+    mFastFusionEngine.setup(1,
+                            mLightSheetMicroscope.getNumberOfDetectionArms());
+
 
     this.setName("EDF_Imaging");
 
@@ -376,23 +381,11 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
 
 
-    final LightSheetFastFusionEngine lFastFusionEngine;
-    lFastFusionEngine = new LightSheetFastFusionEngine(mContext, null, 1, mLightSheetMicroscope.getNumberOfDetectionArms());
-
-    lFastFusionEngine.setSubtractingBackground(false);
-    lFastFusionEngine.setRegistration(true);
-    lFastFusionEngine.setDownscale(true);
-
-    lFastFusionEngine.setup(1,
-                            mLightSheetMicroscope.getNumberOfDetectionArms());
-
-
     OffHeapPlanarStack[]
         lNormalStacks = new OffHeapPlanarStack[lNumberOfDetectionArms];
 
     OffHeapPlanarStack[]
         lEDFStacks = new OffHeapPlanarStack[lNumberOfDetectionArms];
-
 
 
     // define ImageRange: For all detection arm positions take
@@ -448,6 +441,14 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                           10,
                           true);
 
+    for (int lDetectionArm = 0; lDetectionArm < lNumberOfDetectionArms; lDetectionArm++) {
+      configureChart("Quality", "Quality_C" + lDetectionArm, "EDF slice", "Quality", ChartType.Scatter);
+      configureChart("Selected_Z", "Selected_Z_C" + lDetectionArm, "fixedZ", "movingZ", ChartType.Scatter);
+
+    }
+
+    //Thread[] lImagingThreads = new Thread[lNumberOfDetectionArms];
+
     int lIterationCount[] = new int[lNumberOfDetectionArms];
     while (true)
     {
@@ -470,6 +471,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
             lImageQualityEstimator.getQualityArray();
 
         int lQualitySampleIndex = 0;
+        boolean lClearQualityGraph = true;
+        boolean lClearSelectedZGraph = true;
         for (ImageRange lImageRange : lImageRanges[lDetectionArm])
         {
           double lMaxQuality = lQualityPerSliceMeasurementsArray[lQualitySampleIndex];
@@ -481,6 +484,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
           // determine moving slice in focus
           for (double lMovingZ : lImageRange.mMovingPositions)
           {
+            addPoint("Quality", "Quality_C" + lDetectionArm, lClearQualityGraph, lQualitySampleIndex, lQualityPerSliceMeasurementsArray[lQualitySampleIndex]);
+            lClearQualityGraph = false;
             info(""
                  + lImageRange.mFixedPosition
                  + "\t"
@@ -503,6 +508,10 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
             }
             lQualitySampleIndex++;
           }
+          configureChart("Selected_Z", "Selected_Z_C" + lDetectionArm, "LZ", "DZ", ChartType.Scatter);
+
+          addPoint("Selected_Z", "Selected_Z_C" + lDetectionArm, lClearSelectedZGraph, lImageRange.mFixedPosition, lBestMovingZ);
+          lClearSelectedZGraph = false;
 
           mLogFileWriter.write("Finished analysing quality " + new SimpleDateFormat(
               "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
@@ -554,33 +563,71 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
           break;
         }
 
-        // take new images
-        FocusableImager
-            lPreciseImager =
-            new FocusableImager(getLightSheetMicroscope(),
-                                lLightSheetMinIndex,
-                                lLightSheetMaxIndex,
-                                lDetectionArm,
-                                lExposureTimeInSeconds);
-        lPreciseImager.setFieldOfView((int) lImageWidth, (int) lImageHeight);
+        final int lDetectionArmCopy = lDetectionArm;
 
-        lEDFStacks[lDetectionArm] =
-            imageEDFStack(lPreciseImager, lImageRanges[lDetectionArm]);
+        /*
+        Thread lImagingThread = new Thread() {
+          @Override
+          public void run()
+          {*/
 
+            // take new images
+            FocusableImager
+                lPreciseImager =
+                new FocusableImager(getLightSheetMicroscope(),
+                                    lLightSheetMinIndex,
+                                    lLightSheetMaxIndex,
+                                    lDetectionArmCopy,
+                                    lExposureTimeInSeconds);
+            lPreciseImager.setFieldOfView((int) lImageWidth, (int) lImageHeight);
 
-        FocusableImager
-            lImager =
-            new FocusableImager(getLightSheetMicroscope(),
-                                lLightSheetMinIndex,
-                                lLightSheetMaxIndex,
-                                lDetectionArm,
-                                lExposureTimeInSeconds);
-        lImager.setFieldOfView((int) lImageWidth, (int) lImageHeight);
-        OffHeapPlanarStack lNormalStack = imageNormalStack(lImager, lImageRanges[lDetectionArm], 100);
-        String lNormalChannel = "C" + lDetectionArm;
-        lSink.appendStack(lNormalChannel, lNormalStack);
-        lNormalStacks[lDetectionArm] = lNormalStack;
+            FocusableImager
+                lImager =
+                new FocusableImager(getLightSheetMicroscope(),
+                                    lLightSheetMinIndex,
+                                    lLightSheetMaxIndex,
+                                    lDetectionArmCopy,
+                                    lExposureTimeInSeconds);
+            lImager.setFieldOfView((int) lImageWidth, (int) lImageHeight);
 
+            try
+            {
+              lEDFStacks[lDetectionArmCopy] =
+                  imageEDFStack(lPreciseImager, lImageRanges[lDetectionArmCopy]);
+              lNormalStacks[lDetectionArmCopy] = imageNormalStack(lImager, lImageRanges[lDetectionArmCopy], 100);
+            }
+            catch (InterruptedException e)
+            {
+              e.printStackTrace();
+            }
+            catch (ExecutionException e)
+            {
+              e.printStackTrace();
+            }
+            catch (TimeoutException e)
+            {
+              e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+              e.printStackTrace();
+            }
+
+            String lNormalChannel = "C" + lDetectionArmCopy;
+            lSink.appendStack(lNormalChannel, lNormalStacks[lDetectionArmCopy]);
+/*
+          }
+        };
+
+        lImagingThreads[lDetectionArm] = lImagingThread;
+        for (int lOtherDetectionArm = 0; lOtherDetectionArm < lNumberOfDetectionArms; lOtherDetectionArm++) {
+          if(lOtherDetectionArm != lDetectionArm) {
+            if (lImagingThreads[lOtherDetectionArm] != null) {
+              lImagingThreads[lOtherDetectionArm].join();
+            }
+          }
+        }
+        lImagingThreads[lDetectionArm].start();*/
       }
       if (isStopRequested())
       {
@@ -589,7 +636,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       }
       for (int lDetectionArm = 0; lDetectionArm < lNumberOfDetectionArms; lDetectionArm++) {
 
-        lFastFusionEngine.passImage("C" + lDetectionArm + "L0", lNormalStacks[lDetectionArm].getContiguousMemory(),
+        mFastFusionEngine.passImage("C" + lDetectionArm + "L0", lNormalStacks[lDetectionArm].getContiguousMemory(),
                                     ImageChannelDataType.UnsignedInt16,
                                     lNormalStacks[lDetectionArm].getDimensions());
       }
@@ -597,16 +644,16 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
 
 
-      lFastFusionEngine.executeAllTasks();
+      mFastFusionEngine.executeAllTasks();
 
-      lFastFusionEngine.waitFusionTasksToComplete();
+      mFastFusionEngine.waitFusionTasksToComplete();
 
-      for (String name : lFastFusionEngine.getAvailableImagesSlotKeys())
+      for (String name : mFastFusionEngine.getAvailableImagesSlotKeys())
       {
         info("available image: " + name);
       }
 
-      ClearCLImage lFusedImage = lFastFusionEngine.getImage("fused");
+      ClearCLImage lFusedImage = mFastFusionEngine.getImage("fused");
 
       StackInterface
           lFusedStack =
@@ -617,7 +664,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
       lSink.appendStack("default", lFusedStack);
 
-
+      mFastFusionEngine.reset(false);
 
 
       if (isStopRequested())
@@ -720,7 +767,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     mLogFileWriter.write("Finished imaging " + new SimpleDateFormat(
         "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
 
-    lStack.getMetaData().addEntry(MetaDataView.Camera, pImager.mDetectionArmIndex);
+    lStack.getMetaData().addEntry(MetaDataView.Camera, pImager.getDetectionArmIndex());
     lStack.getMetaData().addEntry(MetaDataAcquisitionType.AcquisitionType, AcquisitionType.TimeLapse);
 
     return lStack;
@@ -770,7 +817,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     mLogFileWriter.write("Finished EDF imaging " + new SimpleDateFormat(
         "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
 
-    lStack.getMetaData().addEntry(MetaDataView.Camera, pImager.mDetectionArmIndex);
+    lStack.getMetaData().addEntry(MetaDataView.Camera, pImager.getDetectionArmIndex());
     lStack.getMetaData().addEntry(MetaDataAcquisitionType.AcquisitionType, AcquisitionType.TimeLapse);
 
     return lStack;
