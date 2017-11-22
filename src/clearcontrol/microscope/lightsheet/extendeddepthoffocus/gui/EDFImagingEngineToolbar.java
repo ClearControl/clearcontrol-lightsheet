@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.extendeddepthfield.gui;
+package clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui;
 
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
@@ -9,7 +9,7 @@ import clearcontrol.gui.jfx.var.checkbox.VariableCheckBox;
 import clearcontrol.gui.jfx.var.file.VariableFileChooser;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
 import clearcontrol.gui.jfx.var.textfield.StringVariableTextField;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.DepthOfFocusImagingEngine;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
 import eu.hansolo.enzo.simpleindicator.SimpleIndicator;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
@@ -26,11 +26,11 @@ import javafx.scene.layout.Priority;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * October 2017
  */
-public class DepthOfFocusImagingEngineToolbar extends
+public class EDFImagingEngineToolbar extends
                                                    CustomGridPane
 {
-  public DepthOfFocusImagingEngineToolbar(
-      DepthOfFocusImagingEngine pDepthOfFieldImagingEngine)
+  public EDFImagingEngineToolbar(
+      EDFImagingEngine pDepthOfFieldImagingEngine)
   {
     int lRow = 0;
 

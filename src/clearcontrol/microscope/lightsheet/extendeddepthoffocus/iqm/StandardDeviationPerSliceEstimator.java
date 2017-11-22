@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.extendeddepthfield.iqm;
+package clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm;
 
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.imglib2.StackToImgConverter;

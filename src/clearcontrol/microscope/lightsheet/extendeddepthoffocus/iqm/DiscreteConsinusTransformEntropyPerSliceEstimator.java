@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.extendeddepthfield.iqm;
+package clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm;
 
 import clearcontrol.ip.iqm.DCTS2D;
 import clearcontrol.stack.OffHeapPlanarStack;

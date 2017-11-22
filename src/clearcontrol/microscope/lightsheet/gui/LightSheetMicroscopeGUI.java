@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.gui;
 
-import clearcontrol.microscope.lightsheet.extendeddepthfield.gui.DepthOfFocusImagingEnginePanel;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEnginePanel;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.gui.OfflineFastFusionPanel;
 import javafx.stage.Stage;
@@ -17,8 +18,7 @@ import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterf
 import clearcontrol.microscope.lightsheet.component.detection.gui.DetectionArmPanel;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.gui.LightSheetPanel;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.gui.DepthOfFocusImagingEngineToolbar;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.DepthOfFocusImagingEngine;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEngineToolbar;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
 import clearcontrol.microscope.lightsheet.interactive.gui.InteractiveAcquisitionToolbar;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
@@ -113,11 +113,11 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          LightSheetFastFusionProcessorPanel.class,
                          MicroscopeNodeType.Acquisition);
 
-    addToolbarMappingEntry(DepthOfFocusImagingEngine.class,
-                         DepthOfFocusImagingEngineToolbar.class);
+    addToolbarMappingEntry(EDFImagingEngine.class,
+                         EDFImagingEngineToolbar.class);
 
-    addPanelMappingEntry(DepthOfFocusImagingEngine.class,
-                         DepthOfFocusImagingEnginePanel.class,
+    addPanelMappingEntry(EDFImagingEngine.class,
+                         EDFImagingEnginePanel.class,
                          MicroscopeNodeType.Acquisition);
 
     addPanelMappingEntry(LightSheetFastFusionProcessor.class,

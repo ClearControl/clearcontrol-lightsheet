@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.extendeddepthfield.core;
+package clearcontrol.microscope.lightsheet.extendeddepthoffocus.core;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;

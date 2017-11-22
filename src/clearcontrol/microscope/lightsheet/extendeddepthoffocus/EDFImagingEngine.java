@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.extendeddepthfield;
+package clearcontrol.microscope.lightsheet.extendeddepthoffocus;
 
 import clearcl.ClearCLContext;
 import clearcl.ClearCLImage;
@@ -12,9 +12,9 @@ import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.core.FocusableImager;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.core.ImageRange;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.core.FocusableImager;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.core.ImageRange;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
@@ -29,7 +29,6 @@ import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import coremem.recycling.BasicRecycler;
-import fastfuse.tasks.MemoryReleaseTask;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
@@ -45,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * The DepthOfFocusImagingEngine allows taking images with several
+ * The EDFImagingEngine allows taking images with several
  * focus planes per light sheet position and vice versa.
  *
  * Initially, n light sheet positions are imaged; with m detection arm
@@ -59,7 +58,7 @@ import java.util.concurrent.TimeoutException;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * October 2017
  */
-public class DepthOfFocusImagingEngine extends TaskDevice implements
+public class EDFImagingEngine extends TaskDevice implements
                                                           LoggingFeature,
                                                           VisualConsoleInterface
 {
@@ -111,7 +110,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   private final BoundedVariable<Double>
       mExposureTimeForEDFInSeconds =
       new BoundedVariable<Double>("Exposure time for EDF in seconds",
-                                  0.1,
+                                  0.03,
                                   0.0,
                                   Double.POSITIVE_INFINITY,
                                   0.1);
@@ -119,7 +118,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   private final BoundedVariable<Double>
       mExposureTimeForStacksInSeconds =
       new BoundedVariable<Double>("Exposure time for stacks in seconds",
-                                  0.1,
+                                  0.03,
                                   0.0,
                                   Double.POSITIVE_INFINITY,
                                   0.1);
@@ -227,7 +226,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   private final LightSheetMicroscope mLightSheetMicroscope;
   final LightSheetFastFusionEngine mFastFusionEngine;
 
-  public DepthOfFocusImagingEngine(ClearCLContext pContext, LightSheetMicroscope pLightSheetMicroscope)
+  public EDFImagingEngine(ClearCLContext pContext, LightSheetMicroscope pLightSheetMicroscope)
   {
     super("EDF Imaging");
     mLightSheetMicroscope = pLightSheetMicroscope;
@@ -816,6 +815,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       info("Loop done.");
       lNumberOfIterations--;
       if (lNumberOfIterations < 0) {
+        info("Number of iterations reached.");
         break;
       }
     }

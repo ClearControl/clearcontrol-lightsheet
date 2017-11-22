@@ -34,7 +34,7 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.DepthOfFocusImagingEngine;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
 import clearcontrol.microscope.lightsheet.gui.LightSheetMicroscopeGUI;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.simulation.LightSheetMicroscopeSimulationDevice;
@@ -339,8 +339,9 @@ public class LightSheetMicroscopeDemo extends Application implements
 
       lTimelapse.addFileStackSinkType(RawFileStackSink.class);
 
-      DepthOfFocusImagingEngine lDepthOfFocusImagingEngine = new DepthOfFocusImagingEngine(lSimulationGPUDevice.createContext(), lLightSheetMicroscope);
-      lLightSheetMicroscope.addDevice(0, lDepthOfFocusImagingEngine);
+      EDFImagingEngine
+          lEDFImagingEngine = new EDFImagingEngine(lSimulationGPUDevice.createContext(), lLightSheetMicroscope);
+      lLightSheetMicroscope.addDevice(0, lEDFImagingEngine);
 
 
 
