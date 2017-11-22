@@ -72,7 +72,7 @@ public class EDFImagingEngine extends TaskDevice implements
   //  private BoundedVariable<Integer> mLightSheetIndex;
   private BoundedVariable<Integer>
       mNumberOfISamples =
-      new BoundedVariable<Integer>("Number of illumination samples",
+      new BoundedVariable<Integer>("Number of illumination samples (control planes)",
                                    7,
                                    0,
                                    Integer.MAX_VALUE,
@@ -84,6 +84,15 @@ public class EDFImagingEngine extends TaskDevice implements
                                    0,
                                    Integer.MAX_VALUE,
                                    1);
+
+  private final BoundedVariable<Double>
+      mMinimumRange =
+      new BoundedVariable<Double>("Minimum focus Z range",
+                                  10.0,
+                                  0.0,
+                                  Double.POSITIVE_INFINITY,
+                                  1.0);
+
 
   private BoundedVariable<Double> mFirstZ;
 
@@ -98,13 +107,6 @@ public class EDFImagingEngine extends TaskDevice implements
           Integer.MAX_VALUE,
           1);
 
-  private final BoundedVariable<Double>
-      mMinimumRange =
-      new BoundedVariable<Double>("Minimum focus Z range",
-                                  10.0,
-                                  0.0,
-                                  Double.POSITIVE_INFINITY,
-                                  1.0);
 
 
   private final BoundedVariable<Double>
@@ -113,7 +115,7 @@ public class EDFImagingEngine extends TaskDevice implements
                                   0.03,
                                   0.0,
                                   Double.POSITIVE_INFINITY,
-                                  0.1);
+                                  0.001);
 
   private final BoundedVariable<Double>
       mExposureTimeForStacksInSeconds =
@@ -121,10 +123,10 @@ public class EDFImagingEngine extends TaskDevice implements
                                   0.03,
                                   0.0,
                                   Double.POSITIVE_INFINITY,
-                                  0.1);
+                                  0.001);
 
-  private final Variable<Boolean> mSaveEDFStacks = new Variable<Boolean>("Save EDF stacks", true);
-  private final Variable<Boolean> mSaveCameraStacks = new Variable<Boolean>("Save camera stacks", true);
+  private final Variable<Boolean> mSaveEDFStacks = new Variable<Boolean>("Save EDF stacks", false);
+  private final Variable<Boolean> mSaveCameraStacks = new Variable<Boolean>("Save camera stacks", false);
   private final Variable<Boolean> mSaveFusedStacks = new Variable<Boolean>("Save fused stacks", true);
 
   private BufferedWriter mLogFileWriter;
@@ -140,88 +142,8 @@ public class EDFImagingEngine extends TaskDevice implements
       mDetectionArmFixedVariable =
       new Variable<Boolean>("DetectionArmFixed", false);
 
+  private BoundedVariable<Integer> mNumberOfStackSlicesVariable = new BoundedVariable<Integer>("Number of slices", 100, 0, Integer.MAX_VALUE, 1);
 
-  public BoundedVariable<Double> getFirstZ()
-  {
-    return mFirstZ;
-  }
-
-  public BoundedVariable<Double> getLastZ()
-  {
-    return mLastZ;
-  }
-
-  public BoundedVariable<Double> getExposureTimeForEDFInSeconds()
-  {
-    return mExposureTimeForEDFInSeconds;
-  }
-
-  public BoundedVariable<Double> getExposureTimeForStacksInSeconds()
-  {
-    return mExposureTimeForStacksInSeconds;
-  }
-
-  public Variable<Boolean> getSaveEDFStacks()
-  {
-    return mSaveEDFStacks;
-  }
-
-  public Variable<Boolean> getSaveCameraStacks()
-  {
-    return mSaveCameraStacks;
-  }
-
-  public Variable<Boolean> getSaveFusedStacks()
-  {
-    return mSaveFusedStacks;
-  }
-
-  public BoundedVariable<Integer> getLightSheetMinIndex()
-  {
-    return mLightSheetMinIndex;
-  }
-
-
-  public BoundedVariable<Integer> getLightSheetMaxIndex()
-  {
-    return mLightSheetMaxIndex;
-  }
-
-  public BoundedVariable<Integer> getNumberOfISamples()
-  {
-    return mNumberOfISamples;
-  }
-
-  public BoundedVariable<Integer> getNumberOfDSamples()
-  {
-    return mNumberOfDSamples;
-  }
-
-  public BoundedVariable<Integer> getNumberOfPrecisionIncreasingIterations()
-  {
-    return mNumberOfIterations;
-  }
-
-
-  public BoundedVariable<Double> getMinimumRange()
-  {
-    return mMinimumRange;
-  }
-
-  public Variable<String> getDataSetNamePostfixVariable()
-  {
-    return mDataSetNamePostfixVariable;
-  }
-
-  public Variable<File> getRootFolderVariable()
-  {
-    return mRootFolderVariable;
-  }
-
-  public Variable<Boolean> getDetectionArmFixedVariable()
-  {
-    return mDetectionArmFixedVariable;
-  }
 
   private final LightSheetMicroscope mLightSheetMicroscope;
   final LightSheetFastFusionEngine mFastFusionEngine;
@@ -440,6 +362,8 @@ public class EDFImagingEngine extends TaskDevice implements
         lStepFixedZ =
         (lMaxFixedZ - lMinFixedZ) / (lNumberOfFixedSamples - 1);
 
+    int lNumberOfStackSlices = mNumberOfStackSlicesVariable.get();
+
 
     mLogFileWriter.write("Dataset " + mRootFolderVariable.get() + "\\" + lDatasetname);
     mLogFileWriter.write("Number of " + (mDetectionArmFixedVariable.get()?"detection arm":"light sheet") + " samples: " + lNumberOfFixedSamples);
@@ -456,6 +380,7 @@ public class EDFImagingEngine extends TaskDevice implements
     mLogFileWriter.write("Image height: " + lImageHeight);
     mLogFileWriter.write("Exposure time EDF (sec): " + lExposureTimeForEDFInSeconds);
     mLogFileWriter.write("Exposure time Stacks (sec): " + lExposureTimeForStacksInSeconds);
+    mLogFileWriter.write("Number of slices in stacks: " + lNumberOfStackSlices);
 
     mLogFileWriter.write("Start " + new SimpleDateFormat(
         "yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date()) + "\n");
@@ -704,7 +629,7 @@ public class EDFImagingEngine extends TaskDevice implements
               imageEDFStack(lPreciseImager, lImageRanges[lDetectionArmCopy]);
 
           info("Imaging C" + lDetectionArm + "...");
-          lNormalStacks[lDetectionArmCopy] = imageNormalStack(lImager, lImageRanges[lDetectionArmCopy], 100);
+          lNormalStacks[lDetectionArmCopy] = imageNormalStack(lImager, lImageRanges[lDetectionArmCopy], lNumberOfStackSlices);
         }
         catch (InterruptedException e)
         {
@@ -979,7 +904,7 @@ public class EDFImagingEngine extends TaskDevice implements
   }
 
   /**
-   * Returns true if calibration should be stopped immediately.
+   * Returns true if EDF imging should be stopped immediately.
    *
    * @return true for stopping, false otherwise.
    */
@@ -987,5 +912,90 @@ public class EDFImagingEngine extends TaskDevice implements
   {
     return ScriptingEngine.isCancelRequestedStatic()
            || getStopSignalVariable().get();
+  }
+
+  public BoundedVariable<Integer> getNumberOfStackSlicesVariable()
+  {
+    return mNumberOfStackSlicesVariable;
+  }
+
+  public BoundedVariable<Double> getFirstZ()
+  {
+    return mFirstZ;
+  }
+
+  public BoundedVariable<Double> getLastZ()
+  {
+    return mLastZ;
+  }
+
+  public BoundedVariable<Double> getExposureTimeForEDFInSeconds()
+  {
+    return mExposureTimeForEDFInSeconds;
+  }
+
+  public BoundedVariable<Double> getExposureTimeForStacksInSeconds()
+  {
+    return mExposureTimeForStacksInSeconds;
+  }
+
+  public Variable<Boolean> getSaveEDFStacks()
+  {
+    return mSaveEDFStacks;
+  }
+
+  public Variable<Boolean> getSaveCameraStacks()
+  {
+    return mSaveCameraStacks;
+  }
+
+  public Variable<Boolean> getSaveFusedStacks()
+  {
+    return mSaveFusedStacks;
+  }
+
+  public BoundedVariable<Integer> getLightSheetMinIndex()
+  {
+    return mLightSheetMinIndex;
+  }
+
+  public BoundedVariable<Integer> getLightSheetMaxIndex()
+  {
+    return mLightSheetMaxIndex;
+  }
+
+  public BoundedVariable<Integer> getNumberOfISamples()
+  {
+    return mNumberOfISamples;
+  }
+
+  public BoundedVariable<Integer> getNumberOfDSamples()
+  {
+    return mNumberOfDSamples;
+  }
+
+  public BoundedVariable<Integer> getNumberOfIterations()
+  {
+    return mNumberOfIterations;
+  }
+
+  public BoundedVariable<Double> getMinimumRange()
+  {
+    return mMinimumRange;
+  }
+
+  public Variable<String> getDataSetNamePostfixVariable()
+  {
+    return mDataSetNamePostfixVariable;
+  }
+
+  public Variable<File> getRootFolderVariable()
+  {
+    return mRootFolderVariable;
+  }
+
+  public Variable<Boolean> getDetectionArmFixedVariable()
+  {
+    return mDetectionArmFixedVariable;
   }
 }

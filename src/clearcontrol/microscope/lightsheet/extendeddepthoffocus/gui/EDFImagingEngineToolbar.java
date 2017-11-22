@@ -76,29 +76,35 @@ public class EDFImagingEngineToolbar extends
       lRow++;
     }
 
+
     {
       Separator lSeparator = new Separator();
       lSeparator.setOrientation(Orientation.HORIZONTAL);
-      GridPane.setColumnSpan(lSeparator, 4);
+      GridPane.setColumnSpan(lSeparator, 2);
       add(lSeparator, 0, lRow);
       lRow++;
     }
     {
-      addIntegerField(pDepthOfFieldImagingEngine.getLightSheetMinIndex(), lRow);
+      Label lLabel = new Label("Result stack/sequence properties");
+      add(lLabel, 0, lRow);
       lRow++;
     }
-    {
-      addIntegerField(pDepthOfFieldImagingEngine.getLightSheetMaxIndex(), lRow);
-      lRow++;
-    }
-
-
     {
       addDoubleField(pDepthOfFieldImagingEngine.getFirstZ(), lRow);
       lRow++;
     }
     {
       addDoubleField(pDepthOfFieldImagingEngine.getLastZ(), lRow);
+      lRow++;
+    }
+
+    {
+      addIntegerField(pDepthOfFieldImagingEngine.getNumberOfStackSlicesVariable(), lRow);
+      lRow++;
+    }
+    {
+      addIntegerField(pDepthOfFieldImagingEngine.getNumberOfIterations(),
+                      lRow);
       lRow++;
     }
 
@@ -109,27 +115,46 @@ public class EDFImagingEngineToolbar extends
       lRow++;
     }
 */
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 2);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+    {
+      Label lLabel = new Label("EDF stack properties");
+      add(lLabel, 0, lRow);
+      lRow++;
+    }
     {
       addIntegerField(pDepthOfFieldImagingEngine.getNumberOfISamples(), lRow);
       lRow++;
     }
-
     {
       addIntegerField(pDepthOfFieldImagingEngine.getNumberOfDSamples(), lRow);
       lRow++;
     }
-
-    {
-      addIntegerField(pDepthOfFieldImagingEngine.getNumberOfPrecisionIncreasingIterations(),
-                      lRow);
-      lRow++;
-    }
-
     {
       addDoubleField(pDepthOfFieldImagingEngine.getMinimumRange(),
                       lRow);
       lRow++;
     }
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 2);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+    {
+      Label lLabel = new Label("Imaging settings");
+      add(lLabel, 0, lRow);
+      lRow++;
+    }
+
 
 
     {
@@ -144,7 +169,28 @@ public class EDFImagingEngineToolbar extends
                      lRow);
       lRow++;
     }
+    {
+      addIntegerField(pDepthOfFieldImagingEngine.getLightSheetMinIndex(), lRow);
+      lRow++;
+    }
+    {
+      addIntegerField(pDepthOfFieldImagingEngine.getLightSheetMaxIndex(), lRow);
+      lRow++;
+    }
 
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 2);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+    {
+      Label lLabel = new Label("File storage settings");
+      add(lLabel, 0, lRow);
+      lRow++;
+    }
     {
       VariableFileChooser
           lRootFolderChooser =
@@ -231,7 +277,7 @@ public class EDFImagingEngineToolbar extends
       GridPane.setHgrow(lGridPane, Priority.ALWAYS);
       GridPane.setColumnSpan(lGridPane, 3);
       GridPane.setRowSpan(lGridPane, 7);
-      add(lGridPane, 2, 3);
+      add(lGridPane, 2, 4);
 
       // setGridLinesVisible(true);
 
