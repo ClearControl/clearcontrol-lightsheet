@@ -366,6 +366,8 @@ public class EDFImagingEngine extends TaskDevice implements
 
     int lNumberOfStackSlices = mNumberOfStackSlicesVariable.get();
 
+    double lQualityStandardDeviationMultiplier = 1;
+
 
     mLogFileWriter.write("Dataset " + mRootFolderVariable.get() + "\\" + lDatasetname);
     mLogFileWriter.write("Number of " + (mDetectionArmFixedVariable.get()?"detection arm":"light sheet") + " samples: " + lNumberOfFixedSamples);
@@ -514,7 +516,7 @@ public class EDFImagingEngine extends TaskDevice implements
         double lMeanQuality = new Mean().evaluate(lQualityPerSliceMeasurementsArray);
         double lStandardDeviationQuality = new StandardDeviation().evaluate(lQualityPerSliceMeasurementsArray, lMeanQuality);
 
-        double lQualityThreshold = lMeanQuality * lStandardDeviationQuality;
+        double lQualityThreshold = lMeanQuality + lStandardDeviationQuality * lQualityStandardDeviationMultiplier;
 
         for (ImageRange lImageRange : lImageRanges[lDetectionArm])
         {
