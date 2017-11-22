@@ -32,6 +32,8 @@ import coremem.recycling.BasicRecycler;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -508,6 +510,12 @@ public class EDFImagingEngine extends TaskDevice implements
         boolean lClearSelectedZGraph = true;
 
         int lFixedPosition = 0;
+
+        double lMeanQuality = new Mean().evaluate(lQualityPerSliceMeasurementsArray);
+        double lStandardDeviationQuality = new StandardDeviation().evaluate(lQualityPerSliceMeasurementsArray, lMeanQuality);
+
+        double lQualityThreshold = lMeanQuality * lStandardDeviationQuality;
+
         for (ImageRange lImageRange : lImageRanges[lDetectionArm])
         {
           double lMaxQuality = lQualityPerSliceMeasurementsArray[lQualitySampleIndex];
@@ -519,12 +527,7 @@ public class EDFImagingEngine extends TaskDevice implements
           {
             addPoint("Quality", "Quality_C" + lDetectionArm + "_CPI" + lFixedPosition , lClearQualityGraph, lQualitySampleIndex, lQualityPerSliceMeasurementsArray[lQualitySampleIndex]);
             lClearQualityGraph = false;
-            info(""
-                 + lImageRange.mFixedPosition
-                 + "\t"
-                 + lMovingZ
-                 + "\t"
-                 + lQualityPerSliceMeasurementsArray[lQualitySampleIndex]);
+
             mLogFileWriter.write("Quality["
                                  + lQualitySampleIndex
                                  + "] "
@@ -542,14 +545,20 @@ public class EDFImagingEngine extends TaskDevice implements
             lQualitySampleIndex++;
           }
           lFixedPosition++;
-          configureChart("Selected_Z", "Selected_Z_C" + lDetectionArm, "LZ", "DZ", ChartType.Scatter);
+          //configureChart("Selected_Z", "Selected_Z_C" + lDetectionArm, "LZ", "DZ", ChartType.Scatter);
 
           addPoint("Selected_Z", "Selected_Z_C" + lDetectionArm, lClearSelectedZGraph, lImageRange.mFixedPosition, lBestMovingZ);
           lClearSelectedZGraph = false;
 
           mLogFileWriter.write("Best moving position "
                                + lBestMovingZ
+                               + " Quality: "
+                               + lMaxQuality
                                + "\n");
+          if (lMaxQuality < lQualityThreshold) {
+            warning("Quality in CPI " + lFixedPosition + " to low! Resetting to calibration.");
+            lBestMovingZ = lImageRange.mFixedPosition;
+          }
 
           // setup a new range for this particular fixed slice
           double
