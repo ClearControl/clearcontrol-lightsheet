@@ -1,11 +1,11 @@
 package clearcontrol.microscope.lightsheet.extendeddepthfield.gui;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.cameras.StackCameraDeviceInterface;
 import clearcontrol.devices.cameras.gui.CameraResolutionGrid;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.checkbox.VariableCheckBox;
-import clearcontrol.gui.jfx.var.combo.ClassComboBoxVariable;
 import clearcontrol.gui.jfx.var.file.VariableFileChooser;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
 import clearcontrol.gui.jfx.var.textfield.StringVariableTextField;
@@ -17,7 +17,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
@@ -93,25 +92,23 @@ public class DepthOfFocusImagingEngineToolbar extends
       lRow++;
     }
 
+
     {
-      VariableCheckBox lDetectionArmFixed =
-          new VariableCheckBox("",
-                               pDepthOfFieldImagingEngine.getDetectionArmFixedVariable());
-
-      Label lInterleavedAcquisitionLabel =
-          new Label("Detection arm position fixed \n(otherwise: light sheet position fixed)");
-
-      GridPane.setHalignment(lDetectionArmFixed.getCheckBox(),
-                             HPos.RIGHT);
-      GridPane.setColumnSpan(lDetectionArmFixed.getCheckBox(),
-                             1);
-      GridPane.setColumnSpan(lInterleavedAcquisitionLabel, 3);
-
-      add(lInterleavedAcquisitionLabel, 0, lRow);
-      add(lDetectionArmFixed.getCheckBox(), 1, lRow);
+      addDoubleField(pDepthOfFieldImagingEngine.getFirstZ(), lRow);
+      lRow++;
+    }
+    {
+      addDoubleField(pDepthOfFieldImagingEngine.getLastZ(), lRow);
       lRow++;
     }
 
+
+/*
+    {
+      addCheckbox(pDepthOfFieldImagingEngine.getDetectionArmFixedVariable(), lRow);
+      lRow++;
+    }
+*/
     {
       addIntegerField(pDepthOfFieldImagingEngine.getNumberOfISamples(), lRow);
       lRow++;
@@ -131,6 +128,20 @@ public class DepthOfFocusImagingEngineToolbar extends
     {
       addDoubleField(pDepthOfFieldImagingEngine.getMinimumRange(),
                       lRow);
+      lRow++;
+    }
+
+
+    {
+      addDoubleField(pDepthOfFieldImagingEngine.getExposureTimeForEDFInSeconds(),
+                     lRow);
+      lRow++;
+    }
+
+
+    {
+      addDoubleField(pDepthOfFieldImagingEngine.getExposureTimeForStacksInSeconds(),
+                     lRow);
       lRow++;
     }
 
@@ -165,6 +176,21 @@ public class DepthOfFocusImagingEngineToolbar extends
       this.add(lPostFixTextField.getTextField(), 1, lRow);
       /*this.add(lStackSinkComboBox, 3, lRow);*/
 
+      lRow++;
+    }
+
+    {
+      addCheckbox(pDepthOfFieldImagingEngine.getSaveEDFStacks(), lRow);
+      lRow++;
+    }
+
+    {
+      addCheckbox(pDepthOfFieldImagingEngine.getSaveCameraStacks(), lRow);
+      lRow++;
+    }
+
+    {
+      addCheckbox(pDepthOfFieldImagingEngine.getSaveFusedStacks(), lRow);
       lRow++;
     }
 
@@ -204,7 +230,7 @@ public class DepthOfFocusImagingEngineToolbar extends
       GridPane.setHalignment(lGridPane, HPos.CENTER);
       GridPane.setHgrow(lGridPane, Priority.ALWAYS);
       GridPane.setColumnSpan(lGridPane, 3);
-      GridPane.setRowSpan(lGridPane, 5);
+      GridPane.setRowSpan(lGridPane, 7);
       add(lGridPane, 2, 3);
 
       // setGridLinesVisible(true);
@@ -214,7 +240,7 @@ public class DepthOfFocusImagingEngineToolbar extends
 
   }
 
-  private void addIntegerField(BoundedVariable<Integer> variable, int lRow) {
+  private void addIntegerField(BoundedVariable<Integer> variable, int pRow) {
     NumberVariableTextField<Integer>
         lField =
         new NumberVariableTextField<Integer>(variable.getName(),
@@ -222,11 +248,11 @@ public class DepthOfFocusImagingEngineToolbar extends
                                             variable.getMin(),
                                             variable.getMax(),
                                             variable.getGranularity());
-    this.add(lField.getLabel(), 0, lRow);
-    this.add(lField.getTextField(), 1, lRow);
+    this.add(lField.getLabel(), 0, pRow);
+    this.add(lField.getTextField(), 1, pRow);
 
   }
-  private void addDoubleField(BoundedVariable<Double> variable, int lRow) {
+  private void addDoubleField(BoundedVariable<Double> variable, int pRow) {
     NumberVariableTextField<Double>
         lField =
         new NumberVariableTextField<Double>(variable.getName(),
@@ -234,7 +260,25 @@ public class DepthOfFocusImagingEngineToolbar extends
             variable.getMin(),
             variable.getMax(),
             variable.getGranularity());
-    this.add(lField.getLabel(), 0, lRow);
-    this.add(lField.getTextField(), 1, lRow);
+    this.add(lField.getLabel(), 0, pRow);
+    this.add(lField.getTextField(), 1, pRow);
+  }
+
+  private void addCheckbox(Variable<Boolean> pBooleanVariable, int pRow) {
+    VariableCheckBox lCheckBox =
+        new VariableCheckBox("",
+                             pBooleanVariable);
+
+    Label lLabel =
+        new Label(pBooleanVariable.getName());
+
+    GridPane.setHalignment(lCheckBox.getCheckBox(),
+                           HPos.RIGHT);
+    GridPane.setColumnSpan(lCheckBox.getCheckBox(),
+                           1);
+    GridPane.setColumnSpan(lLabel, 3);
+
+    add(lLabel, 0, pRow);
+    add(lCheckBox.getCheckBox(), 1, pRow);
   }
 }

@@ -29,6 +29,7 @@ import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import coremem.recycling.BasicRecycler;
+import fastfuse.tasks.MemoryReleaseTask;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
@@ -85,22 +86,48 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                    Integer.MAX_VALUE,
                                    1);
 
-  private BoundedVariable<Integer>
-      mNumberOfPrecisionIncreasingIterations =
+  private BoundedVariable<Double> mFirstZ;
+
+
+  private BoundedVariable<Double> mLastZ;
+
+  private BoundedVariable<Integer> mNumberOfIterations =
       new BoundedVariable<Integer>(
-          "Number of precision increasing iterations",
-          5,
+          "Number of iterations",
+          20,
           0,
           Integer.MAX_VALUE,
           1);
 
   private final BoundedVariable<Double>
       mMinimumRange =
-      new BoundedVariable<Double>("Minimum Range",
+      new BoundedVariable<Double>("Minimum focus Z range",
                                   10.0,
                                   0.0,
                                   Double.POSITIVE_INFINITY,
                                   1.0);
+
+
+  private final BoundedVariable<Double>
+      mExposureTimeForEDFInSeconds =
+      new BoundedVariable<Double>("Exposure time for EDF in seconds",
+                                  0.1,
+                                  0.0,
+                                  Double.POSITIVE_INFINITY,
+                                  0.1);
+
+  private final BoundedVariable<Double>
+      mExposureTimeForStacksInSeconds =
+      new BoundedVariable<Double>("Exposure time for stacks in seconds",
+                                  0.1,
+                                  0.0,
+                                  Double.POSITIVE_INFINITY,
+                                  0.1);
+
+  private final Variable<Boolean> mSaveEDFStacks = new Variable<Boolean>("Save EDF stacks", true);
+  private final Variable<Boolean> mSaveCameraStacks = new Variable<Boolean>("Save camera stacks", true);
+  private final Variable<Boolean> mSaveFusedStacks = new Variable<Boolean>("Save fused stacks", true);
+
   private BufferedWriter mLogFileWriter;
 
   private Variable<String>
@@ -114,6 +141,41 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       mDetectionArmFixedVariable =
       new Variable<Boolean>("DetectionArmFixed", false);
 
+
+  public BoundedVariable<Double> getFirstZ()
+  {
+    return mFirstZ;
+  }
+
+  public BoundedVariable<Double> getLastZ()
+  {
+    return mLastZ;
+  }
+
+  public BoundedVariable<Double> getExposureTimeForEDFInSeconds()
+  {
+    return mExposureTimeForEDFInSeconds;
+  }
+
+  public BoundedVariable<Double> getExposureTimeForStacksInSeconds()
+  {
+    return mExposureTimeForStacksInSeconds;
+  }
+
+  public Variable<Boolean> getSaveEDFStacks()
+  {
+    return mSaveEDFStacks;
+  }
+
+  public Variable<Boolean> getSaveCameraStacks()
+  {
+    return mSaveCameraStacks;
+  }
+
+  public Variable<Boolean> getSaveFusedStacks()
+  {
+    return mSaveFusedStacks;
+  }
 
   public BoundedVariable<Integer> getLightSheetMinIndex()
   {
@@ -138,7 +200,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
   public BoundedVariable<Integer> getNumberOfPrecisionIncreasingIterations()
   {
-    return mNumberOfPrecisionIncreasingIterations;
+    return mNumberOfIterations;
   }
 
 
@@ -197,6 +259,27 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                                      1);
 
 
+    LightSheetInterface
+        lLightSheetDevice =
+        getLightSheetMicroscope().getDeviceLists()
+                                 .getDevice(LightSheetInterface.class,
+                                            0);
+
+    BoundedVariable<Number>
+        lLightsheetZVariable =
+        lLightSheetDevice.getZVariable();
+
+    mFirstZ = new BoundedVariable<Double>("First Z",
+                                           lLightsheetZVariable.getMin().doubleValue(),
+                                           lLightsheetZVariable.getMin().doubleValue(),
+                                           lLightsheetZVariable.getMax().doubleValue(),
+      1.0);
+
+    mLastZ = new BoundedVariable<Double>("Last Z",
+                                          lLightsheetZVariable.getMax().doubleValue(),
+                                          lLightsheetZVariable.getMin().doubleValue(),
+                                          lLightsheetZVariable.getMax().doubleValue(),
+                                          1.0);
   }
 
   @Override public boolean startTask()
@@ -255,8 +338,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         mLightSheetMicroscope.getDevice(AcquisitionStateManager.class,
                                         0);
 
-    LightSheetAcquisitionStateInterface<?> lCurrentState =
-        lAcquisitionStateManager.getCurrentState();
+    //LightSheetAcquisitionStateInterface<?> lCurrentState =
+     //   lAcquisitionStateManager.getCurrentState();
 
 
 
@@ -271,8 +354,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       lNumberOfFixedSamples = mNumberOfISamples.get();
     }
     int
-        lNumberOfPrecisionIncreasingIterations =
-        mNumberOfPrecisionIncreasingIterations.get();
+        lNumberOfIterations =
+        mNumberOfIterations.get();
 
     long
         lImageWidth =
@@ -285,7 +368,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
             StackCameraDeviceInterface.class,
             0).getStackHeightVariable().get();
 
-    double lExposureTimeInSeconds = lCurrentState.getExposureInSecondsVariable().get().doubleValue();
+    double lExposureTimeForEDFInSeconds = mExposureTimeForEDFInSeconds.get();
+    double lExposureTimeForStacksInSeconds = mExposureTimeForStacksInSeconds.get();
 
     String
         lDatasetname =
@@ -327,16 +411,14 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     System.out.println(mRootFolderVariable.get() + lDatasetname);
 
     // define ranges where to take images
-    double lMinMovingZ = lLightsheetZVariable.getMin().doubleValue();
-    double lMaxMovingZ = lLightsheetZVariable.getMax().doubleValue();
+    double lMinMovingZ = mFirstZ.get(); // lLightsheetZVariable.getMin().doubleValue();
+    double lMaxMovingZ = mLastZ.get(); // lLightsheetZVariable.getMax().doubleValue();
 
     double
-        lMinFixedZ =
-        lDetectionFocusZVariable.getMin().doubleValue();
+        lMinFixedZ = mFirstZ.get(); // lDetectionFocusZVariable.getMin().doubleValue();
     double
-        lMaxFixedZ =
-        lDetectionFocusZVariable.getMax().doubleValue();
-
+        lMaxFixedZ = mLastZ.get(); // lDetectionFocusZVariable.getMax().doubleValue();
+/*
     if (!mDetectionArmFixedVariable.get())
     {
       lMinMovingZ = lDetectionFocusZVariable.getMin().doubleValue();
@@ -345,7 +427,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
       lMinFixedZ = lLightsheetZVariable.getMin().doubleValue();
       lMaxFixedZ = lLightsheetZVariable.getMax().doubleValue();
     }
-
+*/
     double lMinimumRange = mMinimumRange.get();
 
     ImageRange[][]
@@ -364,7 +446,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     mLogFileWriter.write("Number of " + (mDetectionArmFixedVariable.get()?"detection arm":"light sheet") + " samples: " + lNumberOfFixedSamples);
     mLogFileWriter.write("Number of " + (!mDetectionArmFixedVariable.get()?"detection arm":"light sheet") + " samples: " + lNumberOfMovingSamples);
     mLogFileWriter.write("Detection arm fixed: " + mDetectionArmFixedVariable.get());
-    mLogFileWriter.write("Number of iterations: " + lNumberOfPrecisionIncreasingIterations);
+    mLogFileWriter.write("Number of iterations: " + lNumberOfIterations);
     mLogFileWriter.write("Minimum range: " + lMinimumRange);
     mLogFileWriter.write("Minimum fixed Z: " + lMinFixedZ);
     mLogFileWriter.write("Maximum fixed Z: " + lMaxFixedZ);
@@ -373,7 +455,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
     mLogFileWriter.write("Image width: " + lImageWidth);
     mLogFileWriter.write("Image height: " + lImageHeight);
-    mLogFileWriter.write("Exposure time (sec): " + lExposureTimeInSeconds);
+    mLogFileWriter.write("Exposure time EDF (sec): " + lExposureTimeForEDFInSeconds);
+    mLogFileWriter.write("Exposure time Stacks (sec): " + lExposureTimeForStacksInSeconds);
 
     mLogFileWriter.write("Start " + new SimpleDateFormat(
         "yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date()) + "\n");
@@ -423,7 +506,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                               lLightSheetMinIndex,
                               lLightSheetMaxIndex,
                               lDetectionArm,
-                              lExposureTimeInSeconds);
+                              lExposureTimeForEDFInSeconds);
 
       lInitialImager.setFieldOfView((int) lImageWidth,
                                     (int) lImageHeight);
@@ -454,14 +537,28 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     {
       for (int lDetectionArm = 0; lDetectionArm < lNumberOfDetectionArms; lDetectionArm++)
       {
-        mLogFileWriter.write("Imaging with detection arm " + lDetectionArm);
+        info("Start loop C" + lDetectionArm + "...");
+        mLogFileWriter.write("Imaging with detection arm " + lDetectionArm + "\n");
         // save resulting images to disc
 
-        String lChannel = "C" + lDetectionArm + "_EDF";
-        lEDFStacks[lDetectionArm].getMetaData().addEntry(MetaDataChannel.Channel, lChannel);
-        lSink.appendStack(lChannel, lEDFStacks[lDetectionArm]);
-
+        if (mSaveEDFStacks.get())
+        {
+          info("Save C" + lDetectionArm + "_EDF...");
+          String lChannel = "C" + lDetectionArm + "_EDF";
+          lEDFStacks[lDetectionArm].getMetaData()
+                                   .addEntry(MetaDataChannel.Channel,
+                                             lChannel);
+          mLogFileWriter.write("Start writing EDF stack to disc " + new SimpleDateFormat(
+              "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+          lSink.appendStack(lChannel, lEDFStacks[lDetectionArm]);
+          mLogFileWriter.write("Stop writing EDF stack to disc  " + new SimpleDateFormat(
+              "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+        }
         // Analyse images: get quality per slice
+
+        info("Analyse C" + lDetectionArm + "_EDF...");
+        mLogFileWriter.write("Start analysing quality " + new SimpleDateFormat(
+            "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
         DiscreteConsinusTransformEntropyPerSliceEstimator
             lImageQualityEstimator =
             new DiscreteConsinusTransformEntropyPerSliceEstimator(
@@ -469,6 +566,9 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         double[]
             lQualityPerSliceMeasurementsArray =
             lImageQualityEstimator.getQualityArray();
+
+        mLogFileWriter.write("Stop analysing quality  " + new SimpleDateFormat(
+            "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
 
         int lQualitySampleIndex = 0;
         boolean lClearQualityGraph = true;
@@ -478,8 +578,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
           double lMaxQuality = lQualityPerSliceMeasurementsArray[lQualitySampleIndex];
           double lBestMovingZ = 0;
 
-          mLogFileWriter.write("Start analysing quality " + new SimpleDateFormat(
-              "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
 
           // determine moving slice in focus
           for (double lMovingZ : lImageRange.mMovingPositions)
@@ -513,8 +611,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
           addPoint("Selected_Z", "Selected_Z_C" + lDetectionArm, lClearSelectedZGraph, lImageRange.mFixedPosition, lBestMovingZ);
           lClearSelectedZGraph = false;
 
-          mLogFileWriter.write("Finished analysing quality " + new SimpleDateFormat(
-              "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
           mLogFileWriter.write("Best moving position "
                                + lBestMovingZ
                                + "\n");
@@ -571,51 +667,63 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
           public void run()
           {*/
 
-            // take new images
-            FocusableImager
-                lPreciseImager =
-                new FocusableImager(getLightSheetMicroscope(),
-                                    lLightSheetMinIndex,
-                                    lLightSheetMaxIndex,
-                                    lDetectionArmCopy,
-                                    lExposureTimeInSeconds);
-            lPreciseImager.setFieldOfView((int) lImageWidth, (int) lImageHeight);
+        // take new images
+        FocusableImager
+            lPreciseImager =
+            new FocusableImager(getLightSheetMicroscope(),
+                                lLightSheetMinIndex,
+                                lLightSheetMaxIndex,
+                                lDetectionArmCopy,
+                                lExposureTimeForEDFInSeconds);
+        lPreciseImager.setFieldOfView((int) lImageWidth, (int) lImageHeight);
 
-            FocusableImager
-                lImager =
-                new FocusableImager(getLightSheetMicroscope(),
-                                    lLightSheetMinIndex,
-                                    lLightSheetMaxIndex,
-                                    lDetectionArmCopy,
-                                    lExposureTimeInSeconds);
-            lImager.setFieldOfView((int) lImageWidth, (int) lImageHeight);
+        FocusableImager
+            lImager =
+            new FocusableImager(getLightSheetMicroscope(),
+                                lLightSheetMinIndex,
+                                lLightSheetMaxIndex,
+                                lDetectionArmCopy,
+                                lExposureTimeForStacksInSeconds);
+        lImager.setFieldOfView((int) lImageWidth, (int) lImageHeight);
 
-            try
-            {
-              lEDFStacks[lDetectionArmCopy] =
-                  imageEDFStack(lPreciseImager, lImageRanges[lDetectionArmCopy]);
-              lNormalStacks[lDetectionArmCopy] = imageNormalStack(lImager, lImageRanges[lDetectionArmCopy], 100);
-            }
-            catch (InterruptedException e)
-            {
-              e.printStackTrace();
-            }
-            catch (ExecutionException e)
-            {
-              e.printStackTrace();
-            }
-            catch (TimeoutException e)
-            {
-              e.printStackTrace();
-            }
-            catch (IOException e)
-            {
-              e.printStackTrace();
-            }
+        try
+        {
+          info("Imaging C" + lDetectionArm + "_EDF...");
+          lEDFStacks[lDetectionArmCopy] =
+              imageEDFStack(lPreciseImager, lImageRanges[lDetectionArmCopy]);
 
-            String lNormalChannel = "C" + lDetectionArmCopy;
-            lSink.appendStack(lNormalChannel, lNormalStacks[lDetectionArmCopy]);
-/*
+          info("Imaging C" + lDetectionArm + "...");
+          lNormalStacks[lDetectionArmCopy] = imageNormalStack(lImager, lImageRanges[lDetectionArmCopy], 100);
+        }
+        catch (InterruptedException e)
+        {
+          e.printStackTrace();
+        }
+        catch (ExecutionException e)
+        {
+          e.printStackTrace();
+        }
+        catch (TimeoutException e)
+        {
+          e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+          e.printStackTrace();
+        }
+
+        String lNormalChannel = "C" + lDetectionArmCopy;
+
+        if (mSaveCameraStacks.get())
+        {
+          info("Save C" + lDetectionArm + "...");
+          mLogFileWriter.write("Start writing stack to disc " + new SimpleDateFormat(
+              "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+          lSink.appendStack(lNormalChannel, lNormalStacks[lDetectionArmCopy]);
+          mLogFileWriter.write("Stop writing stack to disc  " + new SimpleDateFormat(
+              "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+        }
+            /*
           }
         };
 
@@ -634,38 +742,56 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         warning("Cancelled by user");
         break;
       }
-      for (int lDetectionArm = 0; lDetectionArm < lNumberOfDetectionArms; lDetectionArm++) {
-
-        mFastFusionEngine.passImage("C" + lDetectionArm + "L0", lNormalStacks[lDetectionArm].getContiguousMemory(),
-                                    ImageChannelDataType.UnsignedInt16,
-                                    lNormalStacks[lDetectionArm].getDimensions());
-      }
 
 
-
-
-      mFastFusionEngine.executeAllTasks();
-
-      mFastFusionEngine.waitFusionTasksToComplete();
-
-      for (String name : mFastFusionEngine.getAvailableImagesSlotKeys())
+      if (mSaveFusedStacks.get())
       {
-        info("available image: " + name);
+        info("Fusing images...");
+        mLogFileWriter.write("Start fusing   " + new SimpleDateFormat(
+            "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+
+        for (int lDetectionArm = 0; lDetectionArm < lNumberOfDetectionArms; lDetectionArm++)
+        {
+
+          mFastFusionEngine.passImage("C" + lDetectionArm + "L0",
+                                      lNormalStacks[lDetectionArm].getContiguousMemory(),
+                                      ImageChannelDataType.UnsignedInt16,
+                                      lNormalStacks[lDetectionArm].getDimensions());
+        }
+        //mFastFusionEngine.addTask(new MemoryReleaseTask("fused", "C0L0", "C1L0", "C0L0d", "C1L0d", "C0L0blur", "C1L0blur", "C1L0reg"));
+
+        mFastFusionEngine.executeAllTasks();
+
+        mFastFusionEngine.waitFusionTasksToComplete();
+
+        for (String name : mFastFusionEngine.getAvailableImagesSlotKeys())
+        {
+          info("available image: " + name);
+        }
+
+        ClearCLImage lFusedImage = mFastFusionEngine.getImage("fused");
+
+        StackInterface
+            lFusedStack =
+            stackRecycler.getOrWait(1000,
+                                    TimeUnit.SECONDS,
+                                    StackRequest.build(lFusedImage.getDimensions()));
+
+        lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
+
+        mLogFileWriter.write("Stop fusing    " + new SimpleDateFormat(
+            "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+
+
+        info("Saving fused stack...");
+        mLogFileWriter.write("Start writing fused stack to disc " + new SimpleDateFormat(
+            "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+        lSink.appendStack("default", lFusedStack);
+        mLogFileWriter.write("Stop writing stack to disc  " + new SimpleDateFormat(
+            "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+
+        mFastFusionEngine.reset(false);
       }
-
-      ClearCLImage lFusedImage = mFastFusionEngine.getImage("fused");
-
-      StackInterface
-          lFusedStack =
-          stackRecycler.getOrWait(1000, TimeUnit.SECONDS, StackRequest
-              .build(lFusedImage.getDimensions()));
-
-      lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
-
-      lSink.appendStack("default", lFusedStack);
-
-      mFastFusionEngine.reset(false);
-
 
       if (isStopRequested())
       {
@@ -673,6 +799,11 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         break;
       }
 
+      info("Loop done.");
+      lNumberOfIterations--;
+      if (lNumberOfIterations < 0) {
+        break;
+      }
     }
 
     lSink.close();
