@@ -411,23 +411,23 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     System.out.println(mRootFolderVariable.get() + lDatasetname);
 
     // define ranges where to take images
-    double lMinMovingZ = mFirstZ.get(); // lLightsheetZVariable.getMin().doubleValue();
-    double lMaxMovingZ = mLastZ.get(); // lLightsheetZVariable.getMax().doubleValue();
+    double lMinMovingZ = lLightsheetZVariable.getMin().doubleValue();
+    double lMaxMovingZ = lLightsheetZVariable.getMax().doubleValue();
 
     double
         lMinFixedZ = mFirstZ.get(); // lDetectionFocusZVariable.getMin().doubleValue();
     double
         lMaxFixedZ = mLastZ.get(); // lDetectionFocusZVariable.getMax().doubleValue();
-/*
+
     if (!mDetectionArmFixedVariable.get())
     {
       lMinMovingZ = lDetectionFocusZVariable.getMin().doubleValue();
       lMaxMovingZ = lDetectionFocusZVariable.getMax().doubleValue();
 
-      lMinFixedZ = lLightsheetZVariable.getMin().doubleValue();
-      lMaxFixedZ = lLightsheetZVariable.getMax().doubleValue();
+      //lMinFixedZ = lLightsheetZVariable.getMin().doubleValue();
+     // lMaxFixedZ = lLightsheetZVariable.getMax().doubleValue();
     }
-*/
+
     double lMinimumRange = mMinimumRange.get();
 
     ImageRange[][]
@@ -523,10 +523,19 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
                           10,
                           10,
                           true);
+    StackInterface
+        lFusedStack = null;
 
     for (int lDetectionArm = 0; lDetectionArm < lNumberOfDetectionArms; lDetectionArm++) {
-      configureChart("Quality", "Quality_C" + lDetectionArm, "EDF slice", "Quality", ChartType.Scatter);
-      configureChart("Selected_Z", "Selected_Z_C" + lDetectionArm, "fixedZ", "movingZ", ChartType.Scatter);
+      for (int lFixedPosition = 0; lFixedPosition < lNumberOfFixedSamples; lFixedPosition++)
+      {
+        configureChart("Quality",
+                       "Quality_C" + lDetectionArm + "_CPI" + lFixedPosition,
+                       "EDF slice",
+                       "Quality",
+                       ChartType.Line);
+      }
+      configureChart("Selected_Z", "Selected_Z_C" + lDetectionArm, "fixedZ", "movingZ", ChartType.Line);
 
     }
 
@@ -573,6 +582,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         int lQualitySampleIndex = 0;
         boolean lClearQualityGraph = true;
         boolean lClearSelectedZGraph = true;
+
+        int lFixedPosition = 0;
         for (ImageRange lImageRange : lImageRanges[lDetectionArm])
         {
           double lMaxQuality = lQualityPerSliceMeasurementsArray[lQualitySampleIndex];
@@ -582,7 +593,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
           // determine moving slice in focus
           for (double lMovingZ : lImageRange.mMovingPositions)
           {
-            addPoint("Quality", "Quality_C" + lDetectionArm, lClearQualityGraph, lQualitySampleIndex, lQualityPerSliceMeasurementsArray[lQualitySampleIndex]);
+            addPoint("Quality", "Quality_C" + lDetectionArm + "_CPI" + lFixedPosition , lClearQualityGraph, lQualitySampleIndex, lQualityPerSliceMeasurementsArray[lQualitySampleIndex]);
             lClearQualityGraph = false;
             info(""
                  + lImageRange.mFixedPosition
@@ -606,6 +617,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
             }
             lQualitySampleIndex++;
           }
+          lFixedPosition++;
           configureChart("Selected_Z", "Selected_Z_C" + lDetectionArm, "LZ", "DZ", ChartType.Scatter);
 
           addPoint("Selected_Z", "Selected_Z_C" + lDetectionArm, lClearSelectedZGraph, lImageRange.mFixedPosition, lBestMovingZ);
@@ -771,11 +783,13 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
         ClearCLImage lFusedImage = mFastFusionEngine.getImage("fused");
 
-        StackInterface
-            lFusedStack =
-            stackRecycler.getOrWait(1000,
-                                    TimeUnit.SECONDS,
-                                    StackRequest.build(lFusedImage.getDimensions()));
+        if (lFusedStack == null)
+        {
+          lFusedStack =
+              stackRecycler.getOrWait(1000,
+                                      TimeUnit.SECONDS,
+                                      StackRequest.build(lFusedImage.getDimensions()));
+        }
 
         lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
 
