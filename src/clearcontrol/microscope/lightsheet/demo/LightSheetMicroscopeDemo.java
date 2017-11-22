@@ -339,7 +339,7 @@ public class LightSheetMicroscopeDemo extends Application implements
 
       lTimelapse.addFileStackSinkType(RawFileStackSink.class);
 
-      DepthOfFocusImagingEngine lDepthOfFocusImagingEngine = new DepthOfFocusImagingEngine(lLightSheetMicroscope);
+      DepthOfFocusImagingEngine lDepthOfFocusImagingEngine = new DepthOfFocusImagingEngine(lSimulationGPUDevice.createContext(), lLightSheetMicroscope);
       lLightSheetMicroscope.addDevice(0, lDepthOfFocusImagingEngine);
 
 

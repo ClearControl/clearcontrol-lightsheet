@@ -1,5 +1,8 @@
 package clearcontrol.microscope.lightsheet.extendeddepthfield;
 
+import clearcl.ClearCLContext;
+import clearcl.ClearCLImage;
+import clearcl.enums.ImageChannelDataType;
 import clearcontrol.core.device.task.TaskDevice;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
@@ -10,10 +13,23 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.extendeddepthfield.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
+import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
+import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
+import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
+import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
+import clearcontrol.microscope.state.AcquisitionStateManager;
+import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.scripting.engine.ScriptingEngine;
+import clearcontrol.stack.ContiguousOffHeapPlanarStackFactory;
 import clearcontrol.stack.OffHeapPlanarStack;
+import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.StackRequest;
+import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
-import gnu.trove.list.array.TDoubleArrayList;
+import coremem.recycling.BasicRecycler;
+import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
+import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,6 +38,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -45,7 +62,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 {
   private final static double sDoubleTolerance = 0.0001;
 
-  private BoundedVariable<Integer> mDetectionArmIndex;
   private BoundedVariable<Integer> mLightSheetMinIndex;
   private BoundedVariable<Integer> mLightSheetMaxIndex;
 
@@ -77,14 +93,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
           1);
 
   private final BoundedVariable<Double>
-      mExposureVariableInSeconds =
-      new BoundedVariable<Double>("Exposure time (s)",
-                                  0.1,
-                                  0.0,
-                                  Double.POSITIVE_INFINITY,
-                                  0.001);
-
-  private final BoundedVariable<Double>
       mMinimumRange =
       new BoundedVariable<Double>("Minimum Range",
                                   10.0,
@@ -108,11 +116,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   {
     double mFixedPosition;
     double[] mMovingPositions;
-  }
-
-  public BoundedVariable<Integer> getDetectionArmIndex()
-  {
-    return mDetectionArmIndex;
   }
 
 
@@ -142,10 +145,6 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     return mNumberOfPrecisionIncreasingIterations;
   }
 
-  public BoundedVariable<Double> getExposureVariable()
-  {
-    return mExposureVariableInSeconds;
-  }
 
   public BoundedVariable<Double> getMinimumRange()
   {
@@ -168,19 +167,15 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
   }
 
   private final LightSheetMicroscope mLightSheetMicroscope;
+  private final ClearCLContext mContext;
 
-  public DepthOfFocusImagingEngine(LightSheetMicroscope pLightSheetMicroscope)
+  public DepthOfFocusImagingEngine(ClearCLContext pContext, LightSheetMicroscope pLightSheetMicroscope)
   {
     super("EDF Imaging");
     mLightSheetMicroscope = pLightSheetMicroscope;
-    this.setName("EDF_Imaging");
+    mContext = pContext;
 
-    mDetectionArmIndex =
-        new BoundedVariable<Integer>("Detection arm",
-                                     0,
-                                     0,
-                                     mLightSheetMicroscope.getNumberOfDetectionArms() - 1,
-                                     1);
+    this.setName("EDF_Imaging");
 
     mLightSheetMinIndex =
         new BoundedVariable<Integer>("Light sheet start",
@@ -250,7 +245,16 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     if (isStopRequested())
       return false;
 
-    int lDetectionArmIndex = mDetectionArmIndex.get();
+    AcquisitionStateManager<LightSheetAcquisitionStateInterface<?>>
+        lAcquisitionStateManager =
+        mLightSheetMicroscope.getDevice(AcquisitionStateManager.class,
+                                        0);
+
+    LightSheetAcquisitionStateInterface<?> lCurrentState =
+        lAcquisitionStateManager.getCurrentState();
+
+
+
     int lLightSheetMinIndex = mLightSheetMinIndex.get();
     int lLightSheetMaxIndex = mLightSheetMaxIndex.get();
 
@@ -276,7 +280,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
             StackCameraDeviceInterface.class,
             0).getStackHeightVariable().get();
 
-    double lExposureTimeInSeconds = mExposureVariableInSeconds.get();
+    double lExposureTimeInSeconds = lCurrentState.getExposureInSecondsVariable().get().doubleValue();
 
     String
         lDatasetname =
@@ -287,7 +291,7 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         lDetectionFocusZVariable =
         getLightSheetMicroscope().getDeviceLists()
                                  .getDevice(DetectionArmInterface.class,
-                                            lDetectionArmIndex)
+                                            0)
                                  .getZVariable();
 
     LightSheetInterface
@@ -299,6 +303,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     BoundedVariable<Number>
         lLightsheetZVariable =
         lLightSheetDevice.getZVariable();
+
+    int lNumberOfDetectionArms = mLightSheetMicroscope.getNumberOfDetectionArms();
 
 
     // Open Image Sink and log file
@@ -337,9 +343,9 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
 
     double lMinimumRange = mMinimumRange.get();
 
-    ImageRange[]
+    ImageRange[][]
         lImageRanges =
-        new ImageRange[lNumberOfFixedSamples];
+        new ImageRange[lNumberOfDetectionArms][lNumberOfFixedSamples];
 
     double
         lStepMovingZ =
@@ -348,10 +354,8 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         lStepFixedZ =
         (lMaxFixedZ - lMinFixedZ) / (lNumberOfFixedSamples - 1);
 
-    int lQualitySampleIndex = 0;
 
     mLogFileWriter.write("Dataset " + mRootFolderVariable.get() + "\\" + lDatasetname);
-    mLogFileWriter.write("Detection arm index: " + lDetectionArmIndex );
     mLogFileWriter.write("Number of " + (mDetectionArmFixedVariable.get()?"detection arm":"light sheet") + " samples: " + lNumberOfFixedSamples);
     mLogFileWriter.write("Number of " + (!mDetectionArmFixedVariable.get()?"detection arm":"light sheet") + " samples: " + lNumberOfMovingSamples);
     mLogFileWriter.write("Detection arm fixed: " + mDetectionArmFixedVariable.get());
@@ -370,172 +374,258 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         "yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date()) + "\n");
 
 
-    // setup imager
-    FocusableImager
-        lInitialImager =
-        new FocusableImager(getLightSheetMicroscope(),
-                            lLightSheetMinIndex,
-                            lLightSheetMaxIndex,
-                            lDetectionArmIndex,
-                            lExposureTimeInSeconds);
 
-    lInitialImager.setFieldOfView((int) lImageWidth,
-                                  (int) lImageHeight);
+
+    final LightSheetFastFusionEngine lFastFusionEngine;
+    lFastFusionEngine = new LightSheetFastFusionEngine(mContext, null, 1, mLightSheetMicroscope.getNumberOfDetectionArms());
+
+    lFastFusionEngine.setSubtractingBackground(false);
+    lFastFusionEngine.setRegistration(true);
+    lFastFusionEngine.setDownscale(true);
+
+    lFastFusionEngine.setup(1,
+                            mLightSheetMicroscope.getNumberOfDetectionArms());
+
+
+    OffHeapPlanarStack[]
+        lNormalStacks = new OffHeapPlanarStack[lNumberOfDetectionArms];
+
+    OffHeapPlanarStack[]
+        lEDFStacks = new OffHeapPlanarStack[lNumberOfDetectionArms];
+
 
 
     // define ImageRange: For all detection arm positions take
     // images for all light sheet positions (or vise versa)
-    for (double lFixedZ = lMinFixedZ; lFixedZ <= lMaxFixedZ + 0.0001;
-         lFixedZ +=
-             lStepFixedZ)
+
+    for (int lDetectionArm = 0; lDetectionArm < lNumberOfDetectionArms; lDetectionArm++)
     {
-      ImageRange imageRange = new ImageRange();
-      imageRange.mFixedPosition = lFixedZ;
-      imageRange.mMovingPositions =
-          new double[lNumberOfMovingSamples];
 
-      int lMovingCount = 0;
-      for (double lMovingZ = lMinMovingZ; lMovingZ
-                                          <= lMaxMovingZ + 0.00001;
-           lMovingZ +=
-               lStepMovingZ)
+      int lQualitySampleIndex = 0;
+      for (double lFixedZ = lMinFixedZ; lFixedZ <= lMaxFixedZ + 0.0001;
+           lFixedZ +=
+               lStepFixedZ)
       {
-        imageRange.mMovingPositions[lMovingCount] = lMovingZ;
-        lMovingCount++;
-      }
-
-      lImageRanges[lQualitySampleIndex] = imageRange;
-      lQualitySampleIndex++;
-    }
-
-    // Get the first image stack for analysis / optimisation
-    OffHeapPlanarStack
-        lStack =
-        takeImages(lInitialImager, lImageRanges);
-
-    int lIterationCount = 0;
-    while (lStack != null)
-    {
-      // save result images to disc
-      lSink.appendStack(lStack);
-
-      // Analyse images: get quality per slice
-      DiscreteConsinusTransformEntropyPerSliceEstimator
-          lImageQualityEstimator =
-          new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
-      double[]
-          lQualityPerSliceMeasurementsArray =
-          lImageQualityEstimator.getQualityArray();
-
-
-      lQualitySampleIndex = 0;
-      for (ImageRange lImageRange : lImageRanges)
-      {
-        double
-            lMaxQuality =
-            lQualityPerSliceMeasurementsArray[lQualitySampleIndex];
-        double lBestMovingZ = 0;
-
-
-        mLogFileWriter.write("Start analysing quality " + new SimpleDateFormat(
-            "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
-
-        // determine moving slice in focus
-        for (double lMovingZ : lImageRange.mMovingPositions)
-        {
-          info(""
-               + lImageRange.mFixedPosition
-               + "\t"
-               + lMovingZ
-               + "\t"
-               + lQualityPerSliceMeasurementsArray[lQualitySampleIndex]);
-          mLogFileWriter.write("Quality[" + lQualitySampleIndex + "] "
-                               + lImageRange.mFixedPosition
-                               + "\t"
-                               + lMovingZ
-                               + "\t"
-                               + lQualityPerSliceMeasurementsArray[lQualitySampleIndex]
-                               + "\n");
-          if (lMaxQuality
-              < lQualityPerSliceMeasurementsArray[lQualitySampleIndex])
-          {
-            lMaxQuality =
-                lQualityPerSliceMeasurementsArray[lQualitySampleIndex];
-            lBestMovingZ = lMovingZ;
-          }
-          lQualitySampleIndex++;
-        }
-
-        mLogFileWriter.write("Finished analysing quality " + new SimpleDateFormat(
-            "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
-        mLogFileWriter.write("Best moving position "
-                             + lBestMovingZ
-                             + "\n");
-
-        // setup a new range for this particular fixed slice
-        double
-            lOldRange =
-            lImageRange.mMovingPositions[lNumberOfMovingSamples - 1]
-            - lImageRange.mMovingPositions[0];
-        double lNewRange = lOldRange / 2;
-        if (lNewRange < lMinimumRange)
-        {
-          lNewRange = lMinimumRange;
-        }
-
-        lStepMovingZ = lNewRange / (lNumberOfMovingSamples - 1);
-
-        mLogFileWriter.write("Fixed "
-                             + lImageRange.mFixedPosition
-                             + " new moving range "
-                             + (lBestMovingZ - lNewRange / 2)
-                             + " - "
-                             + lBestMovingZ
-                             + lNewRange / 2
-                             + "\n");
+        ImageRange imageRange = new ImageRange();
+        imageRange.mFixedPosition = lFixedZ;
+        imageRange.mMovingPositions = new double[lNumberOfMovingSamples];
 
         int lMovingCount = 0;
-        for (double lMovingZ = lBestMovingZ - lNewRange / 2; lMovingZ
-                                                             <=
-                                                             lBestMovingZ
-                                                             +
-                                                             lNewRange
-                                                             / 2
-                                                             + sDoubleTolerance;
+        for (double lMovingZ = lMinMovingZ; lMovingZ <= lMaxMovingZ + 0.00001;
              lMovingZ +=
                  lStepMovingZ)
         {
-          lImageRange.mMovingPositions[lMovingCount] =
-              Math.max(Math.min(lMovingZ, lMaxMovingZ), lMinMovingZ);
+          imageRange.mMovingPositions[lMovingCount] = lMovingZ;
           lMovingCount++;
         }
+
+        lImageRanges[lDetectionArm][lQualitySampleIndex] = imageRange;
+        lQualitySampleIndex++;
       }
 
-      mLogFileWriter.write("ITERATION " + lIterationCount + "\n");
+      // setup imager
+      FocusableImager
+          lInitialImager =
+          new FocusableImager(getLightSheetMicroscope(),
+                              lLightSheetMinIndex,
+                              lLightSheetMaxIndex,
+                              lDetectionArm,
+                              lExposureTimeInSeconds);
 
-      // Cancel if user wants it or if iterations exceeded
-      lIterationCount++;
-      if (lIterationCount > lNumberOfPrecisionIncreasingIterations)
+      lInitialImager.setFieldOfView((int) lImageWidth,
+                                    (int) lImageHeight);
+
+      // Get the first image stack for analysis / optimisation
+      lEDFStacks[lDetectionArm] = imageEDFStack(lInitialImager, lImageRanges[lDetectionArm]);
+    }
+
+
+
+    BasicRecycler<StackInterface, StackRequest>
+        stackRecycler =
+        new BasicRecycler(new ContiguousOffHeapPlanarStackFactory(),
+                          10,
+                          10,
+                          true);
+
+    int lIterationCount[] = new int[lNumberOfDetectionArms];
+    while (true)
+    {
+      for (int lDetectionArm = 0; lDetectionArm < lNumberOfDetectionArms; lDetectionArm++)
       {
+        mLogFileWriter.write("Imaging with detection arm " + lDetectionArm);
+        // save resulting images to disc
+
+        String lChannel = "C" + lDetectionArm + "_EDF";
+        lEDFStacks[lDetectionArm].getMetaData().addEntry(MetaDataChannel.Channel, lChannel);
+        lSink.appendStack(lChannel, lEDFStacks[lDetectionArm]);
+
+        // Analyse images: get quality per slice
+        DiscreteConsinusTransformEntropyPerSliceEstimator
+            lImageQualityEstimator =
+            new DiscreteConsinusTransformEntropyPerSliceEstimator(
+                lEDFStacks[lDetectionArm]);
+        double[]
+            lQualityPerSliceMeasurementsArray =
+            lImageQualityEstimator.getQualityArray();
+
+        int lQualitySampleIndex = 0;
+        for (ImageRange lImageRange : lImageRanges[lDetectionArm])
+        {
+          double lMaxQuality = lQualityPerSliceMeasurementsArray[lQualitySampleIndex];
+          double lBestMovingZ = 0;
+
+          mLogFileWriter.write("Start analysing quality " + new SimpleDateFormat(
+              "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+
+          // determine moving slice in focus
+          for (double lMovingZ : lImageRange.mMovingPositions)
+          {
+            info(""
+                 + lImageRange.mFixedPosition
+                 + "\t"
+                 + lMovingZ
+                 + "\t"
+                 + lQualityPerSliceMeasurementsArray[lQualitySampleIndex]);
+            mLogFileWriter.write("Quality["
+                                 + lQualitySampleIndex
+                                 + "] "
+                                 + lImageRange.mFixedPosition
+                                 + "\t"
+                                 + lMovingZ
+                                 + "\t"
+                                 + lQualityPerSliceMeasurementsArray[lQualitySampleIndex]
+                                 + "\n");
+            if (lMaxQuality < lQualityPerSliceMeasurementsArray[lQualitySampleIndex])
+            {
+              lMaxQuality = lQualityPerSliceMeasurementsArray[lQualitySampleIndex];
+              lBestMovingZ = lMovingZ;
+            }
+            lQualitySampleIndex++;
+          }
+
+          mLogFileWriter.write("Finished analysing quality " + new SimpleDateFormat(
+              "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+          mLogFileWriter.write("Best moving position "
+                               + lBestMovingZ
+                               + "\n");
+
+          // setup a new range for this particular fixed slice
+          double
+              lOldRange =
+              lImageRange.mMovingPositions[lNumberOfMovingSamples - 1]
+              - lImageRange.mMovingPositions[0];
+          double lNewRange = lOldRange / 2;
+          if (lNewRange < lMinimumRange)
+          {
+            lNewRange = lMinimumRange;
+          }
+
+          lStepMovingZ = lNewRange / (lNumberOfMovingSamples - 1);
+
+          mLogFileWriter.write("Fixed "
+                               + lImageRange.mFixedPosition
+                               + " new moving range "
+                               + (lBestMovingZ - lNewRange / 2)
+                               + " - "
+                               + lBestMovingZ
+                               + lNewRange / 2
+                               + "\n");
+
+          int lMovingCount = 0;
+          for (double lMovingZ = lBestMovingZ - lNewRange / 2;
+               lMovingZ
+               <= lBestMovingZ + lNewRange / 2 + sDoubleTolerance;
+               lMovingZ +=
+                   lStepMovingZ)
+          {
+            lImageRange.mMovingPositions[lMovingCount] =
+                Math.max(Math.min(lMovingZ, lMaxMovingZ), lMinMovingZ);
+            lMovingCount++;
+          }
+        }
+
+        mLogFileWriter.write("ITERATION " + lIterationCount[lDetectionArm] + "\n");
+
+        // Cancel if user wants it or if iterations exceeded
+        lIterationCount[lDetectionArm]++;
+        if (isStopRequested())
+        {
+          break;
+        }
+
+        // take new images
+        FocusableImager
+            lPreciseImager =
+            new FocusableImager(getLightSheetMicroscope(),
+                                lLightSheetMinIndex,
+                                lLightSheetMaxIndex,
+                                lDetectionArm,
+                                lExposureTimeInSeconds);
+        lPreciseImager.setFieldOfView((int) lImageWidth, (int) lImageHeight);
+
+        lEDFStacks[lDetectionArm] =
+            imageEDFStack(lPreciseImager, lImageRanges[lDetectionArm]);
+
+
+        FocusableImager
+            lImager =
+            new FocusableImager(getLightSheetMicroscope(),
+                                lLightSheetMinIndex,
+                                lLightSheetMaxIndex,
+                                lDetectionArm,
+                                lExposureTimeInSeconds);
+        lImager.setFieldOfView((int) lImageWidth, (int) lImageHeight);
+        OffHeapPlanarStack lNormalStack = imageNormalStack(lImager, lImageRanges[lDetectionArm], 100);
+        String lNormalChannel = "C" + lDetectionArm;
+        lSink.appendStack(lNormalChannel, lNormalStack);
+        lNormalStacks[lDetectionArm] = lNormalStack;
+
+      }
+      if (isStopRequested())
+      {
+        warning("Cancelled by user");
         break;
       }
-      if (isStopRequested()) {
+      for (int lDetectionArm = 0; lDetectionArm < lNumberOfDetectionArms; lDetectionArm++) {
+
+        lFastFusionEngine.passImage("C" + lDetectionArm + "L0", lNormalStacks[lDetectionArm].getContiguousMemory(),
+                                    ImageChannelDataType.UnsignedInt16,
+                                    lNormalStacks[lDetectionArm].getDimensions());
+      }
+
+
+
+
+      lFastFusionEngine.executeAllTasks();
+
+      lFastFusionEngine.waitFusionTasksToComplete();
+
+      for (String name : lFastFusionEngine.getAvailableImagesSlotKeys())
+      {
+        info("available image: " + name);
+      }
+
+      ClearCLImage lFusedImage = lFastFusionEngine.getImage("fused");
+
+      StackInterface
+          lFusedStack =
+          stackRecycler.getOrWait(1000, TimeUnit.SECONDS, StackRequest
+              .build(lFusedImage.getDimensions()));
+
+      lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
+
+      lSink.appendStack("default", lFusedStack);
+
+
+
+
+      if (isStopRequested())
+      {
         warning("Cancelled by user");
         break;
       }
 
-      // take new images
-      FocusableImager
-          lPreciseImager =
-          new FocusableImager(getLightSheetMicroscope(),
-                              lLightSheetMinIndex,
-                              lLightSheetMaxIndex,
-                              lDetectionArmIndex,
-                              lExposureTimeInSeconds);
-      lPreciseImager.setFieldOfView((int) lImageWidth,
-                                    (int) lImageHeight);
-
-      lStack = takeImages(lPreciseImager, lImageRanges);
     }
 
     lSink.close();
@@ -544,15 +634,59 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
     return true;
   }
 
-  private OffHeapPlanarStack takeImages(FocusableImager pImager,
-                                        ImageRange[] pImageRanges) throws
+  private OffHeapPlanarStack imageNormalStack(FocusableImager pImager,
+                                           ImageRange[] pImageRanges, int pNumberOfSlices ) throws
                                                                    InterruptedException,
                                                                    ExecutionException,
                                                                    TimeoutException,
                                                                    IOException
   {
-    // Request for all images defined in the ImageRange
+
+    double[] x = new double[pImageRanges.length];
+    double[] yLightSheetPosition = new double[pImageRanges.length];
+    double[] yDetectionArmPosition = new double[pImageRanges.length];
+
+    int count = 0;
     for (ImageRange lImageRange : pImageRanges)
+    {
+      for (double lMovingPosition : lImageRange.mMovingPositions)
+      {
+        x[count] = count;
+        if (mDetectionArmFixedVariable.get())
+        {
+          yLightSheetPosition[count] = lMovingPosition;
+          yDetectionArmPosition[count] = lImageRange.mFixedPosition;
+        }
+        else
+        {
+          yLightSheetPosition[count] = lImageRange.mFixedPosition;
+          yDetectionArmPosition[count] = lMovingPosition;
+        }
+      }
+      count++;
+    }
+
+    UnivariateInterpolator lLightSheetPositionInterpolator = new SplineInterpolator();
+    UnivariateFunction lLightSheetPositionFunction = lLightSheetPositionInterpolator.interpolate(x,
+                                                yLightSheetPosition);
+
+    UnivariateInterpolator lDetectionArmPositionInterpolator = new SplineInterpolator();
+    UnivariateFunction lDetectionArmPositionFunction = lDetectionArmPositionInterpolator.interpolate(x, yDetectionArmPosition);
+
+    for (int slice = 0; slice < pNumberOfSlices; slice++) {
+      double position = (double)(count-1) * slice / (pNumberOfSlices);
+
+      mLogFileWriter.write("Image at "
+                           + lLightSheetPositionFunction.value(position)
+                           + "/"
+                           + lDetectionArmPositionFunction.value(position)
+                           + "\n");
+      pImager.addImageRequest(lLightSheetPositionFunction.value(position),
+                              lDetectionArmPositionFunction.value(position));
+    }
+
+    // Request for all images defined in the ImageRange
+/*    for (ImageRange lImageRange : pImageRanges)
     {
       for (double lMovingPosition : lImageRange.mMovingPositions)
       {
@@ -578,13 +712,67 @@ public class DepthOfFocusImagingEngine extends TaskDevice implements
         }
       }
     }
-
+*/
     // Actually run the imaging here
-    mLogFileWriter.write("Start imaging " + new SimpleDateFormat(
+    mLogFileWriter.write("Start imaging    " + new SimpleDateFormat(
         "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
     final OffHeapPlanarStack lStack = pImager.execute();
     mLogFileWriter.write("Finished imaging " + new SimpleDateFormat(
         "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+
+    lStack.getMetaData().addEntry(MetaDataView.Camera, pImager.mDetectionArmIndex);
+    lStack.getMetaData().addEntry(MetaDataAcquisitionType.AcquisitionType, AcquisitionType.TimeLapse);
+
+    return lStack;
+  }
+
+
+  private OffHeapPlanarStack imageEDFStack(FocusableImager pImager,
+                                           ImageRange[] pImageRanges) throws
+                                                                      InterruptedException,
+                                                                      ExecutionException,
+                                                                      TimeoutException,
+                                                                      IOException
+  {
+    // Request for all images defined in the ImageRange
+    for (ImageRange lImageRange : pImageRanges)
+    {
+      for (double lMovingPosition : lImageRange.mMovingPositions)
+      {
+
+        if (mDetectionArmFixedVariable.get())
+        {
+          mLogFileWriter.write("Image at "
+                               + lMovingPosition
+                               + "/"
+                               + lImageRange.mFixedPosition
+                               + "\n");
+          pImager.addImageRequest(lMovingPosition, lImageRange.mFixedPosition);
+        }
+        else
+        {
+          mLogFileWriter.write("Image at "
+                               + lImageRange.mFixedPosition
+                               + "/"
+                               + lMovingPosition
+                               + "\n");
+          pImager.addImageRequest(lImageRange.mFixedPosition,
+                                  lMovingPosition);
+        }
+      }
+
+    }
+
+    // Actually run the imaging here
+    mLogFileWriter.write("Start EDF imaging    " + new SimpleDateFormat(
+        "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+    final OffHeapPlanarStack lStack = pImager.execute();
+    mLogFileWriter.write("Finished EDF imaging " + new SimpleDateFormat(
+        "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
+
+    lStack.getMetaData().addEntry(MetaDataView.Camera, pImager.mDetectionArmIndex);
+    lStack.getMetaData().addEntry(MetaDataAcquisitionType.AcquisitionType, AcquisitionType.TimeLapse);
+
     return lStack;
   }
 

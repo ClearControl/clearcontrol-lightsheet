@@ -12,6 +12,7 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
+import clearcontrol.microscope.lightsheet.extendeddepthfield.DepthOfFocusImagingEngine;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
@@ -69,8 +70,10 @@ public class LightSheetMicroscope extends
         new OfflineFastFusionEngine("Offline Fusion",
                                     this,
                                     pStackFusionContext);
-
     addDevice(0, lOfflineFusionProcessor);
+
+
+
   }
 
   @Override

@@ -85,10 +85,6 @@ public class DepthOfFocusImagingEngineToolbar extends
       lRow++;
     }
     {
-      addIntegerField(pDepthOfFieldImagingEngine.getDetectionArmIndex(), lRow);
-      lRow++;
-    }
-    {
       addIntegerField(pDepthOfFieldImagingEngine.getLightSheetMinIndex(), lRow);
       lRow++;
     }
@@ -135,13 +131,6 @@ public class DepthOfFocusImagingEngineToolbar extends
     {
       addDoubleField(pDepthOfFieldImagingEngine.getMinimumRange(),
                       lRow);
-      lRow++;
-    }
-
-
-
-    {
-      addDoubleField(pDepthOfFieldImagingEngine.getExposureVariable(), lRow);
       lRow++;
     }
 
