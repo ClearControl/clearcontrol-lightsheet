@@ -166,7 +166,25 @@ public class OfflineFastFusionEngine extends TaskDevice implements
     mFastFusionEngine.setRegistration(mRegistrationSwitchVariable.get());
     mFastFusionEngine.setDownscale(mDownscaleSwitchVariable.get());
 
-    mFastFusionEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(),
+    int lNumberOfLightSheets = mLightSheetMicroscope.getNumberOfLightSheets();
+    String lStackDirectory = lRootFolder + "/" + lDatasetname + "/stacks/";
+
+    if (new File(lStackDirectory + "C0L0").exists() &&
+        new File(lStackDirectory + "C0L1").exists() &&
+        new File(lStackDirectory + "C0L2").exists() &&
+        new File(lStackDirectory + "C0L3").exists() &&
+        new File(lStackDirectory + "C1L0").exists() &&
+        new File(lStackDirectory + "C1L1").exists() &&
+        new File(lStackDirectory + "C1L2").exists() &&
+        new File(lStackDirectory + "C1L3").exists()
+        ) {
+      lNumberOfLightSheets = 4;
+    } else if (new File(lStackDirectory + "C0L0").exists() &&
+               new File(lStackDirectory + "C1L0").exists()
+        ) {
+      lNumberOfLightSheets = 1;
+    }
+      mFastFusionEngine.setup(lNumberOfLightSheets,
                             mLightSheetMicroscope.getNumberOfDetectionArms());
 
     if (mRegistrationSwitchVariable.get())
@@ -223,36 +241,45 @@ public class OfflineFastFusionEngine extends TaskDevice implements
 
       for (int i = 0; i < names.length; i++)
       {
-        rawFileStackSource.setLocation(lRootFolder, lDatasetname);
-        StackInterface
-            stack =
-            rawFileStackSource.getStack(names[i], timePoint);
-
-        info("Stack " + names[i]);
-        info("pixel size x" + stack.getMetaData().getVoxelDimX());
-        info("pixel size y" + stack.getMetaData().getVoxelDimY());
-        info("pixel size z" + stack.getMetaData().getVoxelDimZ());
-
-        double lVoxelSizeX = stack.getMetaData().getVoxelDimX();
-        double lVoxelSizeZ = stack.getMetaData().getVoxelDimZ();
-
-        mFastFusionEngine.passImage(names[i], stack.getContiguousMemory(),
-                                    ImageChannelDataType.UnsignedInt16,
-                                    stack.getDimensions());
-
-        if (mDownscaleSwitchVariable.get()) {
-          lVoxelSizeX = lVoxelSizeX * 2;
-        }
-
-        if (mRegistrationSwitchVariable.get())
+        if (new File(lStackDirectory + names[i]).exists())
         {
+          rawFileStackSource.setLocation(lRootFolder, lDatasetname);
+          info("getting" + names[i]);
+          StackInterface
+              stack =
+              rawFileStackSource.getStack(names[i], timePoint);
 
-          float lZAspectRatio =
-              (float) (lVoxelSizeZ
-                       / lVoxelSizeX);
+          info("Stack " + names[i]);
+          mFastFusionEngine.passImage(names[i],
+                                      stack.getContiguousMemory(),
+                                      ImageChannelDataType.UnsignedInt16,
+                                      stack.getDimensions());
 
-          mFastFusionEngine.getRegistrationTask().getParameters().setScaleZ(lZAspectRatio);
-                           
+          if (stack.getMetaData().getVoxelDimX() != null)
+          {
+            info("pixel size x" + stack.getMetaData().getVoxelDimX());
+            info("pixel size y" + stack.getMetaData().getVoxelDimY());
+            info("pixel size z" + stack.getMetaData().getVoxelDimZ());
+
+            double lVoxelSizeX = stack.getMetaData().getVoxelDimX();
+            double lVoxelSizeZ = stack.getMetaData().getVoxelDimZ();
+
+
+
+            if (mDownscaleSwitchVariable.get())
+            {
+              lVoxelSizeX = lVoxelSizeX * 2;
+            }
+
+            if (mRegistrationSwitchVariable.get())
+            {
+
+              float lZAspectRatio = (float) (lVoxelSizeZ / lVoxelSizeX);
+
+              mFastFusionEngine.getRegistrationTask().getParameters().setScaleZ(lZAspectRatio);
+
+            }
+          }
         }
 
         if (isStopRequested())
@@ -263,8 +290,8 @@ public class OfflineFastFusionEngine extends TaskDevice implements
 
       }
 
-      mFastFusionEngine.executeAllTasks();
-
+      int executedTasks = mFastFusionEngine.executeAllTasks();
+      info("tasks executed: " + executedTasks);
       mFastFusionEngine.waitFusionTasksToComplete();
 
       for (String name : mFastFusionEngine.getAvailableImagesSlotKeys())
