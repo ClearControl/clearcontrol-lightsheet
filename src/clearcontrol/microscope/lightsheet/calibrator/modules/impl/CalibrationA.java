@@ -3,6 +3,8 @@ package clearcontrol.microscope.lightsheet.calibrator.modules.impl;
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -21,6 +23,7 @@ import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleIn
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.stack.OffHeapPlanarStack;
+import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import gnu.trove.list.array.TDoubleArrayList;
 
 /**
@@ -35,6 +38,8 @@ public class CalibrationA extends CalibrationBase
   private ArgMaxFinder1DInterface mArgMaxFinder;
   private HashMap<Integer, UnivariateAffineFunction> mModels;
 
+  private RawFileStackSink mSink;
+
   /**
    * Lightsheet Alpha angle calibration module
    * 
@@ -45,6 +50,8 @@ public class CalibrationA extends CalibrationBase
   {
     super(pCalibrator);
     mModels = new HashMap<>();
+
+
   }
 
   /**
@@ -62,6 +69,10 @@ public class CalibrationA extends CalibrationBase
                         int pNumberOfAngles,
                         int pNumberOfRepeats)
   {
+
+    mSink = new RawFileStackSink();
+    mSink.setLocation(new File("C:/temp/"), "calibA");
+
     int lNumberOfDetectionArmDevices = getNumberOfDetectionArms();
 
     mArgMaxFinder = new SmartArgMaxFinder();
@@ -137,8 +148,18 @@ public class CalibrationA extends CalibrationBase
         System.out.format("Angle are not valid, we continue with next set of y values... \n");
     }
 
+    try
+    {
+      mSink.close();
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+
     if (lCount == 0)
       return;
+
 
     for (int i = 0; i < lNumberOfDetectionArmDevices; i++)
       angles[i] = angles[i] / lCount;
@@ -234,6 +255,8 @@ public class CalibrationA extends CalibrationBase
           final OffHeapPlanarStack lStack =
                                           (OffHeapPlanarStack) getLightSheetMicroscope().getCameraStackVariable(i)
                                                                                         .get();
+
+          mSink.appendStack(lStack);
 
           final double[] lAvgIntensityArray =
                                             ImageAnalysisUtils.computeAverageSquareVariationPerPlane(lStack);
