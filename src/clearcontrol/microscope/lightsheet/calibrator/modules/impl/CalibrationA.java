@@ -261,7 +261,7 @@ public class CalibrationA extends CalibrationBase
                                           (OffHeapPlanarStack) getLightSheetMicroscope().getCameraStackVariable(i)
                                                                                         .get();
 
-          mSink.appendStack(lStack);
+          mSink.appendStack("C" + i + "L" + pLightSheetIndex, lStack);
 
           final double[] lAvgIntensityArray =
                                             ImageAnalysisUtils.computeAverageSquareVariationPerPlane(lStack);
