@@ -463,6 +463,11 @@ public class EDFImagingEngine extends TaskDevice implements
                        "Quality",
                        ChartType.Line);
       }
+      configureChart("Quality",
+                     "Quality_C" + lDetectionArm + "_threshold",
+                     "EDF slice",
+                     "Quality",
+                     ChartType.Line);
       configureChart("Selected_Z", "Selected_Z_C" + lDetectionArm, "fixedZ", "movingZ", ChartType.Line);
 
     }
@@ -517,6 +522,10 @@ public class EDFImagingEngine extends TaskDevice implements
         double lStandardDeviationQuality = new StandardDeviation().evaluate(lQualityPerSliceMeasurementsArray, lMeanQuality);
 
         double lQualityThreshold = lMeanQuality + lStandardDeviationQuality * lQualityStandardDeviationMultiplier;
+
+        addPoint("Quality", "Quality_C" + lDetectionArm + "_threshold" , lClearQualityGraph, 0, lQualityThreshold);
+        lClearQualityGraph = false;
+        addPoint("Quality", "Quality_C" + lDetectionArm + "_threshold" , lClearQualityGraph, lQualityPerSliceMeasurementsArray.length - 1, lQualityThreshold);
 
         for (ImageRange lImageRange : lImageRanges[lDetectionArm])
         {
