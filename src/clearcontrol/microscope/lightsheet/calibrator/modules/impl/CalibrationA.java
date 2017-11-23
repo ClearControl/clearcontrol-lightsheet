@@ -85,11 +85,16 @@ public class CalibrationA extends CalibrationBase
     System.out.println("Current Alpha function: "
                        + lLightSheet.getAlphaFunction());
 
-    double lMinA = -7;
-    double lMaxA = 7;
+    double lMinA = -20;
+    double lMaxA = 20;
 
     double lMinIY = lLightSheet.getYVariable().getMin().doubleValue();
     double lMaxIY = lLightSheet.getYVariable().getMax().doubleValue();
+
+    // Test: make the range of Y a bit smaller
+    double lIYRange = lMaxIY - lMinIY;
+    lMaxIY = lMinIY + 0.75 * lIYRange;
+    lMinIY = lMinIY + 0.25 * lIYRange;
 
     double lMinZ = lLightSheet.getZVariable().getMin().doubleValue();
     double lMaxZ = lLightSheet.getZVariable().getMax().doubleValue();

@@ -62,7 +62,7 @@ def getVersionName = {
 sourceCompatibility = 1.8
 
 group = 'net.clearcontrol'
-version = "1.12.0-RH" //getVersionName()
+version = "1.12.1-RH" //getVersionName()
 
 test 
 {
