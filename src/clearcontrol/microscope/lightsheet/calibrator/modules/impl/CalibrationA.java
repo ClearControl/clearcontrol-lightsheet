@@ -91,11 +91,6 @@ public class CalibrationA extends CalibrationBase
     double lMinIY = lLightSheet.getYVariable().getMin().doubleValue();
     double lMaxIY = lLightSheet.getYVariable().getMax().doubleValue();
 
-    // Test: make the range of Y a bit smaller
-    double lIYRange = lMaxIY - lMinIY;
-    lMaxIY = lMinIY + 0.75 * lIYRange;
-    lMinIY = lMinIY + 0.25 * lIYRange;
-
     double lMinZ = lLightSheet.getZVariable().getMin().doubleValue();
     double lMaxZ = lLightSheet.getZVariable().getMax().doubleValue();
 
@@ -211,7 +206,7 @@ public class CalibrationA extends CalibrationBase
       // lQueue.zero();
 
       lQueue.setFullROI();
-      lQueue.setExp(0.04);
+      lQueue.setExp(0.1);
 
       lQueue.setI(pLightSheetIndex);
       lQueue.setIX(pLightSheetIndex, 0);
