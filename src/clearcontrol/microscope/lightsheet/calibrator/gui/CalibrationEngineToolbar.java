@@ -66,6 +66,13 @@ public class CalibrationEngineToolbar extends CustomGridPane
     }
 
     {
+      Label lLabel = new Label("Z -> A -> XY -> P -> Z");
+      GridPane.setColumnSpan(lLabel, 3);
+      add(lLabel, 0, lRow);
+      lRow++;
+    }
+
+    {
       Button lStopCalibration = new Button("Stop");
       lStopCalibration.setAlignment(Pos.CENTER);
       lStopCalibration.setMaxWidth(Double.MAX_VALUE);
@@ -84,7 +91,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
                                                       new ProgressIndicator(0.0);
       lCalibrationProgressIndicator.setMaxWidth(Double.MAX_VALUE);
       lCalibrationProgressIndicator.setStyle(".percentage { visibility: hidden; }");
-      GridPane.setRowSpan(lCalibrationProgressIndicator, 2);
+      GridPane.setRowSpan(lCalibrationProgressIndicator, 3);
       add(lCalibrationProgressIndicator, 2, 0);
 
       pCalibrationEngine.getProgressVariable()
