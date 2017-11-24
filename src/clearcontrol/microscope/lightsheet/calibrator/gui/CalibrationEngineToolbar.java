@@ -120,7 +120,9 @@ public class CalibrationEngineToolbar extends CustomGridPane
       addCheckBoxForCalibrationModule("XY",
                                       pCalibrationEngine.getCalibrateXYVariable(),
                                       0,
-                                      lRow + 1);
+                                      lRow );
+
+      lRow ++;
       addCheckBoxForCalibrationModule("A ",
                                       pCalibrationEngine.getCalibrateAVariable(),
                                       1,
@@ -128,9 +130,15 @@ public class CalibrationEngineToolbar extends CustomGridPane
       addCheckBoxForCalibrationModule("P ",
                                       pCalibrationEngine.getCalibratePVariable(),
                                       1,
-                                      lRow + 1);
+                                      lRow);
 
-      lRow += 2;
+      lRow ++;
+      addCheckBoxForCalibrationModule("W ",
+                                      pCalibrationEngine.getCalibrateWVariable(),
+                                      1,
+                                      lRow);
+
+      lRow ++;
     }
 
     {
