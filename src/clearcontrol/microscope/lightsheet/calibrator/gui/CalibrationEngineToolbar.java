@@ -66,7 +66,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
     }
 
     {
-      Label lLabel = new Label("Z -> A -> XY -> P -> Z");
+      Label lLabel = new Label("Z -> A -> XY -> P -> W -> Z");
       GridPane.setColumnSpan(lLabel, 3);
       add(lLabel, 0, lRow);
       lRow++;
@@ -107,7 +107,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
     {
       Separator lSeparator = new Separator();
       lSeparator.setOrientation(Orientation.HORIZONTAL);
-      GridPane.setColumnSpan(lSeparator, 4);
+      GridPane.setColumnSpan(lSeparator, 3);
       add(lSeparator, 0, lRow);
       lRow++;
     }
@@ -117,16 +117,18 @@ public class CalibrationEngineToolbar extends CustomGridPane
                                       pCalibrationEngine.getCalibrateZVariable(),
                                       0,
                                       lRow);
+
+      addCheckBoxForCalibrationModule("A ",
+                                      pCalibrationEngine.getCalibrateAVariable(),
+                                      1,
+                                      lRow);
+
+      lRow ++;
       addCheckBoxForCalibrationModule("XY",
                                       pCalibrationEngine.getCalibrateXYVariable(),
                                       0,
                                       lRow );
 
-      lRow ++;
-      addCheckBoxForCalibrationModule("A ",
-                                      pCalibrationEngine.getCalibrateAVariable(),
-                                      1,
-                                      lRow);
       addCheckBoxForCalibrationModule("P ",
                                       pCalibrationEngine.getCalibratePVariable(),
                                       1,
@@ -135,7 +137,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
       lRow ++;
       addCheckBoxForCalibrationModule("W ",
                                       pCalibrationEngine.getCalibrateWVariable(),
-                                      1,
+                                      0,
                                       lRow);
 
       lRow ++;
@@ -144,7 +146,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
     {
       Separator lSeparator = new Separator();
       lSeparator.setOrientation(Orientation.HORIZONTAL);
-      GridPane.setColumnSpan(lSeparator, 4);
+      GridPane.setColumnSpan(lSeparator, 3);
       add(lSeparator, 0, lRow);
       lRow++;
     }
@@ -171,7 +173,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
     {
       Separator lSeparator = new Separator();
       lSeparator.setOrientation(Orientation.HORIZONTAL);
-      GridPane.setColumnSpan(lSeparator, 4);
+      GridPane.setColumnSpan(lSeparator, 3);
       add(lSeparator, 0, lRow);
       lRow++;
     }
@@ -311,8 +313,8 @@ public class CalibrationEngineToolbar extends CustomGridPane
 
       TitledPane lTitledPane = new TitledPane("Calibration state", lCalibrationStatePanel);
       lTitledPane.setAnimated(false);
-      lTitledPane.setCollapsible(false);
-      GridPane.setColumnSpan(lTitledPane, 4);
+      lTitledPane.setExpanded(true);
+      GridPane.setColumnSpan(lTitledPane, 3);
       add(lTitledPane, 0, lRow);
       lRow++;
     }
