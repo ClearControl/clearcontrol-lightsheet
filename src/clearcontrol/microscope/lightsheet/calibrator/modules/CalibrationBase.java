@@ -151,6 +151,10 @@ public abstract class CalibrationBase implements
       mCalibrationStateChangeListeners = new ArrayList<>();
   public void addCalibrationStateChangeListener(CalibrationStateChangeListener pCalibrationStateChangeListener) {
     mCalibrationStateChangeListeners.add(pCalibrationStateChangeListener);
+    for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex ++)
+    {
+      setCalibrationState(lLightSheetIndex, getCalibrationState(lLightSheetIndex));
+    }
   }
 
 
