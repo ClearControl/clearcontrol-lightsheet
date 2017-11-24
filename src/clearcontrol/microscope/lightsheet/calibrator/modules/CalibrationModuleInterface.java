@@ -15,4 +15,7 @@ public interface CalibrationModuleInterface
 
   String getName();
 
+
+  CalibrationState getSuccessOfLastCalibration(int pIntLightSheetIndex);
+
 }

@@ -6,6 +6,8 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 
+import java.util.HashMap;
+
 /**
  * Base class providing common fields and methods for all calibration modules
  *
@@ -63,6 +65,7 @@ public abstract class CalibrationBase implements
   @Override
   public void reset()
   {
+    resetState();
     resetIteration();
   }
 
@@ -116,5 +119,23 @@ public abstract class CalibrationBase implements
 
   public String getName() {
     return mName;
+  }
+
+  private HashMap<Integer, CalibrationState> mCalibrationStates = new HashMap<>();
+  private void resetState() {
+    mCalibrationStates.clear();
+  }
+
+  protected void setCalibrationState(int pLightSheetIndex, CalibrationState pState) {
+    if (mCalibrationStates.containsKey(pLightSheetIndex)) {
+      mCalibrationStates.remove(pLightSheetIndex);
+    }
+    mCalibrationStates.put(pLightSheetIndex, pState);
+  }
+  public CalibrationState getSuccessOfLastCalibration(int pIntLightSheetIndex) {
+    if (mCalibrationStates.containsKey(pIntLightSheetIndex)) {
+      return mCalibrationStates.get(pIntLightSheetIndex);
+    }
+    return CalibrationState.NOT_CALIBRATED;
   }
 }
