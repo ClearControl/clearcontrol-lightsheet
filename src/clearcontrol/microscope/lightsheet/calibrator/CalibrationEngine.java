@@ -180,10 +180,9 @@ public class CalibrationEngine extends TaskDevice implements
   public boolean calibrate()
   {
 
-    int lNumberOfSamplesZ = 13;
 
     if (getCalibrateZVariable().get()
-        && !calibrateZ(lNumberOfSamplesZ))
+        && !calibrateZ())
       return false;
 
     if (isStopRequested())
@@ -213,7 +212,7 @@ public class CalibrationEngine extends TaskDevice implements
     if ((getCalibrateAVariable().get()
          || getCalibrateXYVariable().get())
         && getCalibrateZVariable().get()
-        && !calibrateZ(lNumberOfSamplesZ))
+        && !calibrateZ())
       return false;
 
     if (isStopRequested())
@@ -239,12 +238,10 @@ public class CalibrationEngine extends TaskDevice implements
 
   /**
    * Calibrates the lightsheet and detection arm Z positions.
-   * 
-   * @param pNumberOfSamples
-   *          number of samples
+   *
    * @return true when succeeded
    */
-  public boolean calibrateZ(int pNumberOfSamples)
+  public boolean calibrateZ()
   {
     for (int l = 0; l < mNumberOfLightSheetDevices
                     && !isStopRequested(); l++)
@@ -257,8 +254,6 @@ public class CalibrationEngine extends TaskDevice implements
           double lSearchAmplitude = 1.0 / (pow(2, 1 + lIteration));
           lError =
                  calibrateZ(l,
-                            pNumberOfSamples,
-                            pNumberOfSamples,
                             lIteration > 0,
                             lSearchAmplitude,
                             l == 0);
@@ -416,10 +411,6 @@ public class CalibrationEngine extends TaskDevice implements
    * 
    * @param pLightSheetIndex
    *          lightsheet index
-   * @param pNumberOfDSamples
-   *          number of detection Z samples
-   * @param pNumberOfISamples
-   *          number of illumination Z samples
    * @param pRestrictedSearch
    *          true-> restrict search, false -> not
    * @param pSearchAmplitude
@@ -429,15 +420,11 @@ public class CalibrationEngine extends TaskDevice implements
    * @return true when succeeded
    */
   public double calibrateZ(int pLightSheetIndex,
-                           int pNumberOfDSamples,
-                           int pNumberOfISamples,
                            boolean pRestrictedSearch,
                            double pSearchAmplitude,
                            boolean pAdjustDetectionZ)
   {
     mCalibrationZ.calibrate(pLightSheetIndex,
-                            pNumberOfDSamples,
-                            pNumberOfISamples,
                             pRestrictedSearch,
                             pSearchAmplitude);
 

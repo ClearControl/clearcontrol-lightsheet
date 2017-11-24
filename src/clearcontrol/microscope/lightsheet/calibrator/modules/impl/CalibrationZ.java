@@ -46,6 +46,9 @@ public class CalibrationZ extends CalibrationBase
   private DCTS2D mDCTS2D;
   private double[] mMetricArray;
 
+  private BoundedVariable<Integer> mNumberOfISamples = new BoundedVariable<Integer>("Number of illumination samples", 13, 0, Integer.MAX_VALUE);
+  private BoundedVariable<Integer> mNumberOfDSamples = new BoundedVariable<Integer>("Number of detection samples", 13, 0, Integer.MAX_VALUE);
+
   /**
    * Instantiates a Z calibrator module given calibrator
    * 
@@ -68,10 +71,6 @@ public class CalibrationZ extends CalibrationBase
    * 
    * @param pLightSheetIndex
    *          lightsheet index
-   * @param pNumberOfDSamples
-   *          number of detection Z samples
-   * @param pNumberOfISamples
-   *          number of illumination Z samples
    * @param pRestrictedSearch
    *          true -> restrict search to an interval, false not.
    * @param pSearchAmplitude
@@ -79,15 +78,15 @@ public class CalibrationZ extends CalibrationBase
    * @return true -> success
    */
   public boolean calibrate(int pLightSheetIndex,
-                           int pNumberOfDSamples,
-                           int pNumberOfISamples,
                            boolean pRestrictedSearch,
                            double pSearchAmplitude)
   {
+    int lNumberOfISamples = mNumberOfISamples.get();
+    int lNumberOfDSamples = mNumberOfDSamples.get();
     info("Starting to calibrate Z for lightsheet %d, with %d D samples, %d I samples, and a search amplitude of %g ",
          pLightSheetIndex,
-         pNumberOfDSamples,
-         pNumberOfISamples,
+         lNumberOfDSamples,
+         lNumberOfISamples,
          pSearchAmplitude);
 
     mArgMaxFinder = new ModeArgMaxFinder();
@@ -110,7 +109,7 @@ public class CalibrationZ extends CalibrationBase
     double lMinIZ = lZVariable.getMin().doubleValue();
     double lMaxIZ = lZVariable.getMax().doubleValue();
 
-    double lStepIZ = (lMaxIZ - lMinIZ) / (pNumberOfISamples - 1);
+    double lStepIZ = (lMaxIZ - lMinIZ) / (lNumberOfISamples - 1);
 
     double lMinDZ = Double.NEGATIVE_INFINITY;
     double lMaxDZ = Double.POSITIVE_INFINITY;
@@ -138,7 +137,7 @@ public class CalibrationZ extends CalibrationBase
       }
 
       final double[] dz = focusZ(pLightSheetIndex,
-                                 pNumberOfDSamples,
+                                 lNumberOfDSamples,
                                  lMinDZ,
                                  lMaxDZ,
                                  lPerturbedIZ);
@@ -619,6 +618,18 @@ public class CalibrationZ extends CalibrationBase
   public void reset()
   {
     super.reset();
+  }
+
+
+
+  public BoundedVariable<Integer> getNumberOfISamples()
+  {
+    return mNumberOfISamples;
+  }
+
+  public BoundedVariable<Integer> getNumberOfDSamples()
+  {
+    return mNumberOfDSamples;
   }
 
 }
