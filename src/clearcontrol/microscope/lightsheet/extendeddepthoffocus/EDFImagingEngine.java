@@ -486,7 +486,7 @@ public class EDFImagingEngine extends TaskDevice implements
         if (mSaveEDFStacks.get())
         {
           info("Save C" + lDetectionArm + "_EDF...");
-          String lChannel = "C" + lDetectionArm + "_EDF";
+          String lChannel = "C" + lDetectionArm + "L0_EDF";
           lEDFStacks[lDetectionArm].getMetaData()
                                    .addEntry(MetaDataChannel.Channel,
                                              lChannel);
@@ -668,11 +668,11 @@ public class EDFImagingEngine extends TaskDevice implements
           e.printStackTrace();
         }
 
-        String lNormalChannel = "C" + lDetectionArmCopy;
+        String lNormalChannel = "C" + lDetectionArmCopy + "L0";
 
         if (mSaveCameraStacks.get())
         {
-          info("Save C" + lDetectionArm + "...");
+          info("Save C" + lDetectionArm + "L0...");
           mLogFileWriter.write("Start writing stack to disc " + new SimpleDateFormat(
               "yyyy-MM-dd-HH-mm-ss-SSS").format(new Date()) + "\n");
           lSink.appendStack(lNormalChannel, lNormalStacks[lDetectionArmCopy]);
