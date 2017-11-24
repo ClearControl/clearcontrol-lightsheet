@@ -34,6 +34,13 @@ public class CalibrationHP extends CalibrationBase
                            implements CalibrationModuleInterface
 {
 
+  BoundedVariable<Integer> mNumberOfPSamplesVariable = new BoundedVariable<Integer>("Number of power samples", 6, 0, Integer.MAX_VALUE);
+  BoundedVariable<Integer> mNumberOfHSamplesVariable = new BoundedVariable<Integer>("Number of height samples", 6, 0, Integer.MAX_VALUE);
+
+
+  BoundedVariable<Integer> mDetectionArmVariable;
+
+
   private MultiKeyMap<Integer, PolynomialFunction> mHPFunctions;
 
   /**
@@ -45,6 +52,8 @@ public class CalibrationHP extends CalibrationBase
   public CalibrationHP(CalibrationEngine pCalibrator)
   {
     super("HP", pCalibrator);
+
+    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
 
     mHPFunctions = new MultiKeyMap<>();
   }
@@ -389,4 +398,20 @@ public class CalibrationHP extends CalibrationBase
     }
   }
 
+
+  public double calibrate(int pLightSheetIndex)
+  {
+    int lDetectionArmIndex = mDetectionArmVariable.get();
+    int lNumberOfSamplesH = mNumberOfHSamplesVariable.get();
+    int lNumberOfSamplesP = mNumberOfPSamplesVariable.get();
+
+    calibrate(pLightSheetIndex,
+                             lDetectionArmIndex,
+                             lNumberOfSamplesH,
+                             lNumberOfSamplesP);
+
+    info("############################################## Done ");
+
+    return apply(pLightSheetIndex, lDetectionArmIndex);
+  }
 }

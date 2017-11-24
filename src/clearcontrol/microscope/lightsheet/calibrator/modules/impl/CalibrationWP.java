@@ -35,6 +35,13 @@ import org.apache.commons.math3.stat.StatUtils;
 public class CalibrationWP extends CalibrationBase
                            implements CalibrationModuleInterface
 {
+
+  BoundedVariable<Integer> mNumberOfWSamplesVariable = new BoundedVariable<Integer>("Number of width samples", 6, 0, Integer.MAX_VALUE);
+  BoundedVariable<Integer> mNumberOfPSamplesVariable = new BoundedVariable<Integer>("Number of power samples", 6, 0, Integer.MAX_VALUE);
+
+
+  BoundedVariable<Integer> mDetectionArmVariable;
+
   private MultiKeyMap<Integer, PolynomialFunction> mWPFunctions;
 
   /**
@@ -47,8 +54,43 @@ public class CalibrationWP extends CalibrationBase
   {
     super("WP", pCalibrator);
 
+    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
+
     mWPFunctions = new MultiKeyMap<>();
   }
+
+
+
+
+
+
+
+
+  /**
+   * Calibrates the lightsheet laser power versus its width
+   *
+   * @param pLightSheetIndex
+   *          lightsheet index
+   * @return true when succeeded
+   */
+  public double calibrate(int pLightSheetIndex)
+  {
+    int lDetectionArmIndex = mDetectionArmVariable.get();
+    int lNumberOfSamplesP = mNumberOfPSamplesVariable.get();
+    int lNumberOfSamplesW = mNumberOfWSamplesVariable.get();
+
+    calibrate(pLightSheetIndex,
+                             lDetectionArmIndex,
+                             lNumberOfSamplesW,
+                             lNumberOfSamplesP);
+
+    return apply(pLightSheetIndex, lDetectionArmIndex);
+  }
+
+
+
+
+
 
   /**
    * Calibrates the lightsheet width-power relationship for a given lightsheet,
@@ -63,7 +105,7 @@ public class CalibrationWP extends CalibrationBase
    * @param pNumberOfSamplesP
    *          number of P samples
    */
-  public void calibrate(int pLightSheetIndex,
+  private void calibrate(int pLightSheetIndex,
                         int pDetectionArmIndex,
                         int pNumberOfSamplesW,
                         int pNumberOfSamplesP)

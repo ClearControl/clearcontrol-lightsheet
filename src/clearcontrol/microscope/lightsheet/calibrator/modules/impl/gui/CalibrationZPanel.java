@@ -13,6 +13,7 @@ public class CalibrationZPanel extends StandardCalibrationModulePanel
 
     addNumberTextFieldForVariable(pCalibrationZ.getNumberOfISamples().getName(), pCalibrationZ.getNumberOfISamples());
     addNumberTextFieldForVariable(pCalibrationZ.getNumberOfDSamples().getName(), pCalibrationZ.getNumberOfDSamples());
+    addNumberTextFieldForVariable(pCalibrationZ.getMaxIterationsVariable().getName(), pCalibrationZ.getMaxIterationsVariable());
 
 
   }

@@ -17,6 +17,7 @@ import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleIn
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -40,6 +41,13 @@ public class CalibrationXY extends CalibrationBase
       mUnitVectorFromX, mOriginFromY, mUnitVectorFromY;
 
   private MultiKeyMap<Integer, SimpleMatrix> mTransformMatrices;
+
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
+
+
+
+  BoundedVariable<Integer> mNumberOfPointsVariable = new BoundedVariable<Integer>("Number of points", 3, 0, Integer.MAX_VALUE);
+
 
   /**
    * Instantiates a XY calibration module given a parent calibrator.
@@ -89,6 +97,56 @@ public class CalibrationXY extends CalibrationBase
     }
     return result;
   }
+
+
+  public void calibrate(int pLightSheetIndex)
+  {
+
+
+    int lIteration = 0;
+    double lError = Double.POSITIVE_INFINITY;
+    do
+    {
+      lError = calibrateXY(pLightSheetIndex, 0, mNumberOfPointsVariable.get());
+      info("############################################## Error = "
+           + lError);
+
+
+    }
+    while (lError >= 0.05 && lIteration++ < mMaxIterationsVariable.get());
+    info("############################################## Done ");
+
+    if (lError < 0.05) {
+      setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+    } else {
+      setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
+    }
+
+  }
+
+
+  /**
+   * Calibrates the XY position of the lighthsheets
+   *
+   * @param pLightSheetIndex
+   *          lightshet index
+   * @param pDetectionArmIndex
+   *          detection arm index
+   * @param pNumberOfPoints
+   *          number of points
+   * @return true when succeeded
+   */
+  private double calibrateXY(int pLightSheetIndex,
+                            int pDetectionArmIndex,
+                            int pNumberOfPoints)
+  {
+    calibrate(pLightSheetIndex,
+                             pDetectionArmIndex,
+                             pNumberOfPoints);
+
+    return apply(pLightSheetIndex, pDetectionArmIndex);
+  }
+
 
   private boolean calibrate(int pLightSheetIndex,
                             int pDetectionArmIndex,
@@ -497,4 +555,14 @@ public class CalibrationXY extends CalibrationBase
                                   pDetectionArmIndex);
   }
 
+
+  public BoundedVariable<Integer> getMaxIterationsVariable()
+  {
+    return mMaxIterationsVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfPointsVariable()
+  {
+    return mNumberOfPointsVariable;
+  }
 }

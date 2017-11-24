@@ -15,6 +15,7 @@ public class CalibrationPPanel extends StandardCalibrationModulePanel
     addNumberTextFieldForVariable(pCalibrationP.getNumberOfSamplesVariable().getName(), pCalibrationP.getNumberOfSamplesVariable());
     addNumberTextFieldForVariable(pCalibrationP.getDetectionArmVariable().getName(), pCalibrationP.getDetectionArmVariable());
 
+    addNumberTextFieldForVariable(pCalibrationP.getMaxIterationsVariable().getName(), pCalibrationP.getMaxIterationsVariable());
 
   }
 }

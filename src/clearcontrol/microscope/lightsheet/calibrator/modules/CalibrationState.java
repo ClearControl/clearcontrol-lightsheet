@@ -9,8 +9,9 @@ import javafx.scene.paint.Color;
 public enum CalibrationState
 {
   NOT_CALIBRATED("YELLOW"),
-  SUCCEEDED("GREEN"),
-  FAILED("RED");
+  SUCCEEDED("LIGHTGREEN"),
+  ACCEPTABLE("LIMEGREEN"),
+  FAILED("#ff7c4c");
 
   private String mColor;
   CalibrationState(String pColor) {

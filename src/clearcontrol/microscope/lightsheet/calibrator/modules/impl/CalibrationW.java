@@ -34,6 +34,11 @@ import org.apache.commons.math3.stat.StatUtils;
 public class CalibrationW extends CalibrationBase
                           implements CalibrationModuleInterface
 {
+  private BoundedVariable<Integer>
+      mNumberOfSamplesVariable = new BoundedVariable<Integer>("Number of samples", 32, 1, Integer.MAX_VALUE);
+
+
+  BoundedVariable<Integer> mDetectionArmVariable;
 
   private HashMap<Integer, TDoubleArrayList> mIntensityLists;
   private TDoubleArrayList mWList = new TDoubleArrayList();
@@ -48,6 +53,26 @@ public class CalibrationW extends CalibrationBase
   {
     super("W", pCalibrator);
 
+    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
+
+
+  }
+
+
+
+  /**
+   * Calibrates and the lightsheet width
+   *
+   *
+   * @return true when succeeded
+   */
+  public double calibrateW()
+  {
+    int lDetectionArmIndex = mDetectionArmVariable.get();
+    calibrate(lDetectionArmIndex);
+
+    return apply();
+
   }
 
   /**
@@ -55,12 +80,9 @@ public class CalibrationW extends CalibrationBase
    * 
    * @param pDetectionArmIndex
    *          detection arm index
-   * @param pNumberOfSamples
-   *          number of samples
    * @return true for success
    */
-  public boolean calibrate(int pDetectionArmIndex,
-                           int pNumberOfSamples)
+  private boolean calibrate(int pDetectionArmIndex)
   {
     mIntensityLists.clear();
     int lNumberOfLightSheets = getNumberOfLightSheets();
@@ -68,7 +90,7 @@ public class CalibrationW extends CalibrationBase
     {
       double[] lAverageIntensities = calibrate(l,
                                                pDetectionArmIndex,
-                                               3);
+                                               mNumberOfSamplesVariable.get());
       if (lAverageIntensities == null)
       {
         setCalibrationState(l, CalibrationState.FAILED);
@@ -101,7 +123,7 @@ public class CalibrationW extends CalibrationBase
    *          number of samples
    * @return metric value per plane.
    */
-  public double[] calibrate(int pLightSheetIndex,
+  private double[] calibrate(int pLightSheetIndex,
                             int pDetectionArmIndex,
                             int pNumberOfSamples)
   {
@@ -348,5 +370,15 @@ public class CalibrationW extends CalibrationBase
     for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
       setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
     }
+  }
+
+  public BoundedVariable<Integer> getDetectionArmVariable()
+  {
+    return mDetectionArmVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfSamplesVariable()
+  {
+    return mNumberOfSamplesVariable;
   }
 }

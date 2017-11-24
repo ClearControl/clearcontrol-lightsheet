@@ -35,6 +35,9 @@ public class CalibrationP extends CalibrationBase
 
   BoundedVariable<Integer> mDetectionArmVariable;
 
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
+
+
   private TDoubleArrayList mRatioList;
 
   /**
@@ -49,12 +52,39 @@ public class CalibrationP extends CalibrationBase
     mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
   }
 
+
+
+  public void calibrateAllLightSheets()
+  {
+    int lIteration = 0;
+    double lError = Double.POSITIVE_INFINITY;
+    do
+    {
+      calibrate();
+      lError = apply();
+
+      info("############################################## Error = "
+           + lError);
+
+    }
+    while (lError >= 0.04 && lIteration++ < mMaxIterationsVariable.get());
+    info("############################################## Done ");
+
+    for (int pLightSheetIndex = 0; pLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); pLightSheetIndex++) {
+      if (lError < 0.04) {
+        setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+      } else {
+        setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
+      }
+    }
+  }
+
   /**
    * Calibrates the lightsheets power
    * 
    * @return true for success
    */
-  public boolean calibrate()
+  private boolean calibrate()
   {
     int lNumberOfLightSheets = getNumberOfLightSheets();
 
@@ -99,7 +129,7 @@ public class CalibrationP extends CalibrationBase
    *          number of samples
    * @return average intensity
    */
-  public Double calibrate(int pLightSheetIndex,
+  private Double calibrate(int pLightSheetIndex,
                           int pDetectionArmIndex,
                           int pNumberOfSamples)
   {
@@ -277,5 +307,12 @@ public class CalibrationP extends CalibrationBase
   {
     return mDetectionArmVariable;
   }
+
+
+  public BoundedVariable<Integer> getMaxIterationsVariable()
+  {
+    return mMaxIterationsVariable;
+  }
+
 
 }

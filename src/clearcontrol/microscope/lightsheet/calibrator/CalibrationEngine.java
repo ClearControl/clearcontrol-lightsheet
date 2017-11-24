@@ -37,8 +37,6 @@ public class CalibrationEngine extends TaskDevice implements
                                VisualConsoleInterface
 {
 
-  private static final int cMaxIterations = 3;
-
   private File mCalibrationFolder =
                                   MachineConfiguration.get()
                                                       .getFolder("Calibration");
@@ -194,7 +192,7 @@ public class CalibrationEngine extends TaskDevice implements
     if (isStopRequested())
       return false;/**/
 
-    if (getCalibrateXYVariable().get() && !calibrateXY(3))
+    if (getCalibrateXYVariable().get() && !calibrateXY())
       return false;
 
     if (isStopRequested())
@@ -204,10 +202,10 @@ public class CalibrationEngine extends TaskDevice implements
       return false;
 
     if (isStopRequested())
-      return false;/**/
+      return false;
 
-    /*if (!calibrateW(32))
-    	return false;/**/
+    if (getCalibrateWVariable().get() && !calibrateW())
+    	return false;
 
     if ((getCalibrateAVariable().get()
          || getCalibrateXYVariable().get())
@@ -245,40 +243,19 @@ public class CalibrationEngine extends TaskDevice implements
   {
     for (int l = 0; l < mNumberOfLightSheetDevices
                     && !isStopRequested(); l++)
+    {
       if (getCalibrateLightSheetOnOff(l).get())
       {
-        int lIteration = 0;
-        double lError = Double.POSITIVE_INFINITY;
-        do
-        {
-          double lSearchAmplitude = 1.0 / (pow(2, 1 + lIteration));
-          lError =
-                 calibrateZ(l,
-                            lIteration > 0,
-                            lSearchAmplitude,
-                            l == 0);
-          info("############################################## Error = "
-               + lError);
-          if (ScriptingEngine.isCancelRequestedStatic()
-              || !isRunning())
-            return false;
-
-        }
-        while (lError >= 0.02 && lIteration++ < cMaxIterations
-               && !isStopRequested());
-        info("############################################## Done ");
+        mCalibrationZ.calibrateZ(l);
         mProgressVariable.set((1.0 * l) / mNumberOfLightSheetDevices);
       }
+    }
     return true;
   }
 
   /**
    * Calibrates the alpha angle.
-   * 
-   * @param pNumberOfAngles
-   *          number of angles
-   * @param pNumberOfRepeats
-   *          number of repeats
+   *
    * @return true when succeeded
    */
   public boolean calibrateA()
@@ -287,21 +264,7 @@ public class CalibrationEngine extends TaskDevice implements
                     && !isStopRequested(); l++)
       if (getCalibrateLightSheetOnOff(l).get())
       {
-        int lIteration = 0;
-        double lError = Double.POSITIVE_INFINITY;
-        do
-        {
-          lError = calibrateA(l);
-          info("############################################## Error = "
-               + lError);
-          if (ScriptingEngine.isCancelRequestedStatic()
-              || !isRunning())
-            return false;
-
-        }
-        while (lError >= 0.5 && lIteration++ < cMaxIterations
-               && !isStopRequested());
-        info("############################################## Done ");
+        mCalibrationA.calibrate(l);
         mProgressVariable.set((1.0 * l) / mNumberOfLightSheetDevices);
       }
     return true;
@@ -309,32 +272,16 @@ public class CalibrationEngine extends TaskDevice implements
 
   /**
    * Calibrates X and Y lighthseet positions
-   * 
-   * @param pNumberOfPoints
-   *          number of points
+   *
    * @return true when succeeded
    */
-  public boolean calibrateXY(int pNumberOfPoints)
+  public boolean calibrateXY()
   {
     for (int l = 0; l < mNumberOfLightSheetDevices
                     && !isStopRequested(); l++)
       if (getCalibrateLightSheetOnOff(l).get())
       {
-        int lIteration = 0;
-        double lError = Double.POSITIVE_INFINITY;
-        do
-        {
-          lError = calibrateXY(l, 0, pNumberOfPoints);
-          info("############################################## Error = "
-               + lError);
-          if (ScriptingEngine.isCancelRequestedStatic()
-              || !isRunning())
-            return false;
-
-        }
-        while (lError >= 0.05 && lIteration++ < cMaxIterations
-               && !isStopRequested());
-        info("############################################## Done ");
+        mCalibrationXY.calibrate(l);
         mProgressVariable.set((1.0 * l) / mNumberOfLightSheetDevices);
       }
 
@@ -347,45 +294,41 @@ public class CalibrationEngine extends TaskDevice implements
   public boolean calibrateP()
   {
     mCalibrationP.reset();
-    int lIteration = 0;
-    double lError = Double.POSITIVE_INFINITY;
-    do
-    {
-      mCalibrationP.calibrate();
-      lError = mCalibrationP.apply();
-
-      info("############################################## Error = "
-           + lError);
-      if (ScriptingEngine.isCancelRequestedStatic() || !isRunning())
-        return false;
-
-      mProgressVariable.set((1.0 * lIteration) / cMaxIterations);
-    }
-    while (lError >= 0.04 && lIteration++ < cMaxIterations
-           && !isStopRequested());
-    info("############################################## Done ");
+    mCalibrationP.calibrateAllLightSheets();
 
     return true;
   }
 
   /**
    * Calibrates the lighthseet laser power versus its height
-   * 
-   * @param pNumberOfSamplesH
-   *          number of samples for the height
-   * @param pNumberOfSamplesP
-   *          number of samples for the laser power
+   *
    * @return true when succeeded
    */
-  public boolean calibrateHP(int pNumberOfSamplesH,
-                             int pNumberOfSamplesP)
+  public boolean calibrateHP()
   {
     for (int l = 0; l < mNumberOfLightSheetDevices
                     && !isStopRequested(); l++)
       if (getCalibrateLightSheetOnOff(l).get())
       {
-        calibrateHP(l, 0, pNumberOfSamplesH, pNumberOfSamplesP);
-        info("############################################## Done ");
+        mCalibrationHP.calibrate(l);
+        mProgressVariable.set((1.0 * l) / mNumberOfLightSheetDevices);
+      }
+    return true;
+  }
+
+
+  /**
+   * Calibrates the lighthseet laser power versus its height
+   *
+   * @return true when succeeded
+   */
+  public boolean calibrateWP()
+  {
+    for (int l = 0; l < mNumberOfLightSheetDevices
+                    && !isStopRequested(); l++)
+      if (getCalibrateLightSheetOnOff(l).get())
+      {
+        mCalibrationWP.calibrate(l);
         mProgressVariable.set((1.0 * l) / mNumberOfLightSheetDevices);
       }
     return true;
@@ -393,149 +336,22 @@ public class CalibrationEngine extends TaskDevice implements
 
   /**
    * Calibrates the width (beam NA) of the lighthsheet
-   * 
-   * @param pNumberOfSamples
-   *          number of samples
+   *
    * @return true when succeeded
    */
-  public boolean calibrateW(int pNumberOfSamples)
+  public boolean calibrateW()
   {
-    calibrateW(0, pNumberOfSamples);
+    mCalibrationW.calibrateW();
     return true;
   }
 
   // /***************************************************************/ //
 
-  /**
-   * Calibrates the lightsheet and detection arms Z positions.
-   * 
-   * @param pLightSheetIndex
-   *          lightsheet index
-   * @param pRestrictedSearch
-   *          true-> restrict search, false -> not
-   * @param pSearchAmplitude
-   *          search amplitude (within [0,1])
-   * @param pAdjustDetectionZ
-   *          true -> adjust detection Z
-   * @return true when succeeded
-   */
-  public double calibrateZ(int pLightSheetIndex,
-                           boolean pRestrictedSearch,
-                           double pSearchAmplitude,
-                           boolean pAdjustDetectionZ)
-  {
-    mCalibrationZ.calibrate(pLightSheetIndex,
-                            pRestrictedSearch,
-                            pSearchAmplitude);
 
-    return mCalibrationZ.apply(pLightSheetIndex, pAdjustDetectionZ);
-  }
 
-  /**
-   * Calibrates the lightsheet alpha angles.
-   * 
-   * @param pLightSheetIndex
-   *          lightsheet index
-   *          number of repeats
-   * @return true when succeeded
-   */
-  public double calibrateA(int pLightSheetIndex)
-  {
-    mCalibrationA.calibrate(pLightSheetIndex);
 
-    return mCalibrationA.apply(pLightSheetIndex);
-  }
 
-  /**
-   * Calibrates the XY position of the lighthsheets
-   * 
-   * @param pLightSheetIndex
-   *          lightshet index
-   * @param pDetectionArmIndex
-   *          detection arm index
-   * @param pNumberOfPoints
-   *          number of points
-   * @return true when succeeded
-   */
-  public double calibrateXY(int pLightSheetIndex,
-                            int pDetectionArmIndex,
-                            int pNumberOfPoints)
-  {
-    mCalibrationXY.calibrate(pLightSheetIndex,
-                             pDetectionArmIndex,
-                             pNumberOfPoints);
 
-    return mCalibrationXY.apply(pLightSheetIndex, pDetectionArmIndex);
-  }
-
-  /**
-   * Calibrates and the lightsheet width
-   * 
-   * @param pDetectionArmIndex
-   *          detection arm index
-   * @param pNumberOfSamples
-   *          number of samples
-   * @return true when succeeded
-   */
-  public double calibrateW(int pDetectionArmIndex,
-                           int pNumberOfSamples)
-  {
-    mCalibrationW.calibrate(pDetectionArmIndex, pNumberOfSamples);
-
-    return mCalibrationW.apply();
-  }
-
-  /**
-   * Calibrates the lightsheet laser power versus its width
-   * 
-   * @param pLightSheetIndex
-   *          lightsheet index
-   * @param pDetectionArmIndex
-   *          detection arm index
-   * @param pNumberOfSamplesW
-   *          number of samples for the width
-   * @param pNumberOfSamplesP
-   *          number of samples for the laser power
-   * @return true when succeeded
-   */
-  public double calibrateWP(int pLightSheetIndex,
-                            int pDetectionArmIndex,
-                            int pNumberOfSamplesW,
-                            int pNumberOfSamplesP)
-  {
-    mCalibrationWP.calibrate(pLightSheetIndex,
-                             pDetectionArmIndex,
-                             pNumberOfSamplesW,
-                             pNumberOfSamplesP);
-
-    return mCalibrationWP.apply(pLightSheetIndex, pDetectionArmIndex);
-  }
-
-  /**
-   * Calibrates the lightsheet power versus its height
-   * 
-   * @param pLightSheetIndex
-   *          lightsheet index
-   * @param pDetectionArmIndex
-   *          detection arm index
-   * @param pNumberOfSamplesH
-   *          number of samples for the height
-   * @param pNumberOfSamplesP
-   *          number of samples for the laser power
-   * @return true when succeeded
-   */
-  public double calibrateHP(int pLightSheetIndex,
-                            int pDetectionArmIndex,
-                            int pNumberOfSamplesH,
-                            int pNumberOfSamplesP)
-  {
-    mCalibrationHP.calibrate(pLightSheetIndex,
-                             pDetectionArmIndex,
-                             pNumberOfSamplesH,
-                             pNumberOfSamplesP);
-
-    return mCalibrationHP.apply(pLightSheetIndex, pDetectionArmIndex);
-  }
 
   /**
    * Resets the calibration information

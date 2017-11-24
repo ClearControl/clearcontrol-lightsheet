@@ -24,6 +24,7 @@ import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleIn
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -40,8 +41,6 @@ public class CalibrationA extends CalibrationBase
   private ArgMaxFinder1DInterface mArgMaxFinder;
   private HashMap<Integer, UnivariateAffineFunction> mModels;
 
-  private RawFileStackSink mSink;
-
   private BoundedVariable<Double>
       mAngleOptimisationRangeWidthVariable = new BoundedVariable<Double>("Angle range in degrees",
                                                                            14.0, 0.0, 40.0, 1.0);
@@ -55,6 +54,8 @@ public class CalibrationA extends CalibrationBase
 
   private BoundedVariable<Integer>
       mNumberOfAnglesVariable = new BoundedVariable<Integer>("Number of angles", 32, 1, Integer.MAX_VALUE);
+
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
 
 
   /**
@@ -80,9 +81,42 @@ public class CalibrationA extends CalibrationBase
    */
   public void calibrate(int pLightSheetIndex)
   {
+    int lIteration = 0;
+    double lError = Double.POSITIVE_INFINITY;
+    do
+    {
+      lError = calibrateA_internal(pLightSheetIndex);
+      info("############################################## Error = "
+           + lError);
+    }
+    while (lError >= 0.5 && lIteration++ < mMaxIterationsVariable.get());
+    info("############################################## Done ");
 
-    mSink = new RawFileStackSink();
-    mSink.setLocation(new File("C:/temp/"), "calibA");
+    if (lError < 0.5) {
+      setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+    } else {
+      setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
+    }
+
+  }
+
+  /**
+   * Calibrates the lightsheet alpha angles.
+   *
+   * @param pLightSheetIndex
+   *          lightsheet index
+   *          number of repeats
+   * @return true when succeeded
+   */
+  private double calibrateA_internal(int pLightSheetIndex)
+  {
+    calibrate_internal(pLightSheetIndex);
+
+    return apply(pLightSheetIndex);
+  }
+
+  private void calibrate_internal (int pLightSheetIndex)
+  {
 
     int lNumberOfDetectionArmDevices = getNumberOfDetectionArms();
 
@@ -162,14 +196,6 @@ public class CalibrationA extends CalibrationBase
         System.out.format("Angle are not valid, we continue with next set of y values... \n");
     }
 
-    try
-    {
-      mSink.close();
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }
 
     if (lCount == 0)
       return;
@@ -270,7 +296,6 @@ public class CalibrationA extends CalibrationBase
                                           (OffHeapPlanarStack) getLightSheetMicroscope().getCameraStackVariable(i)
                                                                                         .get();
 
-          mSink.appendStack("C" + i + "L" + pLightSheetIndex, lStack);
 
           final double[] lAvgIntensityArray =
                                             ImageAnalysisUtils.computeAverageSquareVariationPerPlane(lStack);
@@ -468,6 +493,12 @@ public class CalibrationA extends CalibrationBase
   public BoundedVariable<Integer> getNumberOfAnglesVariable()
   {
     return mNumberOfAnglesVariable;
+  }
+
+
+  public BoundedVariable<Integer> getMaxIterationsVariable()
+  {
+    return mMaxIterationsVariable;
   }
 
 }

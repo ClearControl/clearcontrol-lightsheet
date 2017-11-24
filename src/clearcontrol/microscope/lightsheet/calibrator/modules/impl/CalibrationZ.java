@@ -1,9 +1,5 @@
 package clearcontrol.microscope.lightsheet.calibrator.modules.impl;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -25,10 +21,13 @@ import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
 import org.apache.commons.collections4.map.MultiKeyMap;
+
+import static java.lang.Math.*;
 
 /**
  * Calibration module for the Z position of lightsheets and detection arms
@@ -49,6 +48,7 @@ public class CalibrationZ extends CalibrationBase
 
   private BoundedVariable<Integer> mNumberOfISamples = new BoundedVariable<Integer>("Number of illumination samples", 13, 0, Integer.MAX_VALUE);
   private BoundedVariable<Integer> mNumberOfDSamples = new BoundedVariable<Integer>("Number of detection samples", 13, 0, Integer.MAX_VALUE);
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
 
   /**
    * Instantiates a Z calibrator module given calibrator
@@ -68,6 +68,65 @@ public class CalibrationZ extends CalibrationBase
   }
 
   /**
+   * Calibrates the lightsheet and detection arm Z positions.
+   *
+   * @return true when succeeded
+   */
+  public boolean calibrateZ(int pLightSheetIndex)
+  {
+    int lIteration = 0;
+    double lError = Double.POSITIVE_INFINITY;
+    do
+    {
+      double lSearchAmplitude = 1.0 / (pow(2, 1 + lIteration));
+      lError =
+          calibrateZ(pLightSheetIndex,
+                     lIteration > 0,
+                     lSearchAmplitude,
+                     pLightSheetIndex == 0);
+      info("############################################## Error = "
+           + lError);
+    }
+    while (lError >= 0.02 && lIteration++ < mMaxIterationsVariable.get());
+    info("############################################## Done ");
+
+    if (lError < 0.02) {
+      setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+    } else {
+      setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
+    }
+
+    return true;
+  }
+
+
+
+  /**
+   * Calibrates the lightsheet and detection arms Z positions.
+   *
+   * @param pLightSheetIndex
+   *          lightsheet index
+   * @param pRestrictedSearch
+   *          true-> restrict search, false -> not
+   * @param pSearchAmplitude
+   *          search amplitude (within [0,1])
+   * @param pAdjustDetectionZ
+   *          true -> adjust detection Z
+   * @return true when succeeded
+   */
+  private double calibrateZ(int pLightSheetIndex,
+                           boolean pRestrictedSearch,
+                           double pSearchAmplitude,
+                           boolean pAdjustDetectionZ)
+  {
+    calibrate(pLightSheetIndex,
+                            pRestrictedSearch,
+                            pSearchAmplitude);
+
+    return apply(pLightSheetIndex, pAdjustDetectionZ);
+  }
+
+  /**
    * Performs calibration for a given lightsheet index
    * 
    * @param pLightSheetIndex
@@ -78,7 +137,7 @@ public class CalibrationZ extends CalibrationBase
    *          search amplitude.
    * @return true -> success
    */
-  public boolean calibrate(int pLightSheetIndex,
+  private boolean calibrate(int pLightSheetIndex,
                            boolean pRestrictedSearch,
                            double pSearchAmplitude)
   {
@@ -228,7 +287,6 @@ public class CalibrationZ extends CalibrationBase
 
     }
 
-    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
     return true;
   }
 
@@ -648,4 +706,8 @@ public class CalibrationZ extends CalibrationBase
     return mNumberOfDSamples;
   }
 
+  public BoundedVariable<Integer> getMaxIterationsVariable()
+  {
+    return mMaxIterationsVariable;
+  }
 }
