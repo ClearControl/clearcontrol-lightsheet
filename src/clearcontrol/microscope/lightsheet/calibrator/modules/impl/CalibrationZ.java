@@ -76,7 +76,7 @@ public class CalibrationZ extends CalibrationBase
    *
    * @return true when succeeded
    */
-  public boolean calibrateZ(int pLightSheetIndex)
+  public double calibrateZ(int pLightSheetIndex)
   {
     int lIteration = 0;
     double lError = Double.POSITIVE_INFINITY;
@@ -95,7 +95,7 @@ public class CalibrationZ extends CalibrationBase
       if (getCalibrationEngine().isStopRequested())
       {
         setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
-        return false;
+        return Double.NaN;
       }
     }
     while (lError >= 0.02 && lIteration++ < mMaxIterationsVariable.get());
@@ -107,7 +107,7 @@ public class CalibrationZ extends CalibrationBase
       setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
     }
 
-    return true;
+    return lError;
   }
 
 
