@@ -50,6 +50,10 @@ public class CalibrationZ extends CalibrationBase
   private BoundedVariable<Integer> mNumberOfDSamples = new BoundedVariable<Integer>("Number of detection samples", 13, 0, Integer.MAX_VALUE);
   private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
 
+
+  private BoundedVariable<Double>
+      mExposureTimeInSecondsVariable = new BoundedVariable<Double>("Exposure time in seconds", 0.02, 0.0, Double.MAX_VALUE, 0.001);
+
   /**
    * Instantiates a Z calibrator module given calibrator
    * 
@@ -86,6 +90,13 @@ public class CalibrationZ extends CalibrationBase
                      pLightSheetIndex == 0);
       info("############################################## Error = "
            + lError);
+
+
+      if (getCalibrationEngine().isStopRequested())
+      {
+        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        return false;
+      }
     }
     while (lError >= 0.02 && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
@@ -118,28 +129,6 @@ public class CalibrationZ extends CalibrationBase
                            boolean pRestrictedSearch,
                            double pSearchAmplitude,
                            boolean pAdjustDetectionZ)
-  {
-    calibrate(pLightSheetIndex,
-                            pRestrictedSearch,
-                            pSearchAmplitude);
-
-    return apply(pLightSheetIndex, pAdjustDetectionZ);
-  }
-
-  /**
-   * Performs calibration for a given lightsheet index
-   * 
-   * @param pLightSheetIndex
-   *          lightsheet index
-   * @param pRestrictedSearch
-   *          true -> restrict search to an interval, false not.
-   * @param pSearchAmplitude
-   *          search amplitude.
-   * @return true -> success
-   */
-  private boolean calibrate(int pLightSheetIndex,
-                           boolean pRestrictedSearch,
-                           double pSearchAmplitude)
   {
     int lNumberOfISamples = mNumberOfISamples.get();
     int lNumberOfDSamples = mNumberOfDSamples.get();
@@ -205,7 +194,7 @@ public class CalibrationZ extends CalibrationBase
       if (dz == null)
       {
         setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
-        return false;
+        return Double.NaN;
       }
 
       String lChartName =
@@ -219,7 +208,7 @@ public class CalibrationZ extends CalibrationBase
                                             "IZ",
                                             ChartType.Line);
 
-      for (int d = 0; d < mNumberOfDetectionArmDevices; d++)
+      for (int d = 0; d < mNumberOfDetectionArmDevices; d++) {
         if (!Double.isNaN(dz[d]))
         {
           lTheilSenEstimators[d].enter(dz[d], lPerturbedIZ);
@@ -232,11 +221,13 @@ public class CalibrationZ extends CalibrationBase
                                           lPerturbedIZ);
 
         }
+      }
+
 
       if (getCalibrationEngine().isStopRequested())
       {
         setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
-        return false;
+        return Double.NaN;
       }
 
     }
@@ -287,7 +278,7 @@ public class CalibrationZ extends CalibrationBase
 
     }
 
-    return true;
+    return apply(pLightSheetIndex, pAdjustDetectionZ);
   }
 
   private double[] focusZ(int pLightSheetIndex,
@@ -333,7 +324,7 @@ public class CalibrationZ extends CalibrationBase
       // lQueue.zero();
 
       lQueue.setFullROI();
-      lQueue.setExp(0.020);
+      lQueue.setExp(mExposureTimeInSecondsVariable.get());
 
       lQueue.setI(pLightSheetIndex);
       lQueue.setIX(pLightSheetIndex, 0);
@@ -396,11 +387,13 @@ public class CalibrationZ extends CalibrationBase
       // info("End play queue");
 
       if (lPlayQueueAndWait)
+      {
         for (int d = 0; d < mNumberOfDetectionArmDevices; d++)
         {
-          final OffHeapPlanarStack lStack =
-                                          (OffHeapPlanarStack) getLightSheetMicroscope().getCameraStackVariable(d)
-                                                                                        .get();
+          final OffHeapPlanarStack
+              lStack =
+              (OffHeapPlanarStack) getLightSheetMicroscope().getCameraStackVariable(
+                  d).get();
 
           if (lStack == null)
             continue;
@@ -412,26 +405,28 @@ public class CalibrationZ extends CalibrationBase
               if (mDCTS2D == null)
                 mDCTS2D = new DCTS2D();
 
-              mMetricArray =
-                           mDCTS2D.computeImageQualityMetric(lStack);
+              mMetricArray = mDCTS2D.computeImageQualityMetric(lStack);
             }
             else
               mMetricArray =
-                           ImageAnalysisUtils.computeAverageSquareVariationPerPlane(lStack);/**/
+                  ImageAnalysisUtils.computeAverageSquareVariationPerPlane(
+                      lStack);/**/
           });
           // info("Begin compute metric");
 
           if (lDZList.size() != mMetricArray.length)
-            severe("Z position list and metric list have different lengths!");
+            severe(
+                "Z position list and metric list have different lengths!");
 
           // System.out.format("metric array: \n");
 
-          String lChartName = String.format("D=%d, I=%d",
-                                            d,
-                                            pLightSheetIndex);
+          String
+              lChartName =
+              String.format("D=%d, I=%d", d, pLightSheetIndex);
 
-          String lSeriesName = String.format("iteration=%d",
-                                             getIteration());
+          String
+              lSeriesName =
+              String.format("iteration=%d", getIteration());
 
           getCalibrationEngine().configureChart(lChartName,
                                                 lSeriesName,
@@ -454,19 +449,18 @@ public class CalibrationZ extends CalibrationBase
           }
 
           // info("Begin argmax");
-          final Double lArgMax =
-                               mArgMaxFinder.argmax(lDZList.toArray(),
-                                                    mMetricArray);
+          final Double
+              lArgMax =
+              mArgMaxFinder.argmax(lDZList.toArray(), mMetricArray);
           // info("End argmax");
 
           if (lArgMax != null)
           {
-            TDoubleArrayList lDCTSList =
-                                       new TDoubleArrayList(mMetricArray);
+            TDoubleArrayList lDCTSList = new TDoubleArrayList(mMetricArray);
 
-            double lAmplitudeRatio =
-                                   (lDCTSList.max() - lDCTSList.min())
-                                     / lDCTSList.max();
+            double
+                lAmplitudeRatio =
+                (lDCTSList.max() - lDCTSList.min()) / lDCTSList.max();
 
             /*System.out.format("argmax=%s amplratio=%s \n",
                               lArgMax.toString(),
@@ -506,7 +500,7 @@ public class CalibrationZ extends CalibrationBase
             severe("Argmax is NULL!");
           }
         }
-
+      }
       return dz;
 
     }
@@ -688,13 +682,15 @@ public class CalibrationZ extends CalibrationBase
   {
     super.reset();
 
-
-    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
-      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+    for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
+      setCalibrationState(lLightSheetIndex, CalibrationState.NOT_CALIBRATED);
     }
   }
 
-
+  public BoundedVariable<Double> getExposureTimeInSecondsVariable()
+  {
+    return mExposureTimeInSecondsVariable;
+  }
 
   public BoundedVariable<Integer> getNumberOfISamples()
   {

@@ -1,7 +1,5 @@
 package clearcontrol.microscope.lightsheet.calibrator;
 
-import static java.lang.Math.pow;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +9,6 @@ import clearcontrol.core.device.task.TaskDevice;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
-import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
 import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationA;
@@ -341,7 +338,7 @@ public class CalibrationEngine extends TaskDevice implements
    */
   public boolean calibrateW()
   {
-    mCalibrationW.calibrateW();
+    mCalibrationW.calibrateAllLightSheets();
     return true;
   }
 

@@ -99,10 +99,8 @@ public class CalibrationXY extends CalibrationBase
   }
 
 
-  public void calibrate(int pLightSheetIndex)
+  public double calibrate(int pLightSheetIndex)
   {
-
-
     int lIteration = 0;
     double lError = Double.POSITIVE_INFINITY;
     do
@@ -111,7 +109,11 @@ public class CalibrationXY extends CalibrationBase
       info("############################################## Error = "
            + lError);
 
-
+      if (getCalibrationEngine().isStopRequested())
+      {
+        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        return Double.NaN;
+      }
     }
     while (lError >= 0.05 && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
@@ -121,7 +123,7 @@ public class CalibrationXY extends CalibrationBase
     } else {
       setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
     }
-
+    return lError;
   }
 
 

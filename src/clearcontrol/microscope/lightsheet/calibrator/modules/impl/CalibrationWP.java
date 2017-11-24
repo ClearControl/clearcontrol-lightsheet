@@ -60,12 +60,6 @@ public class CalibrationWP extends CalibrationBase
   }
 
 
-
-
-
-
-
-
   /**
    * Calibrates the lightsheet laser power versus its width
    *
@@ -78,38 +72,6 @@ public class CalibrationWP extends CalibrationBase
     int lDetectionArmIndex = mDetectionArmVariable.get();
     int lNumberOfSamplesP = mNumberOfPSamplesVariable.get();
     int lNumberOfSamplesW = mNumberOfWSamplesVariable.get();
-
-    calibrate(pLightSheetIndex,
-                             lDetectionArmIndex,
-                             lNumberOfSamplesW,
-                             lNumberOfSamplesP);
-
-    return apply(pLightSheetIndex, lDetectionArmIndex);
-  }
-
-
-
-
-
-
-  /**
-   * Calibrates the lightsheet width-power relationship for a given lightsheet,
-   * detection arm, number of width and power samples.
-   * 
-   * @param pLightSheetIndex
-   *          lightsheet index
-   * @param pDetectionArmIndex
-   *          detection arm index
-   * @param pNumberOfSamplesW
-   *          number of W samples
-   * @param pNumberOfSamplesP
-   *          number of P samples
-   */
-  private void calibrate(int pLightSheetIndex,
-                        int pDetectionArmIndex,
-                        int pNumberOfSamplesW,
-                        int pNumberOfSamplesP)
-  {
 
     LightSheetInterface lLightSheet =
                                     getLightSheetMicroscope().getDeviceLists()
@@ -127,14 +89,14 @@ public class CalibrationWP extends CalibrationBase
 
     double lMinW = lWidthVariable.getMin().doubleValue();
     double lMaxW = lWidthVariable.getMax().doubleValue();
-    double lStepW = (lMaxW - lMinW) / pNumberOfSamplesW;
+    double lStepW = (lMaxW - lMinW) / lNumberOfSamplesW;
     double lReferenceW = (lMaxW - lMinW) / 2;
 
     final double lReferenceIntensity = adjustP(pLightSheetIndex,
-                                               pDetectionArmIndex,
+                                               lDetectionArmIndex,
                                                lReferencePower,
                                                lReferencePower,
-                                               pNumberOfSamplesP,
+                                               lNumberOfSamplesP,
                                                lReferenceW,
                                                0,
                                                true);
@@ -148,7 +110,7 @@ public class CalibrationWP extends CalibrationBase
     {
       final double lPower =
                           adjustP(pLightSheetIndex,
-                                  pDetectionArmIndex,
+                                  lDetectionArmIndex,
                                   lMinP,
                                   lMaxP,
                                   10,
@@ -161,6 +123,13 @@ public class CalibrationWP extends CalibrationBase
       lWList.add(w);
       lPRList.add(lPowerRatio);
       lObservations.add(w, lPowerRatio);
+
+
+      if (getCalibrationEngine().isStopRequested())
+      {
+        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        return Double.NaN;
+      }
     }
 
     final PolynomialCurveFitter lPolynomialCurveFitter =
@@ -173,11 +142,11 @@ public class CalibrationWP extends CalibrationBase
                                            new PolynomialFunction(lCoeficients);
 
     mWPFunctions.put(pLightSheetIndex,
-                     pDetectionArmIndex,
+                     lDetectionArmIndex,
                      lPowerRatioFunction);
 
     String lChartName = String.format(" D=%d, I=%d, W=%g",
-                                      pDetectionArmIndex,
+                                      lDetectionArmIndex,
                                       pLightSheetIndex);
 
     getCalibrationEngine().configureChart(lChartName,
@@ -212,6 +181,7 @@ public class CalibrationWP extends CalibrationBase
 
     }
 
+    return apply(pLightSheetIndex, lDetectionArmIndex);
   }
 
   private Double adjustP(int pLightSheetIndex,
@@ -247,7 +217,9 @@ public class CalibrationWP extends CalibrationBase
       lQueue.addCurrentStateToQueue();
 
       for (int i = 0; i < lNumberOfDetectionArms; i++)
+      {
         lQueue.setC(i, true);
+      }
 
       double lStep = (pMaxP - pMinP) / pNumberOfSamples;
 
@@ -441,9 +413,8 @@ public class CalibrationWP extends CalibrationBase
     super.reset();
     mWPFunctions.clear();
 
-
-    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
-      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+    for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
+      setCalibrationState(lLightSheetIndex, CalibrationState.NOT_CALIBRATED);
     }
   }
 
