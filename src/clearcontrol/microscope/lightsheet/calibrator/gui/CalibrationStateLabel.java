@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.calibrator.gui;
 
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.swing.JLabelString;
+import javafx.application.Platform;
 import javafx.scene.control.Label;
 
 /**
@@ -14,12 +15,12 @@ public class CalibrationStateLabel extends Label
   private CalibrationStateLabel mThis;
 
   public CalibrationStateLabel(final String pLabelName,
-                      final String pInicialValue)
+                      final String pInitialValue)
   {
-    super(pInicialValue);
+    super(pInitialValue);
     mThis = this;
 
-    mStringVariable = new Variable<String>(pLabelName, pInicialValue)
+    mStringVariable = new Variable<String>(pLabelName, pInitialValue)
     {
       @Override
       public String setEventHook(final String pOldValue,
@@ -27,7 +28,13 @@ public class CalibrationStateLabel extends Label
       {
         if (!pNewValue.equals(mThis.getText()))
         {
-          mThis.setText(pNewValue);
+          Platform.runLater(new Runnable()
+            {
+              @Override public void run()
+              {
+                mThis.setText(pNewValue);
+              }
+            });
         }
         return super.setEventHook(pOldValue, pNewValue);
       }
