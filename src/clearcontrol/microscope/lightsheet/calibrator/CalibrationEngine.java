@@ -538,8 +538,8 @@ public class CalibrationEngine extends TaskDevice implements
     lModuleList.add(mCalibrationP);
     lModuleList.add(mCalibrationW);
     lModuleList.add(mCalibrationXY);
-    lModuleList.add(mCalibrationHP);
-    lModuleList.add(mCalibrationWP);
+    //lModuleList.add(mCalibrationHP);
+    //lModuleList.add(mCalibrationWP);
     return lModuleList;
   }
 
