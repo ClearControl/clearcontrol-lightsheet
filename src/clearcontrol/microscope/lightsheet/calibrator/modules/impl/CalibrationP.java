@@ -39,6 +39,8 @@ public class CalibrationP extends CalibrationBase
 
   private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
 
+  private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.04, 0.0, Double.MAX_VALUE, 0.001);
+
 
   private TDoubleArrayList mRatioList;
 
@@ -74,11 +76,11 @@ public class CalibrationP extends CalibrationBase
            + lError);
 
     }
-    while (lError >= 0.04 && lIteration++ < mMaxIterationsVariable.get());
+    while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
 
     for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-      if (lError < 0.04) {
+      if (lError < mStoppingConditionErrorThreshold.get()) {
         setCalibrationState(lLightSheetIndex, CalibrationState.SUCCEEDED);
       } else {
         setCalibrationState(lLightSheetIndex, CalibrationState.ACCEPTABLE);
@@ -328,5 +330,8 @@ public class CalibrationP extends CalibrationBase
     return mMaxIterationsVariable;
   }
 
-
+  public BoundedVariable<Double> getStoppingConditionErrorThreshold()
+  {
+    return mStoppingConditionErrorThreshold;
+  }
 }

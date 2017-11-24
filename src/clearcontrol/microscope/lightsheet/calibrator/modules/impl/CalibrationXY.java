@@ -49,6 +49,8 @@ public class CalibrationXY extends CalibrationBase
   BoundedVariable<Integer> mNumberOfPointsVariable = new BoundedVariable<Integer>("Number of points", 3, 0, Integer.MAX_VALUE);
 
 
+  private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.05, 0.0, Double.MAX_VALUE, 0.001);
+
   /**
    * Instantiates a XY calibration module given a parent calibrator.
    * 
@@ -115,10 +117,10 @@ public class CalibrationXY extends CalibrationBase
         return Double.NaN;
       }
     }
-    while (lError >= 0.05 && lIteration++ < mMaxIterationsVariable.get());
+    while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
 
-    if (lError < 0.05) {
+    if (lError < mStoppingConditionErrorThreshold.get()) {
       setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
     } else {
       setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
@@ -566,5 +568,10 @@ public class CalibrationXY extends CalibrationBase
   public BoundedVariable<Integer> getNumberOfPointsVariable()
   {
     return mNumberOfPointsVariable;
+  }
+
+  public BoundedVariable<Double> getStoppingConditionErrorThreshold()
+  {
+    return mStoppingConditionErrorThreshold;
   }
 }

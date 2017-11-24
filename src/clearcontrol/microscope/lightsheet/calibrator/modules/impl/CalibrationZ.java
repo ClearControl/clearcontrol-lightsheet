@@ -54,6 +54,8 @@ public class CalibrationZ extends CalibrationBase
   private BoundedVariable<Double>
       mExposureTimeInSecondsVariable = new BoundedVariable<Double>("Exposure time in seconds", 0.02, 0.0, Double.MAX_VALUE, 0.001);
 
+  private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.02, 0.0, Double.MAX_VALUE, 0.001);
+
   /**
    * Instantiates a Z calibrator module given calibrator
    * 
@@ -98,10 +100,10 @@ public class CalibrationZ extends CalibrationBase
         return Double.NaN;
       }
     }
-    while (lError >= 0.02 && lIteration++ < mMaxIterationsVariable.get());
+    while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
 
-    if (lError < 0.02) {
+    if (lError < mStoppingConditionErrorThreshold.get()) {
       setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
     } else {
       setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
@@ -705,5 +707,10 @@ public class CalibrationZ extends CalibrationBase
   public BoundedVariable<Integer> getMaxIterationsVariable()
   {
     return mMaxIterationsVariable;
+  }
+
+  public BoundedVariable<Double> getStoppingConditionErrorThreshold()
+  {
+    return mStoppingConditionErrorThreshold;
   }
 }

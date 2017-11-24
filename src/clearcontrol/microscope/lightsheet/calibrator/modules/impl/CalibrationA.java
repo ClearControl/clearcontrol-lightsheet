@@ -53,6 +53,7 @@ public class CalibrationA extends CalibrationBase
 
   private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
 
+  private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.5, 0.0, Double.MAX_VALUE, 0.001);
 
   /**
    * Lightsheet Alpha angle calibration module
@@ -90,10 +91,10 @@ public class CalibrationA extends CalibrationBase
         return Double.NaN;
       }
     }
-    while (lError >= 0.5 && lIteration++ < mMaxIterationsVariable.get());
+    while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
 
-    if (lError < 0.5) {
+    if (lError < mStoppingConditionErrorThreshold.get()) {
       setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
     } else {
       setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
@@ -505,4 +506,8 @@ public class CalibrationA extends CalibrationBase
     return mMaxIterationsVariable;
   }
 
+  public BoundedVariable<Double> getStoppingConditionErrorThreshold()
+  {
+    return mStoppingConditionErrorThreshold;
+  }
 }
