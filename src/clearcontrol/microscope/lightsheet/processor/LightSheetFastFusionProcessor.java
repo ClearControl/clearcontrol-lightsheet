@@ -73,6 +73,9 @@ public class LightSheetFastFusionProcessor extends
                                                                   new Variable<Integer>("TransformLockThreshold",
                                                                                         20);
 
+  private final Variable<Boolean> mBackgroundSubtractionSwitchVariable =
+      new Variable<Boolean>("BackgroundSubtractionSwitch", false);
+
   /**
    * Instantiates a lightsheet stack processor
    *
@@ -97,19 +100,26 @@ public class LightSheetFastFusionProcessor extends
   {
 
     if (mEngine == null)
+    {
       mEngine =
-              new LightSheetFastFusionEngine(getContext(),
-                                             (VisualConsoleInterface) this,
-                                             mLightSheetMicroscope.getNumberOfLightSheets(),
-                                             mLightSheetMicroscope.getNumberOfDetectionArms());
-
-    info("Received stack for processing: %s", pStack);
+          new LightSheetFastFusionEngine(getContext(),
+                                         (VisualConsoleInterface) this,
+                                         mLightSheetMicroscope.getNumberOfLightSheets(),
+                                         mLightSheetMicroscope.getNumberOfDetectionArms());
+      mEngine.setSubtractingBackground(
+          mBackgroundSubtractionSwitchVariable.get());
+      mEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(),
+                    mLightSheetMicroscope.getNumberOfDetectionArms());
+    }
 
     if (isPassThrough(pStack))
     {
-      // info("pass-through mode on, passing stack untouched: %s",
-      // pStack);
+      info("pass-through mode on, passing stack untouched: %s", pStack);
       return pStack;
+    }
+    else
+    {
+      info("Received stack for processing: %s", pStack);
     }
 
     if (mEngine.isDownscale())
@@ -342,6 +352,10 @@ public class LightSheetFastFusionProcessor extends
   public Variable<Integer> getTransformLockThresholdVariable()
   {
     return mTransformLockThresholdVariable;
+  }
+
+  public Variable<Boolean> getBackgroundSubtractionSwitchVariable() {
+    return mBackgroundSubtractionSwitchVariable;
   }
 
 }

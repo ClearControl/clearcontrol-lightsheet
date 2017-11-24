@@ -13,6 +13,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.stack.OffHeapPlanarStack;
@@ -33,6 +34,13 @@ public class CalibrationHP extends CalibrationBase
                            implements CalibrationModuleInterface
 {
 
+  BoundedVariable<Integer> mNumberOfPSamplesVariable = new BoundedVariable<Integer>("Number of power samples", 6, 0, Integer.MAX_VALUE);
+  BoundedVariable<Integer> mNumberOfHSamplesVariable = new BoundedVariable<Integer>("Number of height samples", 6, 0, Integer.MAX_VALUE);
+
+
+  BoundedVariable<Integer> mDetectionArmVariable;
+
+
   private MultiKeyMap<Integer, PolynomialFunction> mHPFunctions;
 
   /**
@@ -43,29 +51,18 @@ public class CalibrationHP extends CalibrationBase
    */
   public CalibrationHP(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("HP", pCalibrator);
+
+    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
 
     mHPFunctions = new MultiKeyMap<>();
   }
 
-  /**
-   * Calibrates a given lightsheet's height-power relationship usinga giben
-   * detection arm, number of H samples, and number of P samples.
-   * 
-   * @param pLightSheetIndex
-   *          lightsheet index
-   * @param pDetectionArmIndex
-   *          detection arm
-   * @param pNumberOfSamplesH
-   *          number of H samples
-   * @param pNumberOfSamplesP
-   *          number of P samples
-   */
-  public void calibrate(int pLightSheetIndex,
-                        int pDetectionArmIndex,
-                        int pNumberOfSamplesH,
-                        int pNumberOfSamplesP)
+  public double calibrate(int pLightSheetIndex)
   {
+    int lDetectionArmIndex = mDetectionArmVariable.get();
+    int lNumberOfSamplesH = mNumberOfHSamplesVariable.get();
+    int lNumberOfSamplesP = mNumberOfPSamplesVariable.get();
 
     LightSheetInterface lLightSheet =
                                     getLightSheetMicroscope().getDeviceLists()
@@ -85,14 +82,14 @@ public class CalibrationHP extends CalibrationBase
 
     double lMinH = lWidthVariable.getMin().doubleValue();
     double lMaxH = lWidthVariable.getMax().doubleValue();
-    double lStepH = (lMaxH - lMinH) / pNumberOfSamplesH;
+    double lStepH = (lMaxH - lMinH) / lNumberOfSamplesH;
     double lReferenceH = lMaxH;
 
     final double lReferenceIntensity = adjustP(pLightSheetIndex,
-                                               pDetectionArmIndex,
+                                               lDetectionArmIndex,
                                                lReferencePower,
                                                lReferencePower,
-                                               pNumberOfSamplesP,
+                                               lNumberOfSamplesP,
                                                lReferenceH,
                                                0,
                                                true);
@@ -105,10 +102,10 @@ public class CalibrationHP extends CalibrationBase
     for (double h = lMinH; h <= lMaxH; h += lStepH)
     {
       final double lPower = adjustP(pLightSheetIndex,
-                                    pDetectionArmIndex,
+                                    lDetectionArmIndex,
                                     lMinP,
                                     lMaxP,
-                                    pNumberOfSamplesP,
+                                    lNumberOfSamplesP,
                                     h,
                                     lReferenceIntensity,
                                     false);
@@ -118,6 +115,13 @@ public class CalibrationHP extends CalibrationBase
       lHList.add(h);
       lPRList.add(lPowerRatio);
       lObservations.add(h, lPowerRatio);
+
+
+      if (getCalibrationEngine().isStopRequested())
+      {
+        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        return Double.NaN;
+      }
     }
 
     final PolynomialCurveFitter lPolynomialCurveFitter =
@@ -128,11 +132,11 @@ public class CalibrationHP extends CalibrationBase
                                            new PolynomialFunction(lCoeficients);
 
     mHPFunctions.put(pLightSheetIndex,
-                     pDetectionArmIndex,
+                     lDetectionArmIndex,
                      lPowerRatioFunction);
 
     String lChartName = String.format(" D=%d, I=%d",
-                                      pDetectionArmIndex,
+                                      lDetectionArmIndex,
                                       pLightSheetIndex);
 
     getCalibrationEngine().configureChart(lChartName,
@@ -162,6 +166,8 @@ public class CalibrationHP extends CalibrationBase
                                       lPRList.get(j));
     }
 
+    info("############################################## Done ");
+    return apply(pLightSheetIndex, lDetectionArmIndex);
   }
 
   private Double adjustP(int pLightSheetIndex,
@@ -343,7 +349,7 @@ public class CalibrationHP extends CalibrationBase
    *          detection arm
    * @return residual error
    */
-  public double apply(int pLightSheetIndex, int pDetectionArmIndex)
+  private double apply(int pLightSheetIndex, int pDetectionArmIndex)
   {
     System.out.println("LightSheet index: " + pLightSheetIndex);
 
@@ -367,6 +373,8 @@ public class CalibrationHP extends CalibrationBase
     System.out.format("New HeightPower function: %s \n",
                       lCurrentHeightFunctionVariable.get());
 
+    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+
     double lError = 0;
 
     return lError;
@@ -380,6 +388,11 @@ public class CalibrationHP extends CalibrationBase
   {
     super.reset();
     mHPFunctions.clear();
+
+    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
+      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+    }
   }
+
 
 }

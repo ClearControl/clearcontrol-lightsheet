@@ -60,7 +60,7 @@ public abstract class StandardAdaptationModule extends
 
   private HashMap<Triple<Integer, Integer, Integer>, Result> mResultsMap =
                                                                          new HashMap<>();
-  private LightSheetDOF mLightSheetDOF;
+  protected LightSheetDOF mLightSheetDOF;
 
   /**
    * Instantiates a ND iterator adaptation module

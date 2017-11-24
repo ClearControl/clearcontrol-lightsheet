@@ -6,6 +6,9 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * Base class providing common fields and methods for all calibration modules
  *
@@ -20,16 +23,21 @@ public abstract class CalibrationBase implements
 
   private volatile int mIteration = 0;
 
+  private String mName;
+
   /**
    * Instantiates a calibration module given a parent calibrator and lightsheet
    * microscope.
-   * 
+   *
+   * @param pName
+   *          name of the calibrator
    * @param pCalibrationEngine
    *          parent calibrator
    */
-  public CalibrationBase(CalibrationEngine pCalibrationEngine)
+  public CalibrationBase(String pName, CalibrationEngine pCalibrationEngine)
   {
     super();
+    mName = pName;
     mCalibrationEngine = pCalibrationEngine;
     mLightSheetMicroscope =
                           pCalibrationEngine.getLightSheetMicroscope();
@@ -58,6 +66,7 @@ public abstract class CalibrationBase implements
   @Override
   public void reset()
   {
+    resetState();
     resetIteration();
   }
 
@@ -108,5 +117,45 @@ public abstract class CalibrationBase implements
     return getLightSheetMicroscope().getDeviceLists()
                                     .getNumberOfDevices(DetectionArmInterface.class);
   }
+
+  public String getName() {
+    return mName;
+  }
+
+  private HashMap<Integer, CalibrationState> mCalibrationStates = new HashMap<>();
+  private void resetState() {
+    mCalibrationStates.clear();
+  }
+
+  protected void setCalibrationState(int pLightSheetIndex, CalibrationState pState) {
+    if (mCalibrationStates.containsKey(pLightSheetIndex)) {
+      mCalibrationStates.remove(pLightSheetIndex);
+    }
+    mCalibrationStates.put(pLightSheetIndex, pState);
+
+    // call listeners
+    for (CalibrationStateChangeListener lCalibrationStateChangeListener : mCalibrationStateChangeListeners) {
+      lCalibrationStateChangeListener.execute(this, pLightSheetIndex);
+    }
+  }
+
+  public CalibrationState getCalibrationState(int pIntLightSheetIndex) {
+    if (mCalibrationStates.containsKey(pIntLightSheetIndex)) {
+      return mCalibrationStates.get(pIntLightSheetIndex);
+    }
+    return CalibrationState.NOT_CALIBRATED;
+  }
+
+
+  ArrayList<CalibrationStateChangeListener>
+      mCalibrationStateChangeListeners = new ArrayList<>();
+  public void addCalibrationStateChangeListener(CalibrationStateChangeListener pCalibrationStateChangeListener) {
+    mCalibrationStateChangeListeners.add(pCalibrationStateChangeListener);
+    for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex ++)
+    {
+      setCalibrationState(lLightSheetIndex, getCalibrationState(lLightSheetIndex));
+    }
+  }
+
 
 }

@@ -14,8 +14,10 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -40,6 +42,15 @@ public class CalibrationXY extends CalibrationBase
 
   private MultiKeyMap<Integer, SimpleMatrix> mTransformMatrices;
 
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
+
+
+
+  BoundedVariable<Integer> mNumberOfPointsVariable = new BoundedVariable<Integer>("Number of points", 3, 0, Integer.MAX_VALUE);
+
+
+  private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.05, 0.0, Double.MAX_VALUE, 0.001);
+
   /**
    * Instantiates a XY calibration module given a parent calibrator.
    * 
@@ -48,7 +59,7 @@ public class CalibrationXY extends CalibrationBase
    */
   public CalibrationXY(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("XY", pCalibrator);
 
     mOriginFromX = new MultiKeyMap<>();
     mUnitVectorFromX = new MultiKeyMap<>();
@@ -73,7 +84,7 @@ public class CalibrationXY extends CalibrationBase
                            int pDetectionArmIndex,
                            int pNumberOfPoints)
   {
-    return calibrate(pLightSheetIndex,
+    boolean result = calibrate(pLightSheetIndex,
                      pDetectionArmIndex,
                      pNumberOfPoints,
                      true)
@@ -81,7 +92,65 @@ public class CalibrationXY extends CalibrationBase
                         pDetectionArmIndex,
                         pNumberOfPoints,
                         false);
+    if (result) {
+      setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+    } else {
+      setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+    }
+    return result;
   }
+
+
+  public double calibrate(int pLightSheetIndex)
+  {
+    int lIteration = 0;
+    double lError = Double.POSITIVE_INFINITY;
+    do
+    {
+      lError = calibrateXY(pLightSheetIndex, 0, mNumberOfPointsVariable.get());
+      info("############################################## Error = "
+           + lError);
+
+      if (getCalibrationEngine().isStopRequested())
+      {
+        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        return Double.NaN;
+      }
+    }
+    while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
+    info("############################################## Done ");
+
+    if (lError < mStoppingConditionErrorThreshold.get()) {
+      setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+    } else {
+      setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
+    }
+    return lError;
+  }
+
+
+  /**
+   * Calibrates the XY position of the lighthsheets
+   *
+   * @param pLightSheetIndex
+   *          lightshet index
+   * @param pDetectionArmIndex
+   *          detection arm index
+   * @param pNumberOfPoints
+   *          number of points
+   * @return true when succeeded
+   */
+  private double calibrateXY(int pLightSheetIndex,
+                            int pDetectionArmIndex,
+                            int pNumberOfPoints)
+  {
+    calibrate(pLightSheetIndex,
+                             pDetectionArmIndex,
+                             pNumberOfPoints);
+
+    return apply(pLightSheetIndex, pDetectionArmIndex);
+  }
+
 
   private boolean calibrate(int pLightSheetIndex,
                             int pDetectionArmIndex,
@@ -456,6 +525,8 @@ public class CalibrationXY extends CalibrationBase
 
     System.out.format("lError: %s \n", lError);
 
+    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+
     return lError;
   }
 
@@ -466,6 +537,10 @@ public class CalibrationXY extends CalibrationBase
   public void reset()
   {
     // check if there is nothing to do here
+
+    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
+      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+    }
   }
 
   /**
@@ -484,4 +559,19 @@ public class CalibrationXY extends CalibrationBase
                                   pDetectionArmIndex);
   }
 
+
+  public BoundedVariable<Integer> getMaxIterationsVariable()
+  {
+    return mMaxIterationsVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfPointsVariable()
+  {
+    return mNumberOfPointsVariable;
+  }
+
+  public BoundedVariable<Double> getStoppingConditionErrorThreshold()
+  {
+    return mStoppingConditionErrorThreshold;
+  }
 }

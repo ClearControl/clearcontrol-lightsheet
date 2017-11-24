@@ -18,6 +18,7 @@ import clearcontrol.devices.stages.StageType;
 import clearcontrol.devices.stages.devices.sim.StageDeviceSimulator;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZSlidingWindowDetectionArmSelection;
 import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationX;
 import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZ;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
@@ -277,7 +278,7 @@ public class SimulatedLightSheetMicroscope extends
    * Timelapse
    */
   @SuppressWarnings("unchecked")
-  public void addStandardDevices()
+  public void addStandardDevices(int pNumberOfControlPlanes)
   {
 
     // Adding calibrator:
@@ -294,7 +295,7 @@ public class SimulatedLightSheetMicroscope extends
       InterpolatedAcquisitionState lAcquisitionState =
                                                      new InterpolatedAcquisitionState("default",
                                                                                       this);
-      lAcquisitionState.setupControlPlanes(7,
+      lAcquisitionState.setupControlPlanes(pNumberOfControlPlanes,
                                            ControlPlaneLayout.Circular);
       lAcquisitionState.copyCurrentMicroscopeSettings();
       lAcquisitionStateManager.setCurrentState(lAcquisitionState);
@@ -304,12 +305,22 @@ public class SimulatedLightSheetMicroscope extends
       {
         AdaptiveEngine<InterpolatedAcquisitionState> lAdaptiveEngine =
                                                                      addAdaptiveEngine(lAcquisitionState);
+        lAdaptiveEngine.getRunUntilAllModulesReadyVariable().set(true);
+
         lAdaptiveEngine.add(new AdaptationZ(7,
                                             1.66,
                                             0.95,
                                             2e-5,
                                             0.010,
                                             0.5));
+        lAdaptiveEngine.add(new AdaptationZSlidingWindowDetectionArmSelection(7,
+                                                                              3,
+                                                                              true,
+                                                                              1.66,
+                                                                              0.95,
+                                                                              2e-5,
+                                                                              0.010,
+                                                                              0.5));
         lAdaptiveEngine.add(new AdaptationX(11,
                                             50,
                                             200,

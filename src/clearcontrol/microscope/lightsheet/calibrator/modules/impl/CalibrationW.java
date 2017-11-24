@@ -16,10 +16,10 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
-import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -33,6 +33,11 @@ import org.apache.commons.math3.stat.StatUtils;
 public class CalibrationW extends CalibrationBase
                           implements CalibrationModuleInterface
 {
+  private BoundedVariable<Integer>
+      mNumberOfSamplesVariable = new BoundedVariable<Integer>("Number of samples", 32, 1, Integer.MAX_VALUE);
+
+
+  BoundedVariable<Integer> mDetectionArmVariable;
 
   private HashMap<Integer, TDoubleArrayList> mIntensityLists;
   private TDoubleArrayList mWList = new TDoubleArrayList();
@@ -45,8 +50,26 @@ public class CalibrationW extends CalibrationBase
    */
   public CalibrationW(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("W", pCalibrator);
 
+    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
+  }
+
+  /**
+   * Calibrates and the lightsheet width
+   *
+   *
+   * @return true when succeeded
+   */
+  public double calibrateAllLightSheets()
+  {
+    int lDetectionArmIndex = mDetectionArmVariable.get();
+    if (calibrate(lDetectionArmIndex))
+    {
+      return apply();
+    } else {
+      return Double.MAX_VALUE;
+    }
   }
 
   /**
@@ -54,28 +77,27 @@ public class CalibrationW extends CalibrationBase
    * 
    * @param pDetectionArmIndex
    *          detection arm index
-   * @param pNumberOfSamples
-   *          number of samples
    * @return true for success
    */
-  public boolean calibrate(int pDetectionArmIndex,
-                           int pNumberOfSamples)
+  private boolean calibrate(int pDetectionArmIndex)
   {
     mIntensityLists.clear();
     int lNumberOfLightSheets = getNumberOfLightSheets();
-    for (int l = 0; l < lNumberOfLightSheets; l++)
+    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
-      double[] lAverageIntensities = calibrate(l,
+      double[] lAverageIntensities = calibrate(lLightSheetIndex,
                                                pDetectionArmIndex,
-                                               3);
+                                               mNumberOfSamplesVariable.get());
       if (lAverageIntensities == null)
+      {
+        setCalibrationState(lLightSheetIndex, CalibrationState.FAILED);
         return false;
+      }
 
-      mIntensityLists.put(l,
+      mIntensityLists.put(lLightSheetIndex,
                           new TDoubleArrayList(lAverageIntensities));
 
-      if (ScriptingEngine.isCancelRequestedStatic())
-        return false;
+      setCalibrationState(lLightSheetIndex, CalibrationState.SUCCEEDED);
     }
 
     return true;
@@ -93,9 +115,9 @@ public class CalibrationW extends CalibrationBase
    *          number of samples
    * @return metric value per plane.
    */
-  public double[] calibrate(int pLightSheetIndex,
-                            int pDetectionArmIndex,
-                            int pNumberOfSamples)
+  private double[] calibrate(int pLightSheetIndex,
+                             int pDetectionArmIndex,
+                             int pNumberOfSamples)
   {
 
     try
@@ -224,9 +246,9 @@ public class CalibrationW extends CalibrationBase
     double lIntensityMax = Double.NEGATIVE_INFINITY;
 
     TDoubleArrayList lSums = new TDoubleArrayList();
-    for (int l = 0; l < lNumberOfLightSheets; l++)
+    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
-      TDoubleArrayList lIntensityList = mIntensityLists.get(l);
+      TDoubleArrayList lIntensityList = mIntensityLists.get(lLightSheetIndex);
       lSums.add(lIntensityList.sum());
 
       lIntensityMin = min(lIntensityMin, lIntensityList.min());
@@ -235,12 +257,12 @@ public class CalibrationW extends CalibrationBase
 
     double lLargestSum = Double.NEGATIVE_INFINITY;
     int lIndexOfLargestSum = -1;
-    for (int l = 0; l < lNumberOfLightSheets; l++)
+    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
-      double lSum = lSums.get(l);
+      double lSum = lSums.get(lLightSheetIndex);
       if (lSum > lLargestSum)
       {
-        lIndexOfLargestSum = l;
+        lIndexOfLargestSum = lLightSheetIndex;
         lLargestSum = lSum;
       }
     }
@@ -250,65 +272,66 @@ public class CalibrationW extends CalibrationBase
 
     TDoubleArrayList[] lOffsetsLists =
                                      new TDoubleArrayList[lNumberOfLightSheets];
-    for (int l = 0; l < lNumberOfLightSheets; l++)
-      lOffsetsLists[l] = new TDoubleArrayList();
-
+    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    {
+      lOffsetsLists[lLightSheetIndex] = new TDoubleArrayList();
+    }
     double lStep = (lIntensityMax - lIntensityMin)
                    / (lReferenceIntensityList.size());
 
-    for (double i = lIntensityMin; i <= lIntensityMax; i += lStep)
+    for (double lIntensity = lIntensityMin; lIntensity <= lIntensityMax; lIntensity += lStep)
     {
-      for (int l = 0; l < lNumberOfLightSheets; l++)
+      for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
       {
 
         int lReferenceIndex =
                             searchFirstAbove(lReferenceIntensityList,
-                                             i);
+                                             lIntensity);
         double lReferenceW = mWList.get(lReferenceIndex);
 
         int lOtherIndex =
-                        searchFirstAbove(lReferenceIntensityList, i);
+                        searchFirstAbove(lReferenceIntensityList, lIntensity);
 
         double lOtherW = mWList.get(lOtherIndex);
 
         double lOffsets = lOtherW - lReferenceW;
 
-        lOffsetsLists[l].add(lOffsets);
+        lOffsetsLists[lLightSheetIndex].add(lOffsets);
 
       }
     }
 
     TDoubleArrayList lMedianOffsets = new TDoubleArrayList();
-    for (int l = 0; l < lNumberOfLightSheets; l++)
+    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
       double lMedianOffset =
-                           StatUtils.percentile(lOffsetsLists[l].toArray(),
+                           StatUtils.percentile(lOffsetsLists[lLightSheetIndex].toArray(),
                                                 50);
       lMedianOffsets.add(lMedianOffset);
     }
 
-    for (int l = 0; l < lNumberOfLightSheets; l++)
+    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
       LightSheetInterface lLightSheetDevice =
                                             getLightSheetMicroscope().getDeviceLists()
                                                                      .getDevice(LightSheet.class,
-                                                                                l);
+                                                                                lLightSheetIndex);
 
       UnivariateAffineFunction lFunction =
                                          lLightSheetDevice.getWidthFunction()
                                                           .get();
 
-      double lOffset = lMedianOffsets.get(l);
+      double lOffset = lMedianOffsets.get(lLightSheetIndex);
 
       System.out.format("Applying offset: %g to lightsheet %d \n",
                         lOffset,
-                        l);
+                        lLightSheetIndex);
 
       lFunction.composeWith(UnivariateAffineFunction.axplusb(1,
                                                              lOffset));
 
       System.out.format("Width function for lightsheet %d is now: %s \n",
-                        l,
+                        lLightSheetIndex,
                         lFunction);
 
       lError += abs(lOffset);
@@ -323,9 +346,12 @@ public class CalibrationW extends CalibrationBase
   private int searchFirstAbove(TDoubleArrayList pList, double pValue)
   {
     int lSize = pList.size();
-    for (int i = 0; i < lSize; i++)
+    for (int i = 0; i < lSize; i++) {
       if (pList.getQuick(i) >= pValue)
+      {
         return i;
+      }
+    }
     return lSize - 1;
   }
 
@@ -336,5 +362,19 @@ public class CalibrationW extends CalibrationBase
   public void reset()
   {
     super.reset();
+
+    for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
+      setCalibrationState(lLightSheetIndex, CalibrationState.NOT_CALIBRATED);
+    }
+  }
+
+  public BoundedVariable<Integer> getDetectionArmVariable()
+  {
+    return mDetectionArmVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfSamplesVariable()
+  {
+    return mNumberOfSamplesVariable;
   }
 }

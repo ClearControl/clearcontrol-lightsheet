@@ -15,17 +15,8 @@ import fastfuse.FastFusionEngine;
 import fastfuse.FastFusionEngineInterface;
 import fastfuse.FastFusionMemoryPool;
 import fastfuse.registration.AffineMatrix;
-import fastfuse.tasks.CompositeTasks;
-import fastfuse.tasks.DownsampleXYbyHalfTask;
+import fastfuse.tasks.*;
 import fastfuse.tasks.DownsampleXYbyHalfTask.Type;
-import fastfuse.tasks.FlipTask;
-import fastfuse.tasks.GaussianBlurTask;
-import fastfuse.tasks.IdentityTask;
-import fastfuse.tasks.MemoryReleaseTask;
-import fastfuse.tasks.RegistrationListener;
-import fastfuse.tasks.RegistrationTask;
-import fastfuse.tasks.TaskInterface;
-import fastfuse.tasks.TenengradFusionTask;
 
 /**
  * Lightsheet fast fusion engine
@@ -46,6 +37,12 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                          MachineConfiguration.get()
                                                              .getBooleanProperty("fastfuse.register",
                                                                                  true);
+
+
+  private volatile boolean mBackgroundSubtraction =
+      MachineConfiguration.get()
+                          .getBooleanProperty("fastfuse.backgroundsubtraction",
+                                              false);
 
   private volatile boolean mDownscale =
                                       MachineConfiguration.get()
@@ -160,11 +157,15 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     }
 
     // setting up pool with max pool size:
-    long lMaxMemoryInBytes =
-                           (long) (mMemRatio
-                                   * pContext.getDevice()
-                                             .getGlobalMemorySizeInBytes());
+    long lMaxMemoryInBytes = (long) (mMemRatio * pContext.getDevice().getGlobalMemorySizeInBytes());
     FastFusionMemoryPool.getInstance(pContext, lMaxMemoryInBytes);
+
+    setup(pNumberOfLightSheets, pNumberOfDetectionArms);
+  }
+
+  public void setup(int pNumberOfLightSheets, int pNumberOfDetectionArms) {
+    this.reset(true);
+    this.getTasks().clear();
 
     int[] lKernelSizesRegistration = new int[]
     { 3, 3, 3 };
@@ -174,8 +175,11 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     float[] lKernelSigmasFusion = new float[]
     { 15, 15, 5 };
 
-    float[] lKernelSigmasBackground = new float[]
-    { 30, 30, 10 };
+    float[] lKernelSigmasBackground = null;
+    if (mBackgroundSubtraction)
+    {
+      lKernelSigmasBackground = new float[] { 30, 30, 10 };
+    }
 
     if (pNumberOfLightSheets == 1)
     {
@@ -227,6 +231,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                       float[] pKernelSigmasBackground)
   {
     if (isDownscale())
+    {
       addTasks(DownsampleXYbyHalfTask.applyAndReleaseInputs(Type.Median,
                                                             "d",
                                                             "C0L0",
@@ -237,7 +242,9 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                             "C1L1",
                                                             "C1L2",
                                                             "C1L3"));
+    }
     else
+    {
       addTasks(IdentityTask.withSuffix("d",
                                        "C0L0",
                                        "C0L1",
@@ -247,7 +254,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                        "C1L1",
                                        "C1L2",
                                        "C1L3"));
-
+    }
     ImageChannelDataType lInitialFusionDataType =
                                                 isRegistration() ? ImageChannelDataType.Float
                                                                  : ImageChannelDataType.UnsignedInt16;
@@ -304,18 +311,40 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     // "C0",
     // "C1adjusted"));
 
-    addTasks(CompositeTasks.fuseWithSmoothWeights("fused-preliminary",
-                                                  ImageChannelDataType.Float,
-                                                  pKernelSigmasFusion,
-                                                  true,
-                                                  "C0",
-                                                  "C1adjusted"));
+    if (pKernelSigmasBackground == null)
+    {
+      addTasks(CompositeTasks.fuseWithSmoothWeights("fused-preliminary",
+                                                                      ImageChannelDataType.Float,
+                                                    pKernelSigmasFusion,
+                                                                      true,
+                                                                      "C0",
+                                                                      "C1adjusted"));
 
-    addTasks(CompositeTasks.subtractBlurredCopyFromFloatImage("fused-preliminary",
-                                                              "fused",
-                                                              pKernelSigmasBackground,
-                                                              true,
-                                                              ImageChannelDataType.UnsignedInt16));
+      addTask(new NonnegativeSubtractionTask("fused-preliminary",
+                                                               0,
+                                                               "fused",
+                                                               ImageChannelDataType.UnsignedInt16));
+
+    }
+    else
+    {
+
+      addTasks(CompositeTasks.fuseWithSmoothWeights(
+          "fused-preliminary",
+          ImageChannelDataType.Float,
+          pKernelSigmasFusion,
+          true,
+          "C0",
+          "C1adjusted"));
+
+      addTasks(CompositeTasks.subtractBlurredCopyFromFloatImage(
+          "fused-preliminary",
+          "fused",
+          pKernelSigmasBackground,
+          true,
+          ImageChannelDataType.UnsignedInt16));
+
+    }
   }
 
   protected void setupFourLightsheetsOneDetectionArm()
@@ -571,6 +600,9 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
         float lZAspectRatio =
                             (float) (lStackMetaData.getVoxelDimZ()
                                      / lStackMetaData.getVoxelDimX());
+
+        System.out.println("RegistrationTask: Setting aspect ratio: " + lZAspectRatio);
+
         mRegistrationTask.getParameters().setScaleZ(lZAspectRatio);
 
         mRegistrationTask.addListener(this);
@@ -641,6 +673,28 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
   public void setRegistration(boolean pRegistration)
   {
     mRegistration = pRegistration;
+  }
+
+
+  /**
+   * Is background subtraction turned on?
+   *
+   * @return true if registration is turned on
+   */
+  public boolean isSubtractingBackground()
+  {
+    return mBackgroundSubtraction;
+  }
+
+  /**
+   * Sets the background subtraction flag
+   *
+   * @param pBackgroundSubtraction
+   *          registration flag
+   */
+  public void setSubtractingBackground(boolean pBackgroundSubtraction)
+  {
+    mBackgroundSubtraction = pBackgroundSubtraction;
   }
 
   /**

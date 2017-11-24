@@ -34,7 +34,7 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.DepthOfFocusImagingEngine;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
 import clearcontrol.microscope.lightsheet.gui.LightSheetMicroscopeGUI;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.simulation.LightSheetMicroscopeSimulationDevice;
@@ -77,7 +77,7 @@ public class LightSheetMicroscopeDemo extends Application implements
       int lMaxCameraResolution = 1024;
       long lImageResolution = 1024;
 
-      int lNumberOfLightSheets = 2;
+      int lNumberOfLightSheets = 4;
       int lNumberOfDetectionArms = 2;
 
       float lDivisionTime = 11f;
@@ -338,6 +338,12 @@ public class LightSheetMicroscopeDemo extends Application implements
                                     lLightSheetMicroscope.addTimelapse();
 
       lTimelapse.addFileStackSinkType(RawFileStackSink.class);
+
+      EDFImagingEngine
+          lEDFImagingEngine = new EDFImagingEngine(lSimulationGPUDevice.createContext(), lLightSheetMicroscope);
+      lLightSheetMicroscope.addDevice(0, lEDFImagingEngine);
+
+
 
       // Now that the microscope has been setup, we can connect the simulator to
       // it:

@@ -9,10 +9,12 @@ import java.util.concurrent.TimeoutException;
 
 import clearcontrol.core.math.functions.UnivariateAffineFunction;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.scripting.engine.ScriptingEngine;
@@ -28,6 +30,18 @@ public class CalibrationP extends CalibrationBase
                           implements CalibrationModuleInterface
 {
 
+  BoundedVariable<Integer> mNumberOfSamplesVariable = new BoundedVariable<Integer>("Number of samples", 6, 0, Integer.MAX_VALUE);
+
+  private BoundedVariable<Double>
+      mExposureTimeInSecondsVariable = new BoundedVariable<Double>("Exposure time in seconds", 0.5, 0.0, Double.MAX_VALUE, 0.001);
+
+  BoundedVariable<Integer> mDetectionArmVariable;
+
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
+
+  private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.04, 0.0, Double.MAX_VALUE, 0.001);
+
+
   private TDoubleArrayList mRatioList;
 
   /**
@@ -38,7 +52,40 @@ public class CalibrationP extends CalibrationBase
    */
   public CalibrationP(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("P", pCalibrator);
+    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
+  }
+
+
+
+  public void calibrateAllLightSheets()
+  {
+    int lIteration = 0;
+    double lError = Double.POSITIVE_INFINITY;
+    do
+    {
+      if (!calibrate()) {
+        for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
+          setCalibrationState(lLightSheetIndex, CalibrationState.FAILED);
+        }
+        return;
+      }
+      lError = apply();
+
+      info("############################################## Error = "
+           + lError);
+
+    }
+    while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
+    info("############################################## Done ");
+
+    for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
+      if (lError < mStoppingConditionErrorThreshold.get()) {
+        setCalibrationState(lLightSheetIndex, CalibrationState.SUCCEEDED);
+      } else {
+        setCalibrationState(lLightSheetIndex, CalibrationState.ACCEPTABLE);
+      }
+    }
   }
 
   /**
@@ -46,20 +93,17 @@ public class CalibrationP extends CalibrationBase
    * 
    * @return true for success
    */
-  public boolean calibrate()
+  private boolean calibrate()
   {
     int lNumberOfLightSheets = getNumberOfLightSheets();
 
     TDoubleArrayList lAverageIntensityList = new TDoubleArrayList();
-    for (int l = 0; l < lNumberOfLightSheets; l++)
+    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
-      Double lValue = calibrate(l, 0, 6);
+      Double lValue = calibrate(lLightSheetIndex, mDetectionArmVariable.get(), mNumberOfSamplesVariable.get());
       if (lValue == null)
         return false;
       lAverageIntensityList.add(lValue);
-
-      if (ScriptingEngine.isCancelRequestedStatic())
-        return false;
     }
 
     System.out.format("Average image intensity list: %s \n",
@@ -91,7 +135,7 @@ public class CalibrationP extends CalibrationBase
    *          number of samples
    * @return average intensity
    */
-  public Double calibrate(int pLightSheetIndex,
+  private Double calibrate(int pLightSheetIndex,
                           int pDetectionArmIndex,
                           int pNumberOfSamples)
   {
@@ -115,7 +159,7 @@ public class CalibrationP extends CalibrationBase
                                        getLightSheetMicroscope().requestQueue();
       lQueue.clearQueue();
       lQueue.setFullROI();
-      lQueue.setExp(0.5);
+      lQueue.setExp(mExposureTimeInSecondsVariable.get());
       lQueue.setI(pLightSheetIndex);
       lQueue.setIX(pLightSheetIndex, 0);
       lQueue.setIY(pLightSheetIndex, 0);
@@ -190,30 +234,31 @@ public class CalibrationP extends CalibrationBase
 
     double lError = 0;
 
-    for (int l = 0; l < lNumberOfLightSheets; l++)
+    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
-      System.out.format("Light sheet index: %d \n", l);
+      System.out.format("Light sheet index: %d \n", lLightSheetIndex);
 
       LightSheetInterface lLightSheetDevice =
                                             getLightSheetMicroscope().getDeviceLists()
                                                                      .getDevice(LightSheetInterface.class,
-                                                                                l);
+                                                                                lLightSheetIndex);
 
       Variable<UnivariateAffineFunction> lPowerFunctionVariable =
                                                                 lLightSheetDevice.getPowerFunction();
 
-      double lPowerRatio = mRatioList.get(l);
+      double lPowerRatio = mRatioList.get(lLightSheetIndex);
 
       if (lPowerRatio == 0 || Double.isNaN(lPowerRatio))
       {
         warning("Power ratio is null or NaN or infinite (%g)",
                 lPowerRatio);
+        setCalibrationState(lLightSheetIndex, CalibrationState.FAILED);
         continue;
       }
 
       System.out.format("Applying power ratio correction: %g to lightsheet %d \n",
                         lPowerRatio,
-                        l);
+                        lLightSheetIndex);
 
       lPowerFunctionVariable.get()
                             .composeWith(UnivariateAffineFunction.axplusb(lPowerRatio,
@@ -221,10 +266,17 @@ public class CalibrationP extends CalibrationBase
       lPowerFunctionVariable.setCurrent();
 
       System.out.format("Power function for lightsheet %d is now: %s \n",
-                        l,
+                        lLightSheetIndex,
                         lPowerFunctionVariable.get());
 
       lError += abs(log(lPowerRatio));
+
+      if (getCalibrationEngine().isStopRequested())
+      {
+        setCalibrationState(lLightSheetIndex, CalibrationState.FAILED);
+        return Double.NaN;
+      }
+      setCalibrationState(lLightSheetIndex, CalibrationState.SUCCEEDED);
     }
 
     System.out.format("Error after applying power ratio correction: %g \n",
@@ -241,13 +293,45 @@ public class CalibrationP extends CalibrationBase
   {
     int lNumberOfLightSheets = getNumberOfLightSheets();
 
-    for (int l = 0; l < lNumberOfLightSheets; l++)
+    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    {
       getLightSheetMicroscope().getDeviceLists()
                                .getDevice(LightSheetInterface.class,
-                                          l)
+                                          lLightSheetIndex)
                                .getPowerFunction()
                                .set(UnivariateAffineFunction.axplusb(1,
                                                                      0));
+    }
 
+
+    for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
+      setCalibrationState(lLightSheetIndex, CalibrationState.NOT_CALIBRATED);
+    }
+
+  }
+
+  public BoundedVariable<Double> getExposureTimeInSecondsVariable()
+  {
+    return mExposureTimeInSecondsVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfSamplesVariable()
+  {
+    return mNumberOfSamplesVariable;
+  }
+
+  public BoundedVariable<Integer> getDetectionArmVariable()
+  {
+    return mDetectionArmVariable;
+  }
+
+  public BoundedVariable<Integer> getMaxIterationsVariable()
+  {
+    return mMaxIterationsVariable;
+  }
+
+  public BoundedVariable<Double> getStoppingConditionErrorThreshold()
+  {
+    return mStoppingConditionErrorThreshold;
   }
 }

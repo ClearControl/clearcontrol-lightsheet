@@ -13,4 +13,11 @@ public interface CalibrationModuleInterface
    */
   void reset();
 
+  String getName();
+
+
+  CalibrationState getCalibrationState(int pIntLightSheetIndex);
+
+  void addCalibrationStateChangeListener(CalibrationStateChangeListener pCalibrationStateChangeListener);
+
 }
