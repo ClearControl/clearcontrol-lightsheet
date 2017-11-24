@@ -270,7 +270,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
           Node lPanel =
               (Node) lConstructor.newInstance(lCalibrationModule);
 
-          Tab lTab = new Tab(lCalibrationModuleClass.getName());
+          Tab lTab = new Tab(lCalibrationModule.getName());
           lTab.setClosable(false);
           lTab.setContent(lPanel);
           lTabPane.getTabs().add(lTab);

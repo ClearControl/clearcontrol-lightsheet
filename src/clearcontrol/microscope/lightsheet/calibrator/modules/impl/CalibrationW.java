@@ -16,6 +16,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
@@ -69,13 +70,20 @@ public class CalibrationW extends CalibrationBase
                                                pDetectionArmIndex,
                                                3);
       if (lAverageIntensities == null)
+      {
+        setCalibrationState(l, CalibrationState.FAILED);
         return false;
+      }
 
       mIntensityLists.put(l,
                           new TDoubleArrayList(lAverageIntensities));
 
-      if (ScriptingEngine.isCancelRequestedStatic())
+      if (ScriptingEngine.isCancelRequestedStatic()) {
+        setCalibrationState(l, CalibrationState.FAILED);
         return false;
+      }
+
+      setCalibrationState(l, CalibrationState.SUCCEEDED);
     }
 
     return true;
@@ -336,5 +344,9 @@ public class CalibrationW extends CalibrationBase
   public void reset()
   {
     super.reset();
+
+    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
+      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+    }
   }
 }

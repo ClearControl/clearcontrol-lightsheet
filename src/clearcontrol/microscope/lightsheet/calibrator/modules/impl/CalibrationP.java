@@ -9,10 +9,12 @@ import java.util.concurrent.TimeoutException;
 
 import clearcontrol.core.math.functions.UnivariateAffineFunction;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.scripting.engine.ScriptingEngine;
@@ -28,6 +30,11 @@ public class CalibrationP extends CalibrationBase
                           implements CalibrationModuleInterface
 {
 
+  BoundedVariable<Integer> mNumberOfSamplesVariable = new BoundedVariable<Integer>("Number of samples", 6, 0, Integer.MAX_VALUE);
+
+
+  BoundedVariable<Integer> mDetectionArmVariable;
+
   private TDoubleArrayList mRatioList;
 
   /**
@@ -39,6 +46,7 @@ public class CalibrationP extends CalibrationBase
   public CalibrationP(CalibrationEngine pCalibrator)
   {
     super("P", pCalibrator);
+    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
   }
 
   /**
@@ -53,7 +61,7 @@ public class CalibrationP extends CalibrationBase
     TDoubleArrayList lAverageIntensityList = new TDoubleArrayList();
     for (int l = 0; l < lNumberOfLightSheets; l++)
     {
-      Double lValue = calibrate(l, 0, 6);
+      Double lValue = calibrate(l, mDetectionArmVariable.get(), mNumberOfSamplesVariable.get());
       if (lValue == null)
         return false;
       lAverageIntensityList.add(lValue);
@@ -208,6 +216,7 @@ public class CalibrationP extends CalibrationBase
       {
         warning("Power ratio is null or NaN or infinite (%g)",
                 lPowerRatio);
+        setCalibrationState(l, CalibrationState.FAILED);
         continue;
       }
 
@@ -225,6 +234,8 @@ public class CalibrationP extends CalibrationBase
                         lPowerFunctionVariable.get());
 
       lError += abs(log(lPowerRatio));
+
+      setCalibrationState(l, CalibrationState.SUCCEEDED);
     }
 
     System.out.format("Error after applying power ratio correction: %g \n",
@@ -249,5 +260,22 @@ public class CalibrationP extends CalibrationBase
                                .set(UnivariateAffineFunction.axplusb(1,
                                                                      0));
 
+
+    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
+      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+    }
+
   }
+
+
+  public BoundedVariable<Integer> getNumberOfSamplesVariable()
+  {
+    return mNumberOfSamplesVariable;
+  }
+
+  public BoundedVariable<Integer> getDetectionArmVariable()
+  {
+    return mDetectionArmVariable;
+  }
+
 }

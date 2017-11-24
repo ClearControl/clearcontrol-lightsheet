@@ -6,6 +6,7 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -131,11 +132,26 @@ public abstract class CalibrationBase implements
       mCalibrationStates.remove(pLightSheetIndex);
     }
     mCalibrationStates.put(pLightSheetIndex, pState);
+
+    // call listeners
+    for (CalibrationStateChangeListener lCalibrationStateChangeListener : mCalibrationStateChangeListeners) {
+      lCalibrationStateChangeListener.execute(this, pLightSheetIndex);
+    }
   }
+
   public CalibrationState getSuccessOfLastCalibration(int pIntLightSheetIndex) {
     if (mCalibrationStates.containsKey(pIntLightSheetIndex)) {
       return mCalibrationStates.get(pIntLightSheetIndex);
     }
     return CalibrationState.NOT_CALIBRATED;
   }
+
+
+  ArrayList<CalibrationStateChangeListener>
+      mCalibrationStateChangeListeners = new ArrayList<>();
+  public void addCalibrationStateChangeListener(CalibrationStateChangeListener pCalibrationStateChangeListener) {
+    mCalibrationStateChangeListeners.add(pCalibrationStateChangeListener);
+  }
+
+
 }

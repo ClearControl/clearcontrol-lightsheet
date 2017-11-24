@@ -18,4 +18,6 @@ public interface CalibrationModuleInterface
 
   CalibrationState getSuccessOfLastCalibration(int pIntLightSheetIndex);
 
+  void addCalibrationStateChangeListener(CalibrationStateChangeListener pCalibrationStateChangeListener);
+
 }

@@ -14,6 +14,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.stack.OffHeapPlanarStack;
@@ -384,6 +385,8 @@ public class CalibrationWP extends CalibrationBase
 
     double lError = 0;
 
+    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+
     return lError;
   }
 
@@ -395,6 +398,11 @@ public class CalibrationWP extends CalibrationBase
   {
     super.reset();
     mWPFunctions.clear();
+
+
+    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
+      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+    }
   }
 
 }

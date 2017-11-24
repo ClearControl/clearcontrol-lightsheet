@@ -14,6 +14,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.stack.OffHeapPlanarStack;
@@ -73,7 +74,7 @@ public class CalibrationXY extends CalibrationBase
                            int pDetectionArmIndex,
                            int pNumberOfPoints)
   {
-    return calibrate(pLightSheetIndex,
+    boolean result = calibrate(pLightSheetIndex,
                      pDetectionArmIndex,
                      pNumberOfPoints,
                      true)
@@ -81,6 +82,12 @@ public class CalibrationXY extends CalibrationBase
                         pDetectionArmIndex,
                         pNumberOfPoints,
                         false);
+    if (result) {
+      setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+    } else {
+      setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+    }
+    return result;
   }
 
   private boolean calibrate(int pLightSheetIndex,
@@ -456,6 +463,8 @@ public class CalibrationXY extends CalibrationBase
 
     System.out.format("lError: %s \n", lError);
 
+    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+
     return lError;
   }
 
@@ -466,6 +475,10 @@ public class CalibrationXY extends CalibrationBase
   public void reset()
   {
     // check if there is nothing to do here
+
+    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
+      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+    }
   }
 
   /**

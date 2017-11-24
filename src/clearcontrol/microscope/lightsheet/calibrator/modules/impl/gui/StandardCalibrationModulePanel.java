@@ -13,6 +13,6 @@ public class StandardCalibrationModulePanel extends CustomVariablePane
 {
   public StandardCalibrationModulePanel(CalibrationModuleInterface pCalibrationModuleInterface) {
     super();
-    addTab(pCalibrationModuleInterface.getName());
+    addTab(""); //"X: " + pCalibrationModuleInterface.getName());
   }
 }

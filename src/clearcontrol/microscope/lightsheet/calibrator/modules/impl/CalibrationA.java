@@ -21,6 +21,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.stack.OffHeapPlanarStack;
@@ -409,6 +410,7 @@ public class CalibrationA extends CalibrationBase
     if (lUnivariateAffineFunction == null)
     {
       System.out.format("No model available! \n");
+      setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
       return Double.POSITIVE_INFINITY;
     }
 
@@ -428,6 +430,7 @@ public class CalibrationA extends CalibrationBase
                     + abs(lUnivariateAffineFunction.getConstant());
 
     System.out.format("Error: %g \n", lError);
+    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
 
     return lError;
   }
@@ -440,6 +443,10 @@ public class CalibrationA extends CalibrationBase
   {
     super.reset();
     mModels.clear();
+
+    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
+      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+    }
   }
 
 

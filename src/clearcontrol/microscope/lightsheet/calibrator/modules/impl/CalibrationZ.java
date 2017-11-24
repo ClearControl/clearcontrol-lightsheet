@@ -21,6 +21,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
@@ -143,7 +144,10 @@ public class CalibrationZ extends CalibrationBase
                                  lPerturbedIZ);
 
       if (dz == null)
+      {
+        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
         return false;
+      }
 
       String lChartName =
                         this.getClass().getSimpleName() + " DZ v. IZ";
@@ -171,7 +175,10 @@ public class CalibrationZ extends CalibrationBase
         }
 
       if (getCalibrationEngine().isStopRequested())
+      {
+        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
         return false;
+      }
 
     }
 
@@ -221,6 +228,7 @@ public class CalibrationZ extends CalibrationBase
 
     }
 
+    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
     return true;
   }
 
@@ -474,7 +482,10 @@ public class CalibrationZ extends CalibrationBase
   public double apply(int pLightSheetIndex, boolean pAdjustDetectionZ)
   {
     if (getCalibrationEngine().isStopRequested())
+    {
+      setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
       return Double.NaN;
+    }
 
     double lSlope = 0, lOffset = 0;
 
@@ -618,6 +629,11 @@ public class CalibrationZ extends CalibrationBase
   public void reset()
   {
     super.reset();
+
+
+    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
+      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+    }
   }
 
 
