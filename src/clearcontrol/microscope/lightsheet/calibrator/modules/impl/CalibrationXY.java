@@ -48,7 +48,7 @@ public class CalibrationXY extends CalibrationBase
    */
   public CalibrationXY(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("XY", pCalibrator);
 
     mOriginFromX = new MultiKeyMap<>();
     mUnitVectorFromX = new MultiKeyMap<>();

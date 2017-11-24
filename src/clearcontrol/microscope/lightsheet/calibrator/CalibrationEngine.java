@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.calibrator;
 import static java.lang.Math.pow;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import clearcontrol.core.configuration.MachineConfiguration;
@@ -10,7 +11,9 @@ import clearcontrol.core.device.task.TaskDevice;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
+import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
 import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationA;
 import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationHP;
 import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationP;
@@ -186,7 +189,7 @@ public class CalibrationEngine extends TaskDevice implements
     if (isStopRequested())
       return false;/**/
 
-    if (getCalibrateAVariable().get() && !calibrateA(32, 4))
+    if (getCalibrateAVariable().get() && !calibrateA())
       return false;
 
     if (isStopRequested())
@@ -283,7 +286,7 @@ public class CalibrationEngine extends TaskDevice implements
    *          number of repeats
    * @return true when succeeded
    */
-  public boolean calibrateA(int pNumberOfAngles, int pNumberOfRepeats)
+  public boolean calibrateA()
   {
     for (int l = 0; l < mNumberOfLightSheetDevices
                     && !isStopRequested(); l++)
@@ -293,7 +296,7 @@ public class CalibrationEngine extends TaskDevice implements
         double lError = Double.POSITIVE_INFINITY;
         do
         {
-          lError = calibrateA(l, pNumberOfAngles, pNumberOfRepeats);
+          lError = calibrateA(l);
           info("############################################## Error = "
                + lError);
           if (ScriptingEngine.isCancelRequestedStatic()
@@ -446,19 +449,12 @@ public class CalibrationEngine extends TaskDevice implements
    * 
    * @param pLightSheetIndex
    *          lightsheet index
-   * @param pNumberOfAngles
-   *          number of angles
-   * @param pNumberOfRepeats
    *          number of repeats
    * @return true when succeeded
    */
-  public double calibrateA(int pLightSheetIndex,
-                           int pNumberOfAngles,
-                           int pNumberOfRepeats)
+  public double calibrateA(int pLightSheetIndex)
   {
-    mCalibrationA.calibrate(pLightSheetIndex,
-                            pNumberOfAngles,
-                            pNumberOfRepeats);
+    mCalibrationA.calibrate(pLightSheetIndex);
 
     return mCalibrationA.apply(pLightSheetIndex);
   }
@@ -733,6 +729,20 @@ public class CalibrationEngine extends TaskDevice implements
   {
     return new File(mCalibrationFolder, pName + ".json");
   }
+
+  public ArrayList<CalibrationModuleInterface> getModuleList()
+  {
+    ArrayList<CalibrationModuleInterface> lModuleList = new ArrayList<>();
+    lModuleList.add(mCalibrationZ);
+    lModuleList.add(mCalibrationA);
+    lModuleList.add(mCalibrationP);
+    lModuleList.add(mCalibrationW);
+    lModuleList.add(mCalibrationXY);
+    lModuleList.add(mCalibrationHP);
+    lModuleList.add(mCalibrationWP);
+    return lModuleList;
+  }
+
 
   /**
    * Returns the variable holding the 'calibrate Z' boolean flag.

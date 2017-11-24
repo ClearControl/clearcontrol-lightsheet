@@ -38,7 +38,7 @@ public class CalibrationP extends CalibrationBase
    */
   public CalibrationP(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("P", pCalibrator);
   }
 
   /**

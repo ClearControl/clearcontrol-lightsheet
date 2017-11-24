@@ -13,4 +13,6 @@ public interface CalibrationModuleInterface
    */
   void reset();
 
+  String getName();
+
 }

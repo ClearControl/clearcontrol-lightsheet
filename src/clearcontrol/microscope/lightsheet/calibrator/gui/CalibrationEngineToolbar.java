@@ -1,12 +1,13 @@
 package clearcontrol.microscope.lightsheet.calibrator.gui;
 
+import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -17,12 +18,16 @@ import clearcontrol.gui.jfx.var.checkbox.VariableCheckBox;
 import clearcontrol.gui.jfx.var.onoffarray.OnOffArrayPane;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+
 /**
  * Calibration Engine Toolbar
  *
  * @author royer
  */
 public class CalibrationEngineToolbar extends CustomGridPane
+    implements LoggingFeature
 {
 
   /**
@@ -220,6 +225,63 @@ public class CalibrationEngineToolbar extends CustomGridPane
       GridPane.setColumnSpan(lResetCalibration, 1);
       add(lResetCalibration, 2, lRow);
 
+      lRow++;
+    }
+
+
+
+    {
+      TabPane lTabPane = new TabPane();
+      TitledPane lTitledPane = new TitledPane("Parameters", lTabPane);
+      lTitledPane.setAnimated(false);
+
+      ArrayList<CalibrationModuleInterface>
+          lModuleList = pCalibrationEngine.getModuleList();
+
+
+      for (CalibrationModuleInterface lCalibrationModule : lModuleList)
+      {
+        try
+        {
+          Class<?> lCalibrationModuleClass =
+              lCalibrationModule.getClass();
+          String lCalibrationModuleClassName =
+              lCalibrationModuleClass.getSimpleName();
+          String lCalibrationModulePanelClassName =
+              lCalibrationModuleClass.getPackage()
+                                    .getName()
+              + ".gui."
+              + lCalibrationModuleClassName
+              + "Panel";
+          info("Searching for class %s as panel for calibration module %s \n",
+               lCalibrationModulePanelClassName,
+               lCalibrationModuleClassName);
+          Class<?> lClass =
+              Class.forName(lCalibrationModulePanelClassName);
+          Constructor<?> lConstructor =
+              lClass.getConstructor(lCalibrationModule.getClass());
+          Node lPanel =
+              (Node) lConstructor.newInstance(lCalibrationModule);
+
+          Tab lTab = new Tab(lCalibrationModuleClass.getName());
+          lTab.setClosable(false);
+          lTab.setContent(lPanel);
+          lTabPane.getTabs().add(lTab);
+
+        }
+        catch (ClassNotFoundException e)
+        {
+          warning("Cannot find panel for module %s \n",
+                  lCalibrationModule.getClass().getSimpleName());
+          // e.printStackTrace();
+        }
+        catch (Throwable e)
+        {
+          e.printStackTrace();
+        }
+      }
+      GridPane.setColumnSpan(lTitledPane, 3);
+      add(lTitledPane, 0, lRow);
       lRow++;
     }
 

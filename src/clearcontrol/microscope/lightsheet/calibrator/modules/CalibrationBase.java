@@ -20,16 +20,21 @@ public abstract class CalibrationBase implements
 
   private volatile int mIteration = 0;
 
+  private String mName;
+
   /**
    * Instantiates a calibration module given a parent calibrator and lightsheet
    * microscope.
-   * 
+   *
+   * @param pName
+   *          name of the calibrator
    * @param pCalibrationEngine
    *          parent calibrator
    */
-  public CalibrationBase(CalibrationEngine pCalibrationEngine)
+  public CalibrationBase(String pName, CalibrationEngine pCalibrationEngine)
   {
     super();
+    mName = pName;
     mCalibrationEngine = pCalibrationEngine;
     mLightSheetMicroscope =
                           pCalibrationEngine.getLightSheetMicroscope();
@@ -109,4 +114,7 @@ public abstract class CalibrationBase implements
                                     .getNumberOfDevices(DetectionArmInterface.class);
   }
 
+  public String getName() {
+    return mName;
+  }
 }

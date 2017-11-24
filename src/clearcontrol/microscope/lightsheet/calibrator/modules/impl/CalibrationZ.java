@@ -54,7 +54,7 @@ public class CalibrationZ extends CalibrationBase
    */
   public CalibrationZ(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("Z", pCalibrator);
 
     mNumberOfDetectionArmDevices =
                                  getLightSheetMicroscope().getDeviceLists()

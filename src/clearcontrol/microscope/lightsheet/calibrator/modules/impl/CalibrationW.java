@@ -45,7 +45,7 @@ public class CalibrationW extends CalibrationBase
    */
   public CalibrationW(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("W", pCalibrator);
 
   }
 

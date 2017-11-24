@@ -15,6 +15,7 @@ import clearcontrol.core.math.argmax.ArgMaxFinder1DInterface;
 import clearcontrol.core.math.argmax.SmartArgMaxFinder;
 import clearcontrol.core.math.functions.UnivariateAffineFunction;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
@@ -40,6 +41,21 @@ public class CalibrationA extends CalibrationBase
 
   private RawFileStackSink mSink;
 
+  private BoundedVariable<Double>
+      mAngleOptimisationRangeWidthVariable = new BoundedVariable<Double>("Angle range in degrees",
+                                                                           -14.0, 0.0, 40.0, 1.0);
+
+
+  private BoundedVariable<Double>
+      mExposureTimeInSecondsVariable = new BoundedVariable<Double>("Exposure time in seconds", 0.04, 0.0, Double.MAX_VALUE, 0.001);
+
+  private BoundedVariable<Integer>
+      mNumberOfRepeatsVariable = new BoundedVariable<Integer>("Number of repeats", 4, 1, Integer.MAX_VALUE);
+
+  private BoundedVariable<Integer>
+      mNumberOfAnglesVariable = new BoundedVariable<Integer>("Number of angles", 32, 1, Integer.MAX_VALUE);
+
+
   /**
    * Lightsheet Alpha angle calibration module
    * 
@@ -48,7 +64,7 @@ public class CalibrationA extends CalibrationBase
    */
   public CalibrationA(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("A", pCalibrator);
     mModels = new HashMap<>();
 
 
@@ -60,14 +76,8 @@ public class CalibrationA extends CalibrationBase
    * 
    * @param pLightSheetIndex
    *          lightsheet index
-   * @param pNumberOfAngles
-   *          numbe rof angles
-   * @param pNumberOfRepeats
-   *          number of repeats.
    */
-  public void calibrate(int pLightSheetIndex,
-                        int pNumberOfAngles,
-                        int pNumberOfRepeats)
+  public void calibrate(int pLightSheetIndex)
   {
 
     mSink = new RawFileStackSink();
@@ -85,8 +95,8 @@ public class CalibrationA extends CalibrationBase
     System.out.println("Current Alpha function: "
                        + lLightSheet.getAlphaFunction());
 
-    double lMinA = -20;
-    double lMaxA = 20;
+    double lMinA = -mAngleOptimisationRangeWidthVariable.get() / 2.0;
+    double lMaxA = mAngleOptimisationRangeWidthVariable.get() / 2.0;
 
     double lMinIY = lLightSheet.getYVariable().getMin().doubleValue();
     double lMaxIY = lLightSheet.getYVariable().getMax().doubleValue();
@@ -100,7 +110,10 @@ public class CalibrationA extends CalibrationBase
     double y = 0.5 * min(abs(lMinIY), abs(lMaxIY));
     double z = 0.5 * (lMaxZ + lMinZ);
 
-    for (int r = 0; r < pNumberOfRepeats; r++)
+    int lNumberOfRepeats = mNumberOfRepeatsVariable.get();
+    int lNumberOfAngles = mNumberOfAnglesVariable.get();
+
+    for (int r = 0; r < lNumberOfRepeats; r++)
     {
       System.out.format("Searching for optimal alpha angles for lighsheet at y=+/-%g \n",
                         y);
@@ -109,7 +122,7 @@ public class CalibrationA extends CalibrationBase
                                       lMinA,
                                       lMaxA,
                                       (lMaxA - lMinA)
-                                             / (pNumberOfAngles - 1),
+                                             / (lNumberOfAngles - 1),
                                       -y,
                                       z);
 
@@ -117,7 +130,7 @@ public class CalibrationA extends CalibrationBase
                                       lMinA,
                                       lMaxA,
                                       (lMaxA - lMinA)
-                                             / (pNumberOfAngles - 1),
+                                             / (lNumberOfAngles - 1),
                                       +y,
                                       z);
 
@@ -206,7 +219,7 @@ public class CalibrationA extends CalibrationBase
       // lQueue.zero();
 
       lQueue.setFullROI();
-      lQueue.setExp(0.1);
+      lQueue.setExp(mExposureTimeInSecondsVariable.get());
 
       lQueue.setI(pLightSheetIndex);
       lQueue.setIX(pLightSheetIndex, 0);
@@ -427,6 +440,27 @@ public class CalibrationA extends CalibrationBase
   {
     super.reset();
     mModels.clear();
+  }
+
+
+  public BoundedVariable<Double> getAngleOptimisationRangeWidthVariable()
+  {
+    return mAngleOptimisationRangeWidthVariable;
+  }
+
+  public BoundedVariable<Double> getExposureTimeInSecondsVariable()
+  {
+    return mExposureTimeInSecondsVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfRepeatsVariable()
+  {
+    return mNumberOfRepeatsVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfAnglesVariable()
+  {
+    return mNumberOfAnglesVariable;
   }
 
 }

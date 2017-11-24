@@ -43,7 +43,7 @@ public class CalibrationHP extends CalibrationBase
    */
   public CalibrationHP(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("HP", pCalibrator);
 
     mHPFunctions = new MultiKeyMap<>();
   }
