@@ -45,7 +45,7 @@ public class CalibrationWP extends CalibrationBase
    */
   public CalibrationWP(CalibrationEngine pCalibrator)
   {
-    super("W", pCalibrator);
+    super("WP", pCalibrator);
 
     mWPFunctions = new MultiKeyMap<>();
   }

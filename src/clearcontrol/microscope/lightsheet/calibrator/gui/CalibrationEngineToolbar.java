@@ -292,6 +292,23 @@ public class CalibrationEngineToolbar extends CustomGridPane
       lRow++;
     }
 
+    {
+
+
+
+      CalibrationStatePanel lCalibrationStatePanel = new CalibrationStatePanel(pCalibrationEngine);
+      //GridPane.setColumnSpan(lCalibrationStatePanel, 4);
+      //add(lCalibrationStatePanel,0, lRow);
+      //lRow++;
+
+      TitledPane lTitledPane = new TitledPane("Calibration state", lCalibrationStatePanel);
+      lTitledPane.setAnimated(false);
+      lTitledPane.setCollapsible(false);
+      GridPane.setColumnSpan(lTitledPane, 4);
+      add(lTitledPane, 0, lRow);
+      lRow++;
+    }
+
   }
 
   private void addCheckBoxForCalibrationModule(String pName,

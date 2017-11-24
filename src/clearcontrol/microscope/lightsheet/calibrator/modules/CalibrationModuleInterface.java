@@ -16,7 +16,7 @@ public interface CalibrationModuleInterface
   String getName();
 
 
-  CalibrationState getSuccessOfLastCalibration(int pIntLightSheetIndex);
+  CalibrationState getCalibrationState(int pIntLightSheetIndex);
 
   void addCalibrationStateChangeListener(CalibrationStateChangeListener pCalibrationStateChangeListener);
 

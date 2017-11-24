@@ -139,7 +139,7 @@ public abstract class CalibrationBase implements
     }
   }
 
-  public CalibrationState getSuccessOfLastCalibration(int pIntLightSheetIndex) {
+  public CalibrationState getCalibrationState(int pIntLightSheetIndex) {
     if (mCalibrationStates.containsKey(pIntLightSheetIndex)) {
       return mCalibrationStates.get(pIntLightSheetIndex);
     }
