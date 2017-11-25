@@ -21,6 +21,10 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationStateChangeListener;
+import clearcontrol.microscope.lightsheet.configurationstate.HasConfigurationState;
+import clearcontrol.microscope.lightsheet.configurationstate.HasName;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.stack.EmptyStack;
@@ -40,7 +44,9 @@ public abstract class StandardAdaptationModule extends
                                                NDIteratorAdaptationModule<InterpolatedAcquisitionState>
                                                implements
                                                AdaptationModuleInterface<InterpolatedAcquisitionState>,
-                                               AsynchronousExecutorFeature
+                                               AsynchronousExecutorFeature,
+                                               HasConfigurationState,
+                                               HasName
 
 {
 
@@ -554,6 +560,42 @@ public abstract class StandardAdaptationModule extends
   public Variable<Double> getLaserPowerVariable()
   {
     return mLaserPowerVariable;
+  }
+
+
+  ConfigurationState mConfigurationState = ConfigurationState.UNINITIALIZED;
+  protected void resetState() {
+    mConfigurationState = ConfigurationState.UNINITIALIZED;
+  }
+
+  protected void setConfigurationState(ConfigurationState pConfigurationState) {
+    mConfigurationState = pConfigurationState;
+
+    // call listeners
+    for (ConfigurationStateChangeListener lConfigurationStateChangeListener : mConfigurationStateChangeListeners)
+    {
+      lConfigurationStateChangeListener.configurationStateChanged(this);
+    }
+
+  }
+
+  public ConfigurationState getConfigurationState() {
+
+    return mConfigurationState;
+  }
+
+
+
+
+  ArrayList<ConfigurationStateChangeListener>
+      mConfigurationStateChangeListeners = new ArrayList<>();
+
+  public void addConfigurationStateChangeListener(ConfigurationStateChangeListener pConfigurationStateChangeListener) {
+    mConfigurationStateChangeListeners.add(
+        pConfigurationStateChangeListener);
+
+    setConfigurationState(getConfigurationState());
+
   }
 
 }

@@ -6,6 +6,9 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationStateChangeListener;
+import clearcontrol.microscope.lightsheet.configurationstate.HasConfigurationStatePerLightSheet;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -15,8 +18,9 @@ import gnu.trove.list.array.TDoubleArrayList;
  *
  * @author royer
  */
-public class AdaptationZ extends StandardAdaptationModule implements
-                         AdaptationModuleInterface<InterpolatedAcquisitionState>
+public class AdaptationZ extends StandardAdaptationPerLightSheetModule implements
+                                                          AdaptationModuleInterface<InterpolatedAcquisitionState>,
+                                                          HasConfigurationStatePerLightSheet
 {
 
   private final Variable<Double> mDeltaZVariable =
@@ -45,7 +49,8 @@ public class AdaptationZ extends StandardAdaptationModule implements
                      double pProbabilityThreshold,
                      double pImageMetricThreshold,
                      double pExposureInSeconds,
-                     double pLaserPower)
+                     double pLaserPower,
+                     int pNumberOfLightSheets)
   {
     super("Z",
           LightSheetDOF.IZ,
@@ -55,6 +60,10 @@ public class AdaptationZ extends StandardAdaptationModule implements
           pExposureInSeconds,
           pLaserPower);
     getDeltaZVariable().set(pDeltaZ);
+
+    for (int lLightSheetIndex = 0; lLightSheetIndex < pNumberOfLightSheets; lLightSheetIndex++) {
+      setConfigurationState(lLightSheetIndex, getConfigurationState(lLightSheetIndex));
+    }
 
   }
 
@@ -119,12 +128,20 @@ public class AdaptationZ extends StandardAdaptationModule implements
 
     lQueue.addMetaDataEntry(MetaDataChannel.Channel, "NoDisplay");
 
-    return findBestDOFValue(lControlPlaneIndex,
+    Future<?> result = findBestDOFValue(lControlPlaneIndex,
                             lLightSheetIndex,
                             lQueue,
                             lAcquisitionState,
                             lDZList);
 
+    if (result != null)
+    {
+      setConfigurationState(lLightSheetIndex, ConfigurationState.SUCCEEDED);
+    } else {
+      setConfigurationState(lLightSheetIndex, ConfigurationState.FAILED);
+    }
+
+    return result;
     /**/
 
   }
