@@ -43,7 +43,7 @@ public class AdaptationW extends StandardAdaptationModule implements
                      double pExposureInSeconds,
                      double pLaserPower)
   {
-    super("W",
+    super("W*",
           LightSheetDOF.IW,
           pNumberOfSamples,
           pProbabilityThreshold,

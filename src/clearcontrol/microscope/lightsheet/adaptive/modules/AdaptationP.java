@@ -38,7 +38,7 @@ public class AdaptationP extends
    */
   public AdaptationP(double pTargetLaserPower)
   {
-    super("W");
+    super("P*");
     mTargetLaserPower = pTargetLaserPower;
   }
 

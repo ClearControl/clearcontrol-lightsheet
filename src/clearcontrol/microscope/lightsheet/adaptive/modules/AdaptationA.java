@@ -58,7 +58,7 @@ public class AdaptationA extends StandardAdaptationModule implements
                      double pExposureInSeconds,
                      double pLaserPower)
   {
-    super("A",
+    super("A*",
           LightSheetDOF.IA,
           pNumberOfSamples,
           pProbabilityThreshold,

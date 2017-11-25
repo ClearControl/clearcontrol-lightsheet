@@ -62,7 +62,7 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
                                                        double pExposureInSeconds,
                                                        double pLaserPower)
   {
-    super("Z (With smooth detection arm voting)",
+    super("Z*",
           LightSheetDOF.IZ,
           pNumberOfSamples,
           pProbabilityThreshold,
