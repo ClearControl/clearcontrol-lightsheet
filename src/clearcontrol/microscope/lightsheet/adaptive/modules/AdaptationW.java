@@ -50,6 +50,8 @@ public class AdaptationW extends StandardAdaptationModule implements
           pImageMetricThreshold,
           pExposureInSeconds,
           pLaserPower);
+
+    getIsActiveVariable().set(false);
   }
 
   @Override

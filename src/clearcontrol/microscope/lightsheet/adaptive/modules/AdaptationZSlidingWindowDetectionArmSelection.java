@@ -74,6 +74,7 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
 
     mFirstAndLastControlPlaneZero.set(pFirstAndLastControlPlaneZero);
 
+    getIsActiveVariable().set(false);
   }
 
   @Override

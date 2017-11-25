@@ -66,6 +66,8 @@ public class AdaptationA extends StandardAdaptationModule implements
           pExposureInSeconds,
           pLaserPower);
     mMaxDefocus = pMaxDefocus;
+
+    getIsActiveVariable().set(false);
   }
 
   @Override

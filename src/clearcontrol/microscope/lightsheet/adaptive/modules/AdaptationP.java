@@ -40,6 +40,8 @@ public class AdaptationP extends
   {
     super("P*");
     mTargetLaserPower = pTargetLaserPower;
+
+    getIsActiveVariable().set(false);
   }
 
   @Override
