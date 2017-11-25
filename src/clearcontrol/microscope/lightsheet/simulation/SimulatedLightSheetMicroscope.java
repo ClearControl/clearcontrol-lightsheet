@@ -303,6 +303,8 @@ public class SimulatedLightSheetMicroscope extends
 
       // Adding adaptive engine device:
       {
+        int lNumberOfLightSheets = lAcquisitionState.getNumberOfLightSheets();
+
         AdaptiveEngine<InterpolatedAcquisitionState> lAdaptiveEngine =
                                                                      addAdaptiveEngine(lAcquisitionState);
         lAdaptiveEngine.getRunUntilAllModulesReadyVariable().set(true);
@@ -312,7 +314,8 @@ public class SimulatedLightSheetMicroscope extends
                                             0.95,
                                             2e-5,
                                             0.010,
-                                            0.5));
+                                            0.5,
+                                            lNumberOfLightSheets));
         lAdaptiveEngine.add(new AdaptationZSlidingWindowDetectionArmSelection(7,
                                                                               3,
                                                                               true,
