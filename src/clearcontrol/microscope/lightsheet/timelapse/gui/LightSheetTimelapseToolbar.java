@@ -1,9 +1,14 @@
 package clearcontrol.microscope.lightsheet.timelapse.gui;
 
+import clearcontrol.microscope.MicroscopeInterface;
+import clearcontrol.microscope.adaptive.AdaptiveEngine;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStatePanel;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 
 import clearcontrol.gui.jfx.var.checkbox.VariableCheckBox;
@@ -92,6 +97,36 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       mRow++;
     }
 */
+
+    {
+      MicroscopeInterface
+          lMicroscopeInterface = pLightSheetTimelapse.getMicroscope();
+      AdaptiveEngine
+          lAdaptiveEngine = (AdaptiveEngine) lMicroscopeInterface.getDevice(AdaptiveEngine.class, 0);
+
+      if (lAdaptiveEngine != null)
+      {
+        int lNumberOfLightSheets = 1;
+        if (lMicroscopeInterface instanceof LightSheetMicroscope)
+        {
+          lNumberOfLightSheets = ((LightSheetMicroscope) lMicroscopeInterface).getNumberOfLightSheets();
+        }
+
+        ConfigurationStatePanel
+            lConfigurationStatePanel =
+            new ConfigurationStatePanel(lAdaptiveEngine.getModuleList(),
+                                        lNumberOfLightSheets);
+
+        TitledPane lTitledPane = new TitledPane("Adaptation state",
+                                                lConfigurationStatePanel);
+        lTitledPane.setAnimated(false);
+        lTitledPane.setExpanded(true);
+        GridPane.setColumnSpan(lTitledPane, 4);
+        add(lTitledPane, 0, mRow);
+        mRow++;
+      }
+    }
+
   }
 
 }
