@@ -31,7 +31,7 @@ public class ConfigurationStateLabel extends Label
             {
               @Override public void run()
               {
-                mThis.setText(pNewValue);
+                mThis.setText(" " + pNewValue + " ");
               }
             });
         }
