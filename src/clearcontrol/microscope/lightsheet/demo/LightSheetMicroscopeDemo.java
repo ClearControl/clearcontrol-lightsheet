@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
+import clearcontrol.microscope.lightsheet.adaptive.AdaptationSetup;
 import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationX;
 import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZ;
 import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZSlidingWindowDetectionArmSelection;
@@ -330,7 +331,7 @@ public class LightSheetMicroscopeDemo extends Application implements
                                                                                       lLightSheetMicroscope);
       lAcquisitionState.getImageWidthVariable().set(lImageResolution);
       lAcquisitionState.getImageHeightVariable().set(lImageResolution);
-      
+
       lAcquisitionState.setupControlPlanes(lNumberOfControlPlanes,
                                            ControlPlaneLayout.Circular);
       lAcquisitionStateManager.setCurrentState(lAcquisitionState);
@@ -338,34 +339,7 @@ public class LightSheetMicroscopeDemo extends Application implements
 
       // Adding adaptive engine device:
       {
-
-        AdaptiveEngine<InterpolatedAcquisitionState>
-            lAdaptiveEngine =
-            lLightSheetMicroscope.addAdaptiveEngine(lAcquisitionState);
-        lAdaptiveEngine.getRunUntilAllModulesReadyVariable().set(true);
-
-        lAdaptiveEngine.add(new AdaptationZ(7,
-                                            1.66,
-                                            0.95,
-                                            2e-5,
-                                            0.010,
-                                            0.5,
-                                            lNumberOfLightSheets));
-        lAdaptiveEngine.add(new AdaptationZSlidingWindowDetectionArmSelection(7,
-                                                                              3,
-                                                                              true,
-                                                                              1.66,
-                                                                              0.95,
-                                                                              2e-5,
-                                                                              0.010,
-                                                                              0.5));
-        lAdaptiveEngine.add(new AdaptationX(11,
-                                            50,
-                                            200,
-                                            0.95,
-                                            2e-5,
-                                            0.010,
-                                            0.5));
+        AdaptationSetup.setup(lLightSheetMicroscope, lAcquisitionState);
       }
 
       // Adding calibrator:
