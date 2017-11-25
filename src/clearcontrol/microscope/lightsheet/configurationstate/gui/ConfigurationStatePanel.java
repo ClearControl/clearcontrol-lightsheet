@@ -66,8 +66,16 @@ public class ConfigurationStatePanel extends CustomGridPane
                         pHasConfigurationStatePerLightSheet.getConfigurationState(
                             pLightSheetIndex);
 
+                    String lConfigurationStateDescription = lConfigurationState.toString();
+
+                    if (pHasConfigurationStatePerLightSheet instanceof HasStateDescriptionPerLightSheet) {
+                      lConfigurationStateDescription += "\n" + ((HasStateDescriptionPerLightSheet) pHasConfigurationStatePerLightSheet).getStateDescription(pLightSheetIndex);
+                    } else if (pHasConfigurationStatePerLightSheet instanceof HasStateDescription) {
+                      lConfigurationStateDescription += "\n" + ((HasStateDescription) pHasConfigurationStatePerLightSheet).getStateDescription();
+                    }
+
                     lConfigurationStateLabel.getStringVariable()
-                                            .set("" + lConfigurationState);
+                                            .set("" + lConfigurationStateDescription);
                     lConfigurationStateLabel.setStyle(
                         "-fx-border-color:white; -fx-font-color:white; -fx-background-color: "
                         + lConfigurationState.getColor().toLowerCase()
@@ -92,8 +100,14 @@ public class ConfigurationStatePanel extends CustomGridPane
                       lConfigurationState =
                       pHasConfigurationState.getConfigurationState();
 
+                  String lConfigurationStateDescription = lConfigurationState.toString();
+
+                  if (pHasConfigurationState instanceof HasStateDescription) {
+                    lConfigurationStateDescription += "\n" + ((HasStateDescription) pHasConfigurationState).getStateDescription();
+                  }
+
                   lConfigurationStateLabel.getStringVariable()
-                                          .set("" + lConfigurationState);
+                                          .set("" + lConfigurationStateDescription);
                   lConfigurationStateLabel.setStyle(
                       "-fx-border-color:white; -fx-font-color:white; -fx-background-color: "
                       + lConfigurationState.getColor().toLowerCase()

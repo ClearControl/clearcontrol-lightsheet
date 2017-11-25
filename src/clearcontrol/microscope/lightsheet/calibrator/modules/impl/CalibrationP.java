@@ -17,6 +17,8 @@ import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleIn
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescription;
+import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescriptionPerLightSheet;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -26,7 +28,8 @@ import gnu.trove.list.array.TDoubleArrayList;
  * @author royer
  */
 public class CalibrationP extends CalibrationBase
-                          implements CalibrationModuleInterface
+                          implements CalibrationModuleInterface,
+                                     HasStateDescriptionPerLightSheet
 {
 
   BoundedVariable<Integer> mNumberOfSamplesVariable = new BoundedVariable<Integer>("Number of samples", 6, 0, Integer.MAX_VALUE);
@@ -330,5 +333,32 @@ public class CalibrationP extends CalibrationBase
   public BoundedVariable<Double> getStoppingConditionErrorThreshold()
   {
     return mStoppingConditionErrorThreshold;
+  }
+
+
+  @Override public String getStateDescription(int pLightSheetIndex)
+  {
+    final LightSheetInterface lLightSheetDevice =
+        getLightSheetMicroscope().getDeviceLists()
+                                 .getDevice(LightSheetInterface.class,
+                                            pLightSheetIndex);
+
+    UnivariateAffineFunction lUnivariateAffineFunction = lLightSheetDevice.getPowerFunction().get();
+
+    return "y = " + lUnivariateAffineFunction.getSlope() + " * x + " + lUnivariateAffineFunction.getConstant();
+  }
+
+  @Override public String getStateDescription()
+  {
+    String result = null;
+    int lNumberOfLightSheets = getNumberOfLightSheets();
+    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++) {
+      if (result == null) {
+        result = getStateDescription(lLightSheetIndex);
+      } else {
+        result = result + "\n" + getStateDescription(lLightSheetIndex);
+      }
+    }
+    return result;
   }
 }

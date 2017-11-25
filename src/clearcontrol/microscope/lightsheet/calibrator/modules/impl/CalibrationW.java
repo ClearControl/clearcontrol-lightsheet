@@ -21,6 +21,7 @@ import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescriptionPerLightSheet;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -32,7 +33,8 @@ import org.apache.commons.math3.stat.StatUtils;
  * @author royer
  */
 public class CalibrationW extends CalibrationPerLightSheetBase
-                          implements CalibrationModuleInterface
+                          implements CalibrationModuleInterface,
+                                     HasStateDescriptionPerLightSheet
 {
   private BoundedVariable<Integer>
       mNumberOfSamplesVariable = new BoundedVariable<Integer>("Number of samples", 32, 1, Integer.MAX_VALUE);
@@ -377,5 +379,22 @@ public class CalibrationW extends CalibrationPerLightSheetBase
   public BoundedVariable<Integer> getNumberOfSamplesVariable()
   {
     return mNumberOfSamplesVariable;
+  }
+
+  @Override public String getStateDescription(int pLightSheetIndex)
+  {
+    final LightSheetInterface lLightSheetDevice =
+        getLightSheetMicroscope().getDeviceLists()
+                                 .getDevice(LightSheetInterface.class,
+                                            pLightSheetIndex);
+
+    UnivariateAffineFunction lUnivariateAffineFunction = lLightSheetDevice.getWidthFunction().get();
+
+    return "y = " + lUnivariateAffineFunction.getSlope() + " * x + " + lUnivariateAffineFunction.getConstant();
+  }
+
+  @Override public String getStateDescription()
+  {
+    return null;
   }
 }

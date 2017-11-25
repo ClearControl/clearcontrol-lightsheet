@@ -23,6 +23,7 @@ import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLight
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescriptionPerLightSheet;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -32,7 +33,8 @@ import gnu.trove.list.array.TDoubleArrayList;
  * @author royer
  */
 public class CalibrationA extends CalibrationPerLightSheetBase
-                          implements CalibrationModuleInterface
+                          implements CalibrationModuleInterface,
+                                     HasStateDescriptionPerLightSheet
 {
 
   private ArgMaxFinder1DInterface mArgMaxFinder;
@@ -512,5 +514,23 @@ public class CalibrationA extends CalibrationPerLightSheetBase
   public BoundedVariable<Double> getStoppingConditionErrorThreshold()
   {
     return mStoppingConditionErrorThreshold;
+  }
+
+
+  @Override public String getStateDescription(int pLightSheetIndex)
+  {
+    final LightSheetInterface lLightSheetDevice =
+        getLightSheetMicroscope().getDeviceLists()
+                                 .getDevice(LightSheetInterface.class,
+                                            pLightSheetIndex);
+
+    UnivariateAffineFunction lUnivariateAffineFunction = lLightSheetDevice.getAlphaFunction().get();
+
+    return "y = " + lUnivariateAffineFunction.getSlope() + " * x + " + lUnivariateAffineFunction.getConstant();
+  }
+
+  @Override public String getStateDescription()
+  {
+    return "";
   }
 }
