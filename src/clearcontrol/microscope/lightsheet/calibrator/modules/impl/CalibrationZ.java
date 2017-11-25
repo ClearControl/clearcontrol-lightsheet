@@ -17,11 +17,11 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
-import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -34,7 +34,7 @@ import static java.lang.Math.*;
  *
  * @author royer
  */
-public class CalibrationZ extends CalibrationBase
+public class CalibrationZ extends CalibrationPerLightSheetBase
                           implements CalibrationModuleInterface
 {
 
@@ -96,7 +96,7 @@ public class CalibrationZ extends CalibrationBase
 
       if (getCalibrationEngine().isStopRequested())
       {
-        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
         return Double.NaN;
       }
     }
@@ -104,9 +104,9 @@ public class CalibrationZ extends CalibrationBase
     info("############################################## Done ");
 
     if (lError < mStoppingConditionErrorThreshold.get()) {
-      setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+      setConfigurationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
     } else {
-      setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
+      setConfigurationState(pLightSheetIndex, ConfigurationState.ACCEPTABLE);
     }
 
     return lError;
@@ -195,7 +195,7 @@ public class CalibrationZ extends CalibrationBase
 
       if (dz == null)
       {
-        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
         return Double.NaN;
       }
 
@@ -228,7 +228,7 @@ public class CalibrationZ extends CalibrationBase
 
       if (getCalibrationEngine().isStopRequested())
       {
-        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
         return Double.NaN;
       }
 
@@ -537,7 +537,7 @@ public class CalibrationZ extends CalibrationBase
   {
     if (getCalibrationEngine().isStopRequested())
     {
-      setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+      setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
       return Double.NaN;
     }
 
@@ -685,7 +685,7 @@ public class CalibrationZ extends CalibrationBase
     super.reset();
 
     for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-      setCalibrationState(lLightSheetIndex, CalibrationState.NOT_CALIBRATED);
+      setConfigurationState(lLightSheetIndex, ConfigurationState.UNINITIALIZED);
     }
   }
 

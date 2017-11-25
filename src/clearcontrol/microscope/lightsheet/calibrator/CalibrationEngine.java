@@ -20,6 +20,8 @@ import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationXY;
 import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationZ;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.HasConfigurationState;
+import clearcontrol.microscope.lightsheet.configurationstate.HasName;
 import clearcontrol.scripting.engine.ScriptingEngine;
 
 import org.ejml.simple.SimpleMatrix;
@@ -533,6 +535,34 @@ public class CalibrationEngine extends TaskDevice implements
   public ArrayList<CalibrationModuleInterface> getModuleList()
   {
     ArrayList<CalibrationModuleInterface> lModuleList = new ArrayList<>();
+    lModuleList.add(mCalibrationZ);
+    lModuleList.add(mCalibrationA);
+    lModuleList.add(mCalibrationP);
+    lModuleList.add(mCalibrationW);
+    lModuleList.add(mCalibrationXY);
+    //lModuleList.add(mCalibrationHP);
+    //lModuleList.add(mCalibrationWP);
+    return lModuleList;
+  }
+
+
+  public ArrayList<HasConfigurationState> getStateList()
+  {
+    ArrayList<HasConfigurationState> lModuleList = new ArrayList<>();
+    lModuleList.add(mCalibrationZ);
+    lModuleList.add(mCalibrationA);
+    lModuleList.add(mCalibrationP);
+    lModuleList.add(mCalibrationW);
+    lModuleList.add(mCalibrationXY);
+    //lModuleList.add(mCalibrationHP);
+    //lModuleList.add(mCalibrationWP);
+    return lModuleList;
+  }
+
+
+  public ArrayList<HasName> getNameList()
+  {
+    ArrayList<HasName> lModuleList = new ArrayList<>();
     lModuleList.add(mCalibrationZ);
     lModuleList.add(mCalibrationA);
     lModuleList.add(mCalibrationP);

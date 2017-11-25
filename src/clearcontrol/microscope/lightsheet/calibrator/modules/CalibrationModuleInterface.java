@@ -1,11 +1,16 @@
 package clearcontrol.microscope.lightsheet.calibrator.modules;
 
+import clearcontrol.microscope.lightsheet.configurationstate.HasConfigurationState;
+import clearcontrol.microscope.lightsheet.configurationstate.HasName;
+
 /**
  * Calibration module interface
  *
  * @author royer
  */
-public interface CalibrationModuleInterface
+public interface CalibrationModuleInterface extends
+                                            HasConfigurationState,
+                                            HasName
 {
 
   /**
@@ -14,10 +19,5 @@ public interface CalibrationModuleInterface
   void reset();
 
   String getName();
-
-
-  CalibrationState getCalibrationState(int pIntLightSheetIndex);
-
-  void addCalibrationStateChangeListener(CalibrationStateChangeListener pCalibrationStateChangeListener);
 
 }

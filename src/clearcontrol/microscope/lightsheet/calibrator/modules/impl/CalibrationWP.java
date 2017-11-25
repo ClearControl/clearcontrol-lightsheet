@@ -14,7 +14,8 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.stack.OffHeapPlanarStack;
@@ -32,7 +33,7 @@ import org.apache.commons.math3.stat.StatUtils;
  *
  * @author royer
  */
-public class CalibrationWP extends CalibrationBase
+public class CalibrationWP extends CalibrationPerLightSheetBase
                            implements CalibrationModuleInterface
 {
 
@@ -127,7 +128,7 @@ public class CalibrationWP extends CalibrationBase
 
       if (getCalibrationEngine().isStopRequested())
       {
-        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
         return Double.NaN;
       }
     }
@@ -399,7 +400,7 @@ public class CalibrationWP extends CalibrationBase
 
     double lError = 0;
 
-    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+    setConfigurationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
 
     return lError;
   }
@@ -414,7 +415,7 @@ public class CalibrationWP extends CalibrationBase
     mWPFunctions.clear();
 
     for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-      setCalibrationState(lLightSheetIndex, CalibrationState.NOT_CALIBRATED);
+      setConfigurationState(lLightSheetIndex, ConfigurationState.UNINITIALIZED);
     }
   }
 

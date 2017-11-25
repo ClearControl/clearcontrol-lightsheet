@@ -14,10 +14,9 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
-import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -65,9 +64,7 @@ public class CalibrationP extends CalibrationBase
     do
     {
       if (!calibrate()) {
-        for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-          setCalibrationState(lLightSheetIndex, CalibrationState.FAILED);
-        }
+        setConfigurationState(ConfigurationState.FAILED);
         return;
       }
       lError = apply();
@@ -79,13 +76,12 @@ public class CalibrationP extends CalibrationBase
     while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-      if (lError < mStoppingConditionErrorThreshold.get()) {
-        setCalibrationState(lLightSheetIndex, CalibrationState.SUCCEEDED);
-      } else {
-        setCalibrationState(lLightSheetIndex, CalibrationState.ACCEPTABLE);
-      }
+    if (lError < mStoppingConditionErrorThreshold.get()) {
+      setConfigurationState(ConfigurationState.SUCCEEDED);
+    } else {
+      setConfigurationState(ConfigurationState.ACCEPTABLE);
     }
+
   }
 
   /**
@@ -252,7 +248,7 @@ public class CalibrationP extends CalibrationBase
       {
         warning("Power ratio is null or NaN or infinite (%g)",
                 lPowerRatio);
-        setCalibrationState(lLightSheetIndex, CalibrationState.FAILED);
+        setConfigurationState(ConfigurationState.FAILED);
         continue;
       }
 
@@ -273,11 +269,11 @@ public class CalibrationP extends CalibrationBase
 
       if (getCalibrationEngine().isStopRequested())
       {
-        setCalibrationState(lLightSheetIndex, CalibrationState.FAILED);
+        setConfigurationState(ConfigurationState.FAILED);
         return Double.NaN;
       }
-      setCalibrationState(lLightSheetIndex, CalibrationState.SUCCEEDED);
     }
+    setConfigurationState(ConfigurationState.SUCCEEDED);
 
     System.out.format("Error after applying power ratio correction: %g \n",
                       lError);
@@ -304,9 +300,8 @@ public class CalibrationP extends CalibrationBase
     }
 
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-      setCalibrationState(lLightSheetIndex, CalibrationState.NOT_CALIBRATED);
-    }
+    setConfigurationState(ConfigurationState.UNINITIALIZED);
+
 
   }
 

@@ -14,10 +14,10 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
-import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -31,7 +31,7 @@ import org.ejml.simple.SimpleMatrix;
  *
  * @author royer
  */
-public class CalibrationXY extends CalibrationBase
+public class CalibrationXY extends CalibrationPerLightSheetBase
                            implements CalibrationModuleInterface
 {
 
@@ -69,36 +69,6 @@ public class CalibrationXY extends CalibrationBase
     mTransformMatrices = new MultiKeyMap<>();
   }
 
-  /**
-   * Calibrates
-   * 
-   * @param pLightSheetIndex
-   *          lightsheet index
-   * @param pDetectionArmIndex
-   *          detection arm index
-   * @param pNumberOfPoints
-   *          number of points
-   * @return true for success
-   */
-  public boolean calibrate(int pLightSheetIndex,
-                           int pDetectionArmIndex,
-                           int pNumberOfPoints)
-  {
-    boolean result = calibrate(pLightSheetIndex,
-                     pDetectionArmIndex,
-                     pNumberOfPoints,
-                     true)
-           && calibrate(pLightSheetIndex,
-                        pDetectionArmIndex,
-                        pNumberOfPoints,
-                        false);
-    if (result) {
-      setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
-    } else {
-      setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
-    }
-    return result;
-  }
 
 
   public double calibrate(int pLightSheetIndex)
@@ -113,7 +83,7 @@ public class CalibrationXY extends CalibrationBase
 
       if (getCalibrationEngine().isStopRequested())
       {
-        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
         return Double.NaN;
       }
     }
@@ -121,9 +91,9 @@ public class CalibrationXY extends CalibrationBase
     info("############################################## Done ");
 
     if (lError < mStoppingConditionErrorThreshold.get()) {
-      setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+      setConfigurationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
     } else {
-      setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
+      setConfigurationState(pLightSheetIndex, ConfigurationState.ACCEPTABLE);
     }
     return lError;
   }
@@ -151,6 +121,35 @@ public class CalibrationXY extends CalibrationBase
     return apply(pLightSheetIndex, pDetectionArmIndex);
   }
 
+
+  /**
+   * Calibrates
+   *
+   * @param pLightSheetIndex
+   *          lightsheet index
+   * @param pDetectionArmIndex
+   *          detection arm index
+   * @param pNumberOfPoints
+   *          number of points
+   * @return true for success
+   */
+  private boolean calibrate(int pLightSheetIndex,
+                            int pDetectionArmIndex,
+                            int pNumberOfPoints)
+  {
+    boolean result = calibrate(pLightSheetIndex,
+                               pDetectionArmIndex,
+                               pNumberOfPoints,
+                               true)
+                     && calibrate(pLightSheetIndex,
+                                  pDetectionArmIndex,
+                                  pNumberOfPoints,
+                                  false);
+    if (!result) {
+      setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
+    }
+    return result;
+  }
 
   private boolean calibrate(int pLightSheetIndex,
                             int pDetectionArmIndex,
@@ -525,7 +524,7 @@ public class CalibrationXY extends CalibrationBase
 
     System.out.format("lError: %s \n", lError);
 
-    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+    //setCalibrationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
 
     return lError;
   }
@@ -539,7 +538,7 @@ public class CalibrationXY extends CalibrationBase
     // check if there is nothing to do here
 
     for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
-      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+      setConfigurationState(i, ConfigurationState.UNINITIALIZED);
     }
   }
 

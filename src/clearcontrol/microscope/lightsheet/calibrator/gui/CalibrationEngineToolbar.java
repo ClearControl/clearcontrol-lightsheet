@@ -1,8 +1,8 @@
 package clearcontrol.microscope.lightsheet.calibrator.gui;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStatePanel;
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -306,12 +306,14 @@ public class CalibrationEngineToolbar extends CustomGridPane
 
 
 
-      CalibrationStatePanel lCalibrationStatePanel = new CalibrationStatePanel(pCalibrationEngine);
-      //GridPane.setColumnSpan(lCalibrationStatePanel, 4);
-      //add(lCalibrationStatePanel,0, lRow);
+      ConfigurationStatePanel
+          lConfigurationStatePanel = new ConfigurationStatePanel(pCalibrationEngine.getModuleList(), pCalibrationEngine.getLightSheetMicroscope().getNumberOfLightSheets());
+      //GridPane.setColumnSpan(lConfigurationStatePanel, 4);
+      //add(lConfigurationStatePanel,0, lRow);
       //lRow++;
 
-      TitledPane lTitledPane = new TitledPane("Calibration state", lCalibrationStatePanel);
+      TitledPane lTitledPane = new TitledPane("Calibration state",
+                                              lConfigurationStatePanel);
       lTitledPane.setAnimated(false);
       lTitledPane.setExpanded(true);
       GridPane.setColumnSpan(lTitledPane, 3);

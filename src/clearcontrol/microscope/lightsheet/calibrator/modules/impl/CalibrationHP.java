@@ -13,7 +13,8 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.stack.OffHeapPlanarStack;
@@ -30,7 +31,7 @@ import org.apache.commons.math3.stat.StatUtils;
  *
  * @author royer
  */
-public class CalibrationHP extends CalibrationBase
+public class CalibrationHP extends CalibrationPerLightSheetBase
                            implements CalibrationModuleInterface
 {
 
@@ -119,7 +120,7 @@ public class CalibrationHP extends CalibrationBase
 
       if (getCalibrationEngine().isStopRequested())
       {
-        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
         return Double.NaN;
       }
     }
@@ -373,7 +374,7 @@ public class CalibrationHP extends CalibrationBase
     System.out.format("New HeightPower function: %s \n",
                       lCurrentHeightFunctionVariable.get());
 
-    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+    setConfigurationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
 
     double lError = 0;
 
@@ -390,7 +391,7 @@ public class CalibrationHP extends CalibrationBase
     mHPFunctions.clear();
 
     for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
-      setCalibrationState(i, CalibrationState.NOT_CALIBRATED);
+      setConfigurationState(i, ConfigurationState.UNINITIALIZED);
     }
   }
 

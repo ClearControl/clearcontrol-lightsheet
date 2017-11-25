@@ -19,7 +19,8 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.stack.OffHeapPlanarStack;
@@ -30,7 +31,7 @@ import gnu.trove.list.array.TDoubleArrayList;
  *
  * @author royer
  */
-public class CalibrationA extends CalibrationBase
+public class CalibrationA extends CalibrationPerLightSheetBase
                           implements CalibrationModuleInterface
 {
 
@@ -87,7 +88,7 @@ public class CalibrationA extends CalibrationBase
 
       if (getCalibrationEngine().isStopRequested())
       {
-        setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+        setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
         return Double.NaN;
       }
     }
@@ -95,9 +96,9 @@ public class CalibrationA extends CalibrationBase
     info("############################################## Done ");
 
     if (lError < mStoppingConditionErrorThreshold.get()) {
-      setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+      setConfigurationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
     } else {
-      setCalibrationState(pLightSheetIndex, CalibrationState.ACCEPTABLE);
+      setConfigurationState(pLightSheetIndex, ConfigurationState.ACCEPTABLE);
     }
 
     return lError;
@@ -440,7 +441,7 @@ public class CalibrationA extends CalibrationBase
     if (lUnivariateAffineFunction == null)
     {
       System.out.format("No model available! \n");
-      setCalibrationState(pLightSheetIndex, CalibrationState.FAILED);
+      setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
       return Double.POSITIVE_INFINITY;
     }
 
@@ -460,7 +461,7 @@ public class CalibrationA extends CalibrationBase
                     + abs(lUnivariateAffineFunction.getConstant());
 
     System.out.format("Error: %g \n", lError);
-    setCalibrationState(pLightSheetIndex, CalibrationState.SUCCEEDED);
+    setConfigurationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
 
     return lError;
   }
@@ -475,7 +476,7 @@ public class CalibrationA extends CalibrationBase
     mModels.clear();
 
     for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-      setCalibrationState(lLightSheetIndex, CalibrationState.NOT_CALIBRATED);
+      setConfigurationState(lLightSheetIndex, ConfigurationState.UNINITIALIZED);
     }
   }
 

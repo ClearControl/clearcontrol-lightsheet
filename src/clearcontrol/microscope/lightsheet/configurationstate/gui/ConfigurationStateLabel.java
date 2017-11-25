@@ -1,7 +1,6 @@
-package clearcontrol.microscope.lightsheet.calibrator.gui;
+package clearcontrol.microscope.lightsheet.configurationstate.gui;
 
 import clearcontrol.core.variable.Variable;
-import clearcontrol.gui.swing.JLabelString;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 
@@ -9,13 +8,13 @@ import javafx.scene.control.Label;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * November 2017
  */
-public class CalibrationStateLabel extends Label
+public class ConfigurationStateLabel extends Label
 {
   private final Variable<String> mStringVariable;
-  private CalibrationStateLabel mThis;
+  private ConfigurationStateLabel mThis;
 
-  public CalibrationStateLabel(final String pLabelName,
-                      final String pInitialValue)
+  public ConfigurationStateLabel(final String pLabelName,
+                                 final String pInitialValue)
   {
     super(pInitialValue);
     mThis = this;

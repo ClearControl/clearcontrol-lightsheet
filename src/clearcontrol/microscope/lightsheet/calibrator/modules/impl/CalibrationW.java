@@ -16,7 +16,8 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationState;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
@@ -30,7 +31,7 @@ import org.apache.commons.math3.stat.StatUtils;
  *
  * @author royer
  */
-public class CalibrationW extends CalibrationBase
+public class CalibrationW extends CalibrationPerLightSheetBase
                           implements CalibrationModuleInterface
 {
   private BoundedVariable<Integer>
@@ -90,14 +91,14 @@ public class CalibrationW extends CalibrationBase
                                                mNumberOfSamplesVariable.get());
       if (lAverageIntensities == null)
       {
-        setCalibrationState(lLightSheetIndex, CalibrationState.FAILED);
+        setConfigurationState(lLightSheetIndex, ConfigurationState.FAILED);
         return false;
       }
 
       mIntensityLists.put(lLightSheetIndex,
                           new TDoubleArrayList(lAverageIntensities));
 
-      setCalibrationState(lLightSheetIndex, CalibrationState.SUCCEEDED);
+      setConfigurationState(lLightSheetIndex, ConfigurationState.SUCCEEDED);
     }
 
     return true;
@@ -364,7 +365,7 @@ public class CalibrationW extends CalibrationBase
     super.reset();
 
     for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-      setCalibrationState(lLightSheetIndex, CalibrationState.NOT_CALIBRATED);
+      setConfigurationState(lLightSheetIndex, ConfigurationState.UNINITIALIZED);
     }
   }
 

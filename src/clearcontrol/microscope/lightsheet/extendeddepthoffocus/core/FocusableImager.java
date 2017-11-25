@@ -22,7 +22,7 @@ import java.util.concurrent.TimeoutException;
  * imager.addImageRequest(lightSheetZ, detectionArmZ)
  * imager.addImageRequest(lightSheetZ + 1, detectionArmZ)
  * <p>
- * stack = imager.execute()
+ * stack = imager.configurationStateOfLightSheetChanged()
  * <p>
  * <p>
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

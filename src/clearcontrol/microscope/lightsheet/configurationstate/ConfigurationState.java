@@ -1,20 +1,18 @@
-package clearcontrol.microscope.lightsheet.calibrator.modules;
-
-import javafx.scene.paint.Color;
+package clearcontrol.microscope.lightsheet.configurationstate;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * November 2017
  */
-public enum CalibrationState
+public enum ConfigurationState
 {
-  NOT_CALIBRATED("YELLOW"),
+  UNINITIALIZED("LIGHTGREY"),
   SUCCEEDED("LIGHTGREEN"),
   ACCEPTABLE("LIMEGREEN"),
   FAILED("#ff7c4c");
 
   private String mColor;
-  CalibrationState(String pColor) {
+  ConfigurationState(String pColor) {
     mColor = pColor;
   }
   public String getColor() {
