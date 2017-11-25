@@ -11,6 +11,7 @@ import java.util.concurrent.TimeoutException;
 
 import clearcontrol.core.math.argmax.ArgMaxFinder1DInterface;
 import clearcontrol.core.math.argmax.methods.ModeArgMaxFinder;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.ip.iqm.DCTS2D;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
@@ -32,7 +33,7 @@ public class AdaptationA extends StandardAdaptationModule implements
                          AdaptationModuleInterface<InterpolatedAcquisitionState>
 {
 
-  private double mMaxDefocus;
+  private BoundedVariable<Double> mMaxDefocusVariable = new BoundedVariable<Double>("Maximum defocus in Z", 15.0, 0.0, Double.MAX_VALUE, 0.1);
 
   /**
    * Instantiates an Alpha adaptation module given a max defocus, number of
@@ -65,7 +66,7 @@ public class AdaptationA extends StandardAdaptationModule implements
           pImageMetricThreshold,
           pExposureInSeconds,
           pLaserPower);
-    mMaxDefocus = pMaxDefocus;
+    mMaxDefocusVariable.set(pMaxDefocus);
 
     getIsActiveVariable().set(false);
   }
@@ -135,8 +136,8 @@ public class AdaptationA extends StandardAdaptationModule implements
                                 double pIY)
   {
 
-    double lMinZ = -mMaxDefocus;
-    double lMaxZ = +mMaxDefocus;
+    double lMinZ = -mMaxDefocusVariable.get();
+    double lMaxZ = +mMaxDefocusVariable.get();
     double lStepZ = (lMaxZ - lMinZ)
                     / (getNumberOfSamplesVariable().get() - 1);
 
@@ -398,4 +399,8 @@ public class AdaptationA extends StandardAdaptationModule implements
 
   }
 
+  public BoundedVariable<Double> getMaxDefocusVariable()
+  {
+    return mMaxDefocusVariable;
+  }
 }

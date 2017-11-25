@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleBase;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -28,7 +29,7 @@ public class AdaptationP extends
                          AdaptationModuleInterface<InterpolatedAcquisitionState>
 {
 
-  private double mTargetLaserPower;
+  private BoundedVariable<Double> mTargetLaserPowerVariable = new BoundedVariable<Double>("Target laser power", 0.5, 0.0, 1.0, 0.1 );
 
   /**
    * Instanciates a laser power adaptation module given the target laser power.
@@ -39,7 +40,7 @@ public class AdaptationP extends
   public AdaptationP(double pTargetLaserPower)
   {
     super("P*");
-    mTargetLaserPower = pTargetLaserPower;
+    mTargetLaserPowerVariable.set( pTargetLaserPower);
 
     getIsActiveVariable().set(false);
   }
@@ -203,7 +204,7 @@ public class AdaptationP extends
 
       for (int l = 0; l < lNumberOfLightSheets; l++)
       {
-        double lRenormalizedPower = (mTargetLaserPower
+        double lRenormalizedPower = (mTargetLaserPowerVariable.get()
                                      / lMaxUnNormalizedPower)
                                     * lPowerPerLightSheet.get(l);
 
@@ -267,4 +268,8 @@ public class AdaptationP extends
 
   }
 
+  public BoundedVariable<Double> getTargetLaserPowerVariable()
+  {
+    return mTargetLaserPowerVariable;
+  }
 }

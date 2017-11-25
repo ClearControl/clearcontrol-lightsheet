@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.adaptive.modules;
 import java.util.concurrent.Future;
 
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
@@ -23,9 +24,12 @@ public class AdaptationZ extends StandardAdaptationPerLightSheetModule implement
                                                           HasConfigurationStatePerLightSheet
 {
 
-  private final Variable<Double> mDeltaZVariable =
-                                                 new Variable<>("DeltaZ",
-                                                                1.0);
+  private final BoundedVariable<Double> mDeltaZVariable =
+                                                 new BoundedVariable<>("Delta Z",
+                                                                1.0,
+                                                                0.0,
+                                                                Double.POSITIVE_INFINITY,
+                                                                0.001);
 
   /**
    * Instantiates a Z focus adaptation module given the delta Z parameter,
@@ -157,7 +161,7 @@ public class AdaptationZ extends StandardAdaptationPerLightSheetModule implement
    * 
    * @return delta Z variable
    */
-  public Variable<Double> getDeltaZVariable()
+  public BoundedVariable<Double> getDeltaZVariable()
   {
     return mDeltaZVariable;
   }

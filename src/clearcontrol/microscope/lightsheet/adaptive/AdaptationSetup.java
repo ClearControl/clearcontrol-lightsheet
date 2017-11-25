@@ -2,9 +2,7 @@ package clearcontrol.microscope.lightsheet.adaptive;
 
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationX;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZ;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZSlidingWindowDetectionArmSelection;
+import clearcontrol.microscope.lightsheet.adaptive.modules.*;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
@@ -49,6 +47,21 @@ public class AdaptationSetup
                                         0.95,
                                         2e-5,
                                         0.010,
+                                        0.5));
+
+    lAdaptiveEngine.add(new AdaptationA(15,
+                                        11,
+                                        0.95,
+                                        2e-5,
+                                        0.01,
+                                        0.5));
+
+    lAdaptiveEngine.add(new AdaptationP(0.5));
+
+    lAdaptiveEngine.add(new AdaptationW(11,
+                                        0.95,
+                                        2e-5,
+                                        0.01,
                                         0.5));
   }
 }

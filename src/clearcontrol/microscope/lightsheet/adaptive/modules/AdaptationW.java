@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.adaptive.modules;
 
 import java.util.concurrent.Future;
 
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -20,7 +21,7 @@ public class AdaptationW extends StandardAdaptationModule implements
                          AdaptationModuleInterface<InterpolatedAcquisitionState>
 {
 
-  private static final int cRepeats = 2;
+  private static final BoundedVariable<Integer> mNumberOfRepeatsVariable = new BoundedVariable<Integer>("Number of repeats", 2, 0, Integer.MAX_VALUE);
 
   /**
    * Instantiates a W adaptation module given the number of samples, probability
@@ -98,7 +99,7 @@ public class AdaptationW extends StandardAdaptationModule implements
     lQueue.setILO(false);
     lQueue.setIW(lLightSheetIndex, lMinW);
     lQueue.setI(lLightSheetIndex);
-    for (int r = 0; r < cRepeats; r++)
+    for (int r = 0; r < mNumberOfRepeatsVariable.get(); r++)
       lQueue.addCurrentStateToQueue();
 
     for (double w = lMinW; w <= lMaxW; w += lStepW)
@@ -109,7 +110,7 @@ public class AdaptationW extends StandardAdaptationModule implements
       lQueue.setILO(false);
       lQueue.setC(false);
       lQueue.setI(lLightSheetIndex);
-      for (int r = 0; r < cRepeats; r++)
+      for (int r = 0; r < mNumberOfRepeatsVariable.get(); r++)
         lQueue.addCurrentStateToQueue();
 
       lQueue.setILO(true);
@@ -122,7 +123,7 @@ public class AdaptationW extends StandardAdaptationModule implements
     lQueue.setILO(false);
     lQueue.setIW(lLightSheetIndex, lCurrentW);
     lQueue.setI(lLightSheetIndex);
-    for (int r = 0; r < cRepeats; r++)
+    for (int r = 0; r < mNumberOfRepeatsVariable.get(); r++)
       lQueue.addCurrentStateToQueue();
 
     lQueue.finalizeQueue();
@@ -164,8 +165,11 @@ public class AdaptationW extends StandardAdaptationModule implements
   @Override
   public void updateState(InterpolatedAcquisitionState pStateToUpdate)
   {
-    // TODO Auto-generated method stub
-
+    updateStateInternal(pStateToUpdate, true, true);
   }
 
+  public static BoundedVariable<Integer> getNumberOfRepeatsVariable()
+  {
+    return mNumberOfRepeatsVariable;
+  }
 }
