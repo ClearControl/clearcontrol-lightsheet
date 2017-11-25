@@ -358,8 +358,7 @@ public class AdaptationA extends StandardAdaptationModule implements
   @Override
   public void updateState(InterpolatedAcquisitionState pStateToUpdate)
   {
-    // TODO Auto-generated method stub
-
+    updateStateInternal(pStateToUpdate, true, true);
   }
 
   /*
