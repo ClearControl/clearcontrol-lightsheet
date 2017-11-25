@@ -48,7 +48,7 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
 
   private BoundedVariable<Integer> mNumberOfISamples = new BoundedVariable<Integer>("Number of illumination samples", 13, 0, Integer.MAX_VALUE);
   private BoundedVariable<Integer> mNumberOfDSamples = new BoundedVariable<Integer>("Number of detection samples", 13, 0, Integer.MAX_VALUE);
-  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MAX_VALUE);
 
 
   private BoundedVariable<Double>
@@ -84,6 +84,7 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
     double lError = Double.POSITIVE_INFINITY;
     do
     {
+      setConfigurationState(pLightSheetIndex, ConfigurationState.fromProgressValue((double)lIteration/mMaxIterationsVariable.get()));
       double lSearchAmplitude = 1.0 / (pow(2, 1 + lIteration));
       lError =
           calibrateZ(pLightSheetIndex,

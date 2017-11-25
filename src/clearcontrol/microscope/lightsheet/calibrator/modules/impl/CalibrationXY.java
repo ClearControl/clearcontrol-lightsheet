@@ -42,7 +42,7 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
 
   private MultiKeyMap<Integer, SimpleMatrix> mTransformMatrices;
 
-  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MAX_VALUE);
 
 
 
@@ -77,6 +77,8 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
     double lError = Double.POSITIVE_INFINITY;
     do
     {
+      setConfigurationState(pLightSheetIndex, ConfigurationState.fromProgressValue((double)lIteration/mMaxIterationsVariable.get()));
+
       lError = calibrateXY(pLightSheetIndex, 0, mNumberOfPointsVariable.get());
       info("############################################## Error = "
            + lError);

@@ -52,7 +52,7 @@ public class CalibrationA extends CalibrationPerLightSheetBase
   private BoundedVariable<Integer>
       mNumberOfAnglesVariable = new BoundedVariable<Integer>("Number of angles", 32, 1, Integer.MAX_VALUE);
 
-  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MAX_VALUE);
 
   private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.5, 0.0, Double.MAX_VALUE, 0.001);
 
@@ -82,6 +82,8 @@ public class CalibrationA extends CalibrationPerLightSheetBase
     int lNumberOfDetectionArmDevices = getNumberOfDetectionArms();
     do
     {
+      setConfigurationState(pLightSheetIndex, ConfigurationState.fromProgressValue((double)lIteration/mMaxIterationsVariable.get()));
+
       lError = calibrate(pLightSheetIndex, lNumberOfDetectionArmDevices);
       info("############################################## Error = "
            + lError);

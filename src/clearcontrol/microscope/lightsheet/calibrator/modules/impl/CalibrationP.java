@@ -36,7 +36,7 @@ public class CalibrationP extends CalibrationBase
 
   BoundedVariable<Integer> mDetectionArmVariable;
 
-  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MIN_VALUE);
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MAX_VALUE);
 
   private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.04, 0.0, Double.MAX_VALUE, 0.001);
 
@@ -63,6 +63,8 @@ public class CalibrationP extends CalibrationBase
     double lError = Double.POSITIVE_INFINITY;
     do
     {
+      setConfigurationState(ConfigurationState.fromProgressValue((double)lIteration/mMaxIterationsVariable.get()));
+
       if (!calibrate()) {
         setConfigurationState(ConfigurationState.FAILED);
         return;
