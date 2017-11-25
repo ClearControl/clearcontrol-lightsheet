@@ -4,6 +4,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import clearcontrol.microscope.adaptive.AdaptiveEngine;
+import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationX;
+import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZ;
+import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZSlidingWindowDetectionArmSelection;
+import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -79,6 +85,7 @@ public class LightSheetMicroscopeDemo extends Application implements
 
       int lNumberOfLightSheets = 4;
       int lNumberOfDetectionArms = 2;
+      int lNumberOfControlPlanes = 7;
 
       float lDivisionTime = 11f;
 
@@ -321,16 +328,52 @@ public class LightSheetMicroscopeDemo extends Application implements
       InterpolatedAcquisitionState lAcquisitionState =
                                                      new InterpolatedAcquisitionState("default",
                                                                                       lLightSheetMicroscope);
-      lAcquisitionState.setupControlPlanes(7,
+      lAcquisitionState.getImageWidthVariable().set(lImageResolution);
+      lAcquisitionState.getImageHeightVariable().set(lImageResolution);
+      
+      lAcquisitionState.setupControlPlanes(lNumberOfControlPlanes,
                                            ControlPlaneLayout.Circular);
       lAcquisitionStateManager.setCurrentState(lAcquisitionState);
       lLightSheetMicroscope.addInteractiveAcquisition();
 
+      // Adding adaptive engine device:
+      {
+
+        AdaptiveEngine<InterpolatedAcquisitionState>
+            lAdaptiveEngine =
+            lLightSheetMicroscope.addAdaptiveEngine(lAcquisitionState);
+        lAdaptiveEngine.getRunUntilAllModulesReadyVariable().set(true);
+
+        lAdaptiveEngine.add(new AdaptationZ(7,
+                                            1.66,
+                                            0.95,
+                                            2e-5,
+                                            0.010,
+                                            0.5,
+                                            lNumberOfLightSheets));
+        lAdaptiveEngine.add(new AdaptationZSlidingWindowDetectionArmSelection(7,
+                                                                              3,
+                                                                              true,
+                                                                              1.66,
+                                                                              0.95,
+                                                                              2e-5,
+                                                                              0.010,
+                                                                              0.5));
+        lAdaptiveEngine.add(new AdaptationX(11,
+                                            50,
+                                            200,
+                                            0.95,
+                                            2e-5,
+                                            0.010,
+                                            0.5));
+      }
+
       // Adding calibrator:
 
       CalibrationEngine lCalibrator =
-                                    lLightSheetMicroscope.addCalibrator();
+          lLightSheetMicroscope.addCalibrator();
       lCalibrator.load();
+
 
       // Adding timelapse device:
 
