@@ -92,7 +92,7 @@ public class CalibrationA extends CalibrationPerLightSheetBase
 
       if (getCalibrationEngine().isStopRequested())
       {
-        setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
+        setConfigurationState(pLightSheetIndex, ConfigurationState.CANCELLED);
         return Double.NaN;
       }
     }
@@ -526,7 +526,7 @@ public class CalibrationA extends CalibrationPerLightSheetBase
 
     UnivariateAffineFunction lUnivariateAffineFunction = lLightSheetDevice.getAlphaFunction().get();
 
-    return "y = " + lUnivariateAffineFunction.getSlope() + " * x + " + lUnivariateAffineFunction.getConstant();
+    return String.format("y = %.3f * x + %.3f", lUnivariateAffineFunction.getSlope(), lUnivariateAffineFunction.getConstant());
   }
 
   @Override public String getStateDescription()

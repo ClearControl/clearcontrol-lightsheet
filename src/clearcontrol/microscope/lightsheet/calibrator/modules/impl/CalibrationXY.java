@@ -85,7 +85,7 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
 
       if (getCalibrationEngine().isStopRequested())
       {
-        setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
+        setConfigurationState(pLightSheetIndex, ConfigurationState.CANCELLED);
         return Double.NaN;
       }
     }

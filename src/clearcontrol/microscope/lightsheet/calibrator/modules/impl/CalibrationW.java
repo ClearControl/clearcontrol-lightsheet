@@ -390,7 +390,7 @@ public class CalibrationW extends CalibrationPerLightSheetBase
 
     UnivariateAffineFunction lUnivariateAffineFunction = lLightSheetDevice.getWidthFunction().get();
 
-    return "y = " + lUnivariateAffineFunction.getSlope() + " * x + " + lUnivariateAffineFunction.getConstant();
+    return String.format("y = %.3f * x + %.3f", lUnivariateAffineFunction.getSlope(), lUnivariateAffineFunction.getConstant());
   }
 
   @Override public String getStateDescription()
