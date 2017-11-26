@@ -193,6 +193,13 @@ public class CalibrationA extends CalibrationPerLightSheetBase
       }
       else
         System.out.format("Angle are not valid, we continue with next set of y values... \n");
+
+
+      if (getCalibrationEngine().isStopRequested())
+      {
+        setConfigurationState(pLightSheetIndex, ConfigurationState.CANCELLED);
+        return Double.NaN;
+      }
     }
 
 
