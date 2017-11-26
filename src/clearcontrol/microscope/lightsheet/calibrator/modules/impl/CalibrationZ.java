@@ -420,46 +420,49 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
           });
           // info("Begin compute metric");
 
+          Double lArgMax = null;
+
           if (lDZList.size() != mMetricArray.length)
+          {
             severe(
                 "Z position list and metric list have different lengths!");
-
-          // System.out.format("metric array: \n");
-
-          String
-              lChartName =
-              String.format("D=%d, I=%d", d, pLightSheetIndex);
-
-          String
-              lSeriesName =
-              String.format("iteration=%d", getIteration());
-
-          getCalibrationEngine().configureChart(lChartName,
-                                                lSeriesName,
-                                                "ΔZ",
-                                                "focus metric",
-                                                ChartType.Line);
-
-          for (int j = 0; j < lDZList.size(); j++)
+          } else
           {
-            getCalibrationEngine().addPoint(lChartName,
-                                            lSeriesName,
-                                            j == 0,
-                                            lDZList.get(j),
-                                            mMetricArray[j]);
+            // System.out.format("metric array: \n");
+
+            String
+                lChartName =
+                String.format("D=%d, I=%d", d, pLightSheetIndex);
+
+            String
+                lSeriesName =
+                String.format("iteration=%d", getIteration());
+
+            getCalibrationEngine().configureChart(lChartName,
+                                                  lSeriesName,
+                                                  "ΔZ",
+                                                  "focus metric",
+                                                  ChartType.Line);
+
+            for (int j = 0; j < lDZList.size(); j++)
+            {
+              getCalibrationEngine().addPoint(lChartName,
+                                              lSeriesName,
+                                              j == 0,
+                                              lDZList.get(j),
+                                              mMetricArray[j]);
 
             /*System.out.format("z=%s m=%s \n",
                               lDZList.get(j),
                               mMetricArray[j]);/**/
 
+            }
+
+            // info("Begin argmax");
+                lArgMax =
+                mArgMaxFinder.argmax(lDZList.toArray(), mMetricArray);
+            // info("End argmax");
           }
-
-          // info("Begin argmax");
-          final Double
-              lArgMax =
-              mArgMaxFinder.argmax(lDZList.toArray(), mMetricArray);
-          // info("End argmax");
-
           if (lArgMax != null)
           {
             TDoubleArrayList lDCTSList = new TDoubleArrayList(mMetricArray);
