@@ -24,9 +24,9 @@ import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.stat.StatUtils;
+import org.ejml.factory.SingularMatrixException;
 import org.ejml.simple.SimpleMatrix;
 
-import javax.vecmath.SingularMatrixException;
 
 /**
  * Calibrates lightsheet position in the XY plane
@@ -79,9 +79,13 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
     double lError = Double.POSITIVE_INFINITY;
     do
     {
-      setConfigurationState(pLightSheetIndex, ConfigurationState.fromProgressValue((double)lIteration/mMaxIterationsVariable.get()));
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.fromProgressValue((double) lIteration
+                                                                 / mMaxIterationsVariable
+                                                                     .get()));
 
-      lError = calibrateXY(pLightSheetIndex, 0, mNumberOfPointsVariable.get());
+      lError =
+          calibrateXY(pLightSheetIndex, 0, mNumberOfPointsVariable.get());
       info("############################################## Error = "
            + lError);
 
@@ -91,10 +95,14 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
         return Double.NaN;
       }
     }
-    while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
+    while (lError >= mStoppingConditionErrorThreshold.get()
+           && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
 
-    if (lError < mStoppingConditionErrorThreshold.get()) {
+    if (Double.isNaN(lError))
+    {
+      setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
+    } else if (lError < mStoppingConditionErrorThreshold.get()) {
       setConfigurationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
     } else {
       setConfigurationState(pLightSheetIndex, ConfigurationState.ACCEPTABLE);
@@ -444,7 +452,6 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
     lMatrix.set(1, 1, lUnitVectorV.getY());
 
     System.out.format("lMatrix: \n");
-    lMatrix.print(4, 3);
 
     mTransformMatrices.put(pLightSheetIndex,
                            pDetectionArmIndex,
@@ -452,6 +459,7 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
     SimpleMatrix lInverseMatrix;
     try
     {
+      lMatrix.print(4, 3);
       lInverseMatrix = lMatrix.invert();
     } catch (SingularMatrixException e) {
       e.printStackTrace();

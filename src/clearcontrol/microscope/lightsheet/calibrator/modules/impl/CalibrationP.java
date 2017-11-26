@@ -81,7 +81,10 @@ public class CalibrationP extends CalibrationBase
     while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
 
-    if (lError < mStoppingConditionErrorThreshold.get()) {
+    if (Double.isNaN(lError))
+    {
+      setConfigurationState(ConfigurationState.FAILED);
+    } else if (lError < mStoppingConditionErrorThreshold.get()) {
       setConfigurationState(ConfigurationState.SUCCEEDED);
     } else {
       setConfigurationState(ConfigurationState.ACCEPTABLE);

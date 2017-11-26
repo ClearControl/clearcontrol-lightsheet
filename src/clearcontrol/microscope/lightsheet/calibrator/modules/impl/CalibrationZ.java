@@ -107,7 +107,10 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
     while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
 
-    if (lError < mStoppingConditionErrorThreshold.get()) {
+    if (Double.isNaN(lError))
+    {
+      setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
+    } else if (lError < mStoppingConditionErrorThreshold.get()) {
       setConfigurationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
     } else {
       setConfigurationState(pLightSheetIndex, ConfigurationState.ACCEPTABLE);
