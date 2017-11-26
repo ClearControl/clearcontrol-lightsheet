@@ -9,9 +9,11 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.gui.ControlPlaneStatePanel;
 import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.HasControlPlaneState;
+import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.configurationstate.CanBeActive;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
+import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStatePanel;
 import clearcontrol.microscope.lightsheet.gui.VariableLabel;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import javafx.animation.KeyFrame;
@@ -48,13 +50,29 @@ public class AdaptationStateEnginePanel extends
   public AdaptationStateEnginePanel(AdaptationStateEngine pAdaptationStateEngine)
   {
     super();
+    int lRow = 0;
+
     mAdaptiveEngine = pAdaptationStateEngine.getAdaptiveEngine();
     mLightSheetMicroscope = pAdaptationStateEngine.getLightSheetMicroscope();
     mInterpolatedAcquisitionState = pAdaptationStateEngine.getInterpolatedAcquisitionState();
 
     CustomGridPane lCustomGridPane = new CustomGridPane();
 
-    int lRow = 0;
+    CalibrationEngine lCalibrationEngine = mLightSheetMicroscope.getDevice(
+        CalibrationEngine.class, 0);
+
+    ConfigurationStatePanel
+        lConfigurationStatePanel = new ConfigurationStatePanel(lCalibrationEngine.getModuleList(), mLightSheetMicroscope.getNumberOfLightSheets());
+
+    TitledPane lTitledPane = new TitledPane("Calibration state",
+                                            lConfigurationStatePanel);
+    lTitledPane.setAnimated(false);
+    lTitledPane.setExpanded(true);
+    //GridPane.setColumnSpan(lTitledPane, 3);
+    lCustomGridPane.add(lTitledPane, 1, lRow);
+    lRow++;
+
+
     for (Object pAdaptationModuleInterface : mAdaptiveEngine.getModuleList()) {
       if (pAdaptationModuleInterface instanceof HasControlPlaneState) {
         TitledPane lModuleStatePanel = buildModuleStatePanel((HasControlPlaneState)pAdaptationModuleInterface);
