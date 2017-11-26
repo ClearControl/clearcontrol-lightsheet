@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.calibrator.modules;
 
+import clearcontrol.core.device.name.ReadOnlyNameableInterface;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
@@ -8,7 +9,6 @@ import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterfa
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationStateChangeListener;
 import clearcontrol.microscope.lightsheet.configurationstate.HasConfigurationState;
-import clearcontrol.microscope.lightsheet.configurationstate.HasName;
 
 import java.util.ArrayList;
 
@@ -20,7 +20,8 @@ import java.util.ArrayList;
 public abstract class CalibrationBase implements
                                       CalibrationModuleInterface,
                                       LoggingFeature,
-                                      HasConfigurationState, HasName
+                                      HasConfigurationState,
+                                      ReadOnlyNameableInterface
 {
   private final CalibrationEngine mCalibrationEngine;
   private final LightSheetMicroscope mLightSheetMicroscope;

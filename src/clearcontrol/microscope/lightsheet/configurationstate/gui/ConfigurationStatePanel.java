@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.configurationstate.gui;
 
+import clearcontrol.core.device.name.ReadOnlyNameableInterface;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.lightsheet.configurationstate.*;
 import clearcontrol.microscope.lightsheet.gui.VariableLabel;
@@ -21,9 +22,9 @@ public class ConfigurationStatePanel extends CustomGridPane
     int posX = 0;
     for (int x = 0; x < lObjectList.size(); x++) {
       Object lObject = lObjectList.get(x);
-      if (lObject instanceof HasConfigurationState && lObject instanceof HasName)
+      if (lObject instanceof HasConfigurationState && lObject instanceof ReadOnlyNameableInterface)
       {
-        Label lLabel = new Label(((HasName)lObject).getName());
+        Label lLabel = new Label(((ReadOnlyNameableInterface)lObject).getName());
         add(lLabel, posX + 1, 0);
         posX++;
       }
@@ -37,7 +38,7 @@ public class ConfigurationStatePanel extends CustomGridPane
     posX = 0;
     for (int x = 0; x < lObjectList.size(); x++) {
       Object lObject = lObjectList.get(x);
-      if (lObject instanceof HasConfigurationState && lObject instanceof HasName)
+      if (lObject instanceof HasConfigurationState && lObject instanceof ReadOnlyNameableInterface)
       {
         HasConfigurationState lHasConfigurationState = (HasConfigurationState)lObject;
         if (lHasConfigurationState instanceof HasConfigurationStatePerLightSheet)

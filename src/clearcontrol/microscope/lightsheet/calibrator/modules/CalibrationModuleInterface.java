@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.calibrator.modules;
 
+import clearcontrol.core.device.name.ReadOnlyNameableInterface;
 import clearcontrol.microscope.lightsheet.configurationstate.HasConfigurationState;
-import clearcontrol.microscope.lightsheet.configurationstate.HasName;
 
 /**
  * Calibration module interface
@@ -10,7 +10,7 @@ import clearcontrol.microscope.lightsheet.configurationstate.HasName;
  */
 public interface CalibrationModuleInterface extends
                                             HasConfigurationState,
-                                            HasName
+                                            ReadOnlyNameableInterface
 {
 
   /**

@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.adaptive.gui;
 
+import clearcontrol.core.device.name.ReadOnlyNameableInterface;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
@@ -11,7 +12,6 @@ import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.HasControlP
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.configurationstate.CanBeActive;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
-import clearcontrol.microscope.lightsheet.configurationstate.HasName;
 import clearcontrol.microscope.lightsheet.gui.VariableLabel;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import javafx.animation.KeyFrame;
@@ -133,8 +133,8 @@ public class AdaptationStateEnginePanel extends
         lControlPlaneStatePanel = new ControlPlaneStatePanel(pHasControlPlaneState, lNumberOfLightSheets, lNumberOfControlPlanes);
 
     String lName = pHasControlPlaneState.toString();
-    if (pHasControlPlaneState instanceof HasName) {
-      lName = ((HasName) pHasControlPlaneState).getName();
+    if (pHasControlPlaneState instanceof ReadOnlyNameableInterface) {
+      lName = ((ReadOnlyNameableInterface) pHasControlPlaneState).getName();
     }
 
 

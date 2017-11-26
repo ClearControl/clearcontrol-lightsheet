@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import clearcontrol.core.concurrent.executors.AsynchronousExecutorFeature;
+import clearcontrol.core.device.name.ReadOnlyNameableInterface;
 import clearcontrol.core.math.argmax.SmartArgMaxFinder;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
@@ -45,8 +46,8 @@ public abstract class StandardAdaptationModule extends
                                                AdaptationModuleInterface<InterpolatedAcquisitionState>,
                                                AsynchronousExecutorFeature,
                                                HasConfigurationState,
-                                               HasName,
-                                               HasControlPlaneState
+                                               ReadOnlyNameableInterface,
+                                               HasControlPlaneState,
                                                CanBeActive
 
 {
