@@ -9,6 +9,7 @@ import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.gui.ControlPlaneStatePanel;
 import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.HasControlPlaneState;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.CanBeActive;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.configurationstate.HasName;
 import clearcontrol.microscope.lightsheet.gui.VariableLabel;
@@ -141,6 +142,10 @@ public class AdaptationStateEnginePanel extends
                                             lControlPlaneStatePanel);
     lTitledPane.setAnimated(false);
     lTitledPane.setExpanded(true);
+
+    if (pHasControlPlaneState instanceof CanBeActive && !((CanBeActive)pHasControlPlaneState).isActive()) {
+      lTitledPane.setExpanded(false);
+    }
     //GridPane.setColumnSpan(lTitledPane, 3);
     return lTitledPane;
   }

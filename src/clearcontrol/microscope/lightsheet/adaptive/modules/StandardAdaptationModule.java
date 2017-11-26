@@ -47,6 +47,7 @@ public abstract class StandardAdaptationModule extends
                                                HasConfigurationState,
                                                HasName,
                                                HasControlPlaneState
+                                               CanBeActive
 
 {
 
@@ -686,5 +687,9 @@ public abstract class StandardAdaptationModule extends
     for (ControlPlaneStateListener lControlPlaneStateListener : mControlPlaneStateListenerList) {
       lControlPlaneStateListener.controlPlaneStateChanged(pLightSheetIndex, pControlPlaneIndex);
     }
+  }
+
+  public boolean isActive() {
+    return super.isActive();
   }
 }
