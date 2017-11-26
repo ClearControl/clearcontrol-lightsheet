@@ -16,12 +16,8 @@ import clearcontrol.devices.signalamp.devices.sim.ScalingAmplifierSimulator;
 import clearcontrol.devices.signalgen.devices.sim.SignalGeneratorSimulatorDevice;
 import clearcontrol.devices.stages.StageType;
 import clearcontrol.devices.stages.devices.sim.StageDeviceSimulator;
-import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.adaptive.AdaptationSetup;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZSlidingWindowDetectionArmSelection;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationX;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZ;
+import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
@@ -304,7 +300,7 @@ public class SimulatedLightSheetMicroscope extends
 
       // Adding adaptive engine device:
       {
-        AdaptationSetup.setup(this, lAcquisitionState);
+        AdaptationStateEngine.setup(this, lAcquisitionState);
       }
 
     }

@@ -1,16 +1,50 @@
 package clearcontrol.microscope.lightsheet.adaptive;
 
+import clearcontrol.core.device.task.TaskDevice;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.modules.*;
+import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
+ * This class is a bit a placeholder for an empty engine. It is used to
+ * make another Adaptive Panel accessible in the GUI
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * November 2017
  */
-public class AdaptationSetup
+public class AdaptationStateEngine extends TaskDevice
 {
+  AdaptiveEngine mAdaptiveEngine;
+  LightSheetMicroscope mLightSheetMicroscope;
+  InterpolatedAcquisitionState mInterpolatedAcquisitionState;
+
+
+  public AdaptationStateEngine(String pDeviceName, AdaptiveEngine pAdaptiveEngine, LightSheetMicroscope pLightSheetMicroscope, InterpolatedAcquisitionState pInterpolatedAcquisitionState)
+  {
+    super(pDeviceName);
+
+    mAdaptiveEngine = pAdaptiveEngine;
+    mLightSheetMicroscope = pLightSheetMicroscope;
+    mInterpolatedAcquisitionState = pInterpolatedAcquisitionState;
+  }
+
+  public AdaptiveEngine getAdaptiveEngine()
+  {
+    return mAdaptiveEngine;
+  }
+
+  public LightSheetMicroscope getLightSheetMicroscope()
+  {
+    return mLightSheetMicroscope;
+  }
+
+  public InterpolatedAcquisitionState getInterpolatedAcquisitionState()
+  {
+    return mInterpolatedAcquisitionState;
+  }
+
   /**
    * This static function allows to maintain setup code for Adaptation
    * modules in one place, which are used in several demos and main
@@ -63,5 +97,12 @@ public class AdaptationSetup
                                         2e-5,
                                         0.01,
                                         0.5));
+
+    lLightSheetMicroscope.addDevice(0, new AdaptationStateEngine("Adaptation state", lAdaptiveEngine, lLightSheetMicroscope, lAcquisitionState));
+  }
+
+  @Override public void run()
+  {
+
   }
 }

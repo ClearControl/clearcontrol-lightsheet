@@ -47,6 +47,7 @@ public class ConfigurationStatePanel extends CustomGridPane
 
           for (int y = 0; y < pNumberOfLightSheets; y++)
           {
+            final int lLightSheetIndex = y;
             ConfigurationStateLabel lConfigurationStateLabel =
                 new ConfigurationStateLabel("", "");
             lHasConfigurationStatePerLightSheet.addConfigurationStateChangeListener(
@@ -61,25 +62,38 @@ public class ConfigurationStatePanel extends CustomGridPane
                       HasConfigurationStatePerLightSheet pHasConfigurationStatePerLightSheet,
                       int pLightSheetIndex)
                   {
-                    ConfigurationState
-                        lConfigurationState =
-                        pHasConfigurationStatePerLightSheet.getConfigurationState(
-                            pLightSheetIndex);
+                    if (pLightSheetIndex == lLightSheetIndex)
+                    {
+                      ConfigurationState
+                          lConfigurationState =
+                          pHasConfigurationStatePerLightSheet.getConfigurationState(
+                              pLightSheetIndex);
 
-                    String lConfigurationStateDescription = lConfigurationState.toString();
+                      String
+                          lConfigurationStateDescription =
+                          lConfigurationState.toString();
 
-                    if (pHasConfigurationStatePerLightSheet instanceof HasStateDescriptionPerLightSheet) {
-                      lConfigurationStateDescription += "\n" + ((HasStateDescriptionPerLightSheet) pHasConfigurationStatePerLightSheet).getStateDescription(pLightSheetIndex);
-                    } else if (pHasConfigurationStatePerLightSheet instanceof HasStateDescription) {
-                      lConfigurationStateDescription += "\n" + ((HasStateDescription) pHasConfigurationStatePerLightSheet).getStateDescription();
+                      if (pHasConfigurationStatePerLightSheet instanceof HasStateDescriptionPerLightSheet)
+                      {
+                        lConfigurationStateDescription +=
+                            "\n" + ((HasStateDescriptionPerLightSheet) pHasConfigurationStatePerLightSheet)
+                                .getStateDescription(pLightSheetIndex);
+                      }
+                      else if (pHasConfigurationStatePerLightSheet instanceof HasStateDescription)
+                      {
+                        lConfigurationStateDescription +=
+                            "\n" + ((HasStateDescription) pHasConfigurationStatePerLightSheet)
+                                .getStateDescription();
+                      }
+
+                      lConfigurationStateLabel.getStringVariable()
+                                              .set("" + lConfigurationStateDescription);
+                      lConfigurationStateLabel.setStyle(
+
+                          " -fx-padding: 2 2 2 2; -fx-border-color:white; -fx-text-fill:white; -fx-background-color: "
+                          + lConfigurationState.getColor().toLowerCase()
+                          + ";");
                     }
-
-                    lConfigurationStateLabel.getStringVariable()
-                                            .set("" + lConfigurationStateDescription);
-                    lConfigurationStateLabel.setStyle(
-                        "-fx-border-color:white; -fx-font-color:white; -fx-background-color: "
-                        + lConfigurationState.getColor().toLowerCase()
-                        + ";");
                   }
                 });
             add(lConfigurationStateLabel, posX + 1, y + 1);
@@ -109,7 +123,7 @@ public class ConfigurationStatePanel extends CustomGridPane
                   lConfigurationStateLabel.getStringVariable()
                                           .set("" + lConfigurationStateDescription);
                   lConfigurationStateLabel.setStyle(
-                      "-fx-border-color:white; -fx-font-color:white; -fx-background-color: "
+                      " -fx-padding: 2 2 2 2; -fx-border-color:white; -fx-text-fill:white; -fx-background-color: "
                       + lConfigurationState.getColor().toLowerCase()
                       + ";");
                 }

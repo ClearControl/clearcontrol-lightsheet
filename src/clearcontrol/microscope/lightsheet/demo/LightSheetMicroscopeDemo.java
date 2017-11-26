@@ -5,12 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import clearcontrol.microscope.adaptive.AdaptiveEngine;
-import clearcontrol.microscope.lightsheet.adaptive.AdaptationSetup;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationX;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZ;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZSlidingWindowDetectionArmSelection;
-import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
+import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -339,7 +334,7 @@ public class LightSheetMicroscopeDemo extends Application implements
 
       // Adding adaptive engine device:
       {
-        AdaptationSetup.setup(lLightSheetMicroscope, lAcquisitionState);
+        AdaptationStateEngine.setup(lLightSheetMicroscope, lAcquisitionState);
       }
 
       // Adding calibrator:

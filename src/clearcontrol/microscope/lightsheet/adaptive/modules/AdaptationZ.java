@@ -20,8 +20,7 @@ import gnu.trove.list.array.TDoubleArrayList;
  * @author royer
  */
 public class AdaptationZ extends StandardAdaptationPerLightSheetModule implements
-                                                          AdaptationModuleInterface<InterpolatedAcquisitionState>,
-                                                          HasConfigurationStatePerLightSheet
+                                                          AdaptationModuleInterface<InterpolatedAcquisitionState>
 {
 
   private final BoundedVariable<Double> mDeltaZVariable =
@@ -65,9 +64,8 @@ public class AdaptationZ extends StandardAdaptationPerLightSheetModule implement
           pLaserPower);
     getDeltaZVariable().set(pDeltaZ);
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < pNumberOfLightSheets; lLightSheetIndex++) {
-      setConfigurationState(lLightSheetIndex, getConfigurationState(lLightSheetIndex));
-    }
+    setConfigurationState(ConfigurationState.UNINITIALIZED);
+
 
   }
 
@@ -138,12 +136,7 @@ public class AdaptationZ extends StandardAdaptationPerLightSheetModule implement
                             lAcquisitionState,
                             lDZList);
 
-    if (result != null)
-    {
-      setConfigurationState(lLightSheetIndex, ConfigurationState.SUCCEEDED);
-    } else {
-      setConfigurationState(lLightSheetIndex, ConfigurationState.FAILED);
-    }
+
 
     return result;
     /**/

@@ -1,5 +1,7 @@
 package clearcontrol.microscope.lightsheet.gui;
 
+import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
+import clearcontrol.microscope.lightsheet.adaptive.gui.AdaptationStateEnginePanel;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEnginePanel;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
@@ -107,6 +109,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 
     addPanelMappingEntry(AdaptiveEngine.class,
                          LightSheetAdaptiveEnginePanel.class,
+                         MicroscopeNodeType.Acquisition);
+
+    addPanelMappingEntry(AdaptationStateEngine.class,
+                         AdaptationStateEnginePanel.class,
                          MicroscopeNodeType.Acquisition);
 
     addPanelMappingEntry(LightSheetFastFusionProcessor.class,
