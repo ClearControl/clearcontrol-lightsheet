@@ -18,6 +18,7 @@ import clearcontrol.microscope.lightsheet.gui.VariableLabel;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
@@ -129,14 +130,21 @@ public class AdaptationStateEnginePanel extends
       @Override public void setEvent(Object pCurrentValue,
                                      Object pNewValue)
       {
-        lVariableLabel.setText(pNewValue.toString());
-        lVariableLabel.setStyle("-fx-border-color:red;");
-        Timeline timeline = new Timeline(new KeyFrame(
-            Duration.millis(2500),
-            (ae) -> {
-              lVariableLabel.setStyle("");
-        }));
-        timeline.play();
+        Platform.runLater(new Runnable()
+        {
+          @Override public void run()
+          {
+            lVariableLabel.setText(pNewValue.toString());
+            lVariableLabel.setStyle("-fx-border-color:red;");
+            Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(2500),
+                (ae) -> {
+                  lVariableLabel.setStyle("");
+                }));
+            timeline.play();
+          }
+        });
+
       }
     });
     return lVariableLabel;
