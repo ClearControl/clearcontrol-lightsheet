@@ -42,7 +42,7 @@ public class CalibrationW extends CalibrationPerLightSheetBase
 
   BoundedVariable<Integer> mDetectionArmVariable;
 
-  private HashMap<Integer, TDoubleArrayList> mIntensityLists;
+  private HashMap<Integer, TDoubleArrayList> mIntensityLists = new HashMap<>();
   private TDoubleArrayList mWList = new TDoubleArrayList();
 
   /**
