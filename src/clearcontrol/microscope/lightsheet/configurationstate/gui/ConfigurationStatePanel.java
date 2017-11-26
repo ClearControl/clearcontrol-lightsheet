@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.configurationstate.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.lightsheet.configurationstate.*;
+import clearcontrol.microscope.lightsheet.gui.VariableLabel;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
@@ -48,8 +49,8 @@ public class ConfigurationStatePanel extends CustomGridPane
           for (int y = 0; y < pNumberOfLightSheets; y++)
           {
             final int lLightSheetIndex = y;
-            ConfigurationStateLabel lConfigurationStateLabel =
-                new ConfigurationStateLabel("", "");
+            VariableLabel lVariableLabel =
+                new VariableLabel("", "");
             lHasConfigurationStatePerLightSheet.addConfigurationStateChangeListener(
                 new ConfigurationStatePerLightSheetChangeListener()
                 {
@@ -86,9 +87,9 @@ public class ConfigurationStatePanel extends CustomGridPane
                                 .getStateDescription();
                       }
 
-                      lConfigurationStateLabel.getStringVariable()
-                                              .set("" + lConfigurationStateDescription);
-                      lConfigurationStateLabel.setStyle(
+                      lVariableLabel.getStringVariable()
+                                    .set("" + lConfigurationStateDescription);
+                      lVariableLabel.setStyle(
 
                           " -fx-padding: 2 2 2 2; -fx-border-color:white; -fx-text-fill:white; -fx-background-color: "
                           + lConfigurationState.getColor().toLowerCase()
@@ -96,13 +97,13 @@ public class ConfigurationStatePanel extends CustomGridPane
                     }
                   }
                 });
-            add(lConfigurationStateLabel, posX + 1, y + 1);
+            add(lVariableLabel, posX + 1, y + 1);
           }
         }
         else
         {
-          ConfigurationStateLabel lConfigurationStateLabel =
-              new ConfigurationStateLabel("", "");
+          VariableLabel lVariableLabel =
+              new VariableLabel("", "");
 
           lHasConfigurationState.addConfigurationStateChangeListener(
               new ConfigurationStateChangeListener()
@@ -120,18 +121,18 @@ public class ConfigurationStatePanel extends CustomGridPane
                     lConfigurationStateDescription += "\n" + ((HasStateDescription) pHasConfigurationState).getStateDescription();
                   }
 
-                  lConfigurationStateLabel.getStringVariable()
-                                          .set("" + lConfigurationStateDescription);
-                  lConfigurationStateLabel.setStyle(
+                  lVariableLabel.getStringVariable()
+                                .set("" + lConfigurationStateDescription);
+                  lVariableLabel.setStyle(
                       " -fx-padding: 2 2 2 2; -fx-border-color:white; -fx-text-fill:white; -fx-background-color: "
                       + lConfigurationState.getColor().toLowerCase()
                       + ";");
                 }
               });
-          GridPane.setFillHeight(lConfigurationStateLabel, true);
-          GridPane.setRowSpan(lConfigurationStateLabel,
+          GridPane.setFillHeight(lVariableLabel, true);
+          GridPane.setRowSpan(lVariableLabel,
                               pNumberOfLightSheets);
-          add(lConfigurationStateLabel, posX + 1, 1);
+          add(lVariableLabel, posX + 1, 1);
         }
         posX++;
       }

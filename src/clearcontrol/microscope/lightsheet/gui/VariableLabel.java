@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.configurationstate.gui;
+package clearcontrol.microscope.lightsheet.gui;
 
 import clearcontrol.core.variable.Variable;
 import javafx.application.Platform;
@@ -8,13 +8,13 @@ import javafx.scene.control.Label;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * November 2017
  */
-public class ConfigurationStateLabel extends Label
+public class VariableLabel extends Label
 {
   private final Variable<String> mStringVariable;
-  private ConfigurationStateLabel mThis;
+  private VariableLabel mThis;
 
-  public ConfigurationStateLabel(final String pLabelName,
-                                 final String pInitialValue)
+  public VariableLabel(final String pLabelName,
+                       final String pInitialValue)
   {
     super(pInitialValue);
     mThis = this;

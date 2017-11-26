@@ -4,7 +4,7 @@ import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.ControlPlaneStateListener;
 import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.HasControlPlaneState;
-import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStateLabel;
+import clearcontrol.microscope.lightsheet.gui.VariableLabel;
 import javafx.scene.control.Label;
 
 /**
@@ -39,9 +39,8 @@ public class ControlPlaneStatePanel extends CustomGridPane
       {
         final int lLightSheetIndex = y;
         final int lControlPlaneIndex = x;
-        ConfigurationStateLabel
-            lConfigurationStateLabel =
-            new ConfigurationStateLabel("", "");
+        VariableLabel lVariableLabel =
+            new VariableLabel("", "");
 
         pHasControlPlaneState.addControlPlaneStateChangeListener(new ControlPlaneStateListener()
         {
@@ -67,10 +66,10 @@ public class ControlPlaneStatePanel extends CustomGridPane
                       pLightSheetIndex,
                       pControlPlaneIndex);
 
-              lConfigurationStateLabel.getStringVariable()
-                                      .set(""
+              lVariableLabel.getStringVariable()
+                            .set(""
                                            + lConfigurationStateDescription);
-              lConfigurationStateLabel.setStyle(
+              lVariableLabel.setStyle(
 
                   " -fx-padding: 2 2 2 2; -fx-border-color:white; -fx-text-fill:white; -fx-background-color: "
                   + lConfigurationState.getColor().toLowerCase()
@@ -78,7 +77,7 @@ public class ControlPlaneStatePanel extends CustomGridPane
             }
           }
         });
-        add(lConfigurationStateLabel, x + 1, y + 1);
+        add(lVariableLabel, x + 1, y + 1);
 
       }
     }
