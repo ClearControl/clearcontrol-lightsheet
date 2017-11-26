@@ -26,6 +26,8 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.stat.StatUtils;
 import org.ejml.simple.SimpleMatrix;
 
+import javax.vecmath.SingularMatrixException;
+
 /**
  * Calibrates lightsheet position in the XY plane
  *
@@ -447,9 +449,15 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
     mTransformMatrices.put(pLightSheetIndex,
                            pDetectionArmIndex,
                            lMatrix);
-
-    SimpleMatrix lInverseMatrix = lMatrix.invert();
-
+    SimpleMatrix lInverseMatrix;
+    try
+    {
+      lInverseMatrix = lMatrix.invert();
+    } catch (SingularMatrixException e) {
+      e.printStackTrace();
+      setConfigurationState(pLightSheetIndex, ConfigurationState.FAILED);
+      return Double.NaN;
+    }
     System.out.format("lInverseMatrix: \n");
     lInverseMatrix.print(4, 6);
 
