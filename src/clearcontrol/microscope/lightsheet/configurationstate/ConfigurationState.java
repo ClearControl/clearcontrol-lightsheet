@@ -7,7 +7,7 @@ package clearcontrol.microscope.lightsheet.configurationstate;
 public enum ConfigurationState
 {
   UNINITIALIZED("Uninitialized", "#878585"),
-  SUCCEEDED("Succeeded", "#49b0ff"),
+  SUCCEEDED("Succeeded", "#3ed860"),
   ACCEPTABLE("Acceptable", "#84c600"),
   FAILED("Failed", "#ff7c4c"),
   PERCENT0("Initialising", "#878585"),
