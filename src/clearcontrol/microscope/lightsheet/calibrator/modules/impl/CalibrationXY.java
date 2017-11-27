@@ -350,6 +350,7 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
     lQueue.zero();
 
     lQueue.setI(pLightSheetIndex);
+    lQueue.setIW(pLightSheetIndex, mLightSheetWidthWhileImaging.get());
     lQueue.setIZ(pLightSheetIndex, 0);
     lQueue.setIH(pLightSheetIndex, 0);
     lQueue.setIZ(pLightSheetIndex, 0);
