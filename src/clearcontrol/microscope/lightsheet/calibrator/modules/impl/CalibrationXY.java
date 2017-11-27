@@ -267,8 +267,8 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
 
         if (f != 0)
         {
-          double ux = (lCenterP.getX() - lCenterN.getX()) / 2f;
-          double uy = (lCenterP.getY() - lCenterN.getY()) / 2f;
+          double ux = (lCenterP.getX() + lCenterN.getX()) / 2f;
+          double uy = (lCenterP.getY() + lCenterN.getY()) / 2f;
 
           System.out.format("Unit vector: (%g,%g) \n", ux, uy);
 
