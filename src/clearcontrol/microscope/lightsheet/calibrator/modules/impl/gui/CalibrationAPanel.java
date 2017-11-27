@@ -23,6 +23,7 @@ public class CalibrationAPanel extends StandardCalibrationModulePanel
     addNumberTextFieldForVariable(pCalibrationA.getAngleOptimisationRangeWidthVariable().getName(), pCalibrationA.getAngleOptimisationRangeWidthVariable());
     addNumberTextFieldForVariable(pCalibrationA.getNumberOfAnglesVariable().getName(), pCalibrationA.getNumberOfAnglesVariable());
     addNumberTextFieldForVariable(pCalibrationA.getNumberOfRepeatsVariable().getName(), pCalibrationA.getNumberOfRepeatsVariable());
+    addNumberTextFieldForVariable(pCalibrationA.getLightSheetWidthWhileImaging().getName(), pCalibrationA.getLightSheetWidthWhileImaging());
     addNumberTextFieldForVariable(pCalibrationA.getExposureTimeInSecondsVariable().getName(), pCalibrationA.getExposureTimeInSecondsVariable());
     addNumberTextFieldForVariable(pCalibrationA.getMaxIterationsVariable().getName(), pCalibrationA.getMaxIterationsVariable());
     addNumberTextFieldForVariable(pCalibrationA.getStoppingConditionErrorThreshold().getName(), pCalibrationA.getStoppingConditionErrorThreshold());

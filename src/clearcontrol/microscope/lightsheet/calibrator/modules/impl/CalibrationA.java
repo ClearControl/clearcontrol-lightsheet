@@ -58,6 +58,9 @@ public class CalibrationA extends CalibrationPerLightSheetBase
 
   private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.5, 0.0, Double.MAX_VALUE, 0.001);
 
+  private BoundedVariable<Double> mLightSheetWidthWhileImaging = new BoundedVariable<Double>("Light sheet width while imaging", 0.25, 0.0, 1.0, 0.01);
+
+
   /**
    * Lightsheet Alpha angle calibration module
    * 
@@ -208,7 +211,7 @@ public class CalibrationA extends CalibrationPerLightSheetBase
 
     if (lCount == 0)
     {
-      return Double.MAX_VALUE;
+      return Double.NaN;
     }
 
     for (int i = 0; i < pNumberOfDetectionArmDevices; i++)
@@ -266,6 +269,7 @@ public class CalibrationA extends CalibrationPerLightSheetBase
       lQueue.setIX(pLightSheetIndex, 0);
       lQueue.setIY(pLightSheetIndex, pY);
       lQueue.setIZ(pLightSheetIndex, pZ);
+      lQueue.setIW(pLightSheetIndex, mLightSheetWidthWhileImaging.get());
       lQueue.setIH(pLightSheetIndex, 0);
       lQueue.setIA(pLightSheetIndex, pMinA);
 
@@ -526,6 +530,10 @@ public class CalibrationA extends CalibrationPerLightSheetBase
     return mStoppingConditionErrorThreshold;
   }
 
+  public BoundedVariable<Double> getLightSheetWidthWhileImaging()
+  {
+    return mLightSheetWidthWhileImaging;
+  }
 
   @Override public String getStateDescription(int pLightSheetIndex)
   {
