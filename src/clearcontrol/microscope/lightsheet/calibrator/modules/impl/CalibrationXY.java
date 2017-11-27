@@ -353,7 +353,7 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
     lQueue.setIW(pLightSheetIndex, mLightSheetWidthWhileImaging.get());
     lQueue.setIZ(pLightSheetIndex, 0);
     lQueue.setIH(pLightSheetIndex, 0);
-    lQueue.setIZ(pLightSheetIndex, 0);
+    lQueue.setIZ(pLightSheetIndex, 0); // TODO: is this a type here? We do the same two lines above...
 
     for (int i = 0; i < mNumberOfDetectionArmDevices; i++)
       lQueue.setDZ(i, 0);
