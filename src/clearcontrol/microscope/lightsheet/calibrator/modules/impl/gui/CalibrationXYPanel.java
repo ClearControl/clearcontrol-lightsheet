@@ -10,7 +10,7 @@ public class CalibrationXYPanel extends StandardCalibrationModulePanel
 {
   public CalibrationXYPanel(CalibrationXY pCalibrationXY) {
     super(pCalibrationXY);
-
+    addNumberTextFieldForVariable(pCalibrationXY.getLightSheetWidthWhileImaging().getName(), pCalibrationXY.getLightSheetWidthWhileImaging());
     addNumberTextFieldForVariable(pCalibrationXY.getMaxIterationsVariable().getName(), pCalibrationXY.getMaxIterationsVariable());
     addNumberTextFieldForVariable(pCalibrationXY.getNumberOfPointsVariable().getName(), pCalibrationXY.getNumberOfPointsVariable());
     addNumberTextFieldForVariable(pCalibrationXY.getStoppingConditionErrorThreshold().getName(), pCalibrationXY.getStoppingConditionErrorThreshold());

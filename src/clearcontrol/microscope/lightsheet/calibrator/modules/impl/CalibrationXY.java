@@ -18,6 +18,7 @@ import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLight
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescriptionPerLightSheet;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -34,7 +35,8 @@ import org.ejml.simple.SimpleMatrix;
  * @author royer
  */
 public class CalibrationXY extends CalibrationPerLightSheetBase
-                           implements CalibrationModuleInterface
+                           implements CalibrationModuleInterface,
+                                      HasStateDescriptionPerLightSheet
 {
 
   private int mNumberOfDetectionArmDevices;
@@ -50,6 +52,7 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
 
   BoundedVariable<Integer> mNumberOfPointsVariable = new BoundedVariable<Integer>("Number of points", 3, 0, Integer.MAX_VALUE);
 
+  private BoundedVariable<Double> mLightSheetWidthWhileImaging = new BoundedVariable<Double>("Light sheet width while imaging", 0.25, 0.0, 1.0, 0.01);
 
   private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.05, 0.0, Double.MAX_VALUE, 0.001);
 
@@ -591,4 +594,29 @@ public class CalibrationXY extends CalibrationPerLightSheetBase
   {
     return mStoppingConditionErrorThreshold;
   }
+
+  public BoundedVariable<Double> getLightSheetWidthWhileImaging()
+  {
+    return mLightSheetWidthWhileImaging;
+  }
+
+  @Override public String getStateDescription(int pLightSheetIndex)
+  {
+    final LightSheetInterface lLightSheetDevice =
+        getLightSheetMicroscope().getDeviceLists()
+                                 .getDevice(LightSheetInterface.class,
+                                            pLightSheetIndex);
+
+    UnivariateAffineFunction lUnivariateAffineFunctionX = lLightSheetDevice.getXFunction().get();
+    UnivariateAffineFunction lUnivariateAffineFunctionY = lLightSheetDevice.getYFunction().get();
+
+    return String.format("X: y = %.3f * x + %.3f", lUnivariateAffineFunctionX.getSlope(), lUnivariateAffineFunctionX.getConstant()) + "\n" +
+     String.format("Y: y = %.3f * x + %.3f", lUnivariateAffineFunctionY.getSlope(), lUnivariateAffineFunctionY.getConstant());
+  }
+
+  @Override public String getStateDescription()
+  {
+    return "";
+  }
+
 }
