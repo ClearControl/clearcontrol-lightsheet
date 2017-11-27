@@ -42,7 +42,7 @@ public class CalibrationA extends CalibrationPerLightSheetBase
 
   private BoundedVariable<Double>
       mAngleOptimisationRangeWidthVariable = new BoundedVariable<Double>("Angle range in degrees",
-                                                                           14.0, 0.0, 40.0, 1.0);
+                                                                           20.0, 0.0, 40.0, 1.0);
 
 
   private BoundedVariable<Double>
