@@ -4,7 +4,6 @@ import clearcontrol.core.device.task.TaskDevice;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.modules.*;
-import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
@@ -75,6 +74,15 @@ public class AdaptationStateEngine extends TaskDevice
                                                                           2e-5,
                                                                           0.010,
                                                                           0.5));
+
+    lAdaptiveEngine.add(new AdaptationZManualDetectionArmSelection(7,
+                                                                   1.66,
+                                                                   0.95,
+                                                                   2e-5,
+                                                                   0.010,
+                                                                   0.5,
+                                                                   lNumberOfLightSheets));
+
     lAdaptiveEngine.add(new AdaptationX(11,
                                         50,
                                         200,
