@@ -59,6 +59,9 @@ public class CalibrationA extends CalibrationPerLightSheetBase
   private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.5, 0.0, Double.MAX_VALUE, 0.001);
 
   private BoundedVariable<Double> mLightSheetWidthWhileImaging = new BoundedVariable<Double>("Light sheet width while imaging", 0.25, 0.0, 1.0, 0.01);
+  private BoundedVariable<Double> mYRangeVariable = new BoundedVariable<Double>("Y range for testing", 1.0, 0.0, 1.0, 0.01);
+  private BoundedVariable<Double> mZRangeVariable = new BoundedVariable<Double>("Z range for testing", 1.0, 0.0, 1.0, 0.01);
+
 
 
   /**
@@ -140,8 +143,20 @@ public class CalibrationA extends CalibrationPerLightSheetBase
     double lMinIY = lLightSheet.getYVariable().getMin().doubleValue();
     double lMaxIY = lLightSheet.getYVariable().getMax().doubleValue();
 
+    if (Math.abs(mYRangeVariable.get() - 1.0) < 0.001) {
+      double lDeltaRange = (lMaxIY - lMinIY) * (1.0 - mYRangeVariable.get()) / 2.0;
+      lMinIY += lDeltaRange;
+      lMaxIY -= lDeltaRange;
+    }
+
     double lMinZ = lLightSheet.getZVariable().getMin().doubleValue();
     double lMaxZ = lLightSheet.getZVariable().getMax().doubleValue();
+
+    if (Math.abs(mZRangeVariable.get() - 1.0) < 0.001) {
+      double lDeltaRange = (lMaxZ - lMinZ) * (1.0 - mZRangeVariable.get()) / 2.0;
+      lMinZ += lDeltaRange;
+      lMaxZ -= lDeltaRange;
+    }
 
     double[] angles = new double[pNumberOfDetectionArmDevices];
     int lCount = 0;
@@ -533,6 +548,16 @@ public class CalibrationA extends CalibrationPerLightSheetBase
   public BoundedVariable<Double> getLightSheetWidthWhileImaging()
   {
     return mLightSheetWidthWhileImaging;
+  }
+
+  public BoundedVariable<Double> getYRangeVariable()
+  {
+    return mYRangeVariable;
+  }
+
+  public BoundedVariable<Double> getZRangeVariable()
+  {
+    return mZRangeVariable;
   }
 
   @Override public String getStateDescription(int pLightSheetIndex)
