@@ -70,6 +70,7 @@ public abstract class StandardAdaptationModule extends
                                                                          new HashMap<>();
   protected LightSheetDOF mLightSheetDOF;
 
+  int [][] mSelectedDetectionArms;
   ConfigurationState[][] mControlPlaneStates = null;
   String[][] mControlPlaneStateDescriptions = null;
 
@@ -154,10 +155,12 @@ public abstract class StandardAdaptationModule extends
       if (mControlPlaneStates == null) {
         mControlPlaneStates = new ConfigurationState[lLightsheetMicroscope.getNumberOfLightSheets()][pStackAcquisition.getNumberOfControlPlanes()];
         mControlPlaneStateDescriptions = new String[lLightsheetMicroscope.getNumberOfLightSheets()][pStackAcquisition.getNumberOfControlPlanes()];
+        mSelectedDetectionArms = new int[lLightsheetMicroscope.getNumberOfLightSheets()][pStackAcquisition.getNumberOfControlPlanes()];
         for (int lLightSheetIndex = 0; lLightSheetIndex < lLightsheetMicroscope.getNumberOfLightSheets(); lLightSheetIndex++) {
           for (int lControlPlaneIndex = 0; lControlPlaneIndex < pStackAcquisition.getNumberOfControlPlanes(); lControlPlaneIndex++) {
             mControlPlaneStates[lLightSheetIndex][lControlPlaneIndex] = ConfigurationState.UNINITIALIZED;
             mControlPlaneStateDescriptions[lLightSheetIndex][lControlPlaneIndex] = "";
+            mSelectedDetectionArms[lLightSheetIndex][lControlPlaneIndex] = -1;
             invokeControlPlaneStateChangeListeners(lLightSheetIndex, lControlPlaneIndex);
           }
         }
@@ -204,6 +207,7 @@ public abstract class StandardAdaptationModule extends
           double lMaxProbability = 0;
           double lMaxMetric = 0;
           double lArgMax = 0;
+          int lSelectedDetectionArm = -1;
 
 
           for (int pDetectionArmIndex =
@@ -260,6 +264,7 @@ public abstract class StandardAdaptationModule extends
               lMaxMetric = lMetricMax;
               lMaxProbability = lFitProbability;
               lArgMax = lArgmax;
+              lSelectedDetectionArm = pDetectionArmIndex;
             }
 
           }
@@ -273,7 +278,7 @@ public abstract class StandardAdaptationModule extends
                                        pControlPlaneIndex,
                                        lInfoString);
 
-          checkAdaptationQuality(pLightSheetIndex, pControlPlaneIndex, lArgMax, lMaxMetric, lMaxProbability);
+          checkAdaptationQuality(pLightSheetIndex, pControlPlaneIndex, lArgMax, lMaxMetric, lMaxProbability, lSelectedDetectionArm);
 
           for (StackInterface lStack : lStacks)
             lStack.free();
@@ -430,7 +435,7 @@ public abstract class StandardAdaptationModule extends
                              * lResult.argmax;
 
 
-        boolean lMissingInfo = checkAdaptationQuality(l, cpi, lCorrection, lResult.metricmax, lResult.probability);
+        boolean lMissingInfo = checkAdaptationQuality(l, cpi, lCorrection, lResult.metricmax, lResult.probability, lSelectedDetectionArm);
 
         if (lMissingInfo)
         {
@@ -522,7 +527,7 @@ public abstract class StandardAdaptationModule extends
     return lCorrection;
   }
 
-  protected boolean checkAdaptationQuality(int pLightSheetIndex, int pControlPlaneIndex, double lCorrectionValue, double lMetricValue, double lPropability) {
+  protected boolean checkAdaptationQuality(int pLightSheetIndex, int pControlPlaneIndex, double lCorrectionValue, double lMetricValue, double lPropability, int pSelectedDetectionArm) {
 
     boolean lProbabilityInsufficient =
         lPropability < getProbabilityThresholdVariable().get();
@@ -565,9 +570,11 @@ public abstract class StandardAdaptationModule extends
       if (lProbabilityInsufficient) {
         mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex] += "Probability insufficient";
       }
+      mSelectedDetectionArms[pLightSheetIndex][pControlPlaneIndex] = -1;
     } else {
       mControlPlaneStates[pLightSheetIndex][pControlPlaneIndex] = ConfigurationState.SUCCEEDED;
       mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex] = "" + lCorrectionValue;
+      mSelectedDetectionArms[pLightSheetIndex][pControlPlaneIndex] = pSelectedDetectionArm;
     }
     invokeControlPlaneStateChangeListeners(pLightSheetIndex, pControlPlaneIndex);
 
@@ -666,7 +673,7 @@ public abstract class StandardAdaptationModule extends
     if (mControlPlaneStateDescriptions == null) {
       return "";
     }
-    return mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex];
+    return "D" + mSelectedDetectionArms[pLightSheetIndex][pControlPlaneIndex] + ": " + mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex];
   }
 
   ArrayList<ConfigurationStateChangeListener>
