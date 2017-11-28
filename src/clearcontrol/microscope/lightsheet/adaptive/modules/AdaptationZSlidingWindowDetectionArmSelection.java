@@ -319,9 +319,9 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
               l);
         }
 
-        boolean
-            lMissingInfo =
-            lMetricMaxInsufficient || lProbabilityInsufficient;
+
+        boolean lMissingInfo = checkAdaptationQuality(l, cpi, lCorrection, lResult.metricmax, lResult.probability, lSelectedDetectionArm);
+
 
         if (lMissingInfo)
         {
