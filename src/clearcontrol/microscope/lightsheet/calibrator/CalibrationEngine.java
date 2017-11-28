@@ -386,8 +386,10 @@ public class CalibrationEngine extends TaskDevice implements
                                                   mLightSheetMicroscope.getDeviceLists()
                                                                        .getDevice(LightSheetInterface.class,
                                                                                   i);
-
-      lLightSheetDevice.resetFunctions();
+      if (getCalibrateLightSheetOnOff(i).get())
+      {
+        lLightSheetDevice.resetFunctions();
+      }
 
     }
   }

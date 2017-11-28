@@ -230,10 +230,26 @@ public class CalibrationEngineToolbar extends CustomGridPane
           e1.printStackTrace();
         }
       });
+
       GridPane.setColumnSpan(lLoadCalibration, 1);
       add(lLoadCalibration, 1, lRow);
 
-      Button lResetCalibration = new Button("Reset");
+      Button lResetAllCalibration = new Button("Reset all");
+      lResetAllCalibration.setAlignment(Pos.CENTER);
+      lResetAllCalibration.setMaxWidth(Double.MAX_VALUE);
+      lResetAllCalibration.setOnAction((e) -> {
+        for (int i = 0; i < pCalibrationEngine.getLightSheetMicroscope().getNumberOfLightSheets(); i++)
+        {
+          pCalibrationEngine.getCalibrateLightSheetOnOff(i).set(true);
+        }
+        pCalibrationEngine.reset();
+      });
+      GridPane.setColumnSpan(lResetAllCalibration, 1);
+      add(lResetAllCalibration, 2, lRow);
+
+      lRow++;
+
+      Button lResetCalibration = new Button("Reset selected");
       lResetCalibration.setAlignment(Pos.CENTER);
       lResetCalibration.setMaxWidth(Double.MAX_VALUE);
       lResetCalibration.setOnAction((e) -> {
@@ -241,6 +257,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
       });
       GridPane.setColumnSpan(lResetCalibration, 1);
       add(lResetCalibration, 2, lRow);
+
 
       lRow++;
     }
