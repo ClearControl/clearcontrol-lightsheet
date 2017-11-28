@@ -369,14 +369,17 @@ public abstract class StandardAdaptationModule extends
       /*System.out.format("%g\t%g \n",
                         lDOFValueList.get(i),
                         lMetricArray[i]);/**/
+      if (i < lDOFValueList.size())
+      {
+        getAdaptiveEngine().addPoint(getName(),
+                                     lChartName,
+                                     i == 0,
 
-      getAdaptiveEngine().addPoint(getName(),
-                                   lChartName,
-                                   i == 0,
-
-                                   lDOFValueList.get(i),
-                                   lMetricArray[i]);
-
+                                     lDOFValueList.get(i),
+                                     lMetricArray[i]);
+      } else {
+        // Todo: this should not happen, but it did on 2017-11-28
+      }
     }
 
     return lMetricArray;
