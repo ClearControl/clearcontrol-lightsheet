@@ -98,7 +98,7 @@ public class LightSheetFastFusionProcessor extends
   public StackInterface process(StackInterface pStack,
                                 RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
   {
-
+    boolean lEngineNeedsInitialisation = false;
     if (mEngine == null)
     {
       mEngine =
@@ -106,6 +106,19 @@ public class LightSheetFastFusionProcessor extends
                                          (VisualConsoleInterface) this,
                                          mLightSheetMicroscope.getNumberOfLightSheets(),
                                          mLightSheetMicroscope.getNumberOfDetectionArms());
+
+      lEngineNeedsInitialisation = true;
+    }
+
+
+    if (mEngine.isSubtractingBackground() != mBackgroundSubtractionSwitchVariable.get())
+        /* // todo: there is no checkbox for registration and downscaline mEngine.isRegistration() != ... || */
+    {
+      lEngineNeedsInitialisation = true;
+    }
+
+    if (lEngineNeedsInitialisation)
+    {
       mEngine.setSubtractingBackground(
           mBackgroundSubtractionSwitchVariable.get());
       mEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(),
