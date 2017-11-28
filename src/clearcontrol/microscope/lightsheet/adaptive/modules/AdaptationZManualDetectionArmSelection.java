@@ -47,6 +47,7 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
           pExposureInSeconds,
           pLaserPower,
           pNumberOfLightSheets);
+    setName("Z**");
 
     // Todo: The following block contains some casts which should be
     // solved in a better way... It's XWing specific
