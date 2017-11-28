@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.adaptive.modules;
 
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeInterface;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -38,7 +39,7 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
                                                 double pImageMetricThreshold,
                                                 double pExposureInSeconds,
                                                 double pLaserPower,
-                                                int pNumberOfLightSheets)
+                                                int pNumberOfLightSheets, LightSheetMicroscope pLightSheetMicroscope)
   {
     super(pNumberOfSamples,
           pDeltaZ,
@@ -52,11 +53,9 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
     // Todo: The following block contains some casts which should be
     // solved in a better way... It's XWing specific
 
-    LightSheetMicroscopeInterface lLightSheetMicroscope =
-        (LightSheetMicroscopeInterface) getAdaptiveEngine().getMicroscope();
 
     InterpolatedAcquisitionState lInterpolatedAcquisitionState =
-        (InterpolatedAcquisitionState) lLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+        (InterpolatedAcquisitionState) pLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
 
     mNumberOfControlPlanes = lInterpolatedAcquisitionState.getNumberOfControlPlanes();
 
@@ -65,7 +64,7 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
       // todo: the default values of the following variables may be XWing specific
       mDetectionArmChoiceVariables[i] = new BoundedVariable<Integer>("Control plane " + i + " camera", (
                                                                                                            i <
-                                                                                                           mDetectionArmChoiceVariables.length / 2) ? 1 : 0, 0, lLightSheetMicroscope.getNumberOfDetectionArms() - 1);
+                                                                                                           mDetectionArmChoiceVariables.length / 2) ? 1 : 0, 0, pLightSheetMicroscope.getNumberOfDetectionArms() - 1);
     }
   }
 

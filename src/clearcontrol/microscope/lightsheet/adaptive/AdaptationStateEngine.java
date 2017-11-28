@@ -81,7 +81,7 @@ public class AdaptationStateEngine extends TaskDevice
                                                                    2e-5,
                                                                    0.010,
                                                                    0.5,
-                                                                   lNumberOfLightSheets));
+                                                                   lNumberOfLightSheets, lLightSheetMicroscope));
 
     lAdaptiveEngine.add(new AdaptationX(11,
                                         50,
@@ -106,7 +106,7 @@ public class AdaptationStateEngine extends TaskDevice
                                         0.01,
                                         0.5));
 
-    lLightSheetMicroscope.addDevice(0, new AdaptationStateEngine("Adaptation state", lAdaptiveEngine, lLightSheetMicroscope, lAcquisitionState));
+    lLightSheetMicroscope.addDevice(0, new AdaptationStateEngine("Microscope State", lAdaptiveEngine, lLightSheetMicroscope, lAcquisitionState));
   }
 
   @Override public void run()
