@@ -164,7 +164,7 @@ public class AdaptationStateEnginePanel extends
     }
 
 
-    TitledPane lTitledPane = new TitledPane("Adaption " + lName + " state",
+    TitledPane lTitledPane = new TitledPane("Adaptation " + lName + " state",
                                             lControlPlaneStatePanel);
     lTitledPane.setAnimated(false);
     lTitledPane.setExpanded(true);
