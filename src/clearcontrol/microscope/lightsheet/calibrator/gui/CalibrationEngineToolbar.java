@@ -113,29 +113,29 @@ public class CalibrationEngineToolbar extends CustomGridPane
     }
 
     {
-      addCheckBoxForCalibrationModule("Z ",
+      addCheckBoxForCalibrationModule("Z (without sample)",
                                       pCalibrationEngine.getCalibrateZVariable(),
                                       0,
                                       lRow);
 
-      addCheckBoxForCalibrationModule("A ",
+      addCheckBoxForCalibrationModule("A (without sample) ",
                                       pCalibrationEngine.getCalibrateAVariable(),
                                       1,
                                       lRow);
 
       lRow ++;
-      addCheckBoxForCalibrationModule("XY",
+      addCheckBoxForCalibrationModule("XY* (without sample)",
                                       pCalibrationEngine.getCalibrateXYVariable(),
                                       0,
                                       lRow );
 
-      addCheckBoxForCalibrationModule("P ",
+      addCheckBoxForCalibrationModule("P* (with sample) ",
                                       pCalibrationEngine.getCalibratePVariable(),
                                       1,
                                       lRow);
 
       lRow ++;
-      addCheckBoxForCalibrationModule("W ",
+      addCheckBoxForCalibrationModule("W* ",
                                       pCalibrationEngine.getCalibrateWVariable(),
                                       0,
                                       lRow);
