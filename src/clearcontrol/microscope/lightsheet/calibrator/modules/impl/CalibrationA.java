@@ -143,7 +143,7 @@ public class CalibrationA extends CalibrationPerLightSheetBase
     double lMinIY = lLightSheet.getYVariable().getMin().doubleValue();
     double lMaxIY = lLightSheet.getYVariable().getMax().doubleValue();
 
-    if (Math.abs(mYRangeVariable.get() - 1.0) < 0.001) {
+    if (Math.abs(mYRangeVariable.get() - 1.0) > 0.001) {
       double lDeltaRange = (lMaxIY - lMinIY) * (1.0 - mYRangeVariable.get()) / 2.0;
       lMinIY += lDeltaRange;
       lMaxIY -= lDeltaRange;
@@ -152,7 +152,7 @@ public class CalibrationA extends CalibrationPerLightSheetBase
     double lMinZ = lLightSheet.getZVariable().getMin().doubleValue();
     double lMaxZ = lLightSheet.getZVariable().getMax().doubleValue();
 
-    if (Math.abs(mZRangeVariable.get() - 1.0) < 0.001) {
+    if (Math.abs(mZRangeVariable.get() - 1.0) > 0.001) {
       double lDeltaRange = (lMaxZ - lMinZ) * (1.0 - mZRangeVariable.get()) / 2.0;
       lMinZ += lDeltaRange;
       lMaxZ -= lDeltaRange;
