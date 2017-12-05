@@ -3,6 +3,8 @@ package clearcontrol.microscope.lightsheet.calibrator.modules.impl;
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -25,6 +27,7 @@ import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescriptionPerLightSheet;
 import clearcontrol.stack.OffHeapPlanarStack;
+import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import gnu.trove.list.array.TDoubleArrayList;
 
 /**
@@ -61,6 +64,7 @@ public class CalibrationA extends CalibrationPerLightSheetBase
   private BoundedVariable<Double> mLightSheetWidthWhileImaging = new BoundedVariable<Double>("Light sheet width while imaging", 0.25, 0.0, 1.0, 0.01);
   private BoundedVariable<Double> mYRangeVariable = new BoundedVariable<Double>("Y range for testing", 1.0, 0.0, 1.0, 0.01);
   private BoundedVariable<Double> mZRangeVariable = new BoundedVariable<Double>("Z range for testing", 1.0, 0.0, 1.0, 0.01);
+  private Variable<String> mDebugPath = new Variable<String>("Debug path", "");
 
 
 
@@ -336,6 +340,16 @@ public class CalibrationA extends CalibrationPerLightSheetBase
               ImageAnalysisUtils.computeAverageSquareVariationPerPlane(
                   lStack);
 
+
+          if (mDebugPath.get().length() > 0)
+          {
+            String timepoint = "" + System.currentTimeMillis();
+            RawFileStackSink lRawFileStackSink = new RawFileStackSink();
+            lRawFileStackSink.setLocation(new File(mDebugPath.get()), "tempA" + timepoint);
+            lRawFileStackSink.appendStack(lStack);
+            lRawFileStackSink.close();
+            info("Saved as " + timepoint);
+          }
           smooth(lAvgIntensityArray, 10);
 
           String
@@ -422,6 +436,10 @@ public class CalibrationA extends CalibrationPerLightSheetBase
       e.printStackTrace();
     }
     catch (final TimeoutException e)
+    {
+      e.printStackTrace();
+    }
+    catch (IOException e)
     {
       e.printStackTrace();
     }
@@ -575,5 +593,11 @@ public class CalibrationA extends CalibrationPerLightSheetBase
   @Override public String getStateDescription()
   {
     return "";
+  }
+
+
+  public Variable<String> getDebugPath()
+  {
+    return mDebugPath;
   }
 }
