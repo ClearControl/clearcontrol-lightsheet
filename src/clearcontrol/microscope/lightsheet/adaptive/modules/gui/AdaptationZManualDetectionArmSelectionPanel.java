@@ -12,6 +12,8 @@ public class AdaptationZManualDetectionArmSelectionPanel extends AdaptationZPane
   {
     super(pAdaptationZManualDetectionArmSelection);
 
+    addCheckBoxForVariable("First and last control plane zero", pAdaptationZManualDetectionArmSelection.getFirstAndLastControlPlaneZero());
+
     for (int i = 0; i < pAdaptationZManualDetectionArmSelection.getNumberOfControlPlanes(); i ++)
     {
       addNumberTextFieldForVariable(

@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.adaptive.modules;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeInterface;
@@ -15,6 +16,11 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
   private int mNumberOfControlPlanes;
 
   private BoundedVariable<Integer>[] mDetectionArmChoiceVariables;
+
+
+  private final Variable<Boolean>
+      mFirstAndLastControlPlaneZero = new Variable<Boolean>("pFirstAndLastControlPlaneZero", true);
+
 
   /**
    * Instantiates a Z focus adaptation module given the delta Z parameter,
@@ -66,6 +72,9 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
                                                                                                            i <
                                                                                                            mDetectionArmChoiceVariables.length / 2) ? 1 : 0, 0, pLightSheetMicroscope.getNumberOfDetectionArms() - 1);
     }
+
+
+    getIsActiveVariable().set(false);
   }
 
 
@@ -136,12 +145,24 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
                                                    lMissingInfo,
                                                    lSelectedDetectionArm));
 
+        if (mFirstAndLastControlPlaneZero.get() && (cpi == 0 || cpi == lNumberOfControlPlanes - 1)) {
+          pStateToUpdate.getInterpolationTables()
+                        .add(mLightSheetDOF, cpi, l, 0);
+          info("Set first/last control plane to zero adaptation as configured.");
+        }
+        else
+        {
+          pStateToUpdate.getInterpolationTables()
+                        .add(mLightSheetDOF, cpi, l, lCorrection);
+        }
+        /*
         if (pRelativeCorrection)
           pStateToUpdate.getInterpolationTables()
                         .add(mLightSheetDOF, cpi, l, lCorrection);
         else
           pStateToUpdate.getInterpolationTables()
                         .set(mLightSheetDOF, cpi, l, lCorrection);
+        */
         invokeControlPlaneStateChangeListeners(l, cpi);
       }
     }
@@ -156,5 +177,11 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
   public BoundedVariable<Integer> getDetectionArmChoiceVariable(int pControlPlane)
   {
     return mDetectionArmChoiceVariables[pControlPlane];
+  }
+
+
+  public Variable<Boolean> getFirstAndLastControlPlaneZero()
+  {
+    return mFirstAndLastControlPlaneZero;
   }
 }
