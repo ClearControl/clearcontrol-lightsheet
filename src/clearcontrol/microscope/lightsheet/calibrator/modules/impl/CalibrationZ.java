@@ -1,5 +1,7 @@
 package clearcontrol.microscope.lightsheet.calibrator.modules.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -10,6 +12,7 @@ import clearcontrol.core.math.argmax.ArgMaxFinder1DInterface;
 import clearcontrol.core.math.argmax.methods.ModeArgMaxFinder;
 import clearcontrol.core.math.functions.UnivariateAffineFunction;
 import clearcontrol.core.math.regression.linear.TheilSenEstimator;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.ip.iqm.DCTS2D;
@@ -25,6 +28,7 @@ import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterfa
 import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescription;
 import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescriptionPerLightSheet;
 import clearcontrol.stack.OffHeapPlanarStack;
+import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import gnu.trove.list.array.TDoubleArrayList;
 
 import org.apache.commons.collections4.map.MultiKeyMap;
@@ -51,11 +55,11 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
 
   private BoundedVariable<Integer> mNumberOfISamples = new BoundedVariable<Integer>("Number of illumination samples", 13, 0, Integer.MAX_VALUE);
   private BoundedVariable<Integer> mNumberOfDSamples = new BoundedVariable<Integer>("Number of detection samples", 13, 0, Integer.MAX_VALUE);
-  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MAX_VALUE);
-
-
+  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 7, 0, Integer.MAX_VALUE);
+  private BoundedVariable<Double> mMaxDeltaZ = new BoundedVariable<Double>("Maximum DeltaZ", 30.0, 0.0, Double.MAX_VALUE, 0.1);
   private BoundedVariable<Double>
-      mExposureTimeInSecondsVariable = new BoundedVariable<Double>("Exposure time in seconds", 0.02, 0.0, Double.MAX_VALUE, 0.001);
+      mExposureTimeInSecondsVariable = new BoundedVariable<Double>("Exposure time in seconds", 0.1, 0.0, Double.MAX_VALUE, 0.001);
+  private Variable<String> mDebugPath = new Variable<String>("Debug path", "");
 
   private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.02, 0.0, Double.MAX_VALUE, 0.001);
 
@@ -220,15 +224,20 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
       for (int d = 0; d < mNumberOfDetectionArmDevices; d++) {
         if (!Double.isNaN(dz[d]))
         {
-          lTheilSenEstimators[d].enter(dz[d], lPerturbedIZ);
+          if (dz[d] > 0.001 && Math.abs(dz[d] - lPerturbedIZ) < mMaxDeltaZ.get()) // this is a workaround. Too many lightsheet positions resulted in dz[d] = 0 so that the fitting doesn't work anymore
+          {
+            System.out.println("D" + d + " enter " + dz[d] + " / " + lPerturbedIZ);
+            lTheilSenEstimators[d].enter(dz[d], lPerturbedIZ);
 
-          getCalibrationEngine().addPoint(lChartName,
-                                          lSeriesName,
-                                          iz == lMinIZ,
+            getCalibrationEngine().addPoint(lChartName,
+                                            lSeriesName,
+                                            iz == lMinIZ,
 
-                                          dz[d],
-                                          lPerturbedIZ);
-
+                                            dz[d],
+                                            lPerturbedIZ);
+          } else {
+            System.out.println("D" + d + " ignore " + dz[d] + " / " + lPerturbedIZ);
+          }
         }
       }
 
@@ -243,10 +252,10 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
 
     for (int d = 0; d < mNumberOfDetectionArmDevices; d++)
     {
-      /*final UnivariateAffineFunction lModel =
-                                            lTheilSenEstimators[d].getModel();/**/
+      final UnivariateAffineFunction lModel =
+                                            lTheilSenEstimators[d].getModel();
 
-      // System.out.println("lModel=" + lModel);
+      System.out.println("D" + d + " lModel=" + lModel);
 
       mModels.put(pLightSheetIndex,
                   d,
@@ -321,8 +330,8 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
            pLightSheetIndex,
            pIZ,
            pNumberOfDSamples,
-           pMinDZ,
-           pMaxDZ);
+           lMinDZ,
+           lMaxDZ);
 
       double lStep = (lMaxDZ - lMinDZ) / (pNumberOfDSamples - 1);
 
@@ -406,6 +415,16 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
 
           if (lStack == null)
             continue;
+
+          if (mDebugPath.get().length() > 0)
+          {
+            String timepoint = "" + System.currentTimeMillis();
+            RawFileStackSink lRawFileStackSink = new RawFileStackSink();
+            lRawFileStackSink.setLocation(new File(mDebugPath.get()), "tempZ" + timepoint);
+            lRawFileStackSink.appendStack(lStack);
+            lRawFileStackSink.close();
+            info("Saved as " + timepoint);
+          }
 
           // info("Begin compute metric");
           ElapsedTime.measureForceOutput("compute metric", () -> {
@@ -528,6 +547,10 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
     {
       e.printStackTrace();
     }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
 
     return null;
 
@@ -633,6 +656,10 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
     double b0 = mModels.get(pLightSheetIndex, 0).getConstant();
     double a1 = mModels.get(pLightSheetIndex, 1).getSlope();
     double b1 = mModels.get(pLightSheetIndex, 1).getConstant();
+    System.out.println("a0=" + a0);
+    System.out.println("b0=" + b0);
+    System.out.println("a1=" + a1);
+    System.out.println("b1=" + b1);
 
     double lDZIntercept0 = -b0 / a0;
     double lDZIntercept1 = -b1 / a1;
@@ -739,5 +766,15 @@ public class CalibrationZ extends CalibrationPerLightSheetBase
     UnivariateAffineFunction lUnivariateAffineFunction = lLightSheetDevice.getZFunction().get();
 
     return String.format("y = %.3f * x + %.3f", lUnivariateAffineFunction.getSlope(), lUnivariateAffineFunction.getConstant());
+  }
+
+  public BoundedVariable<Double> getMaxDeltaZ()
+  {
+    return mMaxDeltaZ;
+  }
+
+  public Variable<String> getDebugPath()
+  {
+    return mDebugPath;
   }
 }
