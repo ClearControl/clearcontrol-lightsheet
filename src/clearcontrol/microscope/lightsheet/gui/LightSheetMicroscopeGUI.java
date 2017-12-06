@@ -4,6 +4,8 @@ import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.adaptive.gui.AdaptationStateEnginePanel;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEnginePanel;
+import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor;
+import clearcontrol.microscope.lightsheet.livestatistics.gui.LiveStatisticsPanel;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.gui.OfflineFastFusionPanel;
 import javafx.stage.Stage;
@@ -126,15 +128,16 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          EDFImagingEnginePanel.class,
                          MicroscopeNodeType.Acquisition);
 
+    addPanelMappingEntry(LiveStatisticsProcessor.class,
+                         LiveStatisticsPanel.class,
+                         MicroscopeNodeType.Acquisition);
+
     addPanelMappingEntry(LightSheetFastFusionProcessor.class,
                          LightSheetFastFusionProcessorPanel.class,
                          MicroscopeNodeType.Other);
 
-
     addToolbarMappingEntry(OfflineFastFusionEngine.class,
                          OfflineFastFusionPanel.class);
-
-
   }
 
   @Override
