@@ -320,6 +320,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                                       "C0",
                                                                       "C1adjusted"));
 
+      // following line just transforms the result image from Float to unsigned int
       addTask(new NonnegativeSubtractionTask("fused-preliminary",
                                                                0,
                                                                "fused",
