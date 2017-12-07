@@ -1,8 +1,5 @@
 package clearcontrol.microscope.lightsheet.processor;
 
-import java.io.IOException;
-import java.util.List;
-
 import clearcl.ClearCLContext;
 import clearcl.enums.ImageChannelDataType;
 import clearcontrol.core.concurrent.executors.AsynchronousExecutorFeature;
@@ -20,6 +17,9 @@ import fastfuse.registration.AffineMatrix;
 import fastfuse.tasks.*;
 import fastfuse.tasks.DownsampleXYbyHalfTask.Type;
 import framework.Handler;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Lightsheet fast fusion engine
@@ -349,14 +349,20 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
           ImageChannelDataType.UnsignedInt16));
 
     }
-    
-    //TODO here is the TimeStepper stuff
-	try 
-	{ 
-		Handler lTimeStepHandler = new Handler(this.getContext(), ImageChannelDataType.Float); 
-		addTask(new CacheStackTask("fused-preliminary", lTimeStepHandler));
-	} 
-			catch (IOException e) { e.printStackTrace(); }
+
+//    //TODO here is the TimeStepper stuff
+//    try
+//    {
+//      Handler
+//          lTimeStepHandler =
+//          new Handler(this.getContext(), ImageChannelDataType.Float);
+//      addTask(new CacheStackTask("fused-preliminary",
+//                                 lTimeStepHandler));
+//    }
+//    catch (IOException e)
+//    {
+//      e.printStackTrace();
+//    }
   }
 
   protected void setupFourLightsheetsOneDetectionArm()
