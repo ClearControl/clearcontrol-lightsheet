@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.livestatistics;
 
 import clearcl.*;
+import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.stack.OffHeapPlanarStack;
@@ -33,10 +34,10 @@ import java.io.IOException;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * December 2017
  */
-public class LiveStatisticsProcessor extends ClearCLStackProcessorBase
-    implements
-    StackProcessorInterface,
-    VisualConsoleInterface
+public class LiveStatisticsProcessor extends ClearCLStackProcessorBase implements
+                                                                       StackProcessorInterface,
+                                                                       VisualConsoleInterface,
+                                                                       LoggingFeature
 {
   LightSheetMicroscope mLightSheetMicroscope;
 
@@ -70,6 +71,7 @@ public class LiveStatisticsProcessor extends ClearCLStackProcessorBase
   @Override public StackInterface process(StackInterface pStack,
                                           RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
   {
+    info("Starting stack statistics");
     RandomAccessibleInterval<ShortType>
         img = new StackToImgConverter(pStack).getRandomAccessibleInterval();
 
@@ -110,6 +112,7 @@ public class LiveStatisticsProcessor extends ClearCLStackProcessorBase
     }
 
 
+    info("Finished stack statistics");
     return pStack;
   }
 }
