@@ -110,6 +110,6 @@ public class LiveStatisticsProcessor extends ClearCLStackProcessorBase
     }
 
 
-    return null;
+    return pStack;
   }
 }
