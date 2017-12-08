@@ -28,21 +28,22 @@ public class CacheStackTask extends TaskBase implements TaskInterface
     mStartTime = System.currentTimeMillis();
   }
 
-@Override
-public boolean enqueue(FastFusionEngineInterface pFastFusionEngine, boolean pWaitToFinish) 
-{
-	//TODO we need a measure of runtime overall
-	float pTime = System.currentTimeMillis()-mStartTime;
-	float pStep = pTime - mLastTime;
-	
-	
-	ClearCLImage CurrImage = pFastFusionEngine.getImage(mSrcImageSlotKey);
-	mTimeStepHandler.processImage(CurrImage, pTime, pStep);
-	System.out.println("computed step would be: "+pStep);
-	
-	mLastTime = pTime;
-	
-	return true;
-}
+	@Override
+	public boolean enqueue(FastFusionEngineInterface pFastFusionEngine, boolean pWaitToFinish) 
+	{
+		if (pFastFusionEngine.isImageAvailable(mSrcImageSlotKey))
+		{
+			//TODO we need a measure of runtime overall
+			float pTime = System.currentTimeMillis()-mStartTime;
+			float pStep = pTime - mLastTime;
+			
+			ClearCLImage CurrImage = pFastFusionEngine.getImage(mSrcImageSlotKey);
+			mTimeStepHandler.processImage(CurrImage, pTime, pStep);
+			System.out.println("computed step would be: "+pStep);
+			
+			mLastTime = pTime;
+		}
+			return true;
+	}
 
 }
