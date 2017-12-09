@@ -351,8 +351,9 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     }
 
     //TODO here is the TimeStepper stuff
-    
+
     //this.getFusedMetaData();
+    System.out.println("adding the stepper task now");
 	try 
 	{ 
 		Handler lTimeStepHandler = new Handler(this.getContext(), ImageChannelDataType.Float); 
