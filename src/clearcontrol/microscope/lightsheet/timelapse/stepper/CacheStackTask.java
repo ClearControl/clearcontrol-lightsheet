@@ -33,6 +33,7 @@ public class CacheStackTask extends TaskBase implements TaskInterface
 	{
 		if (pFastFusionEngine.isImageAvailable(mSrcImageSlotKey))
 		{
+			System.out.println("Fused-preliminary is being cached and processed");
 			//TODO we need a measure of runtime overall
 			float pTime = System.currentTimeMillis()-mStartTime;
 			float pStep = pTime - mLastTime;
@@ -42,6 +43,10 @@ public class CacheStackTask extends TaskBase implements TaskInterface
 			System.out.println("computed step would be: "+pStep);
 			
 			mLastTime = pTime;
+		}
+		else
+		{
+			System.out.println("Fused-preliminary was not available");
 		}
 			return true;
 	}
