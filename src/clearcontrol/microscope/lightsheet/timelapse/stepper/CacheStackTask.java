@@ -31,6 +31,7 @@ public class CacheStackTask extends TaskBase implements TaskInterface
 	@Override
 	public boolean enqueue(FastFusionEngineInterface pFastFusionEngine, boolean pWaitToFinish) 
 	{
+		System.out.println("Task is being called");
 		if (pFastFusionEngine.isImageAvailable(mSrcImageSlotKey))
 		{
 			System.out.println("Fused-preliminary is being cached and processed");
