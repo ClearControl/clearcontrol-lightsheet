@@ -355,8 +355,8 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     System.out.println("adding the stepper task now");
 	try 
 	{ 
-		Handler lTimeStepHandler = new Handler(this.getContext(), ImageChannelDataType.Float); 
-		addTask(new CacheStackTask("fused-preliminary", lTimeStepHandler));
+		Handler lTimeStepHandler = new Handler(this.getContext(), ImageChannelDataType.UnsignedInt16); 
+		addTask(new CacheStackTask("fused", lTimeStepHandler));
 	} 
 			catch (IOException e) { e.printStackTrace(); }
   }
