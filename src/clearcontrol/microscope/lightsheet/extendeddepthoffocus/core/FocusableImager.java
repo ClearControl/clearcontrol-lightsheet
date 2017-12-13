@@ -1,8 +1,11 @@
 package clearcontrol.microscope.lightsheet.extendeddepthoffocus.core;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.devices.signalgen.staves.StaveInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
+import clearcontrol.microscope.lightsheet.component.lightsheet.si.BinaryStructuredIlluminationPattern;
+import clearcontrol.microscope.lightsheet.component.lightsheet.si.StructuredIlluminationPatternInterface;
 import clearcontrol.stack.OffHeapPlanarStack;
 
 import java.util.concurrent.ExecutionException;
@@ -87,11 +90,14 @@ public class FocusableImager implements LoggingFeature
         mQueue.setI(i, true);
         mQueue.setIX(i, 0);
         mQueue.setIY(i, 0);
+        mQueue.setIPattern(i, 0, new BinaryStructuredIlluminationPattern());
+        mQueue.setIPattern(i, 0, new BinaryStructuredIlluminationPattern());
       }
 
       mInitialDetectionZ = detectionZ;
       mQueue.setDZ(mDetectionArmIndex, detectionZ);
       mQueue.setC(mDetectionArmIndex, false);
+
       mQueue.addCurrentStateToQueue();
     }
 
