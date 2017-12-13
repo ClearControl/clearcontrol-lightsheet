@@ -31,13 +31,15 @@ public class CacheStackTask extends TaskBase implements TaskInterface
 	@Override
 	public boolean enqueue(FastFusionEngineInterface pFastFusionEngine, boolean pWaitToFinish) 
 	{
-
-		for (String key : pFastFusionEngine.getAvailableImagesSlotKeys()) {
-			System.out.println("Available: " + key);
-		}
+		System.out.println("available images are");
+		
+		for (String Key:pFastFusionEngine.getAvailableImagesSlotKeys())
+	    {
+	    		System.out.println(Key);
+	    }
 		if (pFastFusionEngine.isImageAvailable(mSrcImageSlotKey))
 		{
-			System.out.println("Fused-preliminary is being cached and processed");
+			System.out.println(mSrcImageSlotKey+" is being cached and processed");
 			//TODO we need a measure of runtime overall
 			float pTime = System.currentTimeMillis()-mStartTime;
 			float pStep = pTime - mLastTime;
@@ -50,7 +52,7 @@ public class CacheStackTask extends TaskBase implements TaskInterface
 		}
 		else
 		{
-			System.out.println("Fused-preliminary was not available");
+			System.out.println(mSrcImageSlotKey+" was not available");
 		}
 			return true;
 	}
