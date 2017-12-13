@@ -1,5 +1,7 @@
 package clearcontrol.microscope.lightsheet.gui;
 
+import clearcontrol.devices.optomech.filterwheels.devices.fli.FLIFilterWheelDevice;
+import clearcontrol.devices.optomech.filterwheels.gui.jfx.FilterWheelDevicePanel;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.adaptive.gui.AdaptationStateEnginePanel;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
@@ -138,6 +140,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 
     addToolbarMappingEntry(OfflineFastFusionEngine.class,
                          OfflineFastFusionPanel.class);
+
+    addPanelMappingEntry(FLIFilterWheelDevice.class,
+                         FilterWheelDevicePanel.class,
+                         MicroscopeNodeType.FilterWheel);
   }
 
   @Override
