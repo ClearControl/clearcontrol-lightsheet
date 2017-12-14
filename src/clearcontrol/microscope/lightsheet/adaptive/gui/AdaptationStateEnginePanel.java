@@ -85,9 +85,24 @@ public class AdaptationStateEnginePanel extends
     add(lCustomGridPane, 1, 0);
 
     add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(0)), 2, 1);
-    add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(1)), 2, 0);
-    add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(2)), 0, 0);
-    add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(3)), 0, 1);
+    if (mLightSheetMicroscope.getNumberOfLightSheets() > 0)
+    {
+      add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(1)),
+          2,
+          0);
+    }
+    if (mLightSheetMicroscope.getNumberOfLightSheets() > 1)
+    {
+      add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(2)),
+          0,
+          0);
+    }
+    if (mLightSheetMicroscope.getNumberOfLightSheets() > 2)
+    {
+      add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(3)),
+          0,
+          1);
+    }
   }
 
   private TitledPane buildLightSheetPanel(LightSheetInterface pLightSheetInterface) {
