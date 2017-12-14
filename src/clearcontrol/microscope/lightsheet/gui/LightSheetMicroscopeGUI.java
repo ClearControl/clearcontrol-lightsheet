@@ -1,23 +1,17 @@
 package clearcontrol.microscope.lightsheet.gui;
 
+import javafx.stage.Stage;
+
 import clearcontrol.deformablemirrors.DeformableMirrorDevice;
 import clearcontrol.deformablemirrors.gui.DeformableMirrorPanel;
 import clearcontrol.devices.optomech.filterwheels.devices.fli.FLIFilterWheelDevice;
 import clearcontrol.devices.optomech.filterwheels.gui.jfx.FilterWheelDevicePanel;
-import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
-import clearcontrol.microscope.lightsheet.adaptive.gui.AdaptationStateEnginePanel;
-import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
-import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEnginePanel;
-import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor;
-import clearcontrol.microscope.lightsheet.livestatistics.gui.LiveStatisticsPanel;
-import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
-import clearcontrol.microscope.lightsheet.processor.gui.OfflineFastFusionPanel;
-import javafx.stage.Stage;
-
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.gui.MicroscopeGUI;
 import clearcontrol.microscope.gui.halcyon.MicroscopeNodeType;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
+import clearcontrol.microscope.lightsheet.adaptive.gui.AdaptationStateEnginePanel;
 import clearcontrol.microscope.lightsheet.adaptive.gui.LightSheetAdaptiveEnginePanel;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.gui.CalibrationEnginePanel;
@@ -26,11 +20,17 @@ import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterf
 import clearcontrol.microscope.lightsheet.component.detection.gui.DetectionArmPanel;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.gui.LightSheetPanel;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEnginePanel;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEngineToolbar;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
 import clearcontrol.microscope.lightsheet.interactive.gui.InteractiveAcquisitionToolbar;
+import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor;
+import clearcontrol.microscope.lightsheet.livestatistics.gui.LiveStatisticsPanel;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
+import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.gui.LightSheetFastFusionProcessorPanel;
+import clearcontrol.microscope.lightsheet.processor.gui.OfflineFastFusionPanel;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.signalgen.gui.LightSheetSignalGeneratorPanel;
 import clearcontrol.microscope.lightsheet.state.gui.AcquisitionStateManagerPanel;
@@ -126,7 +126,7 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          MicroscopeNodeType.Acquisition);
 
     addToolbarMappingEntry(EDFImagingEngine.class,
-                         EDFImagingEngineToolbar.class);
+                           EDFImagingEngineToolbar.class);
 
     addPanelMappingEntry(EDFImagingEngine.class,
                          EDFImagingEnginePanel.class,
@@ -141,7 +141,7 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          MicroscopeNodeType.Other);
 
     addToolbarMappingEntry(OfflineFastFusionEngine.class,
-                         OfflineFastFusionPanel.class);
+                           OfflineFastFusionPanel.class);
 
     addPanelMappingEntry(FLIFilterWheelDevice.class,
                          FilterWheelDevicePanel.class,

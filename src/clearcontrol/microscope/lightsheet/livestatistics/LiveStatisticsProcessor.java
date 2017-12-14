@@ -1,49 +1,37 @@
 package clearcontrol.microscope.lightsheet.livestatistics;
 
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.algorithm.stats.ComputeMinMax;
+import net.imglib2.type.numeric.integer.ShortType;
+import net.imglib2.view.Views;
 import clearcl.*;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.imglib2.StackToImgConverter;
 import clearcontrol.stack.processor.StackProcessorInterface;
 import clearcontrol.stack.processor.clearcl.ClearCLStackProcessorBase;
-import coremem.ContiguousMemoryInterface;
-import coremem.enums.NativeTypeEnum;
-import coremem.offheap.OffHeapMemory;
-import coremem.offheap.OffHeapMemoryAccess;
 import coremem.recycling.RecyclerInterface;
-import fastfuse.FastFusionEngineInterface;
-import fastfuse.tasks.TaskBase;
-import net.imglib2.Cursor;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.stats.ComputeMinMax;
-import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.type.numeric.integer.ShortType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
-import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.Views;
-import org.apache.bcel.generic.FLOAD;
-
-import java.io.IOException;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * December 2017
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) December 2017
  */
-public class LiveStatisticsProcessor extends ClearCLStackProcessorBase implements
-                                                                       StackProcessorInterface,
-                                                                       VisualConsoleInterface,
-                                                                       LoggingFeature
+public class LiveStatisticsProcessor extends ClearCLStackProcessorBase
+                                     implements
+                                     StackProcessorInterface,
+                                     VisualConsoleInterface,
+                                     LoggingFeature
 {
   LightSheetMicroscope mLightSheetMicroscope;
 
   public LiveStatisticsProcessor(String pProcessorName,
                                  LightSheetMicroscope pLightSheetMicroscope,
-                                 ClearCLContext pContext) {
+                                 ClearCLContext pContext)
+  {
     super(pProcessorName, pContext);
     mLightSheetMicroscope = pLightSheetMicroscope;
   }
@@ -51,7 +39,6 @@ public class LiveStatisticsProcessor extends ClearCLStackProcessorBase implement
   private float mMin;
   private float mMax;
   private long[] mHistogram;
-
 
   public float getMin()
   {
@@ -68,17 +55,21 @@ public class LiveStatisticsProcessor extends ClearCLStackProcessorBase implement
     return mHistogram;
   }
 
-  @Override public StackInterface process(StackInterface pStack,
-                                          RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
+  @Override
+  public StackInterface process(StackInterface pStack,
+                                RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
   {
     info("Starting stack statistics");
-    RandomAccessibleInterval<ShortType>
-        img = new StackToImgConverter(pStack).getRandomAccessibleInterval();
+    RandomAccessibleInterval<ShortType> img =
+                                            new StackToImgConverter(pStack).getRandomAccessibleInterval();
 
     ShortType lMinPixel = new ShortType();
     ShortType lMaxPixel = new ShortType();
 
-    ComputeMinMax<ShortType> computeMinMax = new ComputeMinMax<ShortType>(Views.iterable(img), lMinPixel, lMaxPixel);
+    ComputeMinMax<ShortType> computeMinMax =
+                                           new ComputeMinMax<ShortType>(Views.iterable(img),
+                                                                        lMinPixel,
+                                                                        lMaxPixel);
     computeMinMax.process();
 
     float lMin = lMinPixel.get();
@@ -87,14 +78,15 @@ public class LiveStatisticsProcessor extends ClearCLStackProcessorBase implement
 
     long[] lHistogram = new long[256];
 
-    while( cursor.hasNext()) {
-      lHistogram[(int)(((cursor.next()).get() - lMin) / lRange * 255)]++;
+    while (cursor.hasNext())
+    {
+      lHistogram[(int) (((cursor.next()).get() - lMin) / lRange
+                        * 255)]++;
     }
 
     mMin = lMin;
     mMax = lMaxPixel.get();
     mHistogram = lHistogram;
-
 
     configureChart("Histogram",
                    "Histogram",
@@ -102,7 +94,7 @@ public class LiveStatisticsProcessor extends ClearCLStackProcessorBase implement
                    "Pixel count",
                    ChartType.Line);
 
-    for (int i = 0; i < mHistogram.length; i++ )
+    for (int i = 0; i < mHistogram.length; i++)
     {
       addPoint("Histogram",
                "Histogram",
@@ -110,7 +102,6 @@ public class LiveStatisticsProcessor extends ClearCLStackProcessorBase implement
                mMin + i * lRange,
                mHistogram[i]);
     }
-
 
     info("Finished stack statistics");
     return pStack;

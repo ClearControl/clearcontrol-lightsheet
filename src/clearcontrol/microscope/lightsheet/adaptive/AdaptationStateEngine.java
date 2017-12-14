@@ -7,11 +7,11 @@ import clearcontrol.microscope.lightsheet.adaptive.modules.*;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
- * This class is a bit a placeholder for an empty engine. It is used to
- * make another Adaptive Panel accessible in the GUI
+ * This class is a bit a placeholder for an empty engine. It is used to make
+ * another Adaptive Panel accessible in the GUI
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * November 2017
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) November 2017
  */
 public class AdaptationStateEngine extends TaskDevice
 {
@@ -19,8 +19,10 @@ public class AdaptationStateEngine extends TaskDevice
   LightSheetMicroscope mLightSheetMicroscope;
   InterpolatedAcquisitionState mInterpolatedAcquisitionState;
 
-
-  public AdaptationStateEngine(String pDeviceName, AdaptiveEngine pAdaptiveEngine, LightSheetMicroscope pLightSheetMicroscope, InterpolatedAcquisitionState pInterpolatedAcquisitionState)
+  public AdaptationStateEngine(String pDeviceName,
+                               AdaptiveEngine pAdaptiveEngine,
+                               LightSheetMicroscope pLightSheetMicroscope,
+                               InterpolatedAcquisitionState pInterpolatedAcquisitionState)
   {
     super(pDeviceName);
 
@@ -45,18 +47,19 @@ public class AdaptationStateEngine extends TaskDevice
   }
 
   /**
-   * This static function allows to maintain setup code for Adaptation
-   * modules in one place, which are used in several demos and main
-   * XWing code
+   * This static function allows to maintain setup code for Adaptation modules
+   * in one place, which are used in several demos and main XWing code
    *
    * This class may disappear again or refactored...
    */
-  public static void setup(LightSheetMicroscope lLightSheetMicroscope, InterpolatedAcquisitionState lAcquisitionState) {
-    int lNumberOfLightSheets = lLightSheetMicroscope.getNumberOfLightSheets();
+  public static void setup(LightSheetMicroscope lLightSheetMicroscope,
+                           InterpolatedAcquisitionState lAcquisitionState)
+  {
+    int lNumberOfLightSheets =
+                             lLightSheetMicroscope.getNumberOfLightSheets();
 
-    AdaptiveEngine<InterpolatedAcquisitionState>
-        lAdaptiveEngine =
-        lLightSheetMicroscope.addAdaptiveEngine(lAcquisitionState);
+    AdaptiveEngine<InterpolatedAcquisitionState> lAdaptiveEngine =
+                                                                 lLightSheetMicroscope.addAdaptiveEngine(lAcquisitionState);
     lAdaptiveEngine.getRunUntilAllModulesReadyVariable().set(true);
 
     lAdaptiveEngine.add(new AdaptationZ(7,
@@ -81,7 +84,8 @@ public class AdaptationStateEngine extends TaskDevice
                                                                    2e-5,
                                                                    0.010,
                                                                    0.5,
-                                                                   lNumberOfLightSheets, lLightSheetMicroscope));
+                                                                   lNumberOfLightSheets,
+                                                                   lLightSheetMicroscope));
 
     lAdaptiveEngine.add(new AdaptationX(11,
                                         50,
@@ -100,16 +104,17 @@ public class AdaptationStateEngine extends TaskDevice
 
     lAdaptiveEngine.add(new AdaptationP(0.5));
 
-    lAdaptiveEngine.add(new AdaptationW(11,
-                                        0.95,
-                                        2e-5,
-                                        0.01,
-                                        0.5));
+    lAdaptiveEngine.add(new AdaptationW(11, 0.95, 2e-5, 0.01, 0.5));
 
-    lLightSheetMicroscope.addDevice(0, new AdaptationStateEngine("Microscope State", lAdaptiveEngine, lLightSheetMicroscope, lAcquisitionState));
+    lLightSheetMicroscope.addDevice(0,
+                                    new AdaptationStateEngine("Microscope State",
+                                                              lAdaptiveEngine,
+                                                              lLightSheetMicroscope,
+                                                              lAcquisitionState));
   }
 
-  @Override public void run()
+  @Override
+  public void run()
   {
 
   }

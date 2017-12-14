@@ -1,17 +1,18 @@
 package clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm;
 
-import clearcontrol.stack.StackInterface;
-import clearcontrol.stack.imglib2.StackToImgConverter;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.view.Views;
+import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.imglib2.StackToImgConverter;
 
 /**
- * ToDo; This doesn't work with large mImage stacks, because StackToImgConverter tries to build ArrayImgs and not PlanarImgs.
+ * ToDo; This doesn't work with large mImage stacks, because StackToImgConverter
+ * tries to build ArrayImgs and not PlanarImgs.
  * <p>
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * November 2017
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) November 2017
  */
 public class StandardDeviationPerSliceEstimator
 {
@@ -21,9 +22,8 @@ public class StandardDeviationPerSliceEstimator
   public StandardDeviationPerSliceEstimator(StackInterface stack)
   {
 
-    StackToImgConverter<ShortType>
-        lConverter =
-        new StackToImgConverter<>(stack);
+    StackToImgConverter<ShortType> lConverter =
+                                              new StackToImgConverter<>(stack);
     mImage = lConverter.getRandomAccessibleInterval();
   }
 
@@ -44,13 +44,13 @@ public class StandardDeviationPerSliceEstimator
 
     for (int z = 0; z < lNumberOfSlices; z++)
     {
-      RandomAccessibleInterval<ShortType>
-          lSlice =
-          Views.hyperSlice(mImage, 2, z);
+      RandomAccessibleInterval<ShortType> lSlice =
+                                                 Views.hyperSlice(mImage,
+                                                                  2,
+                                                                  z);
 
-      Cursor<ShortType>
-          lCursor =
-          Views.iterable(lSlice).localizingCursor();
+      Cursor<ShortType> lCursor = Views.iterable(lSlice)
+                                       .localizingCursor();
 
       double lSum = 0;
       long lCount = 0;

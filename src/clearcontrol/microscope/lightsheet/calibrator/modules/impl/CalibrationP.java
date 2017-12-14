@@ -14,10 +14,9 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
-import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
-import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescription;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescriptionPerLightSheet;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -27,22 +26,38 @@ import gnu.trove.list.array.TDoubleArrayList;
  *
  * @author royer
  */
-public class CalibrationP extends CalibrationBase
-                          implements CalibrationModuleInterface,
-                                     HasStateDescriptionPerLightSheet
+public class CalibrationP extends CalibrationBase implements
+                          CalibrationModuleInterface,
+                          HasStateDescriptionPerLightSheet
 {
 
-  BoundedVariable<Integer> mNumberOfSamplesVariable = new BoundedVariable<Integer>("Number of samples", 6, 0, Integer.MAX_VALUE);
+  BoundedVariable<Integer> mNumberOfSamplesVariable =
+                                                    new BoundedVariable<Integer>("Number of samples",
+                                                                                 6,
+                                                                                 0,
+                                                                                 Integer.MAX_VALUE);
 
-  private BoundedVariable<Double>
-      mExposureTimeInSecondsVariable = new BoundedVariable<Double>("Exposure time in seconds", 0.5, 0.0, Double.MAX_VALUE, 0.001);
+  private BoundedVariable<Double> mExposureTimeInSecondsVariable =
+                                                                 new BoundedVariable<Double>("Exposure time in seconds",
+                                                                                             0.5,
+                                                                                             0.0,
+                                                                                             Double.MAX_VALUE,
+                                                                                             0.001);
 
   BoundedVariable<Integer> mDetectionArmVariable;
 
-  private BoundedVariable<Integer> mMaxIterationsVariable = new BoundedVariable<Integer>("Maximum number of iterations", 3, 0, Integer.MAX_VALUE);
+  private BoundedVariable<Integer> mMaxIterationsVariable =
+                                                          new BoundedVariable<Integer>("Maximum number of iterations",
+                                                                                       3,
+                                                                                       0,
+                                                                                       Integer.MAX_VALUE);
 
-  private BoundedVariable<Double> mStoppingConditionErrorThreshold = new BoundedVariable<Double>("Stopping condition error threshold", 0.04, 0.0, Double.MAX_VALUE, 0.001);
-
+  private BoundedVariable<Double> mStoppingConditionErrorThreshold =
+                                                                   new BoundedVariable<Double>("Stopping condition error threshold",
+                                                                                               0.04,
+                                                                                               0.0,
+                                                                                               Double.MAX_VALUE,
+                                                                                               0.001);
 
   private TDoubleArrayList mRatioList;
 
@@ -55,10 +70,13 @@ public class CalibrationP extends CalibrationBase
   public CalibrationP(CalibrationEngine pCalibrator)
   {
     super("P", pCalibrator);
-    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
+    mDetectionArmVariable =
+                          new BoundedVariable<Integer>("Detection arm",
+                                                       0,
+                                                       0,
+                                                       pCalibrator.getLightSheetMicroscope()
+                                                                  .getNumberOfDetectionArms());
   }
-
-
 
   public void calibrateAllLightSheets()
   {
@@ -66,9 +84,11 @@ public class CalibrationP extends CalibrationBase
     double lError = Double.POSITIVE_INFINITY;
     do
     {
-      setConfigurationState(ConfigurationState.fromProgressValue((double)lIteration/mMaxIterationsVariable.get()));
+      setConfigurationState(ConfigurationState.fromProgressValue((double) lIteration
+                                                                 / mMaxIterationsVariable.get()));
 
-      if (!calibrate()) {
+      if (!calibrate())
+      {
         setConfigurationState(ConfigurationState.FAILED);
         return;
       }
@@ -78,15 +98,20 @@ public class CalibrationP extends CalibrationBase
            + lError);
 
     }
-    while (lError >= mStoppingConditionErrorThreshold.get() && lIteration++ < mMaxIterationsVariable.get());
+    while (lError >= mStoppingConditionErrorThreshold.get()
+           && lIteration++ < mMaxIterationsVariable.get());
     info("############################################## Done ");
 
     if (Double.isNaN(lError))
     {
       setConfigurationState(ConfigurationState.FAILED);
-    } else if (lError < mStoppingConditionErrorThreshold.get()) {
+    }
+    else if (lError < mStoppingConditionErrorThreshold.get())
+    {
       setConfigurationState(ConfigurationState.SUCCEEDED);
-    } else {
+    }
+    else
+    {
       setConfigurationState(ConfigurationState.ACCEPTABLE);
     }
 
@@ -102,9 +127,12 @@ public class CalibrationP extends CalibrationBase
     int lNumberOfLightSheets = getNumberOfLightSheets();
 
     TDoubleArrayList lAverageIntensityList = new TDoubleArrayList();
-    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
-      Double lValue = calibrate(lLightSheetIndex, mDetectionArmVariable.get(), mNumberOfSamplesVariable.get());
+      Double lValue = calibrate(lLightSheetIndex,
+                                mDetectionArmVariable.get(),
+                                mNumberOfSamplesVariable.get());
       if (lValue == null)
         return false;
       lAverageIntensityList.add(lValue);
@@ -140,8 +168,8 @@ public class CalibrationP extends CalibrationBase
    * @return average intensity
    */
   private Double calibrate(int pLightSheetIndex,
-                          int pDetectionArmIndex,
-                          int pNumberOfSamples)
+                           int pDetectionArmIndex,
+                           int pNumberOfSamples)
   {
     try
     {
@@ -238,7 +266,8 @@ public class CalibrationP extends CalibrationBase
 
     double lError = 0;
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
       System.out.format("Light sheet index: %d \n", lLightSheetIndex);
 
@@ -297,7 +326,8 @@ public class CalibrationP extends CalibrationBase
   {
     int lNumberOfLightSheets = getNumberOfLightSheets();
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
       getLightSheetMicroscope().getDeviceLists()
                                .getDevice(LightSheetInterface.class,
@@ -307,9 +337,7 @@ public class CalibrationP extends CalibrationBase
                                                                      0));
     }
 
-
     setConfigurationState(ConfigurationState.UNINITIALIZED);
-
 
   }
 
@@ -338,28 +366,39 @@ public class CalibrationP extends CalibrationBase
     return mStoppingConditionErrorThreshold;
   }
 
-
-  @Override public String getStateDescription(int pLightSheetIndex)
+  @Override
+  public String getStateDescription(int pLightSheetIndex)
   {
     final LightSheetInterface lLightSheetDevice =
-        getLightSheetMicroscope().getDeviceLists()
-                                 .getDevice(LightSheetInterface.class,
-                                            pLightSheetIndex);
+                                                getLightSheetMicroscope().getDeviceLists()
+                                                                         .getDevice(LightSheetInterface.class,
+                                                                                    pLightSheetIndex);
 
-    UnivariateAffineFunction lUnivariateAffineFunction = lLightSheetDevice.getPowerFunction().get();
+    UnivariateAffineFunction lUnivariateAffineFunction =
+                                                       lLightSheetDevice.getPowerFunction()
+                                                                        .get();
 
-    return String.format("y = %.3f * x + %.3f", lUnivariateAffineFunction.getSlope(), lUnivariateAffineFunction.getConstant());
+    return String.format("y = %.3f * x + %.3f",
+                         lUnivariateAffineFunction.getSlope(),
+                         lUnivariateAffineFunction.getConstant());
   }
 
-  @Override public String getStateDescription()
+  @Override
+  public String getStateDescription()
   {
     String result = null;
     int lNumberOfLightSheets = getNumberOfLightSheets();
-    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++) {
-      if (result == null) {
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    {
+      if (result == null)
+      {
         result = getStateDescription(lLightSheetIndex);
-      } else {
-        result = result + "\n" + getStateDescription(lLightSheetIndex);
+      }
+      else
+      {
+        result =
+               result + "\n" + getStateDescription(lLightSheetIndex);
       }
     }
     return result;

@@ -15,10 +15,10 @@ public enum ControlPlaneLayout
   */
  Linear,
 
-  /**
-   * Linear layout, but the control plane in the center exists twice
-   */
-  LinearWithDoubledCenter,
+ /**
+  * Linear layout, but the control plane in the center exists twice
+  */
+ LinearWithDoubledCenter,
 
  /**
   * Circular layout: control planes are laid with equal spacing on the unit
@@ -46,7 +46,8 @@ public enum ControlPlaneLayout
       return linear(pNumberOfControlPlanes, pControlPlaneIndex);
 
     case LinearWithDoubledCenter:
-      return linearWithDoubledCenter(pNumberOfControlPlanes, pControlPlaneIndex);
+      return linearWithDoubledCenter(pNumberOfControlPlanes,
+                                     pControlPlaneIndex);
 
     case Circular:
       return circular(pNumberOfControlPlanes, pControlPlaneIndex);
@@ -74,24 +75,33 @@ public enum ControlPlaneLayout
   }
 
   private double linearWithDoubledCenter(int pNumberOfControlPlanes,
-                                         int pControlPlaneIndex) {
+                                         int pControlPlaneIndex)
+  {
     int lFirstHalfNumberOfControlPlanes = pNumberOfControlPlanes / 2;
-    int lSecondHalfNumberOfControlPlanes = pNumberOfControlPlanes - lFirstHalfNumberOfControlPlanes;
+    int lSecondHalfNumberOfControlPlanes = pNumberOfControlPlanes
+                                           - lFirstHalfNumberOfControlPlanes;
 
-    if (pControlPlaneIndex < lFirstHalfNumberOfControlPlanes) {
+    if (pControlPlaneIndex < lFirstHalfNumberOfControlPlanes)
+    {
 
       return ((double) pControlPlaneIndex)
              / (lFirstHalfNumberOfControlPlanes - 1) / 2.0;
-    } else {
-      return 0.5 + ((double) (pControlPlaneIndex - lFirstHalfNumberOfControlPlanes))
-             / (lSecondHalfNumberOfControlPlanes - 1) / 2.0;
+    }
+    else
+    {
+      return 0.5 + ((double) (pControlPlaneIndex
+                              - lFirstHalfNumberOfControlPlanes))
+                   / (lSecondHalfNumberOfControlPlanes - 1) / 2.0;
     }
   }
 
-  public static void main(String... args) {
+  public static void main(String... args)
+  {
     for (int i = 0; i < 7; i++)
     {
-      System.out.println("" + i +": " + LinearWithDoubledCenter.layout( 7, i));
+      System.out.println("" + i
+                         + ": "
+                         + LinearWithDoubledCenter.layout(7, i));
     }
   }
 

@@ -1,5 +1,8 @@
 package clearcontrol.microscope.lightsheet.adaptive.modules;
 
+import java.util.Arrays;
+import java.util.concurrent.Future;
+
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
@@ -9,32 +12,32 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import gnu.trove.list.array.TDoubleArrayList;
 
-import java.util.Arrays;
-import java.util.concurrent.Future;
-
 /**
  * Adaptation module responsible for adjusting the Z focus
  *
  * @author royer
- * @author Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * November 2017
+ * @author Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ *         (http://mpi-cbg.de) November 2017
  */
-public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdaptationModule implements
+public class AdaptationZSlidingWindowDetectionArmSelection extends
+                                                           StandardAdaptationModule
+                                                           implements
                                                            AdaptationModuleInterface<InterpolatedAcquisitionState>
 {
 
-
-
   private final Variable<Double> mDeltaZVariable =
-      new Variable<>("DeltaZ",
-                     1.0);
-
+                                                 new Variable<>("DeltaZ",
+                                                                1.0);
 
   private final BoundedVariable<Integer> mSlidingWindowWidthVariable =
-      new BoundedVariable<Integer>("SlidingWindowWidth",
-                                   1, 0, Integer.MAX_VALUE);
+                                                                     new BoundedVariable<Integer>("SlidingWindowWidth",
+                                                                                                  1,
+                                                                                                  0,
+                                                                                                  Integer.MAX_VALUE);
 
-  private final Variable<Boolean> mFirstAndLastControlPlaneZero = new Variable<Boolean>("pFirstAndLastControlPlaneZero", true);
+  private final Variable<Boolean> mFirstAndLastControlPlaneZero =
+                                                                new Variable<Boolean>("pFirstAndLastControlPlaneZero",
+                                                                                      true);
 
   /**
    * Instantiates a Z focus adaptation module given the delta Z parameter,
@@ -93,12 +96,12 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
     final TDoubleArrayList lDZList = new TDoubleArrayList();
 
     InterpolatedAcquisitionState lAcquisitionState =
-        getAdaptiveEngine().getAcquisitionStateVariable()
-                           .get();
+                                                   getAdaptiveEngine().getAcquisitionStateVariable()
+                                                                      .get();
 
     LightSheetMicroscopeQueue lQueue =
-        (LightSheetMicroscopeQueue) getAdaptiveEngine().getMicroscope()
-                                                       .requestQueue();
+                                     (LightSheetMicroscopeQueue) getAdaptiveEngine().getMicroscope()
+                                                                                    .requestQueue();
 
     lQueue.clearQueue();
 
@@ -162,21 +165,23 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
     info("Update new state...");
 
     int lNumberOfControlPlanes =
-        getAdaptiveEngine().getAcquisitionStateVariable()
-                           .get()
-                           .getNumberOfControlPlanes();
+                               getAdaptiveEngine().getAcquisitionStateVariable()
+                                                  .get()
+                                                  .getNumberOfControlPlanes();
     int lNumberOfLightSheets =
-        getAdaptiveEngine().getAcquisitionStateVariable()
-                           .get()
-                           .getNumberOfLightSheets();
+                             getAdaptiveEngine().getAcquisitionStateVariable()
+                                                .get()
+                                                .getNumberOfLightSheets();
 
     int lNumberOfDetectionArms =
-        getAdaptiveEngine().getAcquisitionStateVariable()
-                           .get()
-                           .getNumberOfDetectionArms();
+                               getAdaptiveEngine().getAcquisitionStateVariable()
+                                                  .get()
+                                                  .getNumberOfDetectionArms();
 
-    // correct choosing the wrong detection arm in single slices or for single light sheets
-    int[][] selectedDetectionArms = new int[lNumberOfControlPlanes][lNumberOfLightSheets];
+    // correct choosing the wrong detection arm in single slices or for single
+    // light sheets
+    int[][] selectedDetectionArms =
+                                  new int[lNumberOfControlPlanes][lNumberOfLightSheets];
 
     for (int cpi = 0; cpi < lNumberOfControlPlanes; cpi++)
     {
@@ -197,8 +202,9 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
 
           if (lOneResult != null)
           {
-            if (lOneResult.metricmax * lOneResult.probability
-                > lResult.metricmax * lResult.probability)
+            if (lOneResult.metricmax
+                * lOneResult.probability > lResult.metricmax
+                                           * lResult.probability)
             {
               lResult = lOneResult;
               lSelectedDetectionArm = d;
@@ -208,9 +214,10 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
         selectedDetectionArms[cpi][l] = lSelectedDetectionArm;
       }
 
-      info("Best detection arms for control plane " + cpi + ": " + Arrays.toString(selectedDetectionArms[cpi]));
+      info("Best detection arms for control plane " + cpi
+           + ": "
+           + Arrays.toString(selectedDetectionArms[cpi]));
     }
-
 
     int[] popularDetectionArms = new int[lNumberOfControlPlanes];
 
@@ -225,8 +232,10 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
       }
       int maxPopularity = -1;
       int mostPopularDetectionArm = 0;
-      for (int i = 0; i < lNumberOfDetectionArms; i++) {
-        if (detectionArmPopularity[i] > maxPopularity) {
+      for (int i = 0; i < lNumberOfDetectionArms; i++)
+      {
+        if (detectionArmPopularity[i] > maxPopularity)
+        {
           maxPopularity = detectionArmPopularity[i];
           mostPopularDetectionArm = i;
         }
@@ -235,51 +244,61 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
       popularDetectionArms[cpi] = mostPopularDetectionArm;
     }
 
-    info("Popular detection arms: " + Arrays.toString(popularDetectionArms));
+    info("Popular detection arms: "
+         + Arrays.toString(popularDetectionArms));
 
     // todo: the following block may not work in general:
-    // the idea is to make the chosen detection arms equal in larger regions of the sample. The scope should not switch
-    // between cameras from control plane to control plane. It should in principle image the half sample with one
+    // the idea is to make the chosen detection arms equal in larger regions of
+    // the sample. The scope should not switch
+    // between cameras from control plane to control plane. It should in
+    // principle image the half sample with one
     // camera and the other half with the other camera.
     int lSlidingWindowWidth = mSlidingWindowWidthVariable.get();
-    int[] lSelectedDetectionsArms  = new int[lNumberOfControlPlanes];
+    int[] lSelectedDetectionsArms = new int[lNumberOfControlPlanes];
     for (int cpi = 0; cpi < lNumberOfControlPlanes; cpi++)
     {
-      int
-          lSlidingWindowEnd =
-          Math.min(cpi + (int) (lSlidingWindowWidth * 0.5),
-                   lNumberOfControlPlanes - 1);
-      int
-          lSlidingWindowStart =
-          Math.max(lSlidingWindowEnd - lSlidingWindowWidth + 1, 0);
+      int lSlidingWindowEnd = Math.min(cpi
+                                       + (int) (lSlidingWindowWidth
+                                                * 0.5),
+                                       lNumberOfControlPlanes - 1);
+      int lSlidingWindowStart =
+                              Math.max(lSlidingWindowEnd
+                                       - lSlidingWindowWidth + 1, 0);
 
-      if (lSlidingWindowEnd - lSlidingWindowStart + 1 != lSlidingWindowWidth) {
-        lSlidingWindowEnd = Math.min(lSlidingWindowStart + lSlidingWindowWidth - 1,
-                                    lNumberOfControlPlanes - 1);
+      if (lSlidingWindowEnd - lSlidingWindowStart
+          + 1 != lSlidingWindowWidth)
+      {
+        lSlidingWindowEnd = Math.min(lSlidingWindowStart
+                                     + lSlidingWindowWidth
+                                     - 1,
+                                     lNumberOfControlPlanes - 1);
       }
 
-      //info("Sliding window "+ cpi + ": " + lSlidingWindowStart + " - " + lSlidingWindowEnd);
+      // info("Sliding window "+ cpi + ": " + lSlidingWindowStart + " - " +
+      // lSlidingWindowEnd);
       lSelectedDetectionsArms[cpi] =
-          findPopularDetectionArm(popularDetectionArms,
-                                  lNumberOfDetectionArms,
-                                  lSlidingWindowStart,
-                                  lSlidingWindowEnd);
+                                   findPopularDetectionArm(popularDetectionArms,
+                                                           lNumberOfDetectionArms,
+                                                           lSlidingWindowStart,
+                                                           lSlidingWindowEnd);
     }
-    info("Selected detection arms: " + Arrays.toString(lSelectedDetectionsArms));
+    info("Selected detection arms: "
+         + Arrays.toString(lSelectedDetectionsArms));
 
-    //int mostPopularDetectionArmInFirstBlock = findPopularDetectionArm(popularDetectionArms, lNumberOfDetectionArms, 0, blockSize);
+    // int mostPopularDetectionArmInFirstBlock =
+    // findPopularDetectionArm(popularDetectionArms, lNumberOfDetectionArms, 0,
+    // blockSize);
 
-    //int lSelectedDetectionArm = 0;
+    // int lSelectedDetectionArm = 0;
     for (int cpi = 0; cpi < lNumberOfControlPlanes; cpi++)
     {
-      ///int blockIndex = cpi / blockSize;
-      //if (blockIndex != formerBlockIndex) {
-      //get popular detection arm index for this block
-      //int blockStart = cpi;
+      /// int blockIndex = cpi / blockSize;
+      // if (blockIndex != formerBlockIndex) {
+      // get popular detection arm index for this block
+      // int blockStart = cpi;
 
-      int
-          lSelectedDetectionArm = lSelectedDetectionsArms[cpi];
-      //info("Selected detection arm: " + lSelectedDetectionArm);
+      int lSelectedDetectionArm = lSelectedDetectionsArms[cpi];
+      // info("Selected detection arm: " + lSelectedDetectionArm);
 
       for (int l = 0; l < lNumberOfLightSheets; l++)
       {
@@ -291,46 +310,48 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
           continue;
         }
 
-        double lCorrection = (pFlipCorrectionSign ? -1 : 1) * lResult.argmax;
+        double lCorrection = (pFlipCorrectionSign ? -1 : 1)
+                             * lResult.argmax;
 
         boolean lProbabilityInsufficient =
-            lResult.probability < getProbabilityThresholdVariable().get();
+                                         lResult.probability < getProbabilityThresholdVariable().get();
 
         boolean lMetricMaxInsufficient =
-            lResult.metricmax < getImageMetricThresholdVariable().get();
+                                       lResult.metricmax < getImageMetricThresholdVariable().get();
 
         if (lMetricMaxInsufficient)
         {
-          warning(
-              "Metric maximum too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
-              lResult.metricmax,
-              getImageMetricThresholdVariable().get(),
-              cpi,
-              l);
+          warning("Metric maximum too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
+                  lResult.metricmax,
+                  getImageMetricThresholdVariable().get(),
+                  cpi,
+                  l);
         }
 
         if (lProbabilityInsufficient)
         {
-          warning(
-              "Probability too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
-              lResult.probability,
-              getProbabilityThresholdVariable().get(),
-              cpi,
-              l);
+          warning("Probability too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
+                  lResult.probability,
+                  getProbabilityThresholdVariable().get(),
+                  cpi,
+                  l);
         }
 
-
-        boolean lMissingInfo = checkAdaptationQuality(l, cpi, lCorrection, lResult.metricmax, lResult.probability, lSelectedDetectionArm);
-
+        boolean lMissingInfo =
+                             checkAdaptationQuality(l,
+                                                    cpi,
+                                                    lCorrection,
+                                                    lResult.metricmax,
+                                                    lResult.probability,
+                                                    lSelectedDetectionArm);
 
         if (lMissingInfo)
         {
           lCorrection =
-              computeCorrectionBasedOnNeighbooringControlPlanes(
-                  pRelativeCorrection,
-                  pStateToUpdate,
-                  cpi,
-                  l);
+                      computeCorrectionBasedOnNeighbooringControlPlanes(pRelativeCorrection,
+                                                                        pStateToUpdate,
+                                                                        cpi,
+                                                                        l);
         }
 
         info("Applying correction: %g \n", lCorrection);
@@ -342,18 +363,21 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
                                      9,
                                      l,
                                      cpi,
-                                     String.format(
-                                         "argmax=%g\nmetricmax=%g\nprob=%g\ncorr=%g\nmissing=%s\nselected=%d",
-                                         lResult.argmax,
-                                         lResult.metricmax,
-                                         lResult.probability,
-                                         lCorrection,
-                                         lMissingInfo,
-                                         lSelectedDetectionArm));
+                                     String.format("argmax=%g\nmetricmax=%g\nprob=%g\ncorr=%g\nmissing=%s\nselected=%d",
+                                                   lResult.argmax,
+                                                   lResult.metricmax,
+                                                   lResult.probability,
+                                                   lCorrection,
+                                                   lMissingInfo,
+                                                   lSelectedDetectionArm));
 
-        if (mFirstAndLastControlPlaneZero.get() && (cpi == 0 || cpi == lNumberOfControlPlanes - 1)) {
-          pStateToUpdate.getInterpolationTables()
-                        .add(mLightSheetDOF, cpi, l, 0);
+        if (mFirstAndLastControlPlaneZero.get()
+            && (cpi == 0 || cpi == lNumberOfControlPlanes - 1))
+        {
+          pStateToUpdate.getInterpolationTables().add(mLightSheetDOF,
+                                                      cpi,
+                                                      l,
+                                                      0);
           info("Set first/last control plane to zero adaptation as configured.");
         }
         else
@@ -385,9 +409,14 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
     return mDeltaZVariable;
   }
 
-  private int findPopularDetectionArm(int[] popularDetectionArms, int pNumberOfDetectionArms, int start, int end) {
+  private int findPopularDetectionArm(int[] popularDetectionArms,
+                                      int pNumberOfDetectionArms,
+                                      int start,
+                                      int end)
+  {
     int[] countPerArm = new int[pNumberOfDetectionArms];
-    for (int i = start; i <= end; i++) {
+    for (int i = start; i <= end; i++)
+    {
       int detectionArm = popularDetectionArms[i];
       countPerArm[detectionArm]++;
     }
@@ -395,15 +424,16 @@ public class AdaptationZSlidingWindowDetectionArmSelection extends StandardAdapt
     int maxPopular = 0;
     int chosenDetectionArm = 0;
 
-    for (int i = 0; i < countPerArm.length; i++) {
-      if (countPerArm[i] > maxPopular) {
+    for (int i = 0; i < countPerArm.length; i++)
+    {
+      if (countPerArm[i] > maxPopular)
+      {
         maxPopular = countPerArm[i];
         chosenDetectionArm = i;
       }
     }
     return chosenDetectionArm;
   }
-
 
   public BoundedVariable<Integer> getSlidingWindowWidthVariable()
   {

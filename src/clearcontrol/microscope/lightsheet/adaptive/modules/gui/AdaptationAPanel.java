@@ -1,11 +1,10 @@
 package clearcontrol.microscope.lightsheet.adaptive.modules.gui;
 
 import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationA;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZ;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * November 2017
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) November 2017
  */
 public class AdaptationAPanel extends StandardAdaptationModulePanel
 {
@@ -20,11 +19,15 @@ public class AdaptationAPanel extends StandardAdaptationModulePanel
   {
     super(pAdaptationA);
 
-    addNumberTextFieldForVariable(pAdaptationA.getMaxDefocusVariable().getName(),
+    addNumberTextFieldForVariable(pAdaptationA.getMaxDefocusVariable()
+                                              .getName(),
                                   pAdaptationA.getMaxDefocusVariable(),
-                                  pAdaptationA.getMaxDefocusVariable().getMin(),
-                                  pAdaptationA.getMaxDefocusVariable().getMax(),
-                                  pAdaptationA.getMaxDefocusVariable().getGranularity());
+                                  pAdaptationA.getMaxDefocusVariable()
+                                              .getMin(),
+                                  pAdaptationA.getMaxDefocusVariable()
+                                              .getMax(),
+                                  pAdaptationA.getMaxDefocusVariable()
+                                              .getGranularity());
   }
 
 }

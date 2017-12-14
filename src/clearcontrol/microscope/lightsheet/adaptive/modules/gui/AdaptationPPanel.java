@@ -1,12 +1,11 @@
 package clearcontrol.microscope.lightsheet.adaptive.modules.gui;
 
 import clearcontrol.gui.jfx.var.customvarpanel.CustomVariablePane;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationA;
 import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationP;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * November 2017
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) November 2017
  */
 public class AdaptationPPanel extends CustomVariablePane
 {
@@ -21,11 +20,15 @@ public class AdaptationPPanel extends CustomVariablePane
   {
     super();
 
-    addNumberTextFieldForVariable(pAdaptationP.getTargetLaserPowerVariable().getName(),
+    addNumberTextFieldForVariable(pAdaptationP.getTargetLaserPowerVariable()
+                                              .getName(),
                                   pAdaptationP.getTargetLaserPowerVariable(),
-                                  pAdaptationP.getTargetLaserPowerVariable().getMin(),
-                                  pAdaptationP.getTargetLaserPowerVariable().getMax(),
-                                  pAdaptationP.getTargetLaserPowerVariable().getGranularity());
+                                  pAdaptationP.getTargetLaserPowerVariable()
+                                              .getMin(),
+                                  pAdaptationP.getTargetLaserPowerVariable()
+                                              .getMax(),
+                                  pAdaptationP.getTargetLaserPowerVariable()
+                                              .getGranularity());
   }
 
 }

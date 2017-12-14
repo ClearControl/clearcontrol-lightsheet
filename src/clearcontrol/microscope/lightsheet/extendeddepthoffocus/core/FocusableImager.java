@@ -1,21 +1,19 @@
 package clearcontrol.microscope.lightsheet.extendeddepthoffocus.core;
 
-import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.devices.signalgen.staves.StaveInterface;
-import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.microscope.lightsheet.component.lightsheet.si.BinaryStructuredIlluminationPattern;
-import clearcontrol.microscope.lightsheet.component.lightsheet.si.StructuredIlluminationPatternInterface;
-import clearcontrol.stack.OffHeapPlanarStack;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
+import clearcontrol.microscope.lightsheet.component.lightsheet.si.BinaryStructuredIlluminationPattern;
+import clearcontrol.stack.OffHeapPlanarStack;
+
 /**
- * The FocusableImager takes a LightSheetMicroscope and some configuration parameters.
- * Afterwards it allow imaging given lightsheet / detection arm Z positions
- * without programming overhead.
+ * The FocusableImager takes a LightSheetMicroscope and some configuration
+ * parameters. Afterwards it allow imaging given lightsheet / detection arm Z
+ * positions without programming overhead.
  * <p>
  * Example pseudo code:
  * <p>
@@ -28,8 +26,8 @@ import java.util.concurrent.TimeoutException;
  * stack = imager.configurationStateOfLightSheetChanged()
  * <p>
  * <p>
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * October 2017
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) October 2017
  */
 public class FocusableImager implements LoggingFeature
 {
@@ -39,7 +37,6 @@ public class FocusableImager implements LoggingFeature
 
   int mLightSheetMinIndex;
   int mLightSheetMaxIndex;
-
 
   int mDetectionArmIndex;
 
@@ -90,8 +87,12 @@ public class FocusableImager implements LoggingFeature
         mQueue.setI(i, true);
         mQueue.setIX(i, 0);
         mQueue.setIY(i, 0);
-        mQueue.setIPattern(i, 0, new BinaryStructuredIlluminationPattern());
-        mQueue.setIPattern(i, 0, new BinaryStructuredIlluminationPattern());
+        mQueue.setIPattern(i,
+                           0,
+                           new BinaryStructuredIlluminationPattern());
+        mQueue.setIPattern(i,
+                           0,
+                           new BinaryStructuredIlluminationPattern());
       }
 
       mInitialDetectionZ = detectionZ;
@@ -113,8 +114,7 @@ public class FocusableImager implements LoggingFeature
     mNumberOfExpectedImages++;
   }
 
-  public OffHeapPlanarStack execute() throws
-                                      InterruptedException,
+  public OffHeapPlanarStack execute() throws InterruptedException,
                                       ExecutionException,
                                       TimeoutException
   {
@@ -135,33 +135,28 @@ public class FocusableImager implements LoggingFeature
     mQueue.finalizeQueue();
 
     mLightSheetMicroscope.useRecycler("adaptation", 1, 4, 4);
-    final Boolean
-        lPlayQueueAndWait =
-        mLightSheetMicroscope.playQueueAndWaitForStacks(mQueue,
-                                                        100
-                                                        + mQueue.getQueueLength(),
-                                                        TimeUnit.SECONDS);
+    final Boolean lPlayQueueAndWait =
+                                    mLightSheetMicroscope.playQueueAndWaitForStacks(mQueue,
+                                                                                    100 + mQueue.getQueueLength(),
+                                                                                    TimeUnit.SECONDS);
 
     if (!lPlayQueueAndWait)
     {
       return null;
     }
 
-    OffHeapPlanarStack
-        lResultingStack =
-        (OffHeapPlanarStack) mLightSheetMicroscope.getCameraStackVariable(
-            mDetectionArmIndex).get();
+    OffHeapPlanarStack lResultingStack =
+                                       (OffHeapPlanarStack) mLightSheetMicroscope.getCameraStackVariable(mDetectionArmIndex)
+                                                                                 .get();
 
     if (lResultingStack.getDepth() != mNumberOfExpectedImages)
     {
-      warning(
-          "Warning: number of resulting image does not match the expected number. The stack may be corrupted.");
+      warning("Warning: number of resulting image does not match the expected number. The stack may be corrupted.");
     }
 
     info("imaging done...");
     return lResultingStack;
   }
-
 
   public int getDetectionArmIndex()
   {

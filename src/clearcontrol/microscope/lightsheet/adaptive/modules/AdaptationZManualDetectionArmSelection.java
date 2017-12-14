@@ -3,24 +3,23 @@ package clearcontrol.microscope.lightsheet.adaptive.modules;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.LightSheetMicroscopeInterface;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * November 2017
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) November 2017
  */
-public class AdaptationZManualDetectionArmSelection extends AdaptationZ
+public class AdaptationZManualDetectionArmSelection extends
+                                                    AdaptationZ
 {
   private int mNumberOfControlPlanes;
 
   private BoundedVariable<Integer>[] mDetectionArmChoiceVariables;
 
-
-  private final Variable<Boolean>
-      mFirstAndLastControlPlaneZero = new Variable<Boolean>("pFirstAndLastControlPlaneZero", true);
-
+  private final Variable<Boolean> mFirstAndLastControlPlaneZero =
+                                                                new Variable<Boolean>("pFirstAndLastControlPlaneZero",
+                                                                                      true);
 
   /**
    * Instantiates a Z focus adaptation module given the delta Z parameter,
@@ -45,7 +44,8 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
                                                 double pImageMetricThreshold,
                                                 double pExposureInSeconds,
                                                 double pLaserPower,
-                                                int pNumberOfLightSheets, LightSheetMicroscope pLightSheetMicroscope)
+                                                int pNumberOfLightSheets,
+                                                LightSheetMicroscope pLightSheetMicroscope)
   {
     super(pNumberOfSamples,
           pDeltaZ,
@@ -59,24 +59,33 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
     // Todo: The following block contains some casts which should be
     // solved in a better way... It's XWing specific
 
-
     InterpolatedAcquisitionState lInterpolatedAcquisitionState =
-        (InterpolatedAcquisitionState) pLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+                                                               (InterpolatedAcquisitionState) pLightSheetMicroscope.getAcquisitionStateManager()
+                                                                                                                   .getCurrentState();
 
-    mNumberOfControlPlanes = lInterpolatedAcquisitionState.getNumberOfControlPlanes();
+    mNumberOfControlPlanes =
+                           lInterpolatedAcquisitionState.getNumberOfControlPlanes();
 
-    mDetectionArmChoiceVariables = new BoundedVariable[mNumberOfControlPlanes];
-    for (int i = 0; i < mDetectionArmChoiceVariables.length; i++) {
-      // todo: the default values of the following variables may be XWing specific
-      mDetectionArmChoiceVariables[i] = new BoundedVariable<Integer>("Control plane " + i + " camera", (
-                                                                                                           i <
-                                                                                                           mDetectionArmChoiceVariables.length / 2) ? 1 : 0, 0, pLightSheetMicroscope.getNumberOfDetectionArms() - 1);
+    mDetectionArmChoiceVariables =
+                                 new BoundedVariable[mNumberOfControlPlanes];
+    for (int i = 0; i < mDetectionArmChoiceVariables.length; i++)
+    {
+      // todo: the default values of the following variables may be XWing
+      // specific
+      mDetectionArmChoiceVariables[i] =
+                                      new BoundedVariable<Integer>("Control plane "
+                                                                   + i
+                                                                   + " camera",
+                                                                   (i < mDetectionArmChoiceVariables.length
+                                                                        / 2) ? 1
+                                                                             : 0,
+                                                                   0,
+                                                                   pLightSheetMicroscope.getNumberOfDetectionArms()
+                                                                      - 1);
     }
-
 
     getIsActiveVariable().set(false);
   }
-
 
   protected void updateStateInternal(InterpolatedAcquisitionState pStateToUpdate,
                                      boolean pRelativeCorrection,
@@ -85,25 +94,26 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
     info("Update new state...");
 
     int lNumberOfControlPlanes =
-        getAdaptiveEngine().getAcquisitionStateVariable()
-                           .get()
-                           .getNumberOfControlPlanes();
+                               getAdaptiveEngine().getAcquisitionStateVariable()
+                                                  .get()
+                                                  .getNumberOfControlPlanes();
     int lNumberOfLightSheets =
-        getAdaptiveEngine().getAcquisitionStateVariable()
-                           .get()
-                           .getNumberOfLightSheets();
+                             getAdaptiveEngine().getAcquisitionStateVariable()
+                                                .get()
+                                                .getNumberOfLightSheets();
 
     int lNumberOfDetectionArms =
-        getAdaptiveEngine().getAcquisitionStateVariable()
-                           .get()
-                           .getNumberOfDetectionArms();
+                               getAdaptiveEngine().getAcquisitionStateVariable()
+                                                  .get()
+                                                  .getNumberOfDetectionArms();
 
     int lMissingInfoCount = 0;
     for (int cpi = 0; cpi < lNumberOfControlPlanes; cpi++)
     {
       for (int l = 0; l < lNumberOfLightSheets; l++)
       {
-        int lSelectedDetectionArm = mDetectionArmChoiceVariables[cpi].get();
+        int lSelectedDetectionArm =
+                                  mDetectionArmChoiceVariables[cpi].get();
         Result lResult = getResult(cpi, l, lSelectedDetectionArm);
 
         if (lResult == null)
@@ -115,16 +125,21 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
         double lCorrection = (pFlipCorrectionSign ? -1 : 1)
                              * lResult.argmax;
 
-
-        boolean lMissingInfo = checkAdaptationQuality(l, cpi, lCorrection, lResult.metricmax, lResult.probability, lSelectedDetectionArm);
+        boolean lMissingInfo =
+                             checkAdaptationQuality(l,
+                                                    cpi,
+                                                    lCorrection,
+                                                    lResult.metricmax,
+                                                    lResult.probability,
+                                                    lSelectedDetectionArm);
 
         if (lMissingInfo)
         {
           lCorrection =
-              computeCorrectionBasedOnNeighbooringControlPlanes(pRelativeCorrection,
-                                                                pStateToUpdate,
-                                                                cpi,
-                                                                l);
+                      computeCorrectionBasedOnNeighbooringControlPlanes(pRelativeCorrection,
+                                                                        pStateToUpdate,
+                                                                        cpi,
+                                                                        l);
 
         }
 
@@ -145,9 +160,13 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
                                                    lMissingInfo,
                                                    lSelectedDetectionArm));
 
-        if (mFirstAndLastControlPlaneZero.get() && (cpi == 0 || cpi == lNumberOfControlPlanes - 1)) {
-          pStateToUpdate.getInterpolationTables()
-                        .add(mLightSheetDOF, cpi, l, 0);
+        if (mFirstAndLastControlPlaneZero.get()
+            && (cpi == 0 || cpi == lNumberOfControlPlanes - 1))
+        {
+          pStateToUpdate.getInterpolationTables().add(mLightSheetDOF,
+                                                      cpi,
+                                                      l,
+                                                      0);
           info("Set first/last control plane to zero adaptation as configured.");
         }
         else
@@ -166,7 +185,9 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
         invokeControlPlaneStateChangeListeners(l, cpi);
       }
     }
-    setConfigurationState(ConfigurationState.fromProgressValue((double)lMissingInfoCount / (lNumberOfControlPlanes * lNumberOfLightSheets)));
+    setConfigurationState(ConfigurationState.fromProgressValue((double) lMissingInfoCount
+                                                               / (lNumberOfControlPlanes
+                                                                  * lNumberOfLightSheets)));
   }
 
   public int getNumberOfControlPlanes()
@@ -178,7 +199,6 @@ public class AdaptationZManualDetectionArmSelection extends AdaptationZ
   {
     return mDetectionArmChoiceVariables[pControlPlane];
   }
-
 
   public Variable<Boolean> getFirstAndLastControlPlaneZero()
   {

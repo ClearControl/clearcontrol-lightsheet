@@ -1,15 +1,16 @@
 package clearcontrol.microscope.lightsheet.adaptive.controlplanestate.gui;
 
-import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
-import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.ControlPlaneStateListener;
-import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.HasControlPlaneState;
-import clearcontrol.microscope.lightsheet.gui.VariableLabel;
 import javafx.scene.control.Label;
 
+import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
+import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.ControlPlaneStateListener;
+import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.HasControlPlaneState;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
+import clearcontrol.microscope.lightsheet.gui.VariableLabel;
+
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * November 2017
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) November 2017
  */
 public class ControlPlaneStatePanel extends CustomGridPane
 {
@@ -39,41 +40,36 @@ public class ControlPlaneStatePanel extends CustomGridPane
       {
         final int lLightSheetIndex = y;
         final int lControlPlaneIndex = x;
-        VariableLabel lVariableLabel =
-            new VariableLabel("", "");
+        VariableLabel lVariableLabel = new VariableLabel("", "");
 
         pHasControlPlaneState.addControlPlaneStateChangeListener(new ControlPlaneStateListener()
         {
-          @Override public void controlPlaneStateChanged(int pLightSheetIndex,
-                                                         int pControlPlaneIndex)
+          @Override
+          public void controlPlaneStateChanged(int pLightSheetIndex,
+                                               int pControlPlaneIndex)
           {
             if (pLightSheetIndex == lLightSheetIndex
                 && pControlPlaneIndex == lControlPlaneIndex)
             {
-              ConfigurationState
-                  lConfigurationState =
-                  pHasControlPlaneState.getControlPlaneState(
-                      pLightSheetIndex,
-                      pControlPlaneIndex);
+              ConfigurationState lConfigurationState =
+                                                     pHasControlPlaneState.getControlPlaneState(pLightSheetIndex,
+                                                                                                pControlPlaneIndex);
 
-              String
-                  lConfigurationStateDescription =
-                  lConfigurationState.toString();
+              String lConfigurationStateDescription =
+                                                    lConfigurationState.toString();
 
-              lConfigurationStateDescription +=
-                  "\n"
-                  + pHasControlPlaneState.getControlPlaneStateDescription(
-                      pLightSheetIndex,
-                      pControlPlaneIndex);
+              lConfigurationStateDescription += "\n"
+                                                + pHasControlPlaneState.getControlPlaneStateDescription(pLightSheetIndex,
+                                                                                                        pControlPlaneIndex);
 
               lVariableLabel.getStringVariable()
-                            .set(""
-                                           + lConfigurationStateDescription);
+                            .set("" + lConfigurationStateDescription);
               lVariableLabel.setStyle(
 
-                  " -fx-padding: 2 2 2 2; -fx-border-color:white; -fx-text-fill:white; -fx-background-color: "
-                  + lConfigurationState.getColor().toLowerCase()
-                  + ";");
+                                      " -fx-padding: 2 2 2 2; -fx-border-color:white; -fx-text-fill:white; -fx-background-color: "
+                                      + lConfigurationState.getColor()
+                                                           .toLowerCase()
+                                      + ";");
             }
           }
         });

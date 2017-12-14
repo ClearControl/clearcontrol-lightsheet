@@ -20,11 +20,15 @@ public class AdaptationZPanel extends StandardAdaptationModulePanel
   {
     super(pAdaptationZ);
 
-    addNumberTextFieldForVariable(pAdaptationZ.getDeltaZVariable().getName(),
+    addNumberTextFieldForVariable(pAdaptationZ.getDeltaZVariable()
+                                              .getName(),
                                   pAdaptationZ.getDeltaZVariable(),
-                                  pAdaptationZ.getDeltaZVariable().getMin(),
-                                  pAdaptationZ.getDeltaZVariable().getMax(),
-                                  pAdaptationZ.getDeltaZVariable().getGranularity());
+                                  pAdaptationZ.getDeltaZVariable()
+                                              .getMin(),
+                                  pAdaptationZ.getDeltaZVariable()
+                                              .getMax(),
+                                  pAdaptationZ.getDeltaZVariable()
+                                              .getGranularity());
   }
 
 }

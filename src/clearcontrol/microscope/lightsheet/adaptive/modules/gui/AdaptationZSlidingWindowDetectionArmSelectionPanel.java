@@ -5,10 +5,11 @@ import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZSlidingWin
 /**
  *
  * @author royer
- * @author Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * November 2017
+ * @author Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ *         (http://mpi-cbg.de) November 2017
  */
-public class AdaptationZSlidingWindowDetectionArmSelectionPanel extends StandardAdaptationModulePanel
+public class AdaptationZSlidingWindowDetectionArmSelectionPanel extends
+                                                                StandardAdaptationModulePanel
 {
 
   /**
@@ -22,20 +23,19 @@ public class AdaptationZSlidingWindowDetectionArmSelectionPanel extends Standard
     super(pAdaptationZSlidingWindowDetectionArmSelection);
 
     addNumberTextFieldForVariable("Delta Z: ",
-                                  pAdaptationZSlidingWindowDetectionArmSelection
-                                      .getDeltaZVariable(),
+                                  pAdaptationZSlidingWindowDetectionArmSelection.getDeltaZVariable(),
                                   0.0,
                                   Double.POSITIVE_INFINITY,
                                   0.001);
 
-
     addNumberTextFieldForVariable("Sliding window width for detection arm selection (no of control planes)): ",
-                                  pAdaptationZSlidingWindowDetectionArmSelection
-                                      .getSlidingWindowWidthVariable(),
+                                  pAdaptationZSlidingWindowDetectionArmSelection.getSlidingWindowWidthVariable(),
                                   0,
-                                  Integer.MAX_VALUE, 1);
+                                  Integer.MAX_VALUE,
+                                  1);
 
-    addCheckBoxForVariable("First and last control plane zero", pAdaptationZSlidingWindowDetectionArmSelection.getFirstAndLastControlPlaneZero());
+    addCheckBoxForVariable("First and last control plane zero",
+                           pAdaptationZSlidingWindowDetectionArmSelection.getFirstAndLastControlPlaneZero());
   }
 
 }

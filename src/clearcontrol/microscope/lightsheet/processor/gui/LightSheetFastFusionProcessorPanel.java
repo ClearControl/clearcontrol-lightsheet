@@ -67,7 +67,8 @@ public class LightSheetFastFusionProcessorPanel extends TabPane
     Variable<Integer> lTransformLockThresholdVariable =
                                                       pLightSheetFastFusionProcessor.getTransformLockThresholdVariable();
 
-    Variable<Boolean> lBackgroundSubtractionSwitchVariable = pLightSheetFastFusionProcessor.getBackgroundSubtractionSwitchVariable();
+    Variable<Boolean> lBackgroundSubtractionSwitchVariable =
+                                                           pLightSheetFastFusionProcessor.getBackgroundSubtractionSwitchVariable();
 
     CustomVariablePane lCustomVariablePane = new CustomVariablePane();
 
@@ -112,10 +113,8 @@ public class LightSheetFastFusionProcessorPanel extends TabPane
                                                       Integer.MAX_VALUE,
                                                       1);
 
-
     lCustomVariablePane.addCheckBoxForVariable("Do background subtraction",
                                                lBackgroundSubtractionSwitchVariable);
-
 
     return lCustomVariablePane;
   }

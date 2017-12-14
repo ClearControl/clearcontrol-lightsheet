@@ -1,5 +1,11 @@
 package clearcontrol.microscope.lightsheet.processor;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import clearcl.ClearCLContext;
 import clearcl.ClearCLImage;
 import clearcl.enums.ImageChannelDataType;
@@ -13,108 +19,109 @@ import clearcontrol.scripting.engine.ScriptingEngine;
 import clearcontrol.stack.ContiguousOffHeapPlanarStackFactory;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
-import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import clearcontrol.stack.sourcesink.source.RawFileStackSource;
 import coremem.recycling.BasicRecycler;
 import fastfuse.tasks.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * November 2017
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) November 2017
  */
 public class OfflineFastFusionEngine extends TaskDevice implements
-                                                           LoggingFeature,
-                                                           VisualConsoleInterface {
+                                     LoggingFeature,
+                                     VisualConsoleInterface
+{
   LightSheetMicroscope mLightSheetMicroscope;
 
   ClearCLContext mContext;
 
   LightSheetFastFusionEngine mFastFusionEngine;
 
-  private Variable<File>
-      mRootFolderVariable =
-      new Variable("RootFolder", (Object) null);
+  private Variable<File> mRootFolderVariable =
+                                             new Variable("RootFolder",
+                                                          (Object) null);
 
-
-
-
-  private BoundedVariable<Integer> mFirstTimePointToFuse = new BoundedVariable<Integer>("First time point", 0, 0, Integer.MAX_VALUE, 1);
-  private BoundedVariable<Integer> mLastTimePointToFuse = new BoundedVariable<Integer>("Last time point", 0, 0, Integer.MAX_VALUE, 1);
-
+  private BoundedVariable<Integer> mFirstTimePointToFuse =
+                                                         new BoundedVariable<Integer>("First time point",
+                                                                                      0,
+                                                                                      0,
+                                                                                      Integer.MAX_VALUE,
+                                                                                      1);
+  private BoundedVariable<Integer> mLastTimePointToFuse =
+                                                        new BoundedVariable<Integer>("Last time point",
+                                                                                     0,
+                                                                                     0,
+                                                                                     Integer.MAX_VALUE,
+                                                                                     1);
 
   private final Variable<Boolean> mDownscaleSwitchVariable =
-      new Variable<Boolean>("DownscaleSwitch", true);
+                                                           new Variable<Boolean>("DownscaleSwitch",
+                                                                                 true);
 
   private final Variable<Boolean> mRegistrationSwitchVariable =
-      new Variable<Boolean>("RegistrationSwitch", true);
+                                                              new Variable<Boolean>("RegistrationSwitch",
+                                                                                    true);
 
   private final Variable<Integer> mNumberOfRestartsVariable =
-      new Variable<Integer>("NumberOfRestarts",
-                            5);
+                                                            new Variable<Integer>("NumberOfRestarts",
+                                                                                  5);
 
   private final Variable<Integer> mMaxNumberOfEvaluationsVariable =
-      new Variable<Integer>("MaxNumberOfEvaluations",
-                            200);
+                                                                  new Variable<Integer>("MaxNumberOfEvaluations",
+                                                                                        200);
 
   private final BoundedVariable<Double> mTranslationSearchRadiusVariable =
-      new BoundedVariable<Double>("TranslationSearchRadius",
-                                  15.0);
+                                                                         new BoundedVariable<Double>("TranslationSearchRadius",
+                                                                                                     15.0);
   private final BoundedVariable<Double> mRotationSearchRadiusVariable =
-      new BoundedVariable<Double>("RotationSearchRadius",
-                                  3.0);
+                                                                      new BoundedVariable<Double>("RotationSearchRadius",
+                                                                                                  3.0);
 
   private final BoundedVariable<Double> mSmoothingConstantVariable =
-      new BoundedVariable<Double>("SmoothingConstant",
-                                  0.05);
+                                                                   new BoundedVariable<Double>("SmoothingConstant",
+                                                                                               0.05);
 
   private final Variable<Boolean> mBackgroundSubtractionSwitchVariable =
-      new Variable<Boolean>("BackgroundSubtractionSwitch", false);
+                                                                       new Variable<Boolean>("BackgroundSubtractionSwitch",
+                                                                                             false);
 
   private RegistrationTask mRegistrationTask;
 
   // Todo: determine following list from the selected folder
-  private String[]
-      names =
-      { "C0L0",
-        "C0L1",
-        "C0L2",
-        "C0L3",
-        "C1L0",
-        "C1L1",
-        "C1L2",
-        "C1L3" };
+  private String[] names =
+  { "C0L0", "C0L1", "C0L2", "C0L3", "C1L0", "C1L1", "C1L2", "C1L3" };
 
-
-  public OfflineFastFusionEngine(String pName, LightSheetMicroscope pLightSheetMicroscope, ClearCLContext pContext)
+  public OfflineFastFusionEngine(String pName,
+                                 LightSheetMicroscope pLightSheetMicroscope,
+                                 ClearCLContext pContext)
   {
     super(pName);
     mLightSheetMicroscope = pLightSheetMicroscope;
     mContext = pContext;
 
-    mFastFusionEngine = new LightSheetFastFusionEngine(mContext, null, mLightSheetMicroscope.getNumberOfLightSheets(), mLightSheetMicroscope.getNumberOfDetectionArms());
+    mFastFusionEngine =
+                      new LightSheetFastFusionEngine(mContext,
+                                                     null,
+                                                     mLightSheetMicroscope.getNumberOfLightSheets(),
+                                                     mLightSheetMicroscope.getNumberOfDetectionArms());
   }
 
-  @Override public boolean startTask()
+  @Override
+  public boolean startTask()
   {
     if (getLightSheetMicroscope().getCurrentTask().get() != null)
     {
-      warning(
-          "Another task (%s) is already running, please stop it first.",
-          getLightSheetMicroscope().getCurrentTask());
+      warning("Another task (%s) is already running, please stop it first.",
+              getLightSheetMicroscope().getCurrentTask());
       return false;
     }
     getLightSheetMicroscope().getCurrentTask().set(this);
     return super.startTask();
   }
 
-  @Override public void run()
+  @Override
+  public void run()
   {
     try
     {
@@ -143,17 +150,15 @@ public class OfflineFastFusionEngine extends TaskDevice implements
     }
   }
 
-  private boolean execute() throws
-                          InterruptedException,
-                          ExecutionException,
-                          TimeoutException,
-                          IOException
+  private boolean execute() throws InterruptedException,
+                            ExecutionException,
+                            TimeoutException,
+                            IOException
   {
     if (isStopRequested())
     {
       return false;
     }
-
 
     File lRootFolder = getRootFolderVariable().get();
 
@@ -161,30 +166,33 @@ public class OfflineFastFusionEngine extends TaskDevice implements
 
     lRootFolder = lRootFolder.getParentFile();
 
-    mFastFusionEngine.setSubtractingBackground(
-        mBackgroundSubtractionSwitchVariable.get());
+    mFastFusionEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
     mFastFusionEngine.setRegistration(mRegistrationSwitchVariable.get());
     mFastFusionEngine.setDownscale(mDownscaleSwitchVariable.get());
 
-    int lNumberOfLightSheets = mLightSheetMicroscope.getNumberOfLightSheets();
-    String lStackDirectory = lRootFolder + "/" + lDatasetname + "/stacks/";
+    int lNumberOfLightSheets =
+                             mLightSheetMicroscope.getNumberOfLightSheets();
+    String lStackDirectory = lRootFolder + "/"
+                             + lDatasetname
+                             + "/stacks/";
 
-    if (new File(lStackDirectory + "C0L0").exists() &&
-        new File(lStackDirectory + "C0L1").exists() &&
-        new File(lStackDirectory + "C0L2").exists() &&
-        new File(lStackDirectory + "C0L3").exists() &&
-        new File(lStackDirectory + "C1L0").exists() &&
-        new File(lStackDirectory + "C1L1").exists() &&
-        new File(lStackDirectory + "C1L2").exists() &&
-        new File(lStackDirectory + "C1L3").exists()
-        ) {
+    if (new File(lStackDirectory + "C0L0").exists()
+        && new File(lStackDirectory + "C0L1").exists()
+        && new File(lStackDirectory + "C0L2").exists()
+        && new File(lStackDirectory + "C0L3").exists()
+        && new File(lStackDirectory + "C1L0").exists()
+        && new File(lStackDirectory + "C1L1").exists()
+        && new File(lStackDirectory + "C1L2").exists()
+        && new File(lStackDirectory + "C1L3").exists())
+    {
       lNumberOfLightSheets = 4;
-    } else if (new File(lStackDirectory + "C0L0").exists() &&
-               new File(lStackDirectory + "C1L0").exists()
-        ) {
+    }
+    else if (new File(lStackDirectory + "C0L0").exists()
+             && new File(lStackDirectory + "C1L0").exists())
+    {
       lNumberOfLightSheets = 1;
     }
-      mFastFusionEngine.setup(lNumberOfLightSheets,
+    mFastFusionEngine.setup(lNumberOfLightSheets,
                             mLightSheetMicroscope.getNumberOfDetectionArms());
 
     if (mRegistrationSwitchVariable.get())
@@ -192,45 +200,43 @@ public class OfflineFastFusionEngine extends TaskDevice implements
 
       mFastFusionEngine.getRegistrationTask()
                        .getParameters()
-                       .setNumberOfRestarts(
-                           getNumberOfRestartsVariable().get().intValue());
+                       .setNumberOfRestarts(getNumberOfRestartsVariable().get()
+                                                                         .intValue());
 
       mFastFusionEngine.getRegistrationTask()
                        .getParameters()
-                       .setTranslationSearchRadius(
-                           getTranslationSearchRadiusVariable().get().doubleValue());
+                       .setTranslationSearchRadius(getTranslationSearchRadiusVariable().get()
+                                                                                       .doubleValue());
 
       mFastFusionEngine.getRegistrationTask()
                        .getParameters()
-                       .setRotationSearchRadius(
-                           getRotationSearchRadiusVariable().get().doubleValue());
+                       .setRotationSearchRadius(getRotationSearchRadiusVariable().get()
+                                                                                 .doubleValue());
 
       mFastFusionEngine.getRegistrationTask()
                        .getParameters()
-                       .setMaxNumberOfEvaluations((int) getMaxNumberOfEvaluationsVariable()
-                           .get()
-                           .intValue());
+                       .setMaxNumberOfEvaluations((int) getMaxNumberOfEvaluationsVariable().get()
+                                                                                           .intValue());
 
       mFastFusionEngine.getRegistrationTask()
-                       .setSmoothingConstant(
-                           getSmoothingConstantVariable().get().doubleValue());
+                       .setSmoothingConstant(getSmoothingConstantVariable().get()
+                                                                           .doubleValue());
     }
 
     assert lRootFolder != null;
     assert lRootFolder.isDirectory();
 
-    BasicRecycler<StackInterface, StackRequest>
-        stackRecycler =
-        new BasicRecycler(new ContiguousOffHeapPlanarStackFactory(),
-                          10,
-                          10,
-                          true);
+    BasicRecycler<StackInterface, StackRequest> stackRecycler =
+                                                              new BasicRecycler(new ContiguousOffHeapPlanarStackFactory(),
+                                                                                10,
+                                                                                10,
+                                                                                true);
 
-    RawFileStackSource
-        rawFileStackSource =
-        new RawFileStackSource(stackRecycler);
+    RawFileStackSource rawFileStackSource =
+                                          new RawFileStackSource(stackRecycler);
 
-    for (int timePoint = getFirstTimePointToFuse().get(); timePoint<= getLastTimePointToFuse().get(); timePoint++)
+    for (int timePoint =
+                       getFirstTimePointToFuse().get(); timePoint <= getLastTimePointToFuse().get(); timePoint++)
     {
       if (isStopRequested())
       {
@@ -245,9 +251,9 @@ public class OfflineFastFusionEngine extends TaskDevice implements
         {
           rawFileStackSource.setLocation(lRootFolder, lDatasetname);
           info("getting" + names[i]);
-          StackInterface
-              stack =
-              rawFileStackSource.getStack(names[i], timePoint);
+          StackInterface stack =
+                               rawFileStackSource.getStack(names[i],
+                                                           timePoint);
 
           info("Stack " + names[i]);
           mFastFusionEngine.passImage(names[i],
@@ -264,8 +270,6 @@ public class OfflineFastFusionEngine extends TaskDevice implements
             double lVoxelSizeX = stack.getMetaData().getVoxelDimX();
             double lVoxelSizeZ = stack.getMetaData().getVoxelDimZ();
 
-
-
             if (mDownscaleSwitchVariable.get())
             {
               lVoxelSizeX = lVoxelSizeX * 2;
@@ -274,9 +278,12 @@ public class OfflineFastFusionEngine extends TaskDevice implements
             if (mRegistrationSwitchVariable.get())
             {
 
-              float lZAspectRatio = (float) (lVoxelSizeZ / lVoxelSizeX);
+              float lZAspectRatio =
+                                  (float) (lVoxelSizeZ / lVoxelSizeX);
 
-              mFastFusionEngine.getRegistrationTask().getParameters().setScaleZ(lZAspectRatio);
+              mFastFusionEngine.getRegistrationTask()
+                               .getParameters()
+                               .setScaleZ(lZAspectRatio);
 
             }
           }
@@ -303,9 +310,10 @@ public class OfflineFastFusionEngine extends TaskDevice implements
 
       ClearCLImage lFusedImage = mFastFusionEngine.getImage("fused");
 
-      StackInterface
-          lFusedStack =
-          stackRecycler.getOrWait(1000, TimeUnit.SECONDS, StackRequest.build(lFusedImage.getDimensions()));
+      StackInterface lFusedStack =
+                                 stackRecycler.getOrWait(1000,
+                                                         TimeUnit.SECONDS,
+                                                         StackRequest.build(lFusedImage.getDimensions()));
 
       lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
 
@@ -313,7 +321,10 @@ public class OfflineFastFusionEngine extends TaskDevice implements
       sink.close();
 
       mFastFusionEngine.reset(false);
-      info("Fusion of time point " + timePoint + " took " + ((System.currentTimeMillis() -  lTimeMillis)/1000) + " sec" );
+      info("Fusion of time point " + timePoint
+           + " took "
+           + ((System.currentTimeMillis() - lTimeMillis) / 1000)
+           + " sec");
     }
 
     return true;
@@ -344,7 +355,6 @@ public class OfflineFastFusionEngine extends TaskDevice implements
   {
     return mRootFolderVariable;
   }
-
 
   /**
    * Returns the variable holding the translation search radius.
@@ -396,15 +406,18 @@ public class OfflineFastFusionEngine extends TaskDevice implements
     return mSmoothingConstantVariable;
   }
 
-  public Variable<Boolean> getBackgroundSubtractionSwitchVariable() {
+  public Variable<Boolean> getBackgroundSubtractionSwitchVariable()
+  {
     return mBackgroundSubtractionSwitchVariable;
   }
 
-  public Variable<Boolean> getDownscaleSwitchVariable() {
+  public Variable<Boolean> getDownscaleSwitchVariable()
+  {
     return mDownscaleSwitchVariable;
   }
 
-  public Variable<Boolean> getRegistrationSwitchVariable() {
+  public Variable<Boolean> getRegistrationSwitchVariable()
+  {
     return mRegistrationSwitchVariable;
   }
 
@@ -417,8 +430,5 @@ public class OfflineFastFusionEngine extends TaskDevice implements
   {
     return mLastTimePointToFuse;
   }
-
-
-
 
 }

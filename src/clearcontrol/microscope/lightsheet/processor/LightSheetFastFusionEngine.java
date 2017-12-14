@@ -1,5 +1,8 @@
 package clearcontrol.microscope.lightsheet.processor;
 
+import java.io.IOException;
+import java.util.List;
+
 import clearcl.ClearCLContext;
 import clearcl.enums.ImageChannelDataType;
 import clearcontrol.core.concurrent.executors.AsynchronousExecutorFeature;
@@ -17,9 +20,6 @@ import fastfuse.registration.AffineMatrix;
 import fastfuse.tasks.*;
 import fastfuse.tasks.DownsampleXYbyHalfTask.Type;
 import framework.Handler;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Lightsheet fast fusion engine
@@ -41,11 +41,10 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                              .getBooleanProperty("fastfuse.register",
                                                                                  true);
 
-
   private volatile boolean mBackgroundSubtraction =
-      MachineConfiguration.get()
-                          .getBooleanProperty("fastfuse.backgroundsubtraction",
-                                              false);
+                                                  MachineConfiguration.get()
+                                                                      .getBooleanProperty("fastfuse.backgroundsubtraction",
+                                                                                          false);
 
   private volatile boolean mDownscale =
                                       MachineConfiguration.get()
@@ -160,13 +159,18 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     }
 
     // setting up pool with max pool size:
-    long lMaxMemoryInBytes = (long) (mMemRatio * pContext.getDevice().getGlobalMemorySizeInBytes());
+    long lMaxMemoryInBytes =
+                           (long) (mMemRatio
+                                   * pContext.getDevice()
+                                             .getGlobalMemorySizeInBytes());
     FastFusionMemoryPool.getInstance(pContext, lMaxMemoryInBytes);
 
     setup(pNumberOfLightSheets, pNumberOfDetectionArms);
   }
 
-  public void setup(int pNumberOfLightSheets, int pNumberOfDetectionArms) {
+  public void setup(int pNumberOfLightSheets,
+                    int pNumberOfDetectionArms)
+  {
     this.reset(true);
     this.getTasks().clear();
 
@@ -181,7 +185,8 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     float[] lKernelSigmasBackground = null;
     if (mBackgroundSubtraction)
     {
-      lKernelSigmasBackground = new float[] { 30, 30, 10 };
+      lKernelSigmasBackground = new float[]
+      { 30, 30, 10 };
     }
 
     if (pNumberOfLightSheets == 1)
@@ -317,50 +322,54 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     if (pKernelSigmasBackground == null)
     {
       addTasks(CompositeTasks.fuseWithSmoothWeights("fused-preliminary",
-                                                                      ImageChannelDataType.Float,
+                                                    ImageChannelDataType.Float,
                                                     pKernelSigmasFusion,
-                                                                      true,
-                                                                      "C0",
-                                                                      "C1adjusted"));
+                                                    true,
+                                                    "C0",
+                                                    "C1adjusted"));
 
-      // following line just transforms the result image from Float to unsigned int
+      // following line just transforms the result image from Float to unsigned
+      // int
       addTask(new NonnegativeSubtractionTask("fused-preliminary",
-                                                               0,
-                                                               "fused",
-                                                               ImageChannelDataType.UnsignedInt16));
+                                             0,
+                                             "fused",
+                                             ImageChannelDataType.UnsignedInt16));
 
     }
     else
     {
 
-      addTasks(CompositeTasks.fuseWithSmoothWeights(
-          "fused-preliminary",
-          ImageChannelDataType.Float,
-          pKernelSigmasFusion,
-          true,
-          "C0",
-          "C1adjusted"));
+      addTasks(CompositeTasks.fuseWithSmoothWeights("fused-preliminary",
+                                                    ImageChannelDataType.Float,
+                                                    pKernelSigmasFusion,
+                                                    true,
+                                                    "C0",
+                                                    "C1adjusted"));
 
-      addTasks(CompositeTasks.subtractBlurredCopyFromFloatImage(
-          "fused-preliminary",
-          "fused",
-          pKernelSigmasBackground,
-          true,
-          ImageChannelDataType.UnsignedInt16));
+      addTasks(CompositeTasks.subtractBlurredCopyFromFloatImage("fused-preliminary",
+                                                                "fused",
+                                                                pKernelSigmasBackground,
+                                                                true,
+                                                                ImageChannelDataType.UnsignedInt16));
 
     }
 
-    //TODO here is the TimeStepper stuff
+    // TODO here is the TimeStepper stuff
 
-    //this.getFusedMetaData();
+    // this.getFusedMetaData();
     System.out.println("adding the stepper task now");
-	try 
-	{ 
-		Handler lTimeStepHandler = new Handler(this.getContext(), ImageChannelDataType.UnsignedInt16); 
-		addTask(new CacheStackTask("fused", lTimeStepHandler));
-	} 
-			catch (IOException e) { e.printStackTrace(); }
-//    }
+    try
+    {
+      Handler lTimeStepHandler =
+                               new Handler(this.getContext(),
+                                           ImageChannelDataType.UnsignedInt16);
+      addTask(new CacheStackTask("fused", lTimeStepHandler));
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+    // }
   }
 
   protected void setupFourLightsheetsOneDetectionArm()
@@ -617,7 +626,8 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                             (float) (lStackMetaData.getVoxelDimZ()
                                      / lStackMetaData.getVoxelDimX());
 
-        System.out.println("RegistrationTask: Setting aspect ratio: " + lZAspectRatio);
+        System.out.println("RegistrationTask: Setting aspect ratio: "
+                           + lZAspectRatio);
 
         mRegistrationTask.getParameters().setScaleZ(lZAspectRatio);
 
@@ -690,7 +700,6 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
   {
     mRegistration = pRegistration;
   }
-
 
   /**
    * Is background subtraction turned on?

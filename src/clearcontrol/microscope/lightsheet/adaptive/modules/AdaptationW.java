@@ -21,7 +21,11 @@ public class AdaptationW extends StandardAdaptationModule implements
                          AdaptationModuleInterface<InterpolatedAcquisitionState>
 {
 
-  private static final BoundedVariable<Integer> mNumberOfRepeatsVariable = new BoundedVariable<Integer>("Number of repeats", 2, 0, Integer.MAX_VALUE);
+  private static final BoundedVariable<Integer> mNumberOfRepeatsVariable =
+                                                                         new BoundedVariable<Integer>("Number of repeats",
+                                                                                                      2,
+                                                                                                      0,
+                                                                                                      Integer.MAX_VALUE);
 
   /**
    * Instantiates a W adaptation module given the number of samples, probability

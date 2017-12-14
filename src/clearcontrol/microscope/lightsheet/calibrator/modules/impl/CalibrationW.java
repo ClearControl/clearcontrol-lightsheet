@@ -14,13 +14,12 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
-import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescriptionPerLightSheet;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -33,16 +32,20 @@ import org.apache.commons.math3.stat.StatUtils;
  * @author royer
  */
 public class CalibrationW extends CalibrationPerLightSheetBase
-                          implements CalibrationModuleInterface,
-                                     HasStateDescriptionPerLightSheet
+                          implements
+                          CalibrationModuleInterface,
+                          HasStateDescriptionPerLightSheet
 {
-  private BoundedVariable<Integer>
-      mNumberOfSamplesVariable = new BoundedVariable<Integer>("Number of samples", 32, 1, Integer.MAX_VALUE);
-
+  private BoundedVariable<Integer> mNumberOfSamplesVariable =
+                                                            new BoundedVariable<Integer>("Number of samples",
+                                                                                         32,
+                                                                                         1,
+                                                                                         Integer.MAX_VALUE);
 
   BoundedVariable<Integer> mDetectionArmVariable;
 
-  private HashMap<Integer, TDoubleArrayList> mIntensityLists = new HashMap<>();
+  private HashMap<Integer, TDoubleArrayList> mIntensityLists =
+                                                             new HashMap<>();
   private TDoubleArrayList mWList = new TDoubleArrayList();
 
   /**
@@ -55,7 +58,12 @@ public class CalibrationW extends CalibrationPerLightSheetBase
   {
     super("W", pCalibrator);
 
-    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
+    mDetectionArmVariable =
+                          new BoundedVariable<Integer>("Detection arm",
+                                                       0,
+                                                       0,
+                                                       pCalibrator.getLightSheetMicroscope()
+                                                                  .getNumberOfDetectionArms());
   }
 
   /**
@@ -70,7 +78,9 @@ public class CalibrationW extends CalibrationPerLightSheetBase
     if (calibrate(lDetectionArmIndex))
     {
       return apply();
-    } else {
+    }
+    else
+    {
       return Double.MAX_VALUE;
     }
   }
@@ -86,21 +96,25 @@ public class CalibrationW extends CalibrationPerLightSheetBase
   {
     mIntensityLists.clear();
     int lNumberOfLightSheets = getNumberOfLightSheets();
-    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
-      double[] lAverageIntensities = calibrate(lLightSheetIndex,
-                                               pDetectionArmIndex,
-                                               mNumberOfSamplesVariable.get());
+      double[] lAverageIntensities =
+                                   calibrate(lLightSheetIndex,
+                                             pDetectionArmIndex,
+                                             mNumberOfSamplesVariable.get());
       if (lAverageIntensities == null)
       {
-        setConfigurationState(lLightSheetIndex, ConfigurationState.FAILED);
+        setConfigurationState(lLightSheetIndex,
+                              ConfigurationState.FAILED);
         return false;
       }
 
       mIntensityLists.put(lLightSheetIndex,
                           new TDoubleArrayList(lAverageIntensities));
 
-      setConfigurationState(lLightSheetIndex, ConfigurationState.SUCCEEDED);
+      setConfigurationState(lLightSheetIndex,
+                            ConfigurationState.SUCCEEDED);
     }
 
     return true;
@@ -249,9 +263,11 @@ public class CalibrationW extends CalibrationPerLightSheetBase
     double lIntensityMax = Double.NEGATIVE_INFINITY;
 
     TDoubleArrayList lSums = new TDoubleArrayList();
-    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
-      TDoubleArrayList lIntensityList = mIntensityLists.get(lLightSheetIndex);
+      TDoubleArrayList lIntensityList =
+                                      mIntensityLists.get(lLightSheetIndex);
       lSums.add(lIntensityList.sum());
 
       lIntensityMin = min(lIntensityMin, lIntensityList.min());
@@ -260,7 +276,8 @@ public class CalibrationW extends CalibrationPerLightSheetBase
 
     double lLargestSum = Double.NEGATIVE_INFINITY;
     int lIndexOfLargestSum = -1;
-    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
       double lSum = lSums.get(lLightSheetIndex);
       if (lSum > lLargestSum)
@@ -275,16 +292,20 @@ public class CalibrationW extends CalibrationPerLightSheetBase
 
     TDoubleArrayList[] lOffsetsLists =
                                      new TDoubleArrayList[lNumberOfLightSheets];
-    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
       lOffsetsLists[lLightSheetIndex] = new TDoubleArrayList();
     }
     double lStep = (lIntensityMax - lIntensityMin)
                    / (lReferenceIntensityList.size());
 
-    for (double lIntensity = lIntensityMin; lIntensity <= lIntensityMax; lIntensity += lStep)
+    for (double lIntensity =
+                           lIntensityMin; lIntensity <= lIntensityMax; lIntensity +=
+                                                                                  lStep)
     {
-      for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+      for (int lLightSheetIndex =
+                                0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
       {
 
         int lReferenceIndex =
@@ -292,8 +313,8 @@ public class CalibrationW extends CalibrationPerLightSheetBase
                                              lIntensity);
         double lReferenceW = mWList.get(lReferenceIndex);
 
-        int lOtherIndex =
-                        searchFirstAbove(lReferenceIntensityList, lIntensity);
+        int lOtherIndex = searchFirstAbove(lReferenceIntensityList,
+                                           lIntensity);
 
         double lOtherW = mWList.get(lOtherIndex);
 
@@ -305,7 +326,8 @@ public class CalibrationW extends CalibrationPerLightSheetBase
     }
 
     TDoubleArrayList lMedianOffsets = new TDoubleArrayList();
-    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
       double lMedianOffset =
                            StatUtils.percentile(lOffsetsLists[lLightSheetIndex].toArray(),
@@ -313,7 +335,8 @@ public class CalibrationW extends CalibrationPerLightSheetBase
       lMedianOffsets.add(lMedianOffset);
     }
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < lNumberOfLightSheets; lLightSheetIndex++)
     {
       LightSheetInterface lLightSheetDevice =
                                             getLightSheetMicroscope().getDeviceLists()
@@ -349,7 +372,8 @@ public class CalibrationW extends CalibrationPerLightSheetBase
   private int searchFirstAbove(TDoubleArrayList pList, double pValue)
   {
     int lSize = pList.size();
-    for (int i = 0; i < lSize; i++) {
+    for (int i = 0; i < lSize; i++)
+    {
       if (pList.getQuick(i) >= pValue)
       {
         return i;
@@ -366,8 +390,12 @@ public class CalibrationW extends CalibrationPerLightSheetBase
   {
     super.reset();
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-      setConfigurationState(lLightSheetIndex, ConfigurationState.UNINITIALIZED);
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < this.getLightSheetMicroscope()
+                                                        .getNumberOfLightSheets(); lLightSheetIndex++)
+    {
+      setConfigurationState(lLightSheetIndex,
+                            ConfigurationState.UNINITIALIZED);
     }
   }
 
@@ -381,19 +409,25 @@ public class CalibrationW extends CalibrationPerLightSheetBase
     return mNumberOfSamplesVariable;
   }
 
-  @Override public String getStateDescription(int pLightSheetIndex)
+  @Override
+  public String getStateDescription(int pLightSheetIndex)
   {
     final LightSheetInterface lLightSheetDevice =
-        getLightSheetMicroscope().getDeviceLists()
-                                 .getDevice(LightSheetInterface.class,
-                                            pLightSheetIndex);
+                                                getLightSheetMicroscope().getDeviceLists()
+                                                                         .getDevice(LightSheetInterface.class,
+                                                                                    pLightSheetIndex);
 
-    UnivariateAffineFunction lUnivariateAffineFunction = lLightSheetDevice.getWidthFunction().get();
+    UnivariateAffineFunction lUnivariateAffineFunction =
+                                                       lLightSheetDevice.getWidthFunction()
+                                                                        .get();
 
-    return String.format("y = %.3f * x + %.3f", lUnivariateAffineFunction.getSlope(), lUnivariateAffineFunction.getConstant());
+    return String.format("y = %.3f * x + %.3f",
+                         lUnivariateAffineFunction.getSlope(),
+                         lUnivariateAffineFunction.getConstant());
   }
 
-  @Override public String getStateDescription()
+  @Override
+  public String getStateDescription()
   {
     return null;
   }

@@ -20,41 +20,45 @@ public class CacheStackTask extends TaskBase implements TaskInterface
   private float mStartTime;
   private float mLastTime;
 
-  public CacheStackTask(String pSrcImageSlotKey, Handler pTimeStepHandler)
+  public CacheStackTask(String pSrcImageSlotKey,
+                        Handler pTimeStepHandler)
   {
-	mTimeStepHandler = pTimeStepHandler;
+    mTimeStepHandler = pTimeStepHandler;
     mSrcImageSlotKey = pSrcImageSlotKey;
     // one way to track time
     mStartTime = System.currentTimeMillis();
   }
 
-	@Override
-	public boolean enqueue(FastFusionEngineInterface pFastFusionEngine, boolean pWaitToFinish) 
-	{
-		System.out.println("available images are");
-		
-		for (String Key:pFastFusionEngine.getAvailableImagesSlotKeys())
-	    {
-	    		System.out.println(Key);
-	    }
-		if (pFastFusionEngine.isImageAvailable(mSrcImageSlotKey))
-		{
-			System.out.println(mSrcImageSlotKey+" is being cached and processed");
-			//TODO we need a measure of runtime overall
-			float pTime = System.currentTimeMillis()-mStartTime;
-			float pStep = pTime - mLastTime;
-			
-			ClearCLImage CurrImage = pFastFusionEngine.getImage(mSrcImageSlotKey);
-			mTimeStepHandler.processImage(CurrImage, pTime, pStep);
-			System.out.println("computed step would be: "+pStep);
-			
-			mLastTime = pTime;
-		}
-		else
-		{
-			System.out.println(mSrcImageSlotKey+" was not available");
-		}
-			return true;
-	}
+  @Override
+  public boolean enqueue(FastFusionEngineInterface pFastFusionEngine,
+                         boolean pWaitToFinish)
+  {
+    System.out.println("available images are");
+
+    for (String Key : pFastFusionEngine.getAvailableImagesSlotKeys())
+    {
+      System.out.println(Key);
+    }
+    if (pFastFusionEngine.isImageAvailable(mSrcImageSlotKey))
+    {
+      System.out.println(mSrcImageSlotKey
+                         + " is being cached and processed");
+      // TODO we need a measure of runtime overall
+      float pTime = System.currentTimeMillis() - mStartTime;
+      float pStep = pTime - mLastTime;
+
+      ClearCLImage CurrImage =
+                             pFastFusionEngine.getImage(mSrcImageSlotKey);
+      mTimeStepHandler.processImage(CurrImage, pTime, pStep);
+      System.out.println("computed step would be: " + pStep);
+
+      mLastTime = pTime;
+    }
+    else
+    {
+      System.out.println(mSrcImageSlotKey + " was not available");
+    }
+    return true;
+  }
 
 }

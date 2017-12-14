@@ -1,26 +1,25 @@
 package clearcontrol.microscope.lightsheet.adaptive.modules;
 
+import java.util.HashMap;
+
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
-import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
-import clearcontrol.microscope.lightsheet.calibrator.modules.impl.gui.StandardCalibrationModulePanel;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationStateChangeListener;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationStatePerLightSheetChangeListener;
 import clearcontrol.microscope.lightsheet.configurationstate.HasConfigurationStatePerLightSheet;
 
-import java.util.HashMap;
-
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * November 2017
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) November 2017
  */
 public abstract class StandardAdaptationPerLightSheetModule extends
-                                                   StandardAdaptationModule implements
-                                                                            HasConfigurationStatePerLightSheet
+                                                            StandardAdaptationModule
+                                                            implements
+                                                            HasConfigurationStatePerLightSheet
 {
 
-  private HashMap<Integer, ConfigurationState>
-      mConfigurationStates = new HashMap<>();
+  private HashMap<Integer, ConfigurationState> mConfigurationStates =
+                                                                    new HashMap<>();
 
   public StandardAdaptationPerLightSheetModule(String pModuleName,
                                                LightSheetDOF pLightSheetDOF,
@@ -30,25 +29,23 @@ public abstract class StandardAdaptationPerLightSheetModule extends
                                                double pExposureInSeconds,
                                                double pLaserPower)
   {
-    super( pModuleName,
+    super(pModuleName,
           pLightSheetDOF,
-     pNumberOfSamples,
-     pProbabilityThreshold,
-     pImageMetricThreshold,
-     pExposureInSeconds,
-     pLaserPower);
+          pNumberOfSamples,
+          pProbabilityThreshold,
+          pImageMetricThreshold,
+          pExposureInSeconds,
+          pLaserPower);
   }
 
-
-
-  protected void resetState() {
+  protected void resetState()
+  {
     super.resetState();
     mConfigurationStates.clear();
   }
 
-
-
-  protected void setConfigurationState(int pLightSheetIndex, ConfigurationState pState)
+  protected void setConfigurationState(int pLightSheetIndex,
+                                       ConfigurationState pState)
   {
     if (mConfigurationStates.containsKey(pLightSheetIndex))
     {
@@ -65,24 +62,29 @@ public abstract class StandardAdaptationPerLightSheetModule extends
     {
       if (lConfigurationStateChangeListener instanceof ConfigurationStatePerLightSheetChangeListener)
       {
-        ((ConfigurationStatePerLightSheetChangeListener)lConfigurationStateChangeListener).configurationStateOfLightSheetChanged(this,
-                                                                                                                                 pLightSheetIndex);
-      } else {
+        ((ConfigurationStatePerLightSheetChangeListener) lConfigurationStateChangeListener).configurationStateOfLightSheetChanged(this,
+                                                                                                                                  pLightSheetIndex);
+      }
+      else
+      {
         lConfigurationStateChangeListener.configurationStateChanged(this);
       }
     }
   }
 
   @Override
-  public ConfigurationState getConfigurationState(int pIntLightSheetIndex) {
-    if (mConfigurationStates.containsKey(pIntLightSheetIndex)) {
+  public ConfigurationState getConfigurationState(int pIntLightSheetIndex)
+  {
+    if (mConfigurationStates.containsKey(pIntLightSheetIndex))
+    {
       return mConfigurationStates.get(pIntLightSheetIndex);
     }
     return ConfigurationState.UNINITIALIZED;
   }
 
   @Override
-  public void addConfigurationStateChangeListener(ConfigurationStateChangeListener pConfigurationStateChangeListener) {
+  public void addConfigurationStateChangeListener(ConfigurationStateChangeListener pConfigurationStateChangeListener)
+  {
     super.addConfigurationStateChangeListener(pConfigurationStateChangeListener);
 
     for (int lLightSheetIndex : mConfigurationStates.keySet())

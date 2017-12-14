@@ -29,7 +29,12 @@ public class AdaptationP extends
                          AdaptationModuleInterface<InterpolatedAcquisitionState>
 {
 
-  private BoundedVariable<Double> mTargetLaserPowerVariable = new BoundedVariable<Double>("Target laser power", 0.5, 0.0, 1.0, 0.1 );
+  private BoundedVariable<Double> mTargetLaserPowerVariable =
+                                                            new BoundedVariable<Double>("Target laser power",
+                                                                                        0.5,
+                                                                                        0.0,
+                                                                                        1.0,
+                                                                                        0.1);
 
   /**
    * Instanciates a laser power adaptation module given the target laser power.
@@ -40,7 +45,7 @@ public class AdaptationP extends
   public AdaptationP(double pTargetLaserPower)
   {
     super("P*");
-    mTargetLaserPowerVariable.set( pTargetLaserPower);
+    mTargetLaserPowerVariable.set(pTargetLaserPower);
 
     getIsActiveVariable().set(false);
   }

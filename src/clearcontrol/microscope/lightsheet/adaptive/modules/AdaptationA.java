@@ -33,7 +33,12 @@ public class AdaptationA extends StandardAdaptationModule implements
                          AdaptationModuleInterface<InterpolatedAcquisitionState>
 {
 
-  private BoundedVariable<Double> mMaxDefocusVariable = new BoundedVariable<Double>("Maximum defocus in Z", 15.0, 0.0, Double.MAX_VALUE, 0.1);
+  private BoundedVariable<Double> mMaxDefocusVariable =
+                                                      new BoundedVariable<Double>("Maximum defocus in Z",
+                                                                                  15.0,
+                                                                                  0.0,
+                                                                                  Double.MAX_VALUE,
+                                                                                  0.1);
 
   /**
    * Instantiates an Alpha adaptation module given a max defocus, number of

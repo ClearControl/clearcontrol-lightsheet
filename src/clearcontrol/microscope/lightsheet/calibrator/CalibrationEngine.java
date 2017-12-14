@@ -20,7 +20,6 @@ import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationXY;
 import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationZ;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
-import clearcontrol.microscope.lightsheet.configurationstate.HasConfigurationState;
 import clearcontrol.scripting.engine.ScriptingEngine;
 
 import org.ejml.simple.SimpleMatrix;
@@ -176,9 +175,7 @@ public class CalibrationEngine extends TaskDevice implements
   public boolean calibrate()
   {
 
-
-    if (getCalibrateZVariable().get()
-        && !calibrateZ())
+    if (getCalibrateZVariable().get() && !calibrateZ())
       return false;
 
     if (isStopRequested())
@@ -203,12 +200,11 @@ public class CalibrationEngine extends TaskDevice implements
       return false;
 
     if (getCalibrateWVariable().get() && !calibrateW())
-    	return false;
+      return false;
 
     if ((getCalibrateAVariable().get()
          || getCalibrateXYVariable().get())
-        && getCalibrateZVariable().get()
-        && !calibrateZ())
+        && getCalibrateZVariable().get() && !calibrateZ())
       return false;
 
     if (isStopRequested())
@@ -314,7 +310,6 @@ public class CalibrationEngine extends TaskDevice implements
     return true;
   }
 
-
   /**
    * Calibrates the lighthseet laser power versus its height
    *
@@ -344,12 +339,6 @@ public class CalibrationEngine extends TaskDevice implements
   }
 
   // /***************************************************************/ //
-
-
-
-
-
-
 
   /**
    * Resets the calibration information
@@ -535,19 +524,17 @@ public class CalibrationEngine extends TaskDevice implements
 
   public ArrayList<CalibrationModuleInterface> getModuleList()
   {
-    ArrayList<CalibrationModuleInterface> lModuleList = new ArrayList<>();
+    ArrayList<CalibrationModuleInterface> lModuleList =
+                                                      new ArrayList<>();
     lModuleList.add(mCalibrationZ);
     lModuleList.add(mCalibrationA);
     lModuleList.add(mCalibrationP);
     lModuleList.add(mCalibrationW);
     lModuleList.add(mCalibrationXY);
-    //lModuleList.add(mCalibrationHP);
-    //lModuleList.add(mCalibrationWP);
+    // lModuleList.add(mCalibrationHP);
+    // lModuleList.add(mCalibrationWP);
     return lModuleList;
   }
-
-
-
 
   /**
    * Returns the variable holding the 'calibrate Z' boolean flag.

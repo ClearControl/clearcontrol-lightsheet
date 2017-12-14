@@ -11,12 +11,11 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
-import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -35,12 +34,18 @@ public class CalibrationHP extends CalibrationPerLightSheetBase
                            implements CalibrationModuleInterface
 {
 
-  BoundedVariable<Integer> mNumberOfPSamplesVariable = new BoundedVariable<Integer>("Number of power samples", 6, 0, Integer.MAX_VALUE);
-  BoundedVariable<Integer> mNumberOfHSamplesVariable = new BoundedVariable<Integer>("Number of height samples", 6, 0, Integer.MAX_VALUE);
-
+  BoundedVariable<Integer> mNumberOfPSamplesVariable =
+                                                     new BoundedVariable<Integer>("Number of power samples",
+                                                                                  6,
+                                                                                  0,
+                                                                                  Integer.MAX_VALUE);
+  BoundedVariable<Integer> mNumberOfHSamplesVariable =
+                                                     new BoundedVariable<Integer>("Number of height samples",
+                                                                                  6,
+                                                                                  0,
+                                                                                  Integer.MAX_VALUE);
 
   BoundedVariable<Integer> mDetectionArmVariable;
-
 
   private MultiKeyMap<Integer, PolynomialFunction> mHPFunctions;
 
@@ -54,7 +59,12 @@ public class CalibrationHP extends CalibrationPerLightSheetBase
   {
     super("HP", pCalibrator);
 
-    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
+    mDetectionArmVariable =
+                          new BoundedVariable<Integer>("Detection arm",
+                                                       0,
+                                                       0,
+                                                       pCalibrator.getLightSheetMicroscope()
+                                                                  .getNumberOfDetectionArms());
 
     mHPFunctions = new MultiKeyMap<>();
   }
@@ -117,10 +127,10 @@ public class CalibrationHP extends CalibrationPerLightSheetBase
       lPRList.add(lPowerRatio);
       lObservations.add(h, lPowerRatio);
 
-
       if (getCalibrationEngine().isStopRequested())
       {
-        setConfigurationState(pLightSheetIndex, ConfigurationState.CANCELLED);
+        setConfigurationState(pLightSheetIndex,
+                              ConfigurationState.CANCELLED);
         return Double.NaN;
       }
     }
@@ -374,7 +384,8 @@ public class CalibrationHP extends CalibrationPerLightSheetBase
     System.out.format("New HeightPower function: %s \n",
                       lCurrentHeightFunctionVariable.get());
 
-    setConfigurationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
+    setConfigurationState(pLightSheetIndex,
+                          ConfigurationState.SUCCEEDED);
 
     double lError = 0;
 
@@ -390,10 +401,11 @@ public class CalibrationHP extends CalibrationPerLightSheetBase
     super.reset();
     mHPFunctions.clear();
 
-    for (int i = 0; i < this.getLightSheetMicroscope().getNumberOfLightSheets(); i++) {
+    for (int i = 0; i < this.getLightSheetMicroscope()
+                            .getNumberOfLightSheets(); i++)
+    {
       setConfigurationState(i, ConfigurationState.UNINITIALIZED);
     }
   }
-
 
 }

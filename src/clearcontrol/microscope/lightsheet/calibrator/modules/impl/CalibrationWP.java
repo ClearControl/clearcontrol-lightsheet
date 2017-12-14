@@ -12,12 +12,11 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
-import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
@@ -37,9 +36,16 @@ public class CalibrationWP extends CalibrationPerLightSheetBase
                            implements CalibrationModuleInterface
 {
 
-  BoundedVariable<Integer> mNumberOfWSamplesVariable = new BoundedVariable<Integer>("Number of width samples", 6, 0, Integer.MAX_VALUE);
-  BoundedVariable<Integer> mNumberOfPSamplesVariable = new BoundedVariable<Integer>("Number of power samples", 6, 0, Integer.MAX_VALUE);
-
+  BoundedVariable<Integer> mNumberOfWSamplesVariable =
+                                                     new BoundedVariable<Integer>("Number of width samples",
+                                                                                  6,
+                                                                                  0,
+                                                                                  Integer.MAX_VALUE);
+  BoundedVariable<Integer> mNumberOfPSamplesVariable =
+                                                     new BoundedVariable<Integer>("Number of power samples",
+                                                                                  6,
+                                                                                  0,
+                                                                                  Integer.MAX_VALUE);
 
   BoundedVariable<Integer> mDetectionArmVariable;
 
@@ -55,11 +61,15 @@ public class CalibrationWP extends CalibrationPerLightSheetBase
   {
     super("WP", pCalibrator);
 
-    mDetectionArmVariable = new BoundedVariable<Integer>("Detection arm", 0, 0, pCalibrator.getLightSheetMicroscope().getNumberOfDetectionArms());
+    mDetectionArmVariable =
+                          new BoundedVariable<Integer>("Detection arm",
+                                                       0,
+                                                       0,
+                                                       pCalibrator.getLightSheetMicroscope()
+                                                                  .getNumberOfDetectionArms());
 
     mWPFunctions = new MultiKeyMap<>();
   }
-
 
   /**
    * Calibrates the lightsheet laser power versus its width
@@ -125,10 +135,10 @@ public class CalibrationWP extends CalibrationPerLightSheetBase
       lPRList.add(lPowerRatio);
       lObservations.add(w, lPowerRatio);
 
-
       if (getCalibrationEngine().isStopRequested())
       {
-        setConfigurationState(pLightSheetIndex, ConfigurationState.CANCELLED);
+        setConfigurationState(pLightSheetIndex,
+                              ConfigurationState.CANCELLED);
         return Double.NaN;
       }
     }
@@ -400,7 +410,8 @@ public class CalibrationWP extends CalibrationPerLightSheetBase
 
     double lError = 0;
 
-    setConfigurationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
+    setConfigurationState(pLightSheetIndex,
+                          ConfigurationState.SUCCEEDED);
 
     return lError;
   }
@@ -414,8 +425,12 @@ public class CalibrationWP extends CalibrationPerLightSheetBase
     super.reset();
     mWPFunctions.clear();
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < this.getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-      setConfigurationState(lLightSheetIndex, ConfigurationState.UNINITIALIZED);
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < this.getLightSheetMicroscope()
+                                                        .getNumberOfLightSheets(); lLightSheetIndex++)
+    {
+      setConfigurationState(lLightSheetIndex,
+                            ConfigurationState.UNINITIALIZED);
     }
   }
 

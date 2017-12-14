@@ -1,5 +1,7 @@
 package clearcontrol.microscope.lightsheet.calibrator.modules;
 
+import java.util.ArrayList;
+
 import clearcontrol.core.device.name.ReadOnlyNameableInterface;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -9,8 +11,6 @@ import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterfa
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationStateChangeListener;
 import clearcontrol.microscope.lightsheet.configurationstate.HasConfigurationState;
-
-import java.util.ArrayList;
 
 /**
  * Base class providing common fields and methods for all calibration modules
@@ -39,7 +39,8 @@ public abstract class CalibrationBase implements
    * @param pCalibrationEngine
    *          parent calibrator
    */
-  public CalibrationBase(String pName, CalibrationEngine pCalibrationEngine)
+  public CalibrationBase(String pName,
+                         CalibrationEngine pCalibrationEngine)
   {
     super();
     mName = pName;
@@ -123,16 +124,21 @@ public abstract class CalibrationBase implements
                                     .getNumberOfDevices(DetectionArmInterface.class);
   }
 
-  public String getName() {
+  public String getName()
+  {
     return mName;
   }
 
-  ConfigurationState mConfigurationState = ConfigurationState.UNINITIALIZED;
-  protected void resetState() {
+  ConfigurationState mConfigurationState =
+                                         ConfigurationState.UNINITIALIZED;
+
+  protected void resetState()
+  {
     mConfigurationState = ConfigurationState.UNINITIALIZED;
   }
 
-  protected void setConfigurationState(ConfigurationState pConfigurationState) {
+  protected void setConfigurationState(ConfigurationState pConfigurationState)
+  {
     mConfigurationState = pConfigurationState;
 
     // call listeners
@@ -143,24 +149,21 @@ public abstract class CalibrationBase implements
 
   }
 
-  public ConfigurationState getConfigurationState() {
+  public ConfigurationState getConfigurationState()
+  {
 
     return mConfigurationState;
   }
 
+  ArrayList<ConfigurationStateChangeListener> mConfigurationStateChangeListeners =
+                                                                                 new ArrayList<>();
 
-
-
-  ArrayList<ConfigurationStateChangeListener>
-      mConfigurationStateChangeListeners = new ArrayList<>();
-
-  public void addConfigurationStateChangeListener(ConfigurationStateChangeListener pConfigurationStateChangeListener) {
-    mConfigurationStateChangeListeners.add(
-        pConfigurationStateChangeListener);
+  public void addConfigurationStateChangeListener(ConfigurationStateChangeListener pConfigurationStateChangeListener)
+  {
+    mConfigurationStateChangeListeners.add(pConfigurationStateChangeListener);
 
     setConfigurationState(getConfigurationState());
 
   }
-
 
 }

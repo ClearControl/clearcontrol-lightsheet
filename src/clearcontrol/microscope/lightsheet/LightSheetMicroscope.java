@@ -64,8 +64,10 @@ public class LightSheetMicroscope extends
                                                32,
                                                32);
 
-
-    mLiveStatisticsProcessor = new LiveStatisticsProcessor("Live statistics processor", this, pStackFusionContext);
+    mLiveStatisticsProcessor =
+                             new LiveStatisticsProcessor("Live statistics processor",
+                                                         this,
+                                                         pStackFusionContext);
     addDevice(0, mLiveStatisticsProcessor);
     mStackProcessingPipeline.addStackProcessor(mLiveStatisticsProcessor,
                                                "LiveStatistics",
@@ -73,12 +75,10 @@ public class LightSheetMicroscope extends
                                                2);
 
     OfflineFastFusionEngine lOfflineFusionProcessor =
-        new OfflineFastFusionEngine("Offline Fusion",
-                                    this,
-                                    pStackFusionContext);
+                                                    new OfflineFastFusionEngine("Offline Fusion",
+                                                                                this,
+                                                                                pStackFusionContext);
     addDevice(0, lOfflineFusionProcessor);
-
-
 
   }
 

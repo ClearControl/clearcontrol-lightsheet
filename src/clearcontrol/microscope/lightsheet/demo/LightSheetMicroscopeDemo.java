@@ -4,8 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
-import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -32,6 +30,7 @@ import clearcontrol.devices.signalgen.devices.sim.SignalGeneratorSimulatorDevice
 import clearcontrol.devices.stages.StageType;
 import clearcontrol.devices.stages.devices.sim.StageDeviceSimulator;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
@@ -325,7 +324,8 @@ public class LightSheetMicroscopeDemo extends Application implements
                                                      new InterpolatedAcquisitionState("default",
                                                                                       lLightSheetMicroscope);
       lAcquisitionState.getImageWidthVariable().set(lImageResolution);
-      lAcquisitionState.getImageHeightVariable().set(lImageResolution);
+      lAcquisitionState.getImageHeightVariable()
+                       .set(lImageResolution);
 
       lAcquisitionState.setupControlPlanes(lNumberOfControlPlanes,
                                            ControlPlaneLayout.Circular);
@@ -334,15 +334,15 @@ public class LightSheetMicroscopeDemo extends Application implements
 
       // Adding adaptive engine device:
       {
-        AdaptationStateEngine.setup(lLightSheetMicroscope, lAcquisitionState);
+        AdaptationStateEngine.setup(lLightSheetMicroscope,
+                                    lAcquisitionState);
       }
 
       // Adding calibrator:
 
       CalibrationEngine lCalibrator =
-          lLightSheetMicroscope.addCalibrator();
+                                    lLightSheetMicroscope.addCalibrator();
       lCalibrator.load();
-
 
       // Adding timelapse device:
 
@@ -351,11 +351,10 @@ public class LightSheetMicroscopeDemo extends Application implements
 
       lTimelapse.addFileStackSinkType(RawFileStackSink.class);
 
-      EDFImagingEngine
-          lEDFImagingEngine = new EDFImagingEngine(lSimulationGPUDevice.createContext(), lLightSheetMicroscope);
+      EDFImagingEngine lEDFImagingEngine =
+                                         new EDFImagingEngine(lSimulationGPUDevice.createContext(),
+                                                              lLightSheetMicroscope);
       lLightSheetMicroscope.addDevice(0, lEDFImagingEngine);
-
-
 
       // Now that the microscope has been setup, we can connect the simulator to
       // it:
@@ -447,9 +446,7 @@ public class LightSheetMicroscopeDemo extends Application implements
 
     executeAsynchronously(lRunnable);
 
-
   }
-
 
   /**
    * Main
