@@ -1,5 +1,7 @@
 package clearcontrol.microscope.lightsheet.gui;
 
+import clearcontrol.deformablemirrors.DeformableMirrorDevice;
+import clearcontrol.deformablemirrors.gui.DeformableMirrorPanel;
 import clearcontrol.devices.optomech.filterwheels.devices.fli.FLIFilterWheelDevice;
 import clearcontrol.devices.optomech.filterwheels.gui.jfx.FilterWheelDevicePanel;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
@@ -143,6 +145,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 
     addPanelMappingEntry(FLIFilterWheelDevice.class,
                          FilterWheelDevicePanel.class,
+                         MicroscopeNodeType.FilterWheel);
+
+    addPanelMappingEntry(DeformableMirrorDevice.class,
+                         DeformableMirrorPanel.class,
                          MicroscopeNodeType.FilterWheel);
   }
 
