@@ -86,31 +86,32 @@ public class AdaptationStateEnginePanel extends CustomGridPane
     GridPane.setRowSpan(lCustomGridPane, 2);
     add(lCustomGridPane, 1, 0);
 
-    add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(0)),
-        2,
-        1);
-    if (mLightSheetMicroscope.getNumberOfLightSheets() > 0)
-    {
-      add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(1)),
-          2,
-          0);
-    }
-    if (mLightSheetMicroscope.getNumberOfLightSheets() > 1)
-    {
-      add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(2)),
-          0,
-          0);
-    }
-    if (mLightSheetMicroscope.getNumberOfLightSheets() > 2)
-    {
-      add(buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(3)),
-          0,
-          1);
-    }
+    buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(0),
+                         2,
+                         1);
+
+    buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(1),
+                         2,
+                         0);
+
+    buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(2),
+                         0,
+                         0);
+
+    buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(3),
+                         0,
+                         1);
+
   }
 
-  private TitledPane buildLightSheetPanel(LightSheetInterface pLightSheetInterface)
+  private void buildLightSheetPanel(LightSheetInterface pLightSheetInterface,
+                                    int pColumnIndex,
+                                    int pRowIndex)
   {
+    if (pLightSheetInterface == null)
+    {
+      return;
+    }
 
     CustomGridPane lCustomGridPane = new CustomGridPane();
 
@@ -163,7 +164,7 @@ public class AdaptationStateEnginePanel extends CustomGridPane
     lTitledPane.setAnimated(false);
     lTitledPane.setExpanded(true);
     // GridPane.setColumnSpan(lTitledPane, 3);
-    return lTitledPane;
+    add(lTitledPane, pColumnIndex, pRowIndex);
   }
 
   private VariableLabel buildVariableLabel(String name,

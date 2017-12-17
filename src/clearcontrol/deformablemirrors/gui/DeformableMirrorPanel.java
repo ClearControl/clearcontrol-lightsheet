@@ -2,11 +2,11 @@ package clearcontrol.deformablemirrors.gui;
 
 import javafx.application.Platform;
 
+import clearcontrol.core.device.position.gui.PositionDevicePanel;
 import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.deformablemirrors.DeformableMirrorDevice;
 import clearcontrol.devices.slm.slms.devices.alpao.AlpaoDMDevice;
-import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
 
 import org.ejml.data.DenseMatrix64F;
@@ -15,13 +15,13 @@ import org.ejml.data.DenseMatrix64F;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) December 2017
  */
-public class DeformableMirrorPanel extends CustomGridPane
+public class DeformableMirrorPanel extends PositionDevicePanel
 {
   DeformableMirrorDevice mDeformableMirrorDevice;
 
   public DeformableMirrorPanel(DeformableMirrorDevice pDeformableMirrorDevice)
   {
-    super();
+    super(pDeformableMirrorDevice);
 
     mDeformableMirrorDevice = pDeformableMirrorDevice;
 

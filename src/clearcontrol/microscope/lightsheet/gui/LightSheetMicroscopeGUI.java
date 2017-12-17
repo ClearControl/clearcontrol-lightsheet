@@ -2,6 +2,8 @@ package clearcontrol.microscope.lightsheet.gui;
 
 import javafx.stage.Stage;
 
+import clearcontrol.anything.AnythingDevice;
+import clearcontrol.anything.gui.AnythingPanel;
 import clearcontrol.deformablemirrors.DeformableMirrorDevice;
 import clearcontrol.deformablemirrors.gui.DeformableMirrorPanel;
 import clearcontrol.devices.optomech.filterwheels.devices.fli.FLIFilterWheelDevice;
@@ -149,6 +151,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 
     addPanelMappingEntry(DeformableMirrorDevice.class,
                          DeformableMirrorPanel.class,
+                         MicroscopeNodeType.FilterWheel);
+
+    addPanelMappingEntry(AnythingDevice.class,
+                         AnythingPanel.class,
                          MicroscopeNodeType.FilterWheel);
   }
 
