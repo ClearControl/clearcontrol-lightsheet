@@ -1,13 +1,11 @@
-package clearcontrol.deformablemirrors.gui;
+package clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx;
 
 import javafx.application.Platform;
 
-import clearcontrol.core.device.position.gui.PositionDevicePanel;
 import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.deformablemirrors.DeformableMirrorDevice;
-import clearcontrol.devices.slm.slms.devices.alpao.AlpaoDMDevice;
-import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
+import clearcontrol.gui.jfx.var.customvarpanel.CustomVariablePane;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.DeformableMirrorDevice;
 
 import org.ejml.data.DenseMatrix64F;
 
@@ -15,21 +13,20 @@ import org.ejml.data.DenseMatrix64F;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) December 2017
  */
-public class DeformableMirrorPanel extends PositionDevicePanel
+public class DeformableMirrorPanel extends CustomVariablePane
 {
   DeformableMirrorDevice mDeformableMirrorDevice;
 
   public DeformableMirrorPanel(DeformableMirrorDevice pDeformableMirrorDevice)
   {
-    super(pDeformableMirrorDevice);
+    super();
+    addTab("");
 
     mDeformableMirrorDevice = pDeformableMirrorDevice;
 
-    AlpaoDMDevice lAlpaoDMDevice =
-                                 mDeformableMirrorDevice.getAlpaoDMDevice();
     DenseMatrix64F lMatrixReference =
-                                    lAlpaoDMDevice.getMatrixReference()
-                                                  .get();
+                                    mDeformableMirrorDevice.getMatrixReference()
+                                                           .get();
 
     int count = 0;
     for (int x = 0; x < lMatrixReference.numCols; x++)
@@ -61,13 +58,16 @@ public class DeformableMirrorPanel extends PositionDevicePanel
           }
         });
 
+        addNumberTextFieldForVariable("", lMatrixElementVariable);
+        /*
         NumberVariableTextField<Double> lField =
                                                new NumberVariableTextField<Double>(lMatrixElementVariable.getName(),
                                                                                    lMatrixElementVariable,
                                                                                    lMatrixElementVariable.getMin(),
                                                                                    lMatrixElementVariable.getMax(),
                                                                                    lMatrixElementVariable.getGranularity());
-        this.add(lField.getTextField(), x, y);
+        this.add(lField.getTextField(), x, y);*/
+
       }
     }
   }
