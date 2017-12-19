@@ -17,16 +17,17 @@ public class CacheStackTask extends TaskBase implements TaskInterface
 
   private Handler mTimeStepHandler;
   private final String mSrcImageSlotKey;
-  private float mStartTime;
-  private float mLastTime;
+  private final long mStartTime;
+  private long mLastTime;
 
   public CacheStackTask(String pSrcImageSlotKey,
                         Handler pTimeStepHandler)
   {
+    super(pSrcImageSlotKey);
     mTimeStepHandler = pTimeStepHandler;
     mSrcImageSlotKey = pSrcImageSlotKey;
-    // one way to track time
     mStartTime = System.currentTimeMillis();
+    mLastTime = 0;
   }
 
   @Override
@@ -39,20 +40,33 @@ public class CacheStackTask extends TaskBase implements TaskInterface
     {
       System.out.println(Key);
     }
+
+    // read out time and measure time step
+
+    // measure total time since start of application
+    long pRunTime = System.currentTimeMillis() - mStartTime;
+
+    // compute step till last run
+    long pStep = pRunTime - mLastTime;
+
+    System.out.println("time is: " + pRunTime
+                       + " and Step is: "
+                       + pStep);
+
+    // set LastTime for next run
+    mLastTime = pRunTime;
+
     if (pFastFusionEngine.isImageAvailable(mSrcImageSlotKey))
     {
       System.out.println(mSrcImageSlotKey
                          + " is being cached and processed");
-      // TODO we need a measure of runtime overall
-      float pTime = System.currentTimeMillis() - mStartTime;
-      float pStep = pTime - mLastTime;
 
       ClearCLImage CurrImage =
                              pFastFusionEngine.getImage(mSrcImageSlotKey);
-      mTimeStepHandler.processImage(CurrImage, pTime, pStep);
+      mTimeStepHandler.processImage(CurrImage,
+                                    (float) pRunTime,
+                                    (float) pStep);
       System.out.println("computed step would be: " + pStep);
-
-      mLastTime = pTime;
     }
     else
     {
