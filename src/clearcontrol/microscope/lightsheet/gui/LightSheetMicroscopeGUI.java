@@ -2,8 +2,8 @@ package clearcontrol.microscope.lightsheet.gui;
 
 import javafx.stage.Stage;
 
-import clearcontrol.deformablemirrors.DeformableMirrorDevice;
-import clearcontrol.deformablemirrors.gui.DeformableMirrorPanel;
+import clearcontrol.anything.AnythingDevice;
+import clearcontrol.anything.gui.AnythingPanel;
 import clearcontrol.devices.optomech.filterwheels.devices.fli.FLIFilterWheelDevice;
 import clearcontrol.devices.optomech.filterwheels.gui.jfx.FilterWheelDevicePanel;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
@@ -33,6 +33,8 @@ import clearcontrol.microscope.lightsheet.processor.gui.LightSheetFastFusionProc
 import clearcontrol.microscope.lightsheet.processor.gui.OfflineFastFusionPanel;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.signalgen.gui.LightSheetSignalGeneratorPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.DeformableMirrorPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.DeformableMirrorDevice;
 import clearcontrol.microscope.lightsheet.state.gui.AcquisitionStateManagerPanel;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.gui.LightSheetTimelapseToolbar;
@@ -149,6 +151,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 
     addPanelMappingEntry(DeformableMirrorDevice.class,
                          DeformableMirrorPanel.class,
+                         MicroscopeNodeType.FilterWheel);
+
+    addPanelMappingEntry(AnythingDevice.class,
+                         AnythingPanel.class,
                          MicroscopeNodeType.FilterWheel);
   }
 

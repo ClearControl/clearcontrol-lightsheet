@@ -19,6 +19,7 @@ public class AdaptationPPanel extends CustomVariablePane
   public AdaptationPPanel(AdaptationP pAdaptationP)
   {
     super();
+    addTab("");
 
     addNumberTextFieldForVariable(pAdaptationP.getTargetLaserPowerVariable()
                                               .getName(),
@@ -29,6 +30,7 @@ public class AdaptationPPanel extends CustomVariablePane
                                               .getMax(),
                                   pAdaptationP.getTargetLaserPowerVariable()
                                               .getGranularity());
+
   }
 
 }
