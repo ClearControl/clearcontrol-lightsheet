@@ -92,8 +92,8 @@ dependencies
 
     // ClearControl:
     compile ('net.clearcontrol:clearcontrol:0.12.0-RH')      {transitive= true; changing= true}
-    compile 'pl.edu.icm:JLargeArrays:1.3-RH'
-    compile 'com.github.wendykierp:JTransforms:3.1.2-RH'
+    compile 'pl.edu.icm:jlargearrays:1.3-RH'
+    compile 'com.github.wendykierp:jtransforms:3.1.2-RH'
 }
 
 
@@ -111,6 +111,7 @@ repositories
     maven { url  "http://maven.imagej.net/content/repositories/releases" }
     maven { url  "http://maven.imagej.net/content/repositories/snapshots" }
     maven { url  "http://dl.bintray.com/clearcontrol/ClearControl"  }
+    maven { url "http://dl.bintray.com/haesleinhuepf/snapshots" }
 
     //bio formats
     maven { url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases" }
