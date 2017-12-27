@@ -1,13 +1,13 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.demo;
 
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.DeformableMirrorDevice;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
 public class DeformableMirrorDeviceDemoHelper
 {
-  public static void sweepModes(final DeformableMirrorDevice pDeformableMirrorDevice,
+  public static void sweepModes(final SpatialPhaseModulatorDeviceInterface pAbstractDeformableMirrorDevice,
                                 final DenseMatrix64F pTransformMatrix)
   {
     final DenseMatrix64F lInputVector = new DenseMatrix64F(64, 1);
@@ -28,8 +28,8 @@ public class DeformableMirrorDeviceDemoHelper
           CommonOps.mult(pTransformMatrix,
                          lInputVector,
                          lShapeVector);
-          pDeformableMirrorDevice.getMatrixReference()
-                                 .set(lShapeVector);
+          pAbstractDeformableMirrorDevice.getMatrixReference()
+                                         .set(lShapeVector);
           try
           {
             Thread.sleep(100);
@@ -40,7 +40,7 @@ public class DeformableMirrorDeviceDemoHelper
         }
   }
 
-  public static void playRandomShapes(final DeformableMirrorDevice pDeformableMirrorDevice,
+  public static void playRandomShapes(final SpatialPhaseModulatorDeviceInterface pAbstractDeformableMirrorDevice,
                                       final DenseMatrix64F pTransformMatrix,
                                       int pNumberOfShapes)
   {
@@ -51,7 +51,8 @@ public class DeformableMirrorDeviceDemoHelper
     {
       generateRandomVector(lInputVector, 0.1);
       CommonOps.mult(pTransformMatrix, lInputVector, lShapeVector);
-      pDeformableMirrorDevice.getMatrixReference().set(lShapeVector);
+      pAbstractDeformableMirrorDevice.getMatrixReference()
+                                     .set(lShapeVector);
     }
   }
 

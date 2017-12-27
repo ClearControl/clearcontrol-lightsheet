@@ -19,7 +19,13 @@ public class SpatialPhaseModulatorDeviceSimulator extends
                                               int pActuatorResolution)
   {
     super(pDeviceName, pFullMatrixWidthHeight, pActuatorResolution);
-    mMatrixVariable = new Variable<DenseMatrix64F>("MatrixReference")
+    DenseMatrix64F lMatrix = null;
+    if (mMatrixVariable != null)
+    {
+      lMatrix = mMatrixVariable.get();
+    }
+    mMatrixVariable = new Variable<DenseMatrix64F>("MatrixReference",
+                                                   lMatrix)
     {
       @Override
       public DenseMatrix64F setEventHook(final DenseMatrix64F pOldValue,

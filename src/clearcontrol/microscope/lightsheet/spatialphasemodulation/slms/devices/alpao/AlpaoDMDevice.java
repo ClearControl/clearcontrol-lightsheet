@@ -4,11 +4,11 @@ import asdk.AlpaoDeformableMirror;
 import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.DeformableMirrorDevice;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 
 import org.ejml.data.DenseMatrix64F;
 
-public class AlpaoDMDevice extends DeformableMirrorDevice
+public class AlpaoDMDevice extends SpatialPhaseModulatorDeviceBase
                            implements LoggingFeature
 {
   private static final int cFullMatrixWidthHeight = 11;
@@ -34,7 +34,14 @@ public class AlpaoDMDevice extends DeformableMirrorDevice
     mAlpaoDeformableMirror =
                            new AlpaoDeformableMirror(pAlpaoSerialName);
 
-    mMatrixVariable = new Variable<DenseMatrix64F>("MatrixReference")
+    DenseMatrix64F lMatrix = null;
+    if (mMatrixVariable != null)
+    {
+      lMatrix = mMatrixVariable.get();
+    }
+    mMatrixVariable = new Variable<DenseMatrix64F>("MatrixReference",
+                                                   lMatrix)
+    // mMatrixVariable = new Variable<DenseMatrix64F>("MatrixReference")
     {
       @Override
       public DenseMatrix64F setEventHook(final DenseMatrix64F pOldValue,

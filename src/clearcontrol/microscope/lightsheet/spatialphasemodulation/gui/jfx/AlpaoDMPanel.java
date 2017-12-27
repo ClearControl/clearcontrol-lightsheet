@@ -11,7 +11,7 @@ import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.alpao.AlpaoDMDevice;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
@@ -20,12 +20,12 @@ import org.ejml.ops.CommonOps;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) December 2017
  */
-public class DeformableMirrorPanel extends CustomGridPane
-                                   implements LoggingFeature
+public class AlpaoDMPanel extends CustomGridPane
+                          implements LoggingFeature
 {
-  SpatialPhaseModulatorDeviceBase mSpatialPhaseModulatorDevice;
+  AlpaoDMDevice mSpatialPhaseModulatorDevice;
 
-  public DeformableMirrorPanel(SpatialPhaseModulatorDeviceBase pAbstractDeformableMirrorDevice)
+  public AlpaoDMPanel(AlpaoDMDevice pAbstractDeformableMirrorDevice)
   {
     super();
 
@@ -34,6 +34,7 @@ public class DeformableMirrorPanel extends CustomGridPane
     DenseMatrix64F lMatrixReference =
                                     mSpatialPhaseModulatorDevice.getMatrixReference()
                                                                 .get();
+    System.out.println("Matrix GET to " + lMatrixReference);
 
     BoundedVariable<Double>[][] lVariableMatrix =
                                                 new BoundedVariable[lMatrixReference.numCols][lMatrixReference.numRows];

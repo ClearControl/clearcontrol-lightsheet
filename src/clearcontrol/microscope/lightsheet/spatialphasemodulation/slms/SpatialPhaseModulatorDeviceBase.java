@@ -34,6 +34,14 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
                                 new Variable<Double>("ActuatorResolution",
                                                      (double) pActuatorResolution);
 
+    mMatrixVariable =
+                    new Variable<DenseMatrix64F>("Matrix",
+                                                 new DenseMatrix64F(pFullMatrixWidthHeight,
+                                                                    pFullMatrixWidthHeight,
+                                                                    true,
+                                                                    new double[pFullMatrixWidthHeight
+                                                                               * pFullMatrixWidthHeight]));
+    System.out.println("Matrix SET to " + mMatrixVariable.get());
   }
 
   @Override
