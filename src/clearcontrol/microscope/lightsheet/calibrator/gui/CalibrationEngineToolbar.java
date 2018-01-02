@@ -139,6 +139,11 @@ public class CalibrationEngineToolbar extends CustomGridPane
                                       0,
                                       lRow);
 
+      addCheckBoxForCalibrationModule("ZwS* ",
+                                      pCalibrationEngine.getCalibrateZWithSampleVariable(),
+                                      1,
+                                      lRow);
+
       lRow++;
     }
 

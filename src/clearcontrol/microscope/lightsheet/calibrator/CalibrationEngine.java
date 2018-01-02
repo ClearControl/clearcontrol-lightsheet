@@ -11,13 +11,7 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
-import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationA;
-import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationHP;
-import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationP;
-import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationW;
-import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationWP;
-import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationXY;
-import clearcontrol.microscope.lightsheet.calibrator.modules.impl.CalibrationZ;
+import clearcontrol.microscope.lightsheet.calibrator.modules.impl.*;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.scripting.engine.ScriptingEngine;
@@ -40,6 +34,7 @@ public class CalibrationEngine extends TaskDevice implements
 
   private final LightSheetMicroscope mLightSheetMicroscope;
   private CalibrationZ mCalibrationZ;
+  private CalibrationZWithSample mCalibrationZWithSample;
   private CalibrationA mCalibrationA;
   private CalibrationXY mCalibrationXY;
   private CalibrationP mCalibrationP;
@@ -59,6 +54,10 @@ public class CalibrationEngine extends TaskDevice implements
   private final Variable<Boolean> mCalibrateZVariable =
                                                       new Variable<Boolean>("CalibrateZ",
                                                                             true);
+  private final Variable<Boolean> mCalibrateZWithSampleVariable =
+                                                                new Variable<Boolean>("CalibrateZWithSample",
+                                                                                      false);
+
   private final Variable<Boolean> mCalibrateAVariable =
                                                       new Variable<Boolean>("CalibrateA",
                                                                             false);
@@ -98,6 +97,7 @@ public class CalibrationEngine extends TaskDevice implements
 
     mLightSheetMicroscope = pLightSheetMicroscope;
     mCalibrationZ = new CalibrationZ(this);
+    mCalibrationZWithSample = new CalibrationZWithSample(this);
     mCalibrationA = new CalibrationA(this);
     mCalibrationXY = new CalibrationXY(this);
     mCalibrationP = new CalibrationP(this);
@@ -346,6 +346,7 @@ public class CalibrationEngine extends TaskDevice implements
   public void reset()
   {
     mCalibrationZ.reset();
+    mCalibrationZWithSample.reset();
     mCalibrationA.reset();
     mCalibrationXY.reset();
     mCalibrationP.reset();
@@ -527,6 +528,7 @@ public class CalibrationEngine extends TaskDevice implements
     ArrayList<CalibrationModuleInterface> lModuleList =
                                                       new ArrayList<>();
     lModuleList.add(mCalibrationZ);
+    lModuleList.add(mCalibrationZWithSample);
     lModuleList.add(mCalibrationA);
     lModuleList.add(mCalibrationP);
     lModuleList.add(mCalibrationW);
@@ -544,6 +546,16 @@ public class CalibrationEngine extends TaskDevice implements
   public Variable<Boolean> getCalibrateZVariable()
   {
     return mCalibrateZVariable;
+  }
+
+  /**
+   * Returns the variable holding the 'calibrate Z' boolean flag.
+   *
+   * @return calibrate Z variable
+   */
+  public Variable<Boolean> getCalibrateZWithSampleVariable()
+  {
+    return mCalibrateZWithSampleVariable;
   }
 
   /**
