@@ -8,11 +8,11 @@ import mirao52e.Mirao52eDeformableMirror;
 import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.AbstractDeformableMirrorDevice;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 
 import org.ejml.data.DenseMatrix64F;
 
-public class Mirao52EDevice extends AbstractDeformableMirrorDevice
+public class Mirao52EDevice extends SpatialPhaseModulatorDeviceBase
                             implements LoggingFeature
 {
   private static final int cFullMatrixWidthHeight = 8;
