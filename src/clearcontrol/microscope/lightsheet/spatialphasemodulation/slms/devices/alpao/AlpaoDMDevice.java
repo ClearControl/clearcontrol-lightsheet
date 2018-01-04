@@ -48,6 +48,7 @@ public class AlpaoDMDevice extends SpatialPhaseModulatorDeviceBase
                                          final DenseMatrix64F pNewValue)
       {
 
+        info("Setting the dm device");
         mAlpaoDeformableMirror.sendFullMatrixMirrorShapeVector(pNewValue.data);
 
         return super.setEventHook(pOldValue, pNewValue);
@@ -89,6 +90,7 @@ public class AlpaoDMDevice extends SpatialPhaseModulatorDeviceBase
   @Override
   public void zero()
   {
+    info("calling zero!");
     mAlpaoDeformableMirror.sendFlatMirrorShapeVector();
   }
 

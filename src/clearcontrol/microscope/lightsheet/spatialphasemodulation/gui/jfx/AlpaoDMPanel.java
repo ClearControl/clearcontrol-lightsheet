@@ -87,6 +87,7 @@ public class AlpaoDMPanel extends CustomGridPane
       DenseMatrix64F lMatrix =
                              mSpatialPhaseModulatorDevice.getMatrixReference()
                                                          .get();
+      info("Asking to set the dm device to given values");
       mSpatialPhaseModulatorDevice.getMatrixReference().set(lMatrix);
 
     });
@@ -94,6 +95,7 @@ public class AlpaoDMPanel extends CustomGridPane
 
     Button lZeroButton = new Button("Reset");
     lZeroButton.setOnAction((actionEvent) -> {
+      info("Asking to zero the dm device");
       mSpatialPhaseModulatorDevice.zero();
     });
     this.add(lZeroButton, lMatrixReference.numCols, 1);
