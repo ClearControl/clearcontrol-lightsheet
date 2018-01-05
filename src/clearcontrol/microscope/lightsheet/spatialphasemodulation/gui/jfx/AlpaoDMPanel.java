@@ -1,8 +1,5 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx;
 
-import static clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices.computeZernickeTransformMatrix;
-
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialMatrix;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
@@ -13,9 +10,9 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.alpao.AlpaoDMDevice;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialMatrix;
 
 import org.ejml.data.DenseMatrix64F;
-import org.ejml.ops.CommonOps;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
@@ -138,7 +135,7 @@ public class AlpaoDMPanel extends CustomGridPane
     this.add(lNField.getTextField(), 1, lRow);
     lRow++;
 
-   /* DenseMatrix64F lFullMatrix =
+    /* DenseMatrix64F lFullMatrix =
                                computeZernickeTransformMatrix(lMatrixReference.numRows);
     lFullMatrix.print();*/
 
@@ -148,27 +145,33 @@ public class AlpaoDMPanel extends CustomGridPane
       /*final DenseMatrix64F lInputVector =
                                         new DenseMatrix64F(lFullMatrix.numRows,
                                                            1);
-
+      
       final DenseMatrix64F lShapeVector =
                                         new DenseMatrix64F(lFullMatrix.numRows,
                                                            1);*/
-/*
+      /*
       lInputVector.set(lMVariable.get()
                        + lMatrixReference.numCols * lNVariable.get(),
                        1);*/
 
-      //CommonOps.mult(lFullMatrix, lInputVector, lShapeVector);
+      // CommonOps.mult(lFullMatrix, lInputVector, lShapeVector);
 
-      ZernikePolynomialMatrix lZernikePolynomialMatrix = new ZernikePolynomialMatrix(lMatrixReference.numCols, lMatrixReference.numRows, lMVariable.get(), lNVariable.get());
+      ZernikePolynomialMatrix lZernikePolynomialMatrix =
+                                                       new ZernikePolynomialMatrix(lMatrixReference.numCols,
+                                                                                   lMatrixReference.numRows,
+                                                                                   lMVariable.get(),
+                                                                                   lNVariable.get());
 
       for (int x = 0; x < lMatrixReference.numCols; x++)
       {
         for (int y = 0; y < lMatrixReference.numRows; y++)
         {
-          double lZernikeValue = lZernikePolynomialMatrix.get(x,y);/* lFullMatrix.get(
-                                                 y
-                                                 * lMatrixReference.numCols
-                                                 + x);*/
+          double lZernikeValue =
+                               lZernikePolynomialMatrix.get(x,
+                                                            y);/* lFullMatrix.get(
+                                                               y
+                                                               * lMatrixReference.numCols
+                                                               + x);*/
           // ZernikePolynomials.computeZnmxy(lNVariable.get(), lMVariable.get(),
           // x - centerX, y - centerY);
           lVariableMatrix[x][y].set(lZernikeValue);

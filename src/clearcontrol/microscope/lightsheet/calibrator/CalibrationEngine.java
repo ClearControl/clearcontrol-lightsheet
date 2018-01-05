@@ -181,8 +181,8 @@ public class CalibrationEngine extends TaskDevice implements
     if (isStopRequested())
       return false;/**/
 
-
-    if (getCalibrateZWithSampleVariable().get() && !calibrateZWithSample())
+    if (getCalibrateZWithSampleVariable().get()
+        && !calibrateZWithSample())
       return false;
 
     if (isStopRequested())
@@ -243,7 +243,7 @@ public class CalibrationEngine extends TaskDevice implements
   public boolean calibrateZ()
   {
     for (int l = 0; l < mNumberOfLightSheetDevices
-            && !isStopRequested(); l++)
+                    && !isStopRequested(); l++)
     {
       if (getCalibrateLightSheetOnOff(l).get())
       {
@@ -254,7 +254,6 @@ public class CalibrationEngine extends TaskDevice implements
     return true;
   }
 
-
   /**
    * Calibrates the lightsheet and detection arm Z positions.
    *
@@ -263,7 +262,7 @@ public class CalibrationEngine extends TaskDevice implements
   public boolean calibrateZWithSample()
   {
     for (int l = 0; l < mNumberOfLightSheetDevices
-            && !isStopRequested(); l++)
+                    && !isStopRequested(); l++)
     {
       if (getCalibrateLightSheetOnOff(l).get())
       {
