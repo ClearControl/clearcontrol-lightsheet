@@ -79,7 +79,7 @@ public class AlpaoDMPanel extends CustomGridPane
       }
     }
 
-    Button lExecuteButton = new Button("Zero");
+    Button lExecuteButton = new Button("Execute");
     lExecuteButton.setOnAction((actionEvent) -> {
 
       DenseMatrix64F lMatrix =
@@ -91,7 +91,7 @@ public class AlpaoDMPanel extends CustomGridPane
     });
     this.add(lExecuteButton, lMatrixReference.numCols, 0);
 
-    Button lZeroButton = new Button("Reset");
+    Button lZeroButton = new Button("Zero");
     lZeroButton.setOnAction((actionEvent) -> {
       info("Asking to zero the dm device");
       mSpatialPhaseModulatorDevice.zero();

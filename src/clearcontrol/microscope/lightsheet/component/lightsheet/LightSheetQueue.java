@@ -4,7 +4,8 @@ import clearcontrol.core.device.queue.QueueInterface;
 import clearcontrol.core.device.queue.VariableQueueBase;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.microscope.lightsheet.component.lightsheet.si.BinaryStructuredIlluminationPattern;
+import clearcontrol.devices.signalgen.staves.SteppingFunction;
+import clearcontrol.microscope.lightsheet.component.lightsheet.si.ClosureStructuredIlluminationPattern;
 import clearcontrol.microscope.lightsheet.component.lightsheet.si.StructuredIlluminationPatternInterface;
 
 /**
@@ -131,7 +132,16 @@ public class LightSheetQueue extends VariableQueueBase implements
 
       mSIPatternVariableArray[i] =
                                  new Variable<StructuredIlluminationPatternInterface>("StructuredIlluminationPattern",
-                                                                                      new BinaryStructuredIlluminationPattern());
+                                                                                      new ClosureStructuredIlluminationPattern(new SteppingFunction()
+                                                                                      {
+                                                                                        @Override
+                                                                                        public float function(int pIndex)
+                                                                                        {
+                                                                                          return pIndex
+                                                                                                 % 2;
+                                                                                        }
+                                                                                      },
+                                                                                                                               10));
 
       mLaserOnOffVariableArray[i] = new Variable<Boolean>(lLaserName,
                                                           false);
