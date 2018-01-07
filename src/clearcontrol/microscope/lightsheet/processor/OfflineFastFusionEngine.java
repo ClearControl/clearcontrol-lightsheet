@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.processor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -232,12 +233,10 @@ public class OfflineFastFusionEngine extends TaskDevice implements
                                                                                 10,
                                                                                 true);
 
-    RawFileStackSource rawFileStackSource =
-                                          new RawFileStackSource(stackRecycler);
-
     for (int timePoint =
                        getFirstTimePointToFuse().get(); timePoint <= getLastTimePointToFuse().get(); timePoint++)
     {
+
       if (isStopRequested())
       {
         break;
@@ -245,15 +244,21 @@ public class OfflineFastFusionEngine extends TaskDevice implements
 
       long lTimeMillis = System.currentTimeMillis();
 
+      ArrayList<StackInterface> stacks = new ArrayList<>();
       for (int i = 0; i < names.length; i++)
       {
         if (new File(lStackDirectory + names[i]).exists())
         {
+
+          RawFileStackSource rawFileStackSource =
+                                                new RawFileStackSource(stackRecycler);
           rawFileStackSource.setLocation(lRootFolder, lDatasetname);
           info("getting" + names[i]);
           StackInterface stack =
                                rawFileStackSource.getStack(names[i],
                                                            timePoint);
+
+          stacks.add(stack);
 
           info("Stack " + names[i]);
           mFastFusionEngine.passImage(names[i],
@@ -320,11 +325,34 @@ public class OfflineFastFusionEngine extends TaskDevice implements
       sink.appendStack(lFusedStack);
       sink.close();
 
+      for (StackInterface stack : stacks)
+      {
+        stackRecycler.release(stack);
+      }
+
+      // mFastFusionEngine.removeImage("fused-preliminary");
+      // mFastFusionEngine.removeImage("fused");
+
       mFastFusionEngine.reset(false);
+
+      for (String name : mFastFusionEngine.getAvailableImagesSlotKeys())
+      {
+        info("still image: " + name);
+      }
+
+      mFastFusionEngine.reset(true);
+
+      for (String name : mFastFusionEngine.getAvailableImagesSlotKeys())
+      {
+        info("still still image: " + name);
+      }
+
       info("Fusion of time point " + timePoint
            + " took "
            + ((System.currentTimeMillis() - lTimeMillis) / 1000)
            + " sec");
+
+      // stackRecycler.free();
     }
 
     return true;

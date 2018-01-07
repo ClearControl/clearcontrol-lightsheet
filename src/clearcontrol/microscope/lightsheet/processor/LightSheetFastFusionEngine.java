@@ -1,6 +1,5 @@
 package clearcontrol.microscope.lightsheet.processor;
 
-import java.io.IOException;
 import java.util.List;
 
 import clearcl.ClearCLContext;
@@ -10,7 +9,6 @@ import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
-import clearcontrol.microscope.lightsheet.timelapse.stepper.CacheStackTask;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
 import fastfuse.FastFusionEngine;
@@ -19,7 +17,6 @@ import fastfuse.FastFusionMemoryPool;
 import fastfuse.registration.AffineMatrix;
 import fastfuse.tasks.*;
 import fastfuse.tasks.DownsampleXYbyHalfTask.Type;
-import framework.Handler;
 
 /**
  * Lightsheet fast fusion engine
@@ -357,6 +354,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     // TODO here is the TimeStepper stuff
 
     // this.getFusedMetaData();
+    /*
     System.out.println("adding the stepper task now");
     try
     {
@@ -368,7 +366,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     catch (IOException e)
     {
       e.printStackTrace();
-    }
+    }*/
     // }
   }
 
