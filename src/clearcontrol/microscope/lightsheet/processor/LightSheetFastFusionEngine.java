@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.processor;
 
+import java.io.IOException;
 import java.util.List;
 
 import clearcl.ClearCLContext;
@@ -9,6 +10,7 @@ import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
+import clearcontrol.microscope.lightsheet.timelapse.stepper.CacheStackTask;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
 import fastfuse.FastFusionEngine;
@@ -17,6 +19,7 @@ import fastfuse.FastFusionMemoryPool;
 import fastfuse.registration.AffineMatrix;
 import fastfuse.tasks.*;
 import fastfuse.tasks.DownsampleXYbyHalfTask.Type;
+import framework.Handler;
 
 /**
  * Lightsheet fast fusion engine
@@ -52,6 +55,9 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                     MachineConfiguration.get()
                                                         .getDoubleProperty("fastfuse.memratio",
                                                                            0.8);
+
+
+  private boolean mTimeStepping = true;
 
   private StackMetaData mFusedStackMetaData = new StackMetaData();
 
@@ -354,19 +360,20 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     // TODO here is the TimeStepper stuff
 
     // this.getFusedMetaData();
-    /*
-    System.out.println("adding the stepper task now");
-    try
-    {
-      Handler lTimeStepHandler =
-                               new Handler(this.getContext(),
-                                           ImageChannelDataType.UnsignedInt16);
-      addTask(new CacheStackTask("fused", lTimeStepHandler));
+    if (mTimeStepping) {
+      System.out.println("adding the stepper task now");
+      try
+      {
+        Handler lTimeStepHandler =
+                                 new Handler(this.getContext(),
+                                             ImageChannelDataType.UnsignedInt16);
+        addTask(new CacheStackTask("fused", lTimeStepHandler));
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace();
+      }
     }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }*/
     // }
   }
 
@@ -867,5 +874,11 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
   {
     return mRegistrationTask;
   }
+
+  public void setTimeStepping(boolean mTimeStepping)
+  {
+    this.mTimeStepping = mTimeStepping;
+  }
+
 
 }

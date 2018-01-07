@@ -106,6 +106,7 @@ public class OfflineFastFusionEngine extends TaskDevice implements
                                                      null,
                                                      mLightSheetMicroscope.getNumberOfLightSheets(),
                                                      mLightSheetMicroscope.getNumberOfDetectionArms());
+    mFastFusionEngine.setTimeStepping(false);
   }
 
   @Override
