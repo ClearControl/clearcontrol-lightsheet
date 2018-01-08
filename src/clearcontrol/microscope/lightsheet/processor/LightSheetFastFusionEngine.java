@@ -361,7 +361,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
 
     // this.getFusedMetaData();
     if (mTimeStepping) {
-      System.out.println("adding the stepper task now");
+      /*System.out.println("adding the stepper task now");
       try
       {
         Handler lTimeStepHandler =
@@ -372,7 +372,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
       catch (IOException e)
       {
         e.printStackTrace();
-      }
+      }*/
     }
     // }
   }
