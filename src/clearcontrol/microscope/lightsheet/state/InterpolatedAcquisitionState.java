@@ -718,7 +718,7 @@ public class InterpolatedAcquisitionState extends
                      pPlaneIndex,
                      pLightSheetIndex));
     pQueue.setIW(pLightSheetIndex,
-                 pQueue.getIW(pLightSheetIndex) +
+                 pQueue.getIW(pLightSheetIndex) + // todo: This line may be removed in case a better solution, e.g. proper W-calibration is found
                  get(LightSheetDOF.IW,
                      pPlaneIndex,
                      pLightSheetIndex));
