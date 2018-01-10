@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.alpao;
 
 import asdk.AlpaoDeformableMirror;
+import asdk.TriggerMode;
 import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
@@ -33,6 +34,12 @@ public class AlpaoDMDevice extends SpatialPhaseModulatorDeviceBase
 
     mAlpaoDeformableMirror =
                            new AlpaoDeformableMirror(pAlpaoSerialName);
+    mAlpaoDeformableMirror.setDebugPrintout(true);
+
+
+
+
+
 
     DenseMatrix64F lMatrix = null;
     if (mMatrixVariable != null)
@@ -51,6 +58,9 @@ public class AlpaoDMDevice extends SpatialPhaseModulatorDeviceBase
         info("Setting the dm device");
         mAlpaoDeformableMirror.sendFullMatrixMirrorShapeVector(pNewValue.data);
 
+        info("Setting trigger disabled");
+        mAlpaoDeformableMirror.setInputTriggerMode(TriggerMode.Disabled);
+
         return super.setEventHook(pOldValue, pNewValue);
       }
 
@@ -67,6 +77,16 @@ public class AlpaoDMDevice extends SpatialPhaseModulatorDeviceBase
       mNumberOfActuatorsVariable =
                                  new Variable<Double>("NumberOfActuators",
                                                       (double) mAlpaoDeformableMirror.getNumberOfActuators());
+
+      mAlpaoDeformableMirror.setInputTriggerMode(TriggerMode.Disabled);
+
+      info("Setting ALPAO log level");
+      mAlpaoDeformableMirror.setLogPrintLevel(4);
+
+      info("Resetting ALPAO DM DACs");
+      mAlpaoDeformableMirror.resetDAC();
+
+
       return lOpen;
     }
     catch (final Throwable e)
