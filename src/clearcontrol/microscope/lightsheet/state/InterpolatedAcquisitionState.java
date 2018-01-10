@@ -718,6 +718,7 @@ public class InterpolatedAcquisitionState extends
                      pPlaneIndex,
                      pLightSheetIndex));
     pQueue.setIW(pLightSheetIndex,
+                 pQueue.getIW(pLightSheetIndex) +
                  get(LightSheetDOF.IW,
                      pPlaneIndex,
                      pLightSheetIndex));
