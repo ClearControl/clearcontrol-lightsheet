@@ -203,6 +203,16 @@ public class LightSheetTimelapse extends TimelapseBase implements
                                                             pLightSheetIndex + 1,
                                                             0,
                                                             lNumberOfLaserLines);
+
+    for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
+    {
+      info("Light sheet " + l + " W: " + lQueue.getIW(l));
+    }
+    for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
+    {
+      info("Light sheet " + l + " H: " + lQueue.getIH(l));
+    }
+
     lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
                             getTimePointCounterVariable().get());
 
