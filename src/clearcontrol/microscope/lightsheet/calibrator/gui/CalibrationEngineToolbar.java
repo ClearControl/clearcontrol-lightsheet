@@ -3,6 +3,8 @@ package clearcontrol.microscope.lightsheet.calibrator.gui;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -29,6 +31,9 @@ public class CalibrationEngineToolbar extends CustomGridPane
                                       implements LoggingFeature
 {
 
+  ComboBox lExistingCalibrationComboBox;
+  CalibrationEngine mCalibrationEngine;
+
   /**
    * Instanciates a calibration engine toolbar
    * 
@@ -38,6 +43,8 @@ public class CalibrationEngineToolbar extends CustomGridPane
   public CalibrationEngineToolbar(CalibrationEngine pCalibrationEngine)
   {
     super();
+
+    mCalibrationEngine = pCalibrationEngine;
     // this.setStyle("-fx-background-color: yellow;");
     // mGridPane.setStyle("-fx-border-color: blue;");
 
@@ -212,6 +219,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
         try
         {
           pCalibrationEngine.save();
+          lExistingCalibrationComboBox.setItems(listExistingCalibrationFiles());
         }
         catch (Exception e1)
         {
@@ -220,6 +228,8 @@ public class CalibrationEngineToolbar extends CustomGridPane
       });
       GridPane.setColumnSpan(lSaveCalibration, 1);
       add(lSaveCalibration, 0, lRow);
+
+
 
       Button lLoadCalibration = new Button("Load");
       lLoadCalibration.setAlignment(Pos.CENTER);
@@ -237,6 +247,8 @@ public class CalibrationEngineToolbar extends CustomGridPane
 
       GridPane.setColumnSpan(lLoadCalibration, 1);
       add(lLoadCalibration, 1, lRow);
+
+
 
       Button lResetAllCalibration = new Button("Reset all");
       lResetAllCalibration.setAlignment(Pos.CENTER);
@@ -266,6 +278,52 @@ public class CalibrationEngineToolbar extends CustomGridPane
 
       lRow++;
     }
+
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 3);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+
+
+    {
+      lExistingCalibrationComboBox = new ComboBox(listExistingCalibrationFiles());
+      //GridPane.setColumnSpan(lExistingCalibrationComboBox, 3);
+      add(lExistingCalibrationComboBox, 0, lRow);
+
+      Button lLoadCalibration = new Button("Load");
+      //lLoadCalibration.setAlignment(Pos.CENTER);
+      //lLoadCalibration.setMaxWidth(Double.MAX_VALUE);
+      lLoadCalibration.setOnAction((e) -> {
+        try
+        {
+          pCalibrationEngine.load();
+        }
+        catch (Exception e1)
+        {
+          e1.printStackTrace();
+        }
+      });
+
+      //GridPane.setColumnSpan(lLoadCalibration, 1);
+      add(lLoadCalibration, 1, lRow);
+      lRow++;
+
+    }
+
+
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 3);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+
 
     {
       TabPane lTabPane = new TabPane();
@@ -341,6 +399,15 @@ public class CalibrationEngineToolbar extends CustomGridPane
       lRow++;
     }
 
+  }
+
+  private ObservableList<String> listExistingCalibrationFiles()
+  {
+    ArrayList<String> filenames = mCalibrationEngine.getExistingCalibrationList();
+
+
+    ObservableList<String> list =     FXCollections.observableArrayList(filenames);
+    return list;
   }
 
   private void addCheckBoxForCalibrationModule(String pName,

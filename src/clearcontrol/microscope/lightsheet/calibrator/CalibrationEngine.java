@@ -16,7 +16,9 @@ import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterf
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.scripting.engine.ScriptingEngine;
 
+import net.imglib2.img.array.ArrayImgs;
 import org.ejml.simple.SimpleMatrix;
+import org.python.antlr.ast.Str;
 
 /**
  * Calibration engine
@@ -549,6 +551,22 @@ public class CalibrationEngine extends TaskDevice implements
     return new File(mCalibrationFolder, pName + ".json");
   }
 
+  public ArrayList<String> getExistingCalibrationList() {
+    ArrayList<String> fileList = new ArrayList<String>();
+    File folder = mCalibrationFolder;
+
+    for (File file : folder.listFiles()) {
+      if (!file.isDirectory() && file.getAbsolutePath().endsWith(".json")) {
+        String fileName = file.getName();
+        fileName = fileName.substring(0, fileName.length() - 5);
+
+        fileList.add(fileName);
+      }
+    }
+
+    return fileList;
+  }
+
   public ArrayList<CalibrationModuleInterface> getModuleList()
   {
     ArrayList<CalibrationModuleInterface> lModuleList =
@@ -687,5 +705,6 @@ public class CalibrationEngine extends TaskDevice implements
   {
     return getIsRunningVariable().get();
   }
+
 
 }
