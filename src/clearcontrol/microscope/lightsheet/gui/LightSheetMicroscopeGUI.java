@@ -155,9 +155,9 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          AlpaoDMPanel.class,
                          MicroscopeNodeType.AdaptiveOptics);
 
-    addPanelMappingEntry(SpatialPhaseModulatorDeviceBase.class,
-                         DeformableMirrorPanel.class,
-                         MicroscopeNodeType.AdaptiveOptics);
+    //addPanelMappingEntry(SpatialPhaseModulatorDeviceBase.class,
+    //                     DeformableMirrorPanel.class,
+    //                     MicroscopeNodeType.AdaptiveOptics);
 
     addPanelMappingEntry(AnythingDevice.class,
                          AnythingPanel.class,
