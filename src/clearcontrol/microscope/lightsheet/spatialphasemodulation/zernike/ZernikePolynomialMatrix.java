@@ -24,8 +24,14 @@ public class ZernikePolynomialMatrix implements LoggingFeature
 
   double squaredMaximumRadius;
 
+  int width;
+  int height;
+
   public ZernikePolynomialMatrix(int width, int height, int m, int n)
   {
+    this.width = width;
+    this.height = height;
+
     if (width != height)
     {
       warning("Matrix width and height should be equal");
@@ -46,10 +52,11 @@ public class ZernikePolynomialMatrix implements LoggingFeature
 
   public double get(int x, int y)
   {
-    double radialDistanceSquared =
-                                 (Math.pow((double) x - centerX, 2)
-                                  + Math.pow((double) y - centerY, 2))
-                                   / squaredMaximumRadius;
+    double
+        radialDistanceSquared =
+        (Math.pow((double) x - centerX, 2) + Math.pow((double) y
+                                                      - centerY, 2))
+        / squaredMaximumRadius;
 
     double t = 0;
     t = Math.atan((y - centerY) / (x - centerX));
@@ -61,12 +68,26 @@ public class ZernikePolynomialMatrix implements LoggingFeature
 
     if (radialDistanceSquared <= 1)
     {
-      double pol = ZernikePolynomials.computeZnmr2t(n,
-                                                    m,
-                                                    radialDistanceSquared,
-                                                    t);
+      double
+          pol =
+          ZernikePolynomials.computeZnmr2t(n,
+                                           m,
+                                           radialDistanceSquared,
+                                           t);
       return pol;
     }
     return 0;
+  }
+
+  public double[][] getFullMatrix()
+  {
+    double[][] result = new double[width][height];
+
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+        result[x][y] = get(x, y);
+      }
+    }
+    return result;
   }
 }
