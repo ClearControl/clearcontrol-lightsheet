@@ -29,8 +29,7 @@ public class AlpaoDMPanel extends CustomGridPane
 
     mSpatialPhaseModulatorDevice = pAbstractDeformableMirrorDevice;
 
-    DenseMatrix64F lMatrixReference =
-                                    mSpatialPhaseModulatorDevice.getMatrixReference()
+    DenseMatrix64F lMatrixReference = mSpatialPhaseModulatorDevice.getMatrixReference()
                                                                 .get();
     System.out.println("Matrix GET to " + lMatrixReference);
 
@@ -43,6 +42,8 @@ public class AlpaoDMPanel extends CustomGridPane
       for (int y = 0; y < lMatrixReference.numRows; y++)
       {
 
+        final int position = count;
+
         lVariableMatrix[x][y] =
                               new BoundedVariable<Double>("matrix_"
                                                           + x
@@ -50,7 +51,6 @@ public class AlpaoDMPanel extends CustomGridPane
                                                           + y,
                                                           lMatrixReference.data[count]);
 
-        final int position = count;
         lVariableMatrix[x][y].addSetListener(new VariableSetListener<Double>()
         {
           @Override
@@ -76,6 +76,7 @@ public class AlpaoDMPanel extends CustomGridPane
                                                                                    lVariableMatrix[x][y].getGranularity());
         this.add(lField.getTextField(), x, y);
 
+        count++;
       }
     }
 
@@ -97,6 +98,10 @@ public class AlpaoDMPanel extends CustomGridPane
       mSpatialPhaseModulatorDevice.zero();
     });
     this.add(lZeroButton, lMatrixReference.numCols, 1);
+
+
+
+
 
     int lRow = lMatrixReference.numRows + 1;
 

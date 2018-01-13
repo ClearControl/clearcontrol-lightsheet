@@ -58,8 +58,8 @@ public class AlpaoDMDevice extends SpatialPhaseModulatorDeviceBase
         info("Setting the dm device");
         mAlpaoDeformableMirror.sendFullMatrixMirrorShapeVector(pNewValue.data);
 
-        info("Setting trigger disabled");
-        mAlpaoDeformableMirror.setInputTriggerMode(TriggerMode.Disabled);
+        //info("Setting trigger disabled");
+        //mAlpaoDeformableMirror.setInputTriggerMode(TriggerMode.Disabled);
 
         return super.setEventHook(pOldValue, pNewValue);
       }
