@@ -6,7 +6,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.Transfo
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
-public class ZernickeSpatialPhaseModulatorDevice extends
+public class ZernikeSpatialPhaseModulatorDevice extends
                                                  SpatialPhaseModulatorDeviceBase
                                                  implements
                                                  SpatialPhaseModulatorDeviceInterface
@@ -16,7 +16,7 @@ public class ZernickeSpatialPhaseModulatorDevice extends
 
   protected SpatialPhaseModulatorDeviceInterface mDelegatedSpatialPhaseModulatorDeviceInterface;
 
-  public ZernickeSpatialPhaseModulatorDevice(SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface)
+  public ZernikeSpatialPhaseModulatorDevice(SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface)
   {
     super("Zernicke"
           + pSpatialPhaseModulatorDeviceInterface.getName(),
@@ -129,9 +129,9 @@ public class ZernickeSpatialPhaseModulatorDevice extends
     return mDelegatedSpatialPhaseModulatorDeviceInterface.stop();
   }
 
-  public static ZernickeSpatialPhaseModulatorDevice wrap(SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface)
+  public static ZernikeSpatialPhaseModulatorDevice wrap(SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface)
   {
-    return new ZernickeSpatialPhaseModulatorDevice(pSpatialPhaseModulatorDeviceInterface);
+    return new ZernikeSpatialPhaseModulatorDevice(pSpatialPhaseModulatorDeviceInterface);
   }
 
 }

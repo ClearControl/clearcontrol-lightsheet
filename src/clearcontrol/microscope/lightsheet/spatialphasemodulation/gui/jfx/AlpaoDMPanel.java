@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx;
 
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialsDenseMatrix64F;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
@@ -161,8 +162,8 @@ public class AlpaoDMPanel extends CustomGridPane
 
       // CommonOps.mult(lFullMatrix, lInputVector, lShapeVector);
 
-      ZernikePolynomialMatrix lZernikePolynomialMatrix =
-                                                       new ZernikePolynomialMatrix(lMatrixReference.numCols,
+      ZernikePolynomialsDenseMatrix64F lZernikePolynomialsDenseMatrix64F =
+                                                       new ZernikePolynomialsDenseMatrix64F(lMatrixReference.numCols,
                                                                                    lMatrixReference.numRows,
                                                                                    lMVariable.get(),
                                                                                    lNVariable.get());
@@ -172,7 +173,7 @@ public class AlpaoDMPanel extends CustomGridPane
         for (int y = 0; y < lMatrixReference.numRows; y++)
         {
           double lZernikeValue =
-                               lZernikePolynomialMatrix.get(x,
+                               lZernikePolynomialsDenseMatrix64F.get(x,
                                                             y);/* lFullMatrix.get(
                                                                y
                                                                * lMatrixReference.numCols
