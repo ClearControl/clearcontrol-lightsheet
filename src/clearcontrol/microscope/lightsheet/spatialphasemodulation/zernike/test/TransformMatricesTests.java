@@ -1,12 +1,16 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 public class TransformMatricesTests
 {
@@ -40,5 +44,23 @@ public class TransformMatricesTests
 
     assertEquals(1, lDeterminant, 1e-10);
   }
+
+  @Test
+  public void testSumMatrices() {
+
+    DenseMatrix64F lMatrix1 = new DenseMatrix64F(new double[][]{{0, 1},{0, 1}});
+    DenseMatrix64F lMatrix2 = new DenseMatrix64F(new double[][]{{1, 1},{1, 1}});
+    DenseMatrix64F lMatrix3 = new DenseMatrix64F(new double[][]{{1, 2},{1, 2}});
+
+    ArrayList<DenseMatrix64F> lList = new ArrayList<>();
+    lList.add(lMatrix1);
+    lList.add(lMatrix2);
+
+    DenseMatrix64F lResultMatrix = TransformMatrices.sum(lList);
+    assertTrue(TransformMatrices.matricesEqual(lMatrix3, lResultMatrix, 0.1));
+
+  }
+
+
 
 }

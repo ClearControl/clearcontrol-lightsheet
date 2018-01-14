@@ -5,6 +5,9 @@ import static java.lang.Math.sqrt;
 
 import org.ejml.data.DenseMatrix64F;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TransformMatrices
 {
   public static DenseMatrix64F computeZernickeTransformMatrix(int pSquareImageWidthHeight)
@@ -123,5 +126,76 @@ public class TransformMatrices
     final int lColumnOffset = j * pSquareImageWidthHeight + i;
     final int lRowOffset = v * pSquareImageWidthHeight + u;
     pDenseMatrix64F.set(lRowOffset, lColumnOffset, pZernikeValue);
+  }
+
+  public static DenseMatrix64F multiply(DenseMatrix64F pMatrix, double pFactor) {
+    DenseMatrix64F lResultMatrix = new DenseMatrix64F(pMatrix.numCols, pMatrix.numRows);
+    for (int y = 0; y < lResultMatrix.numRows; y++)
+    {
+      for (int x = 0; x < lResultMatrix.numCols; x++)
+      {
+        lResultMatrix.set(y, x, pMatrix.get(y, x) * pFactor);
+      }
+    }
+    return lResultMatrix;
+  }
+
+  public static DenseMatrix64F sum(List<DenseMatrix64F> pMatrixList) {
+    if (pMatrixList.size() == 0) {
+      return null;
+    }
+    DenseMatrix64F lReferenceMatrix = pMatrixList.get(0);
+    DenseMatrix64F lSumMatrix = new DenseMatrix64F(lReferenceMatrix.numCols, lReferenceMatrix.numRows);
+
+    for (DenseMatrix64F lMatrix : pMatrixList) {
+      for (int y = 0; y < lMatrix.numRows; y++)
+      {
+        for (int x = 0; x < lMatrix.numCols; x++)
+        {
+          lSumMatrix.add(y, x, lMatrix.get(y, x));
+        }
+      }
+    }
+    return lSumMatrix;
+  }
+
+  public static double meanSquaredError(DenseMatrix64F pMatrix1, DenseMatrix64F pMatrix2) {
+    if (pMatrix1.numRows != pMatrix2.numRows) {
+      return Double.NaN;
+    }
+    if (pMatrix1.numCols != pMatrix2.numCols) {
+      return Double.NaN;
+    }
+
+    double sum = 0;
+    for (int y = 0; y < pMatrix1.numRows; y++)
+    {
+      for (int x = 0; x < pMatrix1.numCols; x++)
+      {
+        sum += (Math.pow(pMatrix1.get(y,x) - pMatrix2.get(y, x),2) );
+      }
+    }
+
+    return sum / pMatrix1.numCols / pMatrix1.numRows;
+  }
+
+  public static boolean matricesEqual(DenseMatrix64F pMatrix1, DenseMatrix64F pMatrix2, double pTolerance) {
+    if (pMatrix1.numRows != pMatrix2.numRows) {
+      return false;
+    }
+    if (pMatrix1.numCols != pMatrix2.numCols) {
+      return false;
+    }
+
+    for (int y = 0; y < pMatrix1.numRows; y++)
+    {
+      for (int x = 0; x < pMatrix1.numCols; x++)
+      {
+        if (Math.abs(pMatrix1.get(y,x) - pMatrix2.get(y, x)) > pTolerance) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }
