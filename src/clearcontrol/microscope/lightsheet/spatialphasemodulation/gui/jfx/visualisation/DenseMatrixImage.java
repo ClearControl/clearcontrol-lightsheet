@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx;
+package clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.visualisation;
 
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.LookUpTable;
 import javafx.scene.canvas.Canvas;
