@@ -300,7 +300,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
       lLoadCalibration.setOnAction((e) -> {
         try
         {
-          pCalibrationEngine.load();
+          pCalibrationEngine.load(lExistingCalibrationComboBox.getValue().toString());
         }
         catch (Exception e1)
         {
