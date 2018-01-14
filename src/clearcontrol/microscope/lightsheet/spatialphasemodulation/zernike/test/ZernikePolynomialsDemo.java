@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.test;
 
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialMatrix;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialsDenseMatrix64F;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.NewImage;
@@ -39,8 +40,8 @@ public class ZernikePolynomialsDemo
     int width = 101;
     int height = 101;
 
-    ZernikePolynomialMatrix lZernikePolynomialMatrix =
-                                                     new ZernikePolynomialMatrix(width,
+    ZernikePolynomialsDenseMatrix64F lZernikePolynomialsDenseMatrix64F =
+                                                     new ZernikePolynomialsDenseMatrix64F(width,
                                                                                  height,
                                                                                  m,
                                                                                  n);
@@ -60,7 +61,7 @@ public class ZernikePolynomialsDemo
       {
         ip.set((int) x,
                (int) y,
-               (int) ((lZernikePolynomialMatrix.get(x, y) + 1)
+               (int) ((lZernikePolynomialsDenseMatrix64F.get(x, y) + 1)
                       * 127));
       }
     }

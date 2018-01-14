@@ -10,11 +10,14 @@ import clearcontrol.core.log.LoggingFeature;
  * mat = new ZernikePolynomialMatrix(width, height, m, n)
  * <p>
  * value = mat.get(x, y);
- * <p>
+ *
+ * This is a package private class. Don't use it, prefer ZernikePolynomialsDenseMatrix64F instead.
+ *
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) January 2018
  */
-public class ZernikePolynomialMatrix implements LoggingFeature
+class ZernikePolynomialMatrix implements LoggingFeature
 {
   int m;
   int n;
