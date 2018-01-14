@@ -1,18 +1,15 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.demo;
 
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.DenseMatrixImage;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.visualisation.DenseMatrixImage;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.BlueCyanGreenYellowOrangeRedLUT;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.LookUpTable;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialsDenseMatrix64F;
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.ejml.data.DenseMatrix64F;
-import org.junit.Test;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
