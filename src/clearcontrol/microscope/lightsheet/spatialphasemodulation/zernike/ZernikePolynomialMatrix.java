@@ -27,6 +27,9 @@ public class ZernikePolynomialMatrix implements LoggingFeature
   int width;
   int height;
 
+
+  final static double tolerance = 0.0000001;
+
   public ZernikePolynomialMatrix(int width, int height, int m, int n)
   {
     this.width = width;
@@ -41,8 +44,9 @@ public class ZernikePolynomialMatrix implements LoggingFeature
       warning("n is supposed to be larger or equal to m!");
     }
 
-    centerX = (width - 1) / 2.0;
-    centerY = (height - 1) / 2.0;
+    // the tolarance here helps to prevent NaN results
+    centerX = (width - 1) / 2.0 + tolerance;
+    centerY = (height - 1) / 2.0 + tolerance;
 
     this.m = m;
     this.n = n;
@@ -89,5 +93,12 @@ public class ZernikePolynomialMatrix implements LoggingFeature
       }
     }
     return result;
+  }
+
+  public int getM() {
+    return m;
+  }
+  public int getN() {
+    return n;
   }
 }
