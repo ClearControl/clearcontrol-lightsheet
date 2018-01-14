@@ -8,7 +8,18 @@ import org.ejml.data.DenseMatrix64F;
  */
 public class ZernikePolynomialsDenseMatrix64F extends DenseMatrix64F
 {
+  private int m;
+  private int n;
   public ZernikePolynomialsDenseMatrix64F(int width, int height, int m, int n) {
     super(new ZernikePolynomialMatrix(width, height, m, n).getFullMatrix());
+    this.m = m;
+    this.n = n;
+  }
+
+  public int getM() {
+    return m;
+  }
+  public int getN() {
+    return n;
   }
 }
