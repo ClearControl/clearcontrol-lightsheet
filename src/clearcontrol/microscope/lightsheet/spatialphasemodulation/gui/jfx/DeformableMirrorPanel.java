@@ -1,20 +1,34 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx;
 
-import static clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices.computeZernickeTransformMatrix;
-
-import javafx.application.Platform;
-import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
+import clearcontrol.core.configuration.MachineConfiguration;
+import clearcontrol.core.variable.Variable;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.BlueCyanGreenYellowOrangeRedLUT;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.LookUpTable;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.matrixeditors.DenseMatrixEditor;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.matrixeditors.ZernikeModesLinearCombinationEditor;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.matrixeditors.MatrixUpdateReceiver;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.matrixeditors.ZernikeModeEditor;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.visualisation.DenseMatrixImage;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FWriter;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.*;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.core.variable.VariableSetListener;
-import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 
+import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import org.ejml.data.DenseMatrix64F;
-import org.ejml.ops.CommonOps;
+
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
@@ -25,154 +39,234 @@ public class DeformableMirrorPanel extends CustomGridPane
 {
   SpatialPhaseModulatorDeviceBase mSpatialPhaseModulatorDevice;
 
+  Pane mPreviewPane;
+  GraphicsContext mGraphicsContext;
+  ArrayList<MatrixUpdateReceiver> mListMatrixUpdateReceivers = new ArrayList<>();
+
+  Variable<DenseMatrix64F> mEditorMatrixVariable;
+
+  private File mMirrorModeDirectory =
+      MachineConfiguration.get()
+                          .getFolder("MirrorModes");
+
   public DeformableMirrorPanel(SpatialPhaseModulatorDeviceBase pAbstractDeformableMirrorDevice)
   {
     super();
 
+    int lRow = 0;
+
     mSpatialPhaseModulatorDevice = pAbstractDeformableMirrorDevice;
 
-    DenseMatrix64F lMatrixReference =
-                                    mSpatialPhaseModulatorDevice.getMatrixReference()
-                                                                .get();
+    DenseMatrix64F
+        lMatrixReference =
+        mSpatialPhaseModulatorDevice.getMatrixReference().get();
 
-    BoundedVariable<Double>[][] lVariableMatrix =
-                                                new BoundedVariable[lMatrixReference.numCols][lMatrixReference.numRows];
+    // Preview
+    final int lPreviewWidth = 100;
+    final int lPreviewHeight = 100;
 
-    int count = 0;
-    for (int x = 0; x < lMatrixReference.numCols; x++)
+    mEditorMatrixVariable =
+        new Variable<DenseMatrix64F>("editorMatrix", lMatrixReference.copy());
+    mEditorMatrixVariable.addSetListener((DenseMatrix64F lOldMatrix, DenseMatrix64F lNewMatrix) -> {
+      updateVisualisation(lNewMatrix, lPreviewWidth, lPreviewHeight);
+      updateEditors(lNewMatrix);
+    });
+
     {
-      for (int y = 0; y < lMatrixReference.numRows; y++)
-      {
+      Canvas lCanvas = new Canvas(lPreviewWidth, lPreviewHeight);
+      mGraphicsContext = lCanvas.getGraphicsContext2D();
+      mPreviewPane = new Pane(lCanvas);
+      this.add(mPreviewPane, 0, lRow, 1, 4);
+    }
 
-        lVariableMatrix[x][y] =
-                              new BoundedVariable<Double>("matrix_"
-                                                          + x
-                                                          + "_"
-                                                          + y,
-                                                          lMatrixReference.data[count]);
+    {
+      Button lExecuteButton = new Button("Send to mirror");
+      Font lFont = lExecuteButton.getFont();
+      lFont = Font.font(lFont.getFamily(), FontWeight.BOLD, lFont.getSize());
+      lExecuteButton.setFont(lFont);
+      lExecuteButton.setOnAction((actionEvent) -> {
+        DenseMatrix64F lMatrix = mEditorMatrixVariable.get();
+        info("Asking to set the dm device to given values");
+        mSpatialPhaseModulatorDevice.getMatrixReference().set(lMatrix);
+      });
+      this.add(lExecuteButton, 2, 0);
+      lRow++;
+    }
 
-        final int position = count;
-        lVariableMatrix[x][y].addSetListener(new VariableSetListener<Double>()
+    {
+      Button lZeroButton = new Button("Reset to zero");
+      lZeroButton.setOnAction((actionEvent) -> {
+        DenseMatrix64F
+            lEmptyMatrix =
+            new DenseMatrix64F(lMatrixReference.numRows,
+                               lMatrixReference.numCols);
+        mEditorMatrixVariable.set(lEmptyMatrix);
+      });
+      this.add(lZeroButton, 2, lRow);
+      lRow++;
+    }
+
+    ComboBox lExistingCalibrationComboBox;
+    {
+      // load
+      lExistingCalibrationComboBox = new ComboBox(listExistingMirorModeFiles());
+      //GridPane.setColumnSpan(lExistingCalibrationComboBox, 3);
+      add(lExistingCalibrationComboBox, 1, lRow);
+
+      Button lLoadCalibration = new Button("Load");
+      //lLoadCalibration.setAlignment(Pos.CENTER);
+      //lLoadCalibration.setMaxWidth(Double.MAX_VALUE);
+      lLoadCalibration.setOnAction((e) -> {
+        try
         {
-          @Override
-          public void setEvent(Double pCurrentValue, Double pNewValue)
-          {
-            Platform.runLater(new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                lMatrixReference.data[position] = pNewValue;
-                info("Setting " + position + " = " + pNewValue);
-              }
-            });
-          }
-        });
+          DenseMatrix64F lMatrix = new DenseMatrix64F(lMatrixReference.numRows, lMatrixReference.numCols);
+          new DenseMatrix64FReader(getFile(lExistingCalibrationComboBox.getValue().toString()), lMatrix).read();
+          mEditorMatrixVariable.set(lMatrix);
+        }
+        catch (Exception e1)
+        {
+          e1.printStackTrace();
+        }
+      });
 
-        NumberVariableTextField<Double> lField =
-                                               new NumberVariableTextField<Double>(lVariableMatrix[x][y].getName(),
-                                                                                   lVariableMatrix[x][y],
-                                                                                   lVariableMatrix[x][y].getMin(),
-                                                                                   lVariableMatrix[x][y].getMax(),
-                                                                                   lVariableMatrix[x][y].getGranularity());
-        this.add(lField.getTextField(), x, y);
+      //GridPane.setColumnSpan(lLoadCalibration, 1);
+      add(lLoadCalibration, 2, lRow);
+      lRow++;
 
+    }
+
+    {
+      // save
+      Variable<String> lFileNameVariable = new Variable<String>("filename", "DM_");
+
+      TextField lFileNameTextField =
+          new TextField(lFileNameVariable.get());
+      lFileNameTextField.setMaxWidth(Double.MAX_VALUE);
+      lFileNameTextField.textProperty()
+                                   .addListener((obs, o, n) -> {
+                                     String lName = n.trim();
+                                     if (!lName.isEmpty())
+                                       lFileNameVariable.set(lName);
+                                   });
+      add(lFileNameTextField, 1, lRow);
+
+
+
+      Button lSaveCalibration = new Button("Save");
+      lSaveCalibration.setAlignment(Pos.CENTER);
+      lSaveCalibration.setMaxWidth(Double.MAX_VALUE);
+      lSaveCalibration.setOnAction((e) -> {
+        try
+        {
+          new DenseMatrix64FWriter(getFile(lFileNameVariable.get()), mEditorMatrixVariable.get()).write();
+          updateEditors(mEditorMatrixVariable.get());
+          lExistingCalibrationComboBox.setItems(listExistingMirorModeFiles());
+        }
+        catch (Exception e1)
+        {
+          e1.printStackTrace();
+        }
+      });
+      GridPane.setColumnSpan(lSaveCalibration, 1);
+      add(lSaveCalibration, 2, lRow);
+      lRow++;
+
+    }
+
+
+
+
+
+
+
+
+    TabPane lTabPane = new TabPane();
+    add(lTabPane, 0, lRow, 6, 1);
+
+
+    {
+      // Single zernike editor
+      Tab lSingleZernikeTab = new Tab("Single Zernike mode");
+      ZernikeModeEditor
+          lZernikeModeEditor = new ZernikeModeEditor(mEditorMatrixVariable);
+      lSingleZernikeTab.setContent(lZernikeModeEditor);
+      lTabPane.getTabs().add(lSingleZernikeTab);
+    }
+
+    {
+      // Linear combination editor
+      Tab lZernikeLinearCombinationTab = new Tab("Linear combination of Zernike modes");
+      ZernikeModesLinearCombinationEditor
+          lEditor = new ZernikeModesLinearCombinationEditor(mEditorMatrixVariable, getExistingMirrorModeList(), mMirrorModeDirectory);
+      lZernikeLinearCombinationTab.setContent(lEditor);
+      lTabPane.getTabs().add(lZernikeLinearCombinationTab);
+    }
+
+    {
+      // Matrix editor
+      Tab lZernikeEditorTab = new Tab("Matrix editor");
+      DenseMatrixEditor lMatrixEditor = new DenseMatrixEditor(mEditorMatrixVariable);
+      lZernikeEditorTab.setContent(lMatrixEditor);
+      mListMatrixUpdateReceivers.add(lMatrixEditor);
+      lTabPane.getTabs().add(lZernikeEditorTab);
+    }
+
+
+
+
+
+
+
+
+
+    // execute first drawing
+    mEditorMatrixVariable.set(mEditorMatrixVariable.get());
+  }
+
+  private void updateVisualisation(DenseMatrix64F pNewMatrix, int pPreviewWidth, int pPreviewHeight) {
+    System.out.println("refreshVisualisation");
+
+    LookUpTable lLookUpTable = new BlueCyanGreenYellowOrangeRedLUT();
+
+    mGraphicsContext.drawImage(new DenseMatrixImage(pNewMatrix, lLookUpTable), 0, 0, pPreviewWidth, pPreviewHeight);
+  }
+
+  private void updateEditors(DenseMatrix64F pMatrix) {
+    for (MatrixUpdateReceiver lReceiver : mListMatrixUpdateReceivers) {
+      lReceiver.updateMatrix(pMatrix);
+    }
+  }
+
+
+
+  private File getFile(String pName)
+  {
+    return new File(mMirrorModeDirectory, pName + ".json");
+  }
+
+  private ObservableList<String> listExistingMirorModeFiles()
+  {
+    ArrayList<String> filenames = getExistingMirrorModeList();
+    ObservableList<String> list =     FXCollections.observableArrayList(filenames);
+    return list;
+  }
+
+  ArrayList<String> mExistingTemplateFileList = new ArrayList<String>();
+  private ArrayList<String> getExistingMirrorModeList() {
+    File folder = mMirrorModeDirectory;
+
+    mExistingTemplateFileList.clear();
+    for (File file : folder.listFiles()) {
+      if (!file.isDirectory() && file.getAbsolutePath().endsWith(".json")) {
+        String fileName = file.getName();
+        fileName = fileName.substring(0, fileName.length() - 5);
+
+        mExistingTemplateFileList.add(fileName);
       }
     }
 
-    Button lExecuteButton = new Button("Zero");
-    lExecuteButton.setOnAction((actionEvent) -> {
-
-      DenseMatrix64F lMatrix =
-                             mSpatialPhaseModulatorDevice.getMatrixReference()
-                                                         .get();
-      mSpatialPhaseModulatorDevice.getMatrixReference().set(lMatrix);
-
-    });
-    this.add(lExecuteButton, lMatrixReference.numCols, 0);
-
-    Button lZeroButton = new Button("Reset");
-    lZeroButton.setOnAction((actionEvent) -> {
-      mSpatialPhaseModulatorDevice.zero();
-    });
-    this.add(lZeroButton, lMatrixReference.numCols, 1);
-
-    int lRow = lMatrixReference.numRows + 1;
-
-    BoundedVariable<Integer> lMVariable =
-                                        new BoundedVariable<Integer>("m",
-                                                                     0,
-                                                                     Integer.MIN_VALUE,
-                                                                     Integer.MAX_VALUE,
-                                                                     1);
-
-    NumberVariableTextField<Integer> lMField =
-                                             new NumberVariableTextField<Integer>(lMVariable.getName(),
-                                                                                  lMVariable,
-                                                                                  lMVariable.getMin(),
-                                                                                  lMVariable.getMax(),
-                                                                                  lMVariable.getGranularity());
-
-    this.add(lMField.getLabel(), 0, lRow);
-    this.add(lMField.getTextField(), 1, lRow);
-    lRow++;
-
-    BoundedVariable<Integer> lNVariable =
-                                        new BoundedVariable<Integer>("n",
-                                                                     0,
-                                                                     Integer.MIN_VALUE,
-                                                                     Integer.MAX_VALUE,
-                                                                     1);
-
-    NumberVariableTextField<Integer> lNField =
-                                             new NumberVariableTextField<Integer>(lNVariable.getName(),
-                                                                                  lNVariable,
-                                                                                  lNVariable.getMin(),
-                                                                                  lNVariable.getMax(),
-                                                                                  lNVariable.getGranularity());
-    this.add(lNField.getLabel(), 0, lRow);
-    this.add(lNField.getTextField(), 1, lRow);
-    lRow++;
-
-    DenseMatrix64F lFullMatrix =
-                               computeZernickeTransformMatrix(lMatrixReference.numRows);
-    lFullMatrix.print();
-
-    Button lZernikeMomentsButton =
-                                 new Button("Calculate Zernike moments");
-    lZernikeMomentsButton.setOnAction((actionEvent) -> {
-      final DenseMatrix64F lInputVector =
-                                        new DenseMatrix64F(lFullMatrix.numRows,
-                                                           1);
-
-      final DenseMatrix64F lShapeVector =
-                                        new DenseMatrix64F(lFullMatrix.numRows,
-                                                           1);
-
-      lInputVector.set(lMVariable.get()
-                       + lMatrixReference.numCols * lNVariable.get(),
-                       1);
-
-      CommonOps.mult(lFullMatrix, lInputVector, lShapeVector);
-      for (int x = 0; x < lMatrixReference.numCols; x++)
-      {
-        for (int y = 0; y < lMatrixReference.numRows; y++)
-        {
-          double lZernikeValue = lFullMatrix.get(
-                                                 y
-                                                 * lMatrixReference.numCols
-                                                 + x);
-          // ZernikePolynomials.computeZnmxy(lNVariable.get(), lMVariable.get(),
-          // x - centerX, y - centerY);
-          lVariableMatrix[x][y].set(lZernikeValue);
-        }
-      }
-    });
-    GridPane.setColumnSpan(lZernikeMomentsButton, 2);
-    this.add(lZernikeMomentsButton, 0, lRow);
-
-    lRow++;
-
+    return mExistingTemplateFileList;
   }
+
 
 }
