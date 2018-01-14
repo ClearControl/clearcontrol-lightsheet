@@ -4,12 +4,15 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialMatrix;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialsDenseMatrix64F;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import org.ejml.data.DenseMatrix64F;
 
 /**
+ * This editor allows the user to set the Zernike mode to a given mode
+ * defined by the parameter m, n and multiplied with a factor
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
@@ -85,19 +88,19 @@ public class ZernikeModeEditor extends GridPane implements
     Button lZernikeMomentsButton =
         new Button("Calculate Zernike moments");
     lZernikeMomentsButton.setOnAction((actionEvent) -> {
-
-
-      ZernikePolynomialMatrix lZernikePolynomialMatrix =
-          new ZernikePolynomialMatrix(mMatrixReference.numCols,
+      ZernikePolynomialsDenseMatrix64F lZernikePolynomialsDenseMatrix64F =
+          new ZernikePolynomialsDenseMatrix64F(mMatrixReference.numCols,
                                       mMatrixReference.numRows,
                                       lMVariable.get(),
                                       lNVariable.get());
 
+      // todo: maybe it is enough to call
+      // mMatrixVariable.set(lZernikePolynomialsDenseMatrix64F);
       for (int x = 0; x < mMatrixReference.numCols; x++)
       {
         for (int y = 0; y < mMatrixReference.numRows; y++)
         {
-          mMatrixReference.set(x,y, lZernikePolynomialMatrix.get(x, y));
+          mMatrixReference.set(x,y, lZernikePolynomialsDenseMatrix64F.get(x, y));
         }
       }
       mMatrixVariable.set(mMatrixReference);
@@ -106,7 +109,5 @@ public class ZernikeModeEditor extends GridPane implements
     this.add(lZernikeMomentsButton, 0, lRow);
 
     lRow++;
-
-
   }
 }

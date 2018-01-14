@@ -10,6 +10,21 @@ import java.util.ArrayList;
  * just here for testing until a better/more precise implementation
  * comes up.
  *
+ * This decomposer takes a given matrix M0 and determined a Zernike mode
+ * Z1 the matrix is most similar to. It subtracts then w1*Z1 from M0:
+ *
+ * M1 = M0 - w1*Z1
+ *
+ * With M1 the process is repeated until no Zernike modes are available anymore.
+ * Then, the list of Zernike modes Z and the list of weights w are
+ * assembled to a string like:
+ *
+ * Z[0,0] 0.5
+ * Z[-1,1] 0.25
+ * Z[1,1] 0.25
+ *
+ * Todo: replace this class by a more sophisticated decomposition
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
@@ -22,20 +37,34 @@ public class SimpleZernikeDecomposer
   final double mMinFactor;
   final double mMaxFactor;
   final double mMinAbsoluteFactor;
+
+  /**
+   * Maximum n parameter of Zernike modes
+   */
   int sMaxN = 6;
+
+  /**
+   * The composer assembles a short text explaining success or failure of the decomposition
+   */
   private String mDecomposerComment;
 
+  /**
+   * Constructor
+   * @param pMatrix Zernike mode to decompose
+   * @param pMinFactor maximum factor which is allowed for each component
+   * @param pMaxFactor minimum factor which is allowed for each component
+   * @param pMinAbsoluteFactor minimum absolute factor to prevent small weights
+   */
   public SimpleZernikeDecomposer(DenseMatrix64F pMatrix, double pMinFactor, double pMaxFactor, double pMinAbsoluteFactor) {
     mMinFactor = pMinFactor;
     mMaxFactor = pMaxFactor;
     mMinAbsoluteFactor = pMinAbsoluteFactor;
 
-
     initializeZernikePolynomialList(pMatrix.numCols, pMatrix.numRows);
 
-    mMostImportantCoefficients = new ArrayList<>();
+    mMostImportantCoefficients = new ArrayList<Double>();
 
-    mMostImportantZernikePolynomialsList = new ArrayList<>();
+    mMostImportantZernikePolynomialsList = new ArrayList<ZernikePolynomialsDenseMatrix64F>();
 
     decompose(pMatrix);
   }
@@ -45,37 +74,37 @@ public class SimpleZernikeDecomposer
   }
 
   public String getCompositionCode() {
-    String result = "";
-    double sum = 0;
+    String lResultText = "";
+    double lSum = 0;
     for (int i = 0; i < mMostImportantCoefficients.size(); i++)
     {
-      sum = sum + mMostImportantCoefficients.get(i);
+      lSum = lSum + mMostImportantCoefficients.get(i);
     }
 
     for (int i = 0; i < mMostImportantCoefficients.size(); i++) {
 
-        result =
-            result
+        lResultText =
+            lResultText
             + "Z["
             + mMostImportantZernikePolynomialsList.get(i).getM()
             + ","
             + mMostImportantZernikePolynomialsList.get(i).getN()
             + "] "
-            + (mMostImportantCoefficients.get(i) / sum)
+            + (mMostImportantCoefficients.get(i) / lSum)
             + "\n";
 
     }
-    result = result + mDecomposerComment;
-    return result;
+    lResultText = lResultText + mDecomposerComment;
+    return lResultText;
   }
 
   private void decompose(DenseMatrix64F pMatrix) {
-    int index = getIndexOfMostSimilarZernikePolynomial(pMatrix);
-    if (index < 0) {
+    int lIndex = getIndexOfMostSimilarZernikePolynomial(pMatrix);
+    if (lIndex < 0) {
       return;
     }
 
-    ZernikePolynomialsDenseMatrix64F lMatrixMultiplicant = mZernikePolynomialList.get(index);
+    ZernikePolynomialsDenseMatrix64F lMatrixMultiplicant = mZernikePolynomialList.get(lIndex);
     //System.out.println("Checking " + mZernikePolynomialList.get(index).getM() + " " + mZernikePolynomialList.get(index).getN());
 
 
@@ -97,13 +126,17 @@ public class SimpleZernikeDecomposer
     if (Math.abs(factor) > mMinAbsoluteFactor &&
         factor >= mMinFactor &&
         factor <= mMaxFactor) {
-      System.out.println("Add to list " + factor);
+      //System.out.println("Add to list " + factor);
       mMostImportantCoefficients.add(factor);
       mMostImportantZernikePolynomialsList.add(lMatrixMultiplicant);
       mDecomposerComment = "# Decomposition OK";
     }
     else // error / strange situation handling
     {
+      // This block is entered if the decomposer fails to find a good
+      // factor. To prevent an empty result, something is printed out
+      // as result and the comment points the user to a potential
+      // algorithm failure.
       if (mMostImportantCoefficients.size() == 0)
       {
         mMostImportantCoefficients.add(1.0);
@@ -119,11 +152,11 @@ public class SimpleZernikeDecomposer
         lContinueDecomposition = false;
       }
     }
-    mZernikePolynomialList.remove(index);
+    mZernikePolynomialList.remove(lIndex);
 
 
     if (lContinueDecomposition || mZernikePolynomialList.size() > 0) {
-
+      // Compute remaining matrix values and continue decomposition
       DenseMatrix64F lRemaining = new DenseMatrix64F(pMatrix.numCols, pMatrix.numRows);
 
       for (int y = 0; y < lMatrixMultiplicant.numRows; y++) {
@@ -139,20 +172,34 @@ public class SimpleZernikeDecomposer
 
   }
 
+  /**
+   * Determine the Zernike mode in the list which is the most similar
+   * to the given matrix.
+   *
+   * Todo: take a unknown factor into account.
+   *
+   * @param pMatrix
+   * @return
+   */
   private int getIndexOfMostSimilarZernikePolynomial(DenseMatrix64F pMatrix)
   {
-    double minMSE = Double.MAX_VALUE;
-    int minMSEIndex = -1;
+    double lMinimumMSE = Double.MAX_VALUE;
+    int lMinimumMSEIndex = -1;
     for (int i = 0; i < mZernikePolynomialList.size(); i++) {
-      double mse = TransformMatrices.meanSquaredError(pMatrix, mZernikePolynomialList.get(i));
-      if (mse < minMSE) {
-        minMSE = mse;
-        minMSEIndex = i;
+      double lMSE = TransformMatrices.meanSquaredError(pMatrix, mZernikePolynomialList.get(i));
+      if (lMSE < lMinimumMSE) {
+        lMinimumMSE = lMSE;
+        lMinimumMSEIndex = i;
       }
     }
-    return minMSEIndex;
+    return lMinimumMSEIndex;
   }
 
+  /**
+   * Initialize the list of Zernike modes which can be composed
+   * @param pWidth
+   * @param pHeight
+   */
   private void initializeZernikePolynomialList(int pWidth, int pHeight)
   {
     mZernikePolynomialList = new ArrayList<>();

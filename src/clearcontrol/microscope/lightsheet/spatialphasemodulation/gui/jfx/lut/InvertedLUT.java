@@ -14,8 +14,8 @@ public class InvertedLUT implements LookUpTable
     mLookUpTable = pLookUpTable;
   }
 
-  @Override public Color getColor(float index)
+  @Override public Color getColor(float pIndex)
   {
-    return mLookUpTable.getColor(1.0f - index);
+    return mLookUpTable.getColor(1.0f - pIndex);
   }
 }

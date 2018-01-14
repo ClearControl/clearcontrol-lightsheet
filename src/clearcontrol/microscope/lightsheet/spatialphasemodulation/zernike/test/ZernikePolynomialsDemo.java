@@ -1,6 +1,5 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.test;
 
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialMatrix;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialsDenseMatrix64F;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -37,36 +36,36 @@ public class ZernikePolynomialsDemo
 
   private static ImagePlus testZernike(int m, int n, String path)
   {
-    int width = 101;
-    int height = 101;
+    int lWidth = 101;
+    int lHeight = 101;
 
     ZernikePolynomialsDenseMatrix64F lZernikePolynomialsDenseMatrix64F =
-                                                     new ZernikePolynomialsDenseMatrix64F(width,
-                                                                                 height,
+                                                     new ZernikePolynomialsDenseMatrix64F(lWidth,
+                                                                                 lHeight,
                                                                                  m,
                                                                                  n);
 
-    ImagePlus imp = NewImage.createByteImage("Z " + m
+    ImagePlus lImagePlus = NewImage.createByteImage("Z " + m
                                              + " "
                                              + n,
-                                             (int) width,
-                                             (int) height,
+                                             (int) lWidth,
+                                             (int) lHeight,
                                              1,
                                              NewImage.FILL_BLACK);
-    ImageProcessor ip = imp.getProcessor();
+    ImageProcessor lImageProcessor = lImagePlus.getProcessor();
 
-    for (int x = 0; x < width; x++)
+    for (int x = 0; x < lWidth; x++)
     {
-      for (int y = 0; y < height; y++)
+      for (int y = 0; y < lHeight; y++)
       {
-        ip.set((int) x,
+        lImageProcessor.set((int) x,
                (int) y,
                (int) ((lZernikePolynomialsDenseMatrix64F.get(x, y) + 1)
                       * 127));
       }
     }
-    imp.show();
+    lImagePlus.show();
 
-    return imp;
+    return lImagePlus;
   }
 }

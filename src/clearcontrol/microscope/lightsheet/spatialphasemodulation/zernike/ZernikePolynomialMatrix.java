@@ -47,7 +47,7 @@ class ZernikePolynomialMatrix implements LoggingFeature
       warning("n is supposed to be larger or equal to m!");
     }
 
-    // the tolarance here helps to prevent NaN results
+    // the tolerance here helps to prevent NaN results
     centerX = (width - 1) / 2.0 + tolerance;
     centerY = (height - 1) / 2.0 + tolerance;
 

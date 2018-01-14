@@ -39,7 +39,6 @@ public class DeformableMirrorPanel extends CustomGridPane
 {
   SpatialPhaseModulatorDeviceBase mSpatialPhaseModulatorDevice;
 
-  Pane mPreviewPane;
   GraphicsContext mGraphicsContext;
   ArrayList<MatrixUpdateReceiver> mListMatrixUpdateReceivers = new ArrayList<>();
 
@@ -75,52 +74,55 @@ public class DeformableMirrorPanel extends CustomGridPane
     {
       Canvas lCanvas = new Canvas(lPreviewWidth, lPreviewHeight);
       mGraphicsContext = lCanvas.getGraphicsContext2D();
-      mPreviewPane = new Pane(lCanvas);
-      this.add(mPreviewPane, 0, lRow, 1, 4);
+
+      Pane lPreviewPane = new Pane(lCanvas);
+      this.add(lPreviewPane, 0, lRow, 1, 4);
     }
 
     {
-      Button lExecuteButton = new Button("Send to mirror");
-      Font lFont = lExecuteButton.getFont();
+      Button lSendToDeviceButton = new Button("Send to mirror");
+      Font lFont = lSendToDeviceButton.getFont();
       lFont = Font.font(lFont.getFamily(), FontWeight.BOLD, lFont.getSize());
-      lExecuteButton.setFont(lFont);
-      lExecuteButton.setOnAction((actionEvent) -> {
+      lSendToDeviceButton.setFont(lFont);
+      lSendToDeviceButton.setMaxWidth(Double.MAX_VALUE);
+      lSendToDeviceButton.setOnAction((actionEvent) -> {
         DenseMatrix64F lMatrix = mEditorMatrixVariable.get();
         info("Asking to set the dm device to given values");
         mSpatialPhaseModulatorDevice.getMatrixReference().set(lMatrix);
       });
-      this.add(lExecuteButton, 2, 0);
+      this.add(lSendToDeviceButton, 2, 0);
       lRow++;
     }
 
     {
+      // reset
       Button lZeroButton = new Button("Reset to zero");
       lZeroButton.setOnAction((actionEvent) -> {
         DenseMatrix64F
             lEmptyMatrix =
             new DenseMatrix64F(lMatrixReference.numRows,
                                lMatrixReference.numCols);
+
         mEditorMatrixVariable.set(lEmptyMatrix);
       });
+      lZeroButton.setMaxWidth(Double.MAX_VALUE);
       this.add(lZeroButton, 2, lRow);
       lRow++;
     }
 
-    ComboBox lExistingCalibrationComboBox;
+    ComboBox lExistingMirrorModesComboBox;
     {
       // load
-      lExistingCalibrationComboBox = new ComboBox(listExistingMirorModeFiles());
-      //GridPane.setColumnSpan(lExistingCalibrationComboBox, 3);
-      add(lExistingCalibrationComboBox, 1, lRow);
+      lExistingMirrorModesComboBox = new ComboBox(listExistingMirorModeFiles());
+      add(lExistingMirrorModesComboBox, 1, lRow);
 
-      Button lLoadCalibration = new Button("Load");
-      //lLoadCalibration.setAlignment(Pos.CENTER);
-      //lLoadCalibration.setMaxWidth(Double.MAX_VALUE);
-      lLoadCalibration.setOnAction((e) -> {
+      Button lLoadMirrorModeBytton = new Button("Load");
+      lLoadMirrorModeBytton.setMaxWidth(Double.MAX_VALUE);
+      lLoadMirrorModeBytton.setOnAction((e) -> {
         try
         {
           DenseMatrix64F lMatrix = new DenseMatrix64F(lMatrixReference.numRows, lMatrixReference.numCols);
-          new DenseMatrix64FReader(getFile(lExistingCalibrationComboBox.getValue().toString()), lMatrix).read();
+          new DenseMatrix64FReader(getFile(lExistingMirrorModesComboBox.getValue().toString()), lMatrix).read();
           mEditorMatrixVariable.set(lMatrix);
         }
         catch (Exception e1)
@@ -129,8 +131,7 @@ public class DeformableMirrorPanel extends CustomGridPane
         }
       });
 
-      //GridPane.setColumnSpan(lLoadCalibration, 1);
-      add(lLoadCalibration, 2, lRow);
+      add(lLoadMirrorModeBytton, 2, lRow);
       lRow++;
 
     }
@@ -150,39 +151,28 @@ public class DeformableMirrorPanel extends CustomGridPane
                                    });
       add(lFileNameTextField, 1, lRow);
 
-
-
-      Button lSaveCalibration = new Button("Save");
-      lSaveCalibration.setAlignment(Pos.CENTER);
-      lSaveCalibration.setMaxWidth(Double.MAX_VALUE);
-      lSaveCalibration.setOnAction((e) -> {
+      Button lSaveMirrorModeButton = new Button("Save");
+      lSaveMirrorModeButton.setAlignment(Pos.CENTER);
+      lSaveMirrorModeButton.setMaxWidth(Double.MAX_VALUE);
+      lSaveMirrorModeButton.setOnAction((e) -> {
         try
         {
           new DenseMatrix64FWriter(getFile(lFileNameVariable.get()), mEditorMatrixVariable.get()).write();
           updateEditors(mEditorMatrixVariable.get());
-          lExistingCalibrationComboBox.setItems(listExistingMirorModeFiles());
+          lExistingMirrorModesComboBox.setItems(listExistingMirorModeFiles());
         }
         catch (Exception e1)
         {
           e1.printStackTrace();
         }
       });
-      GridPane.setColumnSpan(lSaveCalibration, 1);
-      add(lSaveCalibration, 2, lRow);
+      GridPane.setColumnSpan(lSaveMirrorModeButton, 1);
+      add(lSaveMirrorModeButton, 2, lRow);
       lRow++;
-
     }
-
-
-
-
-
-
-
 
     TabPane lTabPane = new TabPane();
     add(lTabPane, 0, lRow, 6, 1);
-
 
     {
       // Single zernike editor
@@ -210,14 +200,6 @@ public class DeformableMirrorPanel extends CustomGridPane
       mListMatrixUpdateReceivers.add(lMatrixEditor);
       lTabPane.getTabs().add(lZernikeEditorTab);
     }
-
-
-
-
-
-
-
-
 
     // execute first drawing
     mEditorMatrixVariable.set(mEditorMatrixVariable.get());

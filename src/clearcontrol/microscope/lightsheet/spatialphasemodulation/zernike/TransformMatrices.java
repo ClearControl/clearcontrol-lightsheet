@@ -128,6 +128,12 @@ public class TransformMatrices
     pDenseMatrix64F.set(lRowOffset, lColumnOffset, pZernikeValue);
   }
 
+  /**
+   * Allows multiplying a matrix with a scalar
+   * @param pMatrix matrix M
+   * @param pFactor scalar s
+   * @return M*s
+   */
   public static DenseMatrix64F multiply(DenseMatrix64F pMatrix, double pFactor) {
     DenseMatrix64F lResultMatrix = new DenseMatrix64F(pMatrix.numCols, pMatrix.numRows);
     for (int y = 0; y < lResultMatrix.numRows; y++)
@@ -140,6 +146,11 @@ public class TransformMatrices
     return lResultMatrix;
   }
 
+  /**
+   * Allows summing a list of matrices
+   * @param pMatrixList list
+   * @return sum matrix of all list elements
+   */
   public static DenseMatrix64F sum(List<DenseMatrix64F> pMatrixList) {
     if (pMatrixList.size() == 0) {
       return null;

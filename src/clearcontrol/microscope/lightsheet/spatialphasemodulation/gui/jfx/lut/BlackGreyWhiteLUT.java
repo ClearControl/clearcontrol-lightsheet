@@ -9,11 +9,12 @@ import javafx.scene.paint.Color;
 public class BlackGreyWhiteLUT implements LookUpTable
 {
 
-  @Override public Color getColor(float index)
+  @Override public Color getColor(float pIndex)
   {
-    if (index < 0 || index > 1) {
-      throw new IllegalArgumentException("Colour index must be between 0 and 1 but was " + index + "!");
+    if (pIndex < 0 || pIndex > 1) {
+      throw new IllegalArgumentException("Colour index must be between 0 and 1 but was " + pIndex
+                                         + "!");
     }
-    return new Color(index, index, index, 1.0);
+    return new Color(pIndex, pIndex, pIndex, 1.0);
   }
 }

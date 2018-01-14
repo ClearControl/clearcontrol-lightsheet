@@ -5,19 +5,14 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.BlueCyanGreenYellowOrangeRedLUT;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.LookUpTable;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialMatrix;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialsDenseMatrix64F;
 import javafx.application.Platform;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import org.ejml.data.DenseMatrix64F;
 
 /**
+ * This editor class shows an array of text fields allowing the user
+ * to edit a matrix manually.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
@@ -92,23 +87,23 @@ public class DenseMatrixEditor extends GridPane implements
     }
   }
 
-  private boolean sendingUpdates = false;
-  private boolean receivingUpdates = false;
+  private boolean mSendingUpdatesMutex = false;
+  private boolean mReceivingUpdatesMutex = false;
   private void sendUpdates() {
-    if (sendingUpdates || receivingUpdates) {
+    if (mSendingUpdatesMutex || mReceivingUpdatesMutex) {
       return;
     }
-    sendingUpdates = true;
+    mSendingUpdatesMutex = true;
     mMatrixVariable.set(mMatrixReference);
-    sendingUpdates = false;
+    mSendingUpdatesMutex = false;
   }
 
   @Override
   public void updateMatrix(DenseMatrix64F pMatrix) {
-    if (sendingUpdates || receivingUpdates) {
+    if (mSendingUpdatesMutex || mReceivingUpdatesMutex) {
       return;
     }
-    receivingUpdates = true;
+    mReceivingUpdatesMutex = true;
     for (int x = 0; x < mMatrixReference.numCols; x++)
     {
       for (int y = 0; y < mMatrixReference.numRows; y++)
@@ -117,6 +112,6 @@ public class DenseMatrixEditor extends GridPane implements
         lVariableMatrix[x][y].set(lZernikeValue);
       }
     }
-    receivingUpdates = false;
+    mReceivingUpdatesMutex = false;
   }
 }

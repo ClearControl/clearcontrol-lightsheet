@@ -36,10 +36,10 @@ public class MatrixVisualisationDemo extends Application
         -3,
         5), lLookUpTable), 0, 0, lWidth, lHeight);
 
-    Pane root = new Pane(lCanvas);
-    Scene scene = new Scene(root);
+    Pane lRootPane = new Pane(lCanvas);
+    Scene lScene = new Scene(lRootPane);
 
-    primaryStage.setScene(scene);
+    primaryStage.setScene(lScene);
     primaryStage.show();
 
   }

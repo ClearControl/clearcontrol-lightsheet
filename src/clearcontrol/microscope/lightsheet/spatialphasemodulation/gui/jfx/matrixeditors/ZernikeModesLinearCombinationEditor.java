@@ -2,14 +2,12 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.matrix
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.DeformableMirrorPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.BlueCyanGreenYellowOrangeRedLUT;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.LookUpTable;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.visualisation.DenseMatrixImage;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.SimpleZernikeDecomposer;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialMatrix;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialsDenseMatrix64F;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
@@ -19,17 +17,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import org.ejml.data.DenseMatrix64F;
-import org.python.antlr.ast.Str;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Optional;
 
 /**
+ * This editor allows the user to enter a linear combination of
+ * Zernike modes. Also saved templates of Zernike modes are allowed.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
@@ -57,6 +56,8 @@ public class ZernikeModesLinearCombinationEditor extends GridPane implements
       Button lZernikeMomentsButton =
           new Button("Decompose Zernike moments (experimental)");
       lZernikeMomentsButton.setOnAction((actionEvent) -> {
+        // Decompose the matrix and ask the user if the result should
+        // be kept.
         String lCompositionCode = new SimpleZernikeDecomposer(pMatrixVariable.get()).getCompositionCode();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -66,7 +67,6 @@ public class ZernikeModesLinearCombinationEditor extends GridPane implements
 
         LookUpTable lLookUpTable = new BlueCyanGreenYellowOrangeRedLUT();
         DenseMatrix64F lMatrix = drawMatrixFromText(lCompositionCode);
-        //DenseMatrixImage lImage = new DenseMatrixImage(lMatrix, lLookUpTable);
 
         int lWidth = 100;
         int lHeight = 100;
@@ -123,27 +123,43 @@ public class ZernikeModesLinearCombinationEditor extends GridPane implements
     }
   }
 
-  private DenseMatrix64F drawMatrixFromText(String text) {
+  /**
+   * This function transforms a given text in the following format
+   * to a Matrix containing the described Zernike modes.
+   *
+   * Examples:
+   *
+   * Z[0, 0] 0.33
+   * -2 2 0.33
+   * TemplateFile 0.33
+   *
+   * todo: Create a reusable class in which can to that. It should
+   * have hight code quality.
+   *
+   * @param pText
+   * @return
+   */
+  private DenseMatrix64F drawMatrixFromText(String pText) {
     ArrayList<DenseMatrix64F> lMatrixList = new ArrayList<>();
 
-    int lineCount = 0;
+    int lLineCount = 0;
 
     try
     {
-      String[] rows = text.split("\n");
+      String[] lRows = pText.split("\n");
 
-      for (String row : rows)
+      for (String lCurrentRow : lRows)
       {
-        row = row.trim();
+        lCurrentRow = lCurrentRow.trim();
 
-        lineCount ++;
-        if (row.trim().startsWith("//") || row.trim().startsWith("#")) {
+        lLineCount ++;
+        if (lCurrentRow.trim().startsWith("//") || lCurrentRow.trim().startsWith("#")) {
           continue;
         }
-        if (row.startsWith("Z") && row.contains("[") && row.contains(
+        if (lCurrentRow.startsWith("Z") && lCurrentRow.contains("[") && lCurrentRow.contains(
             "]"))
         {
-          String[] temp = row.split("\\]");
+          String[] temp = lCurrentRow.split("\\]");
           double factor = Double.valueOf(temp[1].trim());
 
           temp = temp[0].split("\\[" );
@@ -160,36 +176,37 @@ public class ZernikeModesLinearCombinationEditor extends GridPane implements
           continue;
         }
 
-        String spacedRow = row;
-        spacedRow = spacedRow.replace("\t", " ");
+        // deal with white spaces
+        String lRowWithSpaces = lCurrentRow;
+        lRowWithSpaces = lRowWithSpaces.replace("\t", " ");
 
-        while (spacedRow.contains("  ")){
-          spacedRow = spacedRow.replace("  ", " ");
+        while (lRowWithSpaces.contains("  ")){
+          lRowWithSpaces = lRowWithSpaces.replace("  ", " ");
         }
 
-        String[] splitRow = spacedRow.split(" ");
-        if (splitRow.length == 3) {
-          double m = Double.valueOf(splitRow[0]);
-          double n = Double.valueOf(splitRow[1]);
-          double factor = Double.valueOf(splitRow[2]);
+        String[] lColumns = lRowWithSpaces.split(" ");
+        if (lColumns.length == 3) {
+          double m = Double.valueOf(lColumns[0]);
+          double n = Double.valueOf(lColumns[1]);
+          double factor = Double.valueOf(lColumns[2]);
           lMatrixList.add(createZermikeModeMatrix((int)m, (int)n, factor));
           continue;
         }
 
-        if (splitRow.length == 2) {
-          double factor = Double.valueOf(splitRow[1]);
+        if (lColumns.length == 2) {
+          double lFactor = Double.valueOf(lColumns[1]);
 
-          String searchedFilename = splitRow[0];
-          for (String filename : mExistingMatrixTemplates) {
-            if (searchedFilename.equals(filename)) {
+          String lSearchedFilename = lColumns[0];
+          for (String lExistingMirrorTemplateFilename : mExistingMatrixTemplates) {
+            if (lSearchedFilename.equals(lExistingMirrorTemplateFilename)) {
               DenseMatrix64F lReferenceMatrix = mMatrixVariable.get();
               DenseMatrix64F lMatrix = new DenseMatrix64F(lReferenceMatrix.numCols, lReferenceMatrix.numRows);
 
-              File lTemplateFile = new File(mMatrixTemplateFolder, filename + ".json");
+              File lTemplateFile = new File(mMatrixTemplateFolder, lExistingMirrorTemplateFilename + ".json");
 
               if (new DenseMatrix64FReader(lTemplateFile, lMatrix).read())
               {
-                lMatrixList.add(lMatrix);
+                lMatrixList.add(TransformMatrices.multiply(lMatrix, lFactor));
                 continue;
               }
             }
@@ -198,7 +215,7 @@ public class ZernikeModesLinearCombinationEditor extends GridPane implements
 
       }
     } catch (Exception e) {
-      info("Erorr parsing line " + lineCount + ": " + e.getMessage());
+      info("Erorr parsing line " + lLineCount + ": " + e.getMessage());
       return null;
     }
 

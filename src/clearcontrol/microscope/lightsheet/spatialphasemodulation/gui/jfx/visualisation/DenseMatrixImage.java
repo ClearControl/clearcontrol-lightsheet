@@ -1,14 +1,9 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.visualisation;
 
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.LookUpTable;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import org.ejml.data.DenseMatrix64F;
 
 /**
@@ -18,12 +13,12 @@ import org.ejml.data.DenseMatrix64F;
 public class DenseMatrixImage extends WritableImage
 {
   DenseMatrix64F mMatrix;
-  LookUpTable mLut;
+  LookUpTable mLookUpTable;
 
-  public DenseMatrixImage(DenseMatrix64F lMatrix, LookUpTable lLut) {
+  public DenseMatrixImage(DenseMatrix64F lMatrix, LookUpTable lLookUpTable) {
     super(lMatrix.numCols, lMatrix.numRows);
     mMatrix = lMatrix;
-    mLut = lLut;
+    mLookUpTable = lLookUpTable;
 
     process();
   }
@@ -34,14 +29,14 @@ public class DenseMatrixImage extends WritableImage
     for (int x = 0; x < mMatrix.numCols; x++) {
       for (int y = 0; y < mMatrix.numRows; y++) {
 
-        float value = (float)(mMatrix.get(x,y) / 2.0 + 0.5);
-        if (value < 0) {
-          value = 0;
+        float lValue = (float)(mMatrix.get(x,y) / 2.0 + 0.5);
+        if (lValue < 0) {
+          lValue = 0;
         }
-        if (value > 1) {
-          value = 1;
+        if (lValue > 1) {
+          lValue = 1;
         }
-        Color color = mLut.getColor(value);
+        Color color = mLookUpTable.getColor(lValue);
         lPixelWriter.setColor(x, y, color);
       }
     }
