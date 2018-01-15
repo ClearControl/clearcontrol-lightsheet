@@ -110,7 +110,8 @@ public class ZernikeModesLinearCombinationEditor extends GridPane implements
         "#\n" +
         "# Examples:\n" +
         "# Z[0, 0] 0.5\n"+
-        "# -2 2 0.49\n"+
+        "# Z1 (0/ 0) 0.5\n" +
+        "# -2 2 0.49\n" +
         "# templateFile 0.01\n";
   }
 
@@ -164,6 +165,27 @@ public class ZernikeModesLinearCombinationEditor extends GridPane implements
 
           temp = temp[0].split("\\[" );
           temp = temp[1].split("," );
+
+          double m = Double.valueOf(temp[0]);
+          double n = Double.valueOf(temp[1]);
+
+          System.out.println("m " + m);
+          System.out.println("n " + n);
+          System.out.println("f " + factor);
+
+          lMatrixList.add(createZermikeModeMatrix((int)m, (int)n, factor));
+          continue;
+        }
+
+        if (lCurrentRow.startsWith("Z") && lCurrentRow.contains("(") && lCurrentRow.contains(
+            ")"))
+        {
+
+          String[] temp = lCurrentRow.split("\\)");
+          double factor = Double.valueOf(temp[1].trim());
+
+          temp = temp[0].split("\\(" );
+          temp = temp[1].split("/" );
 
           double m = Double.valueOf(temp[0]);
           double n = Double.valueOf(temp[1]);
