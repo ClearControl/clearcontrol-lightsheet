@@ -5,7 +5,10 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialsDenseMatrix64F;
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import org.ejml.data.DenseMatrix64F;
 
@@ -85,6 +88,100 @@ public class DenseMatrixEditor extends GridPane implements
         count++;
       }
     }
+
+    int lRow = mMatrixReference.numRows + 1;
+
+
+    Button lFlipHorizontalButton =
+        new Button("Flip horizontal");
+    lFlipHorizontalButton.setOnAction((actionEvent) -> {
+      DenseMatrix64F lMatrixCopy = mMatrixReference.copy();
+      TransformMatrices.flipSquareMatrixHorizontal(lMatrixCopy, mMatrixReference);
+      mMatrixVariable.set(mMatrixReference);
+    });
+    GridPane.setColumnSpan(lFlipHorizontalButton, 2);
+    lFlipHorizontalButton.setMaxWidth(Double.MAX_VALUE);
+    this.add(lFlipHorizontalButton, 0, lRow);
+
+
+    Button lFlipVerticalButton =
+        new Button("Flip vertical");
+    lFlipVerticalButton.setOnAction((actionEvent) -> {
+      DenseMatrix64F lMatrixCopy = mMatrixReference.copy();
+      TransformMatrices.flipSquareMatrixVertical(lMatrixCopy, mMatrixReference);
+      mMatrixVariable.set(mMatrixReference);
+    });
+    GridPane.setColumnSpan(lFlipVerticalButton, 2);
+    lFlipVerticalButton.setMaxWidth(Double.MAX_VALUE);
+    this.add(lFlipVerticalButton, 2, lRow);
+
+
+    Button lFlipXYButton =
+        new Button("Flip XY");
+    lFlipXYButton.setOnAction((actionEvent) -> {
+      DenseMatrix64F lMatrixCopy = mMatrixReference.copy();
+      TransformMatrices.flipSquareMatrixXY(lMatrixCopy, mMatrixReference);
+      mMatrixVariable.set(mMatrixReference);
+    });
+    GridPane.setColumnSpan(lFlipXYButton, 3);
+    lFlipXYButton.setMaxWidth(Double.MAX_VALUE);
+    this.add(lFlipXYButton, 4, lRow);
+
+
+    Button lRotateClockwise =
+        new Button("Rotate clockwise");
+    lRotateClockwise.setOnAction((actionEvent) -> {
+      DenseMatrix64F lMatrixCopy = mMatrixReference.copy();
+      TransformMatrices.flipSquareMatrixXY(lMatrixCopy, mMatrixReference);
+      lMatrixCopy = mMatrixReference.copy();
+      TransformMatrices.flipSquareMatrixVertical(lMatrixCopy, mMatrixReference);
+      mMatrixVariable.set(mMatrixReference);
+    });
+    GridPane.setColumnSpan(lRotateClockwise, 2);
+    lRotateClockwise.setMaxWidth(Double.MAX_VALUE);
+    this.add(lRotateClockwise, 7, lRow);
+
+
+    Button lRotateCounterClockwiseButton =
+        new Button("Rotate counter clockwise");
+    lRotateCounterClockwiseButton.setOnAction((actionEvent) -> {
+      DenseMatrix64F lMatrixCopy = mMatrixReference.copy();
+      TransformMatrices.flipSquareMatrixXY(lMatrixCopy, mMatrixReference);
+      lMatrixCopy = mMatrixReference.copy();
+      TransformMatrices.flipSquareMatrixHorizontal(lMatrixCopy, mMatrixReference);
+      mMatrixVariable.set(mMatrixReference);
+    });
+    GridPane.setColumnSpan(lRotateCounterClockwiseButton, 2);
+    lRotateCounterClockwiseButton.setMaxWidth(Double.MAX_VALUE);
+    this.add(lRotateCounterClockwiseButton, 9, lRow);
+
+    lRow++;
+
+
+    BoundedVariable<Double> lFactorVariable =
+        new BoundedVariable<Double>("factor",
+                                    1.0,
+                                    Double.MIN_VALUE,
+                                    Double.MAX_VALUE,
+                                    0.0001);
+
+    NumberVariableTextField<Double> lFactorField =
+        new NumberVariableTextField<Double>(lFactorVariable.getName(),
+                                            lFactorVariable,
+                                            lFactorVariable.getMin(),
+                                            lFactorVariable.getMax(),
+                                            lFactorVariable.getGranularity());
+
+    this.add(lFactorField.getLabel(), 0, lRow);
+    this.add(lFactorField.getTextField(), 1, lRow);
+
+    Button lZernikeMomentsButton =
+        new Button("Mutliply");
+    lZernikeMomentsButton.setOnAction((actionEvent) -> {
+      mMatrixVariable.set(TransformMatrices.multiply(mMatrixReference, lFactorVariable.get()));
+    });
+    GridPane.setColumnSpan(lZernikeMomentsButton, 2);
+    this.add(lZernikeMomentsButton, 2, lRow);
   }
 
   private boolean mSendingUpdatesMutex = false;

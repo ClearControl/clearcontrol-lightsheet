@@ -17,6 +17,7 @@ import clearcontrol.core.log.LoggingFeature;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) January 2018
  */
+@Deprecated
 class ZernikePolynomialMatrix implements LoggingFeature
 {
   int m;

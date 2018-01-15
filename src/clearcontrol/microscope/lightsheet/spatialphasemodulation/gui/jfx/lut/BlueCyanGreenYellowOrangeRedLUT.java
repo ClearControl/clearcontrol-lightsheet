@@ -31,8 +31,10 @@ public class BlueCyanGreenYellowOrangeRedLUT implements LookUpTable
     } else if (pIndex < 0.75) {
       lRed = lInnerIndex;
       lGreen = 1;
-    } else {
+    } else if (pIndex < 1){
       lGreen = 1.0f - lInnerIndex;
+      lRed = 1;
+    } else {
       lRed = 1;
     }
 

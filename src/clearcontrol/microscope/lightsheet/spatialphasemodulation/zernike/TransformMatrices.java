@@ -170,6 +170,17 @@ public class TransformMatrices
     return lSumMatrix;
   }
 
+  public static DenseMatrix64F sum(DenseMatrix64F... pMatrixArray)
+  {
+    ArrayList<DenseMatrix64F> lList = new ArrayList<DenseMatrix64F>();
+
+    for (int i = 0; i < pMatrixArray.length; i++) {
+      lList.add(pMatrixArray[i]);
+    }
+    return sum(lList);
+  }
+
+
   public static double meanSquaredError(DenseMatrix64F pMatrix1, DenseMatrix64F pMatrix2) {
     if (pMatrix1.numRows != pMatrix2.numRows) {
       return Double.NaN;
@@ -208,5 +219,65 @@ public class TransformMatrices
       }
     }
     return true;
+  }
+
+  public static boolean flipSquareMatrixVertical(DenseMatrix64F pSourceMatrix, DenseMatrix64F pTargetMatrix) {
+    if (pSourceMatrix == pTargetMatrix ||
+        pSourceMatrix.numRows != pTargetMatrix.numRows ||
+        pSourceMatrix.numCols != pTargetMatrix.numCols ||
+        pSourceMatrix.numRows != pSourceMatrix.numCols)
+    {
+      return false;
+    }
+
+    for (int y = 0; y < pSourceMatrix.numRows; y++)
+    {
+      for (int x = 0; x < pSourceMatrix.numCols; x++)
+      {
+        pTargetMatrix.set(pSourceMatrix.numRows - y - 1, x, pSourceMatrix.get(y, x));
+      }
+    }
+
+    return false;
+  }
+
+  public static boolean flipSquareMatrixHorizontal(DenseMatrix64F pSourceMatrix, DenseMatrix64F pTargetMatrix) {
+    if (pSourceMatrix == pTargetMatrix ||
+        pSourceMatrix.numRows != pTargetMatrix.numRows ||
+        pSourceMatrix.numCols != pTargetMatrix.numCols ||
+        pSourceMatrix.numRows != pSourceMatrix.numCols)
+    {
+      return false;
+    }
+
+    for (int y = 0; y < pSourceMatrix.numRows; y++)
+    {
+      for (int x = 0; x < pSourceMatrix.numCols; x++)
+      {
+        pTargetMatrix.set(y, pSourceMatrix.numCols - x - 1, pSourceMatrix.get(y, x));
+      }
+    }
+
+    return false;
+  }
+
+  public static boolean flipSquareMatrixXY(DenseMatrix64F pSourceMatrix, DenseMatrix64F pTargetMatrix) {
+    if (pSourceMatrix == pTargetMatrix ||
+        pSourceMatrix.numRows != pTargetMatrix.numRows ||
+        pSourceMatrix.numCols != pTargetMatrix.numCols ||
+        pSourceMatrix.numRows != pSourceMatrix.numCols)
+    {
+      return false;
+    }
+
+    for (int y = 0; y < pSourceMatrix.numRows; y++)
+    {
+      for (int x = 0; x < pSourceMatrix.numCols; x++)
+      {
+        pTargetMatrix.set(x, y, pSourceMatrix.get(y, x));
+      }
+    }
+
+    return false;
   }
 }

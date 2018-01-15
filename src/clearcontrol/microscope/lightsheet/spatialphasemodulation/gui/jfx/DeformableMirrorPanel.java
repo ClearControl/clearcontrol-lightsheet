@@ -4,18 +4,14 @@ import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.BlueCyanGreenYellowOrangeRedLUT;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.lut.LookUpTable;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.matrixeditors.DenseMatrixEditor;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.matrixeditors.ZernikeModesLinearCombinationEditor;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.matrixeditors.MatrixUpdateReceiver;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.matrixeditors.ZernikeModeEditor;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.matrixeditors.*;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.visualisation.DenseMatrixImage;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.visualisation.ImagePane;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FWriter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 
 import clearcontrol.core.log.LoggingFeature;
@@ -39,7 +35,8 @@ public class DeformableMirrorPanel extends CustomGridPane
 {
   SpatialPhaseModulatorDeviceBase mSpatialPhaseModulatorDevice;
 
-  GraphicsContext mGraphicsContext;
+  ImagePane mPreviewPane;
+  //GraphicsContext mGraphicsContext;
   ArrayList<MatrixUpdateReceiver> mListMatrixUpdateReceivers = new ArrayList<>();
 
   Variable<DenseMatrix64F> mEditorMatrixVariable;
@@ -72,11 +69,8 @@ public class DeformableMirrorPanel extends CustomGridPane
     });
 
     {
-      Canvas lCanvas = new Canvas(lPreviewWidth, lPreviewHeight);
-      mGraphicsContext = lCanvas.getGraphicsContext2D();
-
-      Pane lPreviewPane = new Pane(lCanvas);
-      this.add(lPreviewPane, 0, lRow, 1, 4);
+      mPreviewPane = new ImagePane(lPreviewWidth, lPreviewHeight);
+      this.add(mPreviewPane, 0, lRow, 1, 4);
     }
 
     {
@@ -88,7 +82,18 @@ public class DeformableMirrorPanel extends CustomGridPane
       lSendToDeviceButton.setOnAction((actionEvent) -> {
         DenseMatrix64F lMatrix = mEditorMatrixVariable.get();
         info("Asking to set the dm device to given values");
-        mSpatialPhaseModulatorDevice.getMatrixReference().set(lMatrix);
+
+        boolean arrayOk = true;
+        double[] data = lMatrix.data;
+        for (int i = 0; i< data.length; i++) {
+          if (data[i] < -1 || data[i] > 1) {
+            warning("Error: Matrix element " + i + " out of acceptable range! Change it and try again.");
+            arrayOk = false;
+          }
+        }
+        if (arrayOk) {
+          mSpatialPhaseModulatorDevice.getMatrixReference().set(lMatrix);
+        }
       });
       this.add(lSendToDeviceButton, 2, 0);
       lRow++;
@@ -193,6 +198,16 @@ public class DeformableMirrorPanel extends CustomGridPane
     }
 
     {
+      // Zernike controller
+      Tab lZernikeControllerTab = new Tab("Zernike controller");
+      ZernikeVisualController
+          lZernikeVisualController = new ZernikeVisualController(mEditorMatrixVariable);
+      lZernikeControllerTab.setContent(lZernikeVisualController);
+      lTabPane.getTabs().add(lZernikeControllerTab);
+      lTabPane.getSelectionModel().select(lZernikeControllerTab);
+    }
+
+    {
       // Matrix editor
       Tab lZernikeEditorTab = new Tab("Matrix editor");
       DenseMatrixEditor lMatrixEditor = new DenseMatrixEditor(mEditorMatrixVariable);
@@ -200,6 +215,8 @@ public class DeformableMirrorPanel extends CustomGridPane
       mListMatrixUpdateReceivers.add(lMatrixEditor);
       lTabPane.getTabs().add(lZernikeEditorTab);
     }
+
+
 
     // execute first drawing
     mEditorMatrixVariable.set(mEditorMatrixVariable.get());
@@ -210,7 +227,8 @@ public class DeformableMirrorPanel extends CustomGridPane
 
     LookUpTable lLookUpTable = new BlueCyanGreenYellowOrangeRedLUT();
 
-    mGraphicsContext.drawImage(new DenseMatrixImage(pNewMatrix, lLookUpTable), 0, 0, pPreviewWidth, pPreviewHeight);
+    mPreviewPane.setImage(new DenseMatrixImage(pNewMatrix, lLookUpTable));
+    //mGraphicsContext.drawImage(new DenseMatrixImage(pNewMatrix, lLookUpTable), 0, 0, pPreviewWidth, pPreviewHeight);
   }
 
   private void updateEditors(DenseMatrix64F pMatrix) {
