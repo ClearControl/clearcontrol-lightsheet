@@ -9,6 +9,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.visuali
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.visualisation.ImagePane;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FWriter;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -36,6 +37,9 @@ public class DeformableMirrorPanel extends CustomGridPane
   SpatialPhaseModulatorDeviceBase mSpatialPhaseModulatorDevice;
 
   ImagePane mPreviewPane;
+  ImagePane mPreviewPaneScaled;
+  Label mPreviewScaledLabel;
+
   //GraphicsContext mGraphicsContext;
   ArrayList<MatrixUpdateReceiver> mListMatrixUpdateReceivers = new ArrayList<>();
 
@@ -68,10 +72,36 @@ public class DeformableMirrorPanel extends CustomGridPane
       updateEditors(lNewMatrix);
     });
 
+
     {
       mPreviewPane = new ImagePane(lPreviewWidth, lPreviewHeight);
       this.add(mPreviewPane, 0, lRow, 1, 4);
     }
+
+    {
+      mPreviewPaneScaled = new ImagePane(lPreviewWidth, lPreviewHeight);
+      this.add(mPreviewPaneScaled, 1, lRow, 1, 4);
+    }
+
+    {
+      Label lPreviewLabel = new Label("Full range");
+      lPreviewLabel.setAlignment(Pos.CENTER);
+      this.add(lPreviewLabel, 0, 4, 1, 1);
+    }
+
+    {
+      mPreviewScaledLabel = new Label("Range");
+      mPreviewScaledLabel.setAlignment(Pos.CENTER);
+      this.add(mPreviewScaledLabel, 1, 4, 1, 1);
+    }
+
+    CheckBox lFlipXYCheckBox = new CheckBox("Flip XY");
+    this.add(lFlipXYCheckBox, 4, 0);
+    CheckBox lFlipVerticalCheckBox = new CheckBox("Flip vertical");
+    this.add(lFlipVerticalCheckBox, 5, 0);
+    CheckBox lFlipHorizontalCheckBox = new CheckBox("Flip horizontal");
+    this.add(lFlipHorizontalCheckBox, 6, 0);
+
 
     {
       Button lSendToDeviceButton = new Button("Send to mirror");
@@ -80,11 +110,34 @@ public class DeformableMirrorPanel extends CustomGridPane
       lSendToDeviceButton.setFont(lFont);
       lSendToDeviceButton.setMaxWidth(Double.MAX_VALUE);
       lSendToDeviceButton.setOnAction((actionEvent) -> {
-        DenseMatrix64F lMatrix = mEditorMatrixVariable.get();
+
+        DenseMatrix64F lSourceMatrix = mEditorMatrixVariable.get().copy();
+        DenseMatrix64F lTargetMatrix = mEditorMatrixVariable.get().copy();
+        if (lFlipXYCheckBox.isSelected())
+        {
+          TransformMatrices.flipSquareMatrixXY(lSourceMatrix,
+                                                     lTargetMatrix);
+          lSourceMatrix = lTargetMatrix.copy();
+        }
+        if (lFlipVerticalCheckBox.isSelected())
+        {
+          TransformMatrices.flipSquareMatrixVertical(lSourceMatrix,
+                                                     lTargetMatrix);
+          lSourceMatrix = lTargetMatrix.copy();
+        }
+        if (lFlipHorizontalCheckBox.isSelected())
+        {
+          TransformMatrices.flipSquareMatrixHorizontal(lSourceMatrix,
+                                                     lTargetMatrix);
+          lSourceMatrix = lTargetMatrix.copy();
+        }
+        mSpatialPhaseModulatorDevice.getMatrixReference().set(lTargetMatrix);
+
+
         info("Asking to set the dm device to given values");
 
         boolean arrayOk = true;
-        double[] data = lMatrix.data;
+        double[] data = lTargetMatrix.data;
         for (int i = 0; i< data.length; i++) {
           if (data[i] < -1 || data[i] > 1) {
             warning("Error: Matrix element " + i + " out of acceptable range! Change it and try again.");
@@ -92,10 +145,10 @@ public class DeformableMirrorPanel extends CustomGridPane
           }
         }
         if (arrayOk) {
-          mSpatialPhaseModulatorDevice.getMatrixReference().set(lMatrix);
+          mSpatialPhaseModulatorDevice.getMatrixReference().set(lTargetMatrix);
         }
       });
-      this.add(lSendToDeviceButton, 2, 0);
+      this.add(lSendToDeviceButton, 3, 0);
       lRow++;
     }
 
@@ -111,7 +164,7 @@ public class DeformableMirrorPanel extends CustomGridPane
         mEditorMatrixVariable.set(lEmptyMatrix);
       });
       lZeroButton.setMaxWidth(Double.MAX_VALUE);
-      this.add(lZeroButton, 2, lRow);
+      this.add(lZeroButton, 3, lRow);
       lRow++;
     }
 
@@ -119,7 +172,7 @@ public class DeformableMirrorPanel extends CustomGridPane
     {
       // load
       lExistingMirrorModesComboBox = new ComboBox(listExistingMirorModeFiles());
-      add(lExistingMirrorModesComboBox, 1, lRow);
+      add(lExistingMirrorModesComboBox, 2, lRow);
 
       Button lLoadMirrorModeBytton = new Button("Load");
       lLoadMirrorModeBytton.setMaxWidth(Double.MAX_VALUE);
@@ -136,7 +189,7 @@ public class DeformableMirrorPanel extends CustomGridPane
         }
       });
 
-      add(lLoadMirrorModeBytton, 2, lRow);
+      add(lLoadMirrorModeBytton, 3, lRow);
       lRow++;
 
     }
@@ -154,7 +207,7 @@ public class DeformableMirrorPanel extends CustomGridPane
                                      if (!lName.isEmpty())
                                        lFileNameVariable.set(lName);
                                    });
-      add(lFileNameTextField, 1, lRow);
+      add(lFileNameTextField, 2, lRow);
 
       Button lSaveMirrorModeButton = new Button("Save");
       lSaveMirrorModeButton.setAlignment(Pos.CENTER);
@@ -172,12 +225,14 @@ public class DeformableMirrorPanel extends CustomGridPane
         }
       });
       GridPane.setColumnSpan(lSaveMirrorModeButton, 1);
-      add(lSaveMirrorModeButton, 2, lRow);
+      add(lSaveMirrorModeButton, 3, lRow);
       lRow++;
     }
+    lRow++;
+
 
     TabPane lTabPane = new TabPane();
-    add(lTabPane, 0, lRow, 6, 1);
+    add(lTabPane, 0, lRow, 9, 1);
 
     {
       // Single zernike editor
@@ -228,6 +283,15 @@ public class DeformableMirrorPanel extends CustomGridPane
     LookUpTable lLookUpTable = new BlueCyanGreenYellowOrangeRedLUT();
 
     mPreviewPane.setImage(new DenseMatrixImage(pNewMatrix, lLookUpTable));
+
+    double lMin = TransformMatrices.getMinOfMatrix(pNewMatrix);
+    double lMax = TransformMatrices.getMaxOfMatrix(pNewMatrix);
+
+    double lFactor = 1.0 / Math.max(Math.abs(lMin), Math.abs(lMax));
+    DenseMatrix64F lScaledMatrix = TransformMatrices.multiply(pNewMatrix, lFactor);
+    mPreviewPaneScaled.setImage(new DenseMatrixImage(lScaledMatrix, lLookUpTable));
+    mPreviewScaledLabel.setText("-" + String.format("%.2f", 1.0 / lFactor) + " ... " + String.format("%.2f", 1.0 / lFactor));
+
     //mGraphicsContext.drawImage(new DenseMatrixImage(pNewMatrix, lLookUpTable), 0, 0, pPreviewWidth, pPreviewHeight);
   }
 

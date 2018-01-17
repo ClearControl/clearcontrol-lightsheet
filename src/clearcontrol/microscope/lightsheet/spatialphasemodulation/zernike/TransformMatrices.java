@@ -280,4 +280,47 @@ public class TransformMatrices
 
     return false;
   }
+
+  public static void rotateClockwise(DenseMatrix64F pSourceMatrix,
+                                     DenseMatrix64F pTargetMatrox)
+  {
+    TransformMatrices.flipSquareMatrixXY(pSourceMatrix, pTargetMatrox);
+    pSourceMatrix = pTargetMatrox.copy();
+    TransformMatrices.flipSquareMatrixVertical(pSourceMatrix, pTargetMatrox);
+  }
+
+  public static void rotateCounterClockwise(DenseMatrix64F pSourceMatrix,
+                                     DenseMatrix64F pTargetMatrox)
+  {
+    TransformMatrices.flipSquareMatrixXY(pSourceMatrix, pTargetMatrox);
+    pSourceMatrix = pTargetMatrox.copy();
+    TransformMatrices.flipSquareMatrixHorizontal(pSourceMatrix, pTargetMatrox);
+  }
+
+  public static double getMaxOfMatrix(DenseMatrix64F pMatrix) {
+    double[] lData = pMatrix.data;
+
+    double lMax = Double.MIN_VALUE;
+    for (double lValue : lData) {
+      if (lValue > lMax) {
+        lMax = lValue;
+      }
+    }
+    return lMax;
+  }
+
+  public static double getMinOfMatrix(DenseMatrix64F pMatrix) {
+    double[] lData = pMatrix.data;
+
+    double lMin = Double.MAX_VALUE;
+    for (double lValue : lData) {
+      if (lValue < lMin) {
+        lMin = lValue;
+      }
+    }
+    return lMin;
+  }
+
+
+
 }
