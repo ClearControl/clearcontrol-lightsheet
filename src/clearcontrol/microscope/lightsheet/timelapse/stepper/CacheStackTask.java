@@ -17,8 +17,9 @@ public class CacheStackTask extends TaskBase implements TaskInterface
 
   private Handler mTimeStepHandler;
   private final String mSrcImageSlotKey;
-  private final long mStartTime;
-  private long mLastTime;
+  //private final long mStartTime;
+  //private long mLastTime;
+  private float time;
 
   public CacheStackTask(String pSrcImageSlotKey,
                         Handler pTimeStepHandler)
@@ -26,8 +27,9 @@ public class CacheStackTask extends TaskBase implements TaskInterface
     super(pSrcImageSlotKey);
     mTimeStepHandler = pTimeStepHandler;
     mSrcImageSlotKey = pSrcImageSlotKey;
-    mStartTime = System.currentTimeMillis();
-    mLastTime = 0;
+    time = -90;
+    //mStartTime = System.currentTimeMillis();
+    //mLastTime = 0;
   }
 
   @Override
@@ -44,17 +46,20 @@ public class CacheStackTask extends TaskBase implements TaskInterface
     // read out time and measure time step
 
     // measure total time since start of application
-    long pRunTime = System.currentTimeMillis() - mStartTime;
+    //long pRunTime = System.currentTimeMillis() - mStartTime;
 
     // compute step till last run
-    long pStep = pRunTime - mLastTime;
+    //long pStep = pRunTime - mLastTime;
+    float pStep = mTimeStepHandler.mTimeStepper.mNeutralStep;
+    
+    time = time+90;
 
-    System.out.println("time is: " + pRunTime
+    System.out.println("time is: " + time
                        + " and Step is: "
                        + pStep);
 
     // set LastTime for next run
-    mLastTime = pRunTime;
+    //mLastTime = pRunTime;
 
     if (pFastFusionEngine.isImageAvailable(mSrcImageSlotKey))
     {
@@ -64,7 +69,7 @@ public class CacheStackTask extends TaskBase implements TaskInterface
       ClearCLImage CurrImage =
                              pFastFusionEngine.getImage(mSrcImageSlotKey);
       mTimeStepHandler.processImage(CurrImage,
-                                    (float) pRunTime,
+                                    (float) time,
                                     (float) pStep);
       System.out.println("computed step would be: " + pStep);
     }
