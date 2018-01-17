@@ -132,9 +132,7 @@ public class DenseMatrixEditor extends GridPane implements
         new Button("Rotate clockwise");
     lRotateClockwise.setOnAction((actionEvent) -> {
       DenseMatrix64F lMatrixCopy = mMatrixReference.copy();
-      TransformMatrices.flipSquareMatrixXY(lMatrixCopy, mMatrixReference);
-      lMatrixCopy = mMatrixReference.copy();
-      TransformMatrices.flipSquareMatrixVertical(lMatrixCopy, mMatrixReference);
+      TransformMatrices.rotateClockwise(lMatrixCopy, mMatrixReference);
       mMatrixVariable.set(mMatrixReference);
     });
     GridPane.setColumnSpan(lRotateClockwise, 2);
