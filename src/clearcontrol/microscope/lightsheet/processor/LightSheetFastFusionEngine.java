@@ -19,7 +19,6 @@ import fastfuse.FastFusionMemoryPool;
 import fastfuse.registration.AffineMatrix;
 import fastfuse.tasks.*;
 import fastfuse.tasks.DownsampleXYbyHalfTask.Type;
-import framework.Handler;
 
 /**
  * Lightsheet fast fusion engine
