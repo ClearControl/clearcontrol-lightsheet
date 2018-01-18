@@ -27,6 +27,7 @@ import eu.hansolo.enzo.simpleindicator.SimpleIndicator;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) October 2017
  */
+@Deprecated
 public class EDFImagingEngineToolbar extends CustomGridPane
 {
   public EDFImagingEngineToolbar(EDFImagingEngine pDepthOfFieldImagingEngine)

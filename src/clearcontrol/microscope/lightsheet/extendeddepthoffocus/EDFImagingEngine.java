@@ -60,6 +60,7 @@ import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) October 2017
  */
+@Deprecated
 public class EDFImagingEngine extends TaskDevice implements
                               LoggingFeature,
                               VisualConsoleInterface
