@@ -14,6 +14,7 @@ import clearcontrol.stack.imglib2.StackToImgConverter;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) November 2017
  */
+@Deprecated
 public class StandardDeviationPerSliceEstimator
 {
   RandomAccessibleInterval<ShortType> mImage;

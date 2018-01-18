@@ -29,6 +29,7 @@ import clearcontrol.stack.OffHeapPlanarStack;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) October 2017
  */
+@Deprecated
 public class FocusableImager implements LoggingFeature
 {
   LightSheetMicroscope mLightSheetMicroscope;

@@ -7,6 +7,7 @@ import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) November 2017
  */
+@Deprecated
 public class EDFImagingEnginePanel extends VisualConsolePanel
 {
 
