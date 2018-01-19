@@ -96,10 +96,12 @@ public class DeformableMirrorPanel extends CustomGridPane
     }
 
     CheckBox lFlipXYCheckBox = new CheckBox("Flip XY");
+    lFlipXYCheckBox.setSelected(true);
     this.add(lFlipXYCheckBox, 4, 0);
     CheckBox lFlipVerticalCheckBox = new CheckBox("Flip vertical");
     this.add(lFlipVerticalCheckBox, 5, 0);
     CheckBox lFlipHorizontalCheckBox = new CheckBox("Flip horizontal");
+    lFlipHorizontalCheckBox.setSelected(true);
     this.add(lFlipHorizontalCheckBox, 6, 0);
 
 
