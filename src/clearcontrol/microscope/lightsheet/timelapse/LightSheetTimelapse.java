@@ -50,6 +50,10 @@ public class LightSheetTimelapse extends TimelapseBase implements
                                                                   new Variable<Boolean>("InterleavedAcquisition",
                                                                                         false);
 
+  private final Variable<Boolean> mExtendedDepthOfFieldAcquisitionVariable =
+      new Variable<Boolean>("ExtendedDepthOfFieldAcquisition",
+                            false);
+
   /**
    * @param pLightSheetMicroscope
    *          microscope
@@ -196,13 +200,16 @@ public class LightSheetTimelapse extends TimelapseBase implements
     int lNumberOfLaserLines =
                             mLightSheetMicroscope.getNumberOfLaserLines();
 
+    int lNumberOfEDFSlices = mExtendedDepthOfFieldAcquisitionVariable.get()?4:0;
+
     LightSheetMicroscopeQueue lQueue =
                                      pCurrentState.getQueue(0,
                                                             lNumberOfDetectionArms,
                                                             pLightSheetIndex,
                                                             pLightSheetIndex + 1,
                                                             0,
-                                                            lNumberOfLaserLines);
+                                                            lNumberOfLaserLines,
+                                                            lNumberOfEDFSlices);
 
     for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
     {
@@ -238,6 +245,11 @@ public class LightSheetTimelapse extends TimelapseBase implements
   public Variable<Boolean> getFuseStacksVariable()
   {
     return mFuseStacksVariable;
+  }
+
+  public Variable<Boolean> getExtendedDepthOfFieldAcquisitionVariable()
+  {
+    return mExtendedDepthOfFieldAcquisitionVariable;
   }
 
   /**

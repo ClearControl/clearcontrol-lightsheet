@@ -523,7 +523,8 @@ public class InterpolatedAcquisitionState extends
                         0,
                         mNumberOfLightSheets,
                         0,
-                        mNumberOfLaserLines);
+                        mNumberOfLaserLines,
+                        0);
     }
     mQueueUpdateNeeded = false;
   }
@@ -534,7 +535,8 @@ public class InterpolatedAcquisitionState extends
                                             int pLightSheetIndexMin,
                                             int pLightSheetIndexMax,
                                             int pLaserLineIndexMin,
-                                            int pLaserLineIndexMax)
+                                            int pLaserLineIndexMax,
+                                            int pExtendedDepthOfFieldSliceCount)
   {
     LightSheetMicroscopeQueue lQueue = getMicroscope().requestQueue();
 
@@ -548,17 +550,25 @@ public class InterpolatedAcquisitionState extends
 
     lQueue.clearQueue();
 
+    int lEDFRelativeMinSliceDistance = - (pExtendedDepthOfFieldSliceCount / 2);
+    int lEDFRelativeMaxSliceDistance = pExtendedDepthOfFieldSliceCount + lEDFRelativeMinSliceDistance;
+
+
     for (int lIndex = 0; lIndex < lStackDepthInPlanes; lIndex++)
     {
-      applyAcquisitionStateAtStackPlane(lQueue,
-                                        lIndex,
-                                        pCameraIndexMin,
-                                        pCameraIndexMax,
-                                        pLightSheetIndexMin,
-                                        pLightSheetIndexMax,
-                                        pLaserLineIndexMin,
-                                        pLaserLineIndexMax);
-      lQueue.addCurrentStateToQueue();
+      for (int lRelativeIndex = lIndex + lEDFRelativeMinSliceDistance; lRelativeIndex <= lIndex + lEDFRelativeMaxSliceDistance; lRelativeIndex ++)
+      {
+        applyAcquisitionStateAtStackPlane(lQueue,
+                                          lRelativeIndex,
+                                          lIndex,
+                                          pCameraIndexMin,
+                                          pCameraIndexMax,
+                                          pLightSheetIndexMin,
+                                          pLightSheetIndexMax,
+                                          pLaserLineIndexMin,
+                                          pLaserLineIndexMax);
+        lQueue.addCurrentStateToQueue();
+      }
     }
 
     lQueue.setTransitionTime(0.5);
@@ -598,8 +608,10 @@ public class InterpolatedAcquisitionState extends
    * 
    * @param pQueue
    *          lightsheet microscope
-   * @param pPlaneIndex
-   *          stack plane index
+   * @param pLightSheetPlaneIndex
+   *          stack plane index (light sheet)
+   * @param pDetectionArmPlaneIndex
+   *          stack plane index (detection arm)
    * @param pCameraIndexMin
    *          lower camera index (inclusive)
    * @param pCameraIndexMax
@@ -614,7 +626,8 @@ public class InterpolatedAcquisitionState extends
    *          higher laser line index (exclusive)
    */
   public void applyAcquisitionStateAtStackPlane(LightSheetMicroscopeQueue pQueue,
-                                                int pPlaneIndex,
+                                                int pLightSheetPlaneIndex,
+                                                int pDetectionArmPlaneIndex,
                                                 int pCameraIndexMin,
                                                 int pCameraIndexMax,
                                                 int pLightSheetIndexMin,
@@ -626,7 +639,7 @@ public class InterpolatedAcquisitionState extends
     for (int d = pCameraIndexMin; d < pCameraIndexMax; d++)
     {
       applyAcquisitionStateAtStackPlaneAndForCamera(pQueue,
-                                                    pPlaneIndex,
+                                                    pDetectionArmPlaneIndex,
                                                     d);
     }
 
@@ -636,7 +649,7 @@ public class InterpolatedAcquisitionState extends
     for (int l = pLightSheetIndexMin; l < pLightSheetIndexMax; l++)
     {
       applyAcquisitionStateAtStackPlaneAndLightSheet(pQueue,
-                                                     pPlaneIndex,
+                                                     pLightSheetPlaneIndex,
                                                      l,
                                                      pLaserLineIndexMin,
                                                      pLaserLineIndexMax);

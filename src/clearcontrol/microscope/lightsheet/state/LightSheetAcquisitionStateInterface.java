@@ -42,7 +42,8 @@ public interface LightSheetAcquisitionStateInterface<S extends LightSheetAcquisi
                                      int pLightSheetIndexMin,
                                      int pLightSheetIndexMax,
                                      int pLaserLineIndexMin,
-                                     int pLaserLineIndexMax);
+                                     int pLaserLineIndexMax,
+                                     int pExtendedDepthOfFieldSlices);
 
   /**
    * Returns current interpolation tables
