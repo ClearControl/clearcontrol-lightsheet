@@ -59,6 +59,8 @@ public class LiveStatisticsProcessor extends ClearCLStackProcessorBase
   public StackInterface process(StackInterface pStack,
                                 RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
   {
+    if (true) return pStack;
+
     info("Starting stack statistics");
     RandomAccessibleInterval<ShortType> img =
                                             new StackToImgConverter(pStack).getRandomAccessibleInterval();
