@@ -72,6 +72,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
     }
 
 
+    /*
     {
       VariableCheckBox lInterleavedAcquisition =
                                                new VariableCheckBox("",
@@ -89,7 +90,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       add(lInterleavedAcquisition.getCheckBox(), 0, mRow);
       add(lInterleavedAcquisitionLabel, 1, mRow);
       mRow++;
-    }
+    }*/
 
     {
       VariableCheckBox lFuseStacksCheckBox =
