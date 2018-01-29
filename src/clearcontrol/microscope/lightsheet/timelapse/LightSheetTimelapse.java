@@ -200,7 +200,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
     int lNumberOfLaserLines =
                             mLightSheetMicroscope.getNumberOfLaserLines();
 
-    int lNumberOfEDFSlices = mExtendedDepthOfFieldAcquisitionVariable.get()?4:0;
+    int lNumberOfEDFSlices = mExtendedDepthOfFieldAcquisitionVariable.get()?10:0;
 
     LightSheetMicroscopeQueue lQueue =
                                      pCurrentState.getQueue(0,
