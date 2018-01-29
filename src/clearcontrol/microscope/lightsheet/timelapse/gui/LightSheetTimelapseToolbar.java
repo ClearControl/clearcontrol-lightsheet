@@ -110,18 +110,18 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
     }
 
     {
-      VariableCheckBox lFuseStacksCheckBox =
+      VariableCheckBox lEDFImagingCheckBox =
           new VariableCheckBox("Extenced depth of field (EDF)",
                                pLightSheetTimelapse.getExtendedDepthOfFieldAcquisitionVariable());
 
-      GridPane.setHalignment(lFuseStacksCheckBox.getCheckBox(),
+      GridPane.setHalignment(lEDFImagingCheckBox.getCheckBox(),
                              HPos.RIGHT);
-      GridPane.setColumnSpan(lFuseStacksCheckBox.getLabel(), 1);
-      GridPane.setColumnSpan(lFuseStacksCheckBox.getCheckBox(), 1);
+      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 1);
+      GridPane.setColumnSpan(lEDFImagingCheckBox.getCheckBox(), 1);
 
-      GridPane.setColumnSpan(lFuseStacksCheckBox.getLabel(), 3);
-      add(lFuseStacksCheckBox.getCheckBox(), 0, mRow);
-      add(lFuseStacksCheckBox.getLabel(), 1, mRow);
+      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 3);
+      add(lEDFImagingCheckBox.getCheckBox(), 0, mRow);
+      add(lEDFImagingCheckBox.getLabel(), 1, mRow);
 
       mRow++;
     }
