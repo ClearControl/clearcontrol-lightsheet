@@ -1,12 +1,11 @@
-package clearcontrol.microscope.lightsheet.spatialphasemodulation.experimentscheduler.gui;
+package clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.file.VariableFileChooser;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.experimentscheduler.SpatialPhaseModulatorExperimentScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
@@ -14,11 +13,11 @@ import javafx.scene.layout.GridPane;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
-public class SpatialPhaseModulatorExperimentSchedulerPanel extends
+public class MirrorModeSchedulerPanel extends
                                                            CustomGridPane
     implements LoggingFeature
 {
-  public SpatialPhaseModulatorExperimentSchedulerPanel(SpatialPhaseModulatorExperimentScheduler pSpatialPhaseModulatorExperimentScheduler) {
+  public MirrorModeSchedulerPanel(MirrorModeScheduler pMirrorModeScheduler) {
 
 
     int lRow = 0;
@@ -31,7 +30,7 @@ public class SpatialPhaseModulatorExperimentSchedulerPanel extends
     {
       VariableFileChooser lRootFolderChooser =
           new VariableFileChooser("Folder:",
-                                  pSpatialPhaseModulatorExperimentScheduler.getRootFolderVariable(),
+                                  pMirrorModeScheduler.getRootFolderVariable(),
                                   true);
       GridPane.setColumnSpan(lRootFolderChooser.getLabel(),
                              Integer.valueOf(1));
@@ -48,7 +47,7 @@ public class SpatialPhaseModulatorExperimentSchedulerPanel extends
 
     {
       BoundedVariable<Integer>
-          lDelayFramesVariable = pSpatialPhaseModulatorExperimentScheduler.getDelayFramesVariable();
+          lDelayFramesVariable = pMirrorModeScheduler.getDelayFramesVariable();
       NumberVariableTextField<Integer> lField =
           new NumberVariableTextField<Integer>(lDelayFramesVariable.getName(),
                                                lDelayFramesVariable,

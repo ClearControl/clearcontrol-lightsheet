@@ -1,10 +1,11 @@
-package clearcontrol.microscope.lightsheet.spatialphasemodulation.experimentscheduler;
+package clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler;
 
 import clearcontrol.core.device.VirtualDevice;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.microscope.lightsheet.component.scheduler.ExperimentScheduler;
+import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import org.ejml.data.DenseMatrix64F;
@@ -15,8 +16,7 @@ import java.io.File;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
-public class SpatialPhaseModulatorExperimentScheduler extends VirtualDevice implements
-                                                                            ExperimentScheduler,
+public class MirrorModeScheduler extends SchedulerBase implements
                                                                             LoggingFeature
 {
   private Variable<File> mRootFolderVariable =
@@ -28,10 +28,8 @@ public class SpatialPhaseModulatorExperimentScheduler extends VirtualDevice impl
 
   private SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
 
-  private Variable<Boolean> mActiveVariable = new Variable<Boolean>("active", false);
-
-  public SpatialPhaseModulatorExperimentScheduler(SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
-    super("Scheduler for " + pSpatialPhaseModulatorDeviceInterface.getName());
+  public MirrorModeScheduler(SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
+    super("Mirror mode scheduler for " + pSpatialPhaseModulatorDeviceInterface.getName());
 
     mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
   }
@@ -57,7 +55,7 @@ public class SpatialPhaseModulatorExperimentScheduler extends VirtualDevice impl
 
 
     File lFolder = mRootFolderVariable.get();
-    if (!lFolder.isDirectory()) {
+    if (lFolder == null || !lFolder.isDirectory()) {
       warning("Error: given root folder is no directory");
       return false;
     }
@@ -80,10 +78,5 @@ public class SpatialPhaseModulatorExperimentScheduler extends VirtualDevice impl
 
     info("Sent. Scheduler done");
     return true;
-  }
-
-  @Override public Variable<Boolean> getActiveVariable()
-  {
-    return mActiveVariable;
   }
 }
