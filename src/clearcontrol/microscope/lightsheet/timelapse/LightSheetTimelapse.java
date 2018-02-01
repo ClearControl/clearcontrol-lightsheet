@@ -10,7 +10,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.microscope.lightsheet.component.scheduler.ExperimentScheduler;
+import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
@@ -101,12 +101,13 @@ public class LightSheetTimelapse extends TimelapseBase implements
       else
         sequentialAcquisition(lCurrentState);
 
-      ArrayList<ExperimentScheduler>
-          lExperimentSchedulerList = getMicroscope().getDevices(ExperimentScheduler.class);
-      for (ExperimentScheduler lExperimentScheduler : lExperimentSchedulerList)
+      ArrayList<SchedulerInterface>
+          lSchedulerInterfaceList = getMicroscope().getDevices(SchedulerInterface.class);
+      for (SchedulerInterface lSchedulerInterface : lSchedulerInterfaceList)
       {
-        if (lExperimentScheduler.getActiveVariable().get()) {
-          lExperimentScheduler.doExperiment(getTimePointCounterVariable().get());
+        if (lSchedulerInterface.getActiveVariable().get()) {
+          lSchedulerInterface.setMicroscope(getMicroscope());
+          lSchedulerInterface.doExperiment(getTimePointCounterVariable().get());
         }
       }
 
