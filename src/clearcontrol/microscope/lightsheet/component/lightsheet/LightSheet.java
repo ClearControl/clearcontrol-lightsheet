@@ -149,7 +149,8 @@ public class LightSheet extends
     mHeightPowerFunction.addSetListener((VariableSetListener<PolynomialFunction>) lFunctionVariableListener);
 
     getHeightVariable().set(getHeightVariable().getMax());
-    getWidthVariable().set(getWidthVariable().getMax());
+    // todo: uncomment this line as soon as the arduino/iris works as planned
+    //getWidthVariable().set(getWidthVariable().getMax());
 
     notifyListeners(this);
   }
