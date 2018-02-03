@@ -2,6 +2,9 @@ package clearcontrol.microscope.lightsheet.calibrator.gui;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+
+import clearcontrol.gui.video.video2d.Stack2DDisplay;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -279,6 +282,32 @@ public class CalibrationEngineToolbar extends CustomGridPane
       lRow++;
     }
 
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 3);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+
+    {
+      Button lShowMultichannelOverlay = new Button("Show overlays");
+      lShowMultichannelOverlay.setAlignment(Pos.CENTER);
+      lShowMultichannelOverlay.setMaxWidth(Double.MAX_VALUE);
+      lShowMultichannelOverlay.setOnAction((e) -> {
+        LightSheetMicroscope lLightSheetMicroscope = pCalibrationEngine.getLightSheetMicroscope();
+
+        ImageJOverlayViewer lImageJOverlayViewer = new ImageJOverlayViewer(lLightSheetMicroscope.getDevices(
+            Stack2DDisplay.class));
+        lImageJOverlayViewer.show();
+
+      });
+      GridPane.setColumnSpan(lShowMultichannelOverlay, 1);
+      add(lShowMultichannelOverlay, 2, lRow);
+
+      lRow++;
+    }
 
     {
       Separator lSeparator = new Separator();
