@@ -1,6 +1,6 @@
 package clearcontrol.microscope.lightsheet.timelapse.gui;
 
-import clearcontrol.microscope.lightsheet.component.scheduler.ExperimentScheduler;
+import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
@@ -15,7 +15,6 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStatePanel;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.timelapse.gui.TimelapseToolbar;
-import org.apache.commons.math3.analysis.function.Exp;
 
 import java.util.ArrayList;
 
@@ -45,14 +44,14 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
     }
 
     {
-      ArrayList<ExperimentScheduler>
-          lExperimentSchedulerList = pLightSheetTimelapse.getMicroscope().getDevices(ExperimentScheduler.class);
-      for (ExperimentScheduler lExperimentScheduler : lExperimentSchedulerList) {
+      ArrayList<SchedulerInterface>
+          lSchedulerInterfaceList = pLightSheetTimelapse.getMicroscope().getDevices(SchedulerInterface.class);
+      for (SchedulerInterface lSchedulerInterface : lSchedulerInterfaceList) {
         VariableCheckBox lSchedulerActiveCheckBox =
-            new VariableCheckBox("", lExperimentScheduler.getActiveVariable());
+            new VariableCheckBox("", lSchedulerInterface.getActiveVariable());
 
         Label lInterleavedAcquisitionLabel =
-            new Label(lExperimentScheduler.getName());
+            new Label(lSchedulerInterface.getName());
 
         GridPane.setHalignment(lSchedulerActiveCheckBox.getCheckBox(),
                                HPos.RIGHT);

@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.gui;
 
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.experimentscheduler.SpatialPhaseModulatorExperimentScheduler;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.experimentscheduler.gui.SpatialPhaseModulatorExperimentSchedulerPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.MirrorModeSchedulerPanel;
 import javafx.stage.Stage;
 
 import clearcontrol.anything.AnythingDevice;
@@ -162,8 +162,8 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          MicroscopeNodeType.AdaptiveOptics);
 
 
-    addPanelMappingEntry(SpatialPhaseModulatorExperimentScheduler.class,
-                         SpatialPhaseModulatorExperimentSchedulerPanel.class,
+    addPanelMappingEntry(MirrorModeScheduler.class,
+                         MirrorModeSchedulerPanel.class,
                          MicroscopeNodeType.AdaptiveOptics);
 
     addPanelMappingEntry(AnythingDevice.class,

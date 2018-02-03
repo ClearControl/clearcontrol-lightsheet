@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.experimentscheduler.SpatialPhaseModulatorExperimentScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import javafx.application.Application;
@@ -346,9 +346,9 @@ public class LightSheetMicroscopeDemo extends Application implements
           lSpatialPhaseModulatorDeviceBase = new SpatialPhaseModulatorDeviceSimulator("Simulated Spatial Phase Modulator Device", 11, 1);
       lLightSheetMicroscope.addDevice(0, lSpatialPhaseModulatorDeviceBase);
 
-      SpatialPhaseModulatorExperimentScheduler lSpatialPhaseModulatorExperimentScheduler =
-          new SpatialPhaseModulatorExperimentScheduler(lSpatialPhaseModulatorDeviceBase);
-      lLightSheetMicroscope.addDevice(0, lSpatialPhaseModulatorExperimentScheduler);
+      MirrorModeScheduler lMirrorModeScheduler =
+          new MirrorModeScheduler(lSpatialPhaseModulatorDeviceBase);
+      lLightSheetMicroscope.addDevice(0, lMirrorModeScheduler);
 
       // Adding calibrator:
 
