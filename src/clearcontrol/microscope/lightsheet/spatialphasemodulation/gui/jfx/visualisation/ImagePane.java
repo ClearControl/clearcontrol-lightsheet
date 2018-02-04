@@ -6,9 +6,12 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
 /**
+ * Deprecated: This class should move to clearcontrol.gui...
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
+@Deprecated
 public class ImagePane extends Pane
 {
   GraphicsContext mGraphicsContext;
