@@ -13,7 +13,9 @@ import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterf
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
+import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
+import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
@@ -29,6 +31,7 @@ public class LightSheetMicroscope extends
                                   LightSheetMicroscopeInterface
 {
   private LightSheetFastFusionProcessor mStackFusionProcessor;
+  private LiveStatisticsProcessor mLiveStatisticsProcessor;
 
   /**
    * Instantiates a lightsheet microscope with a given name.
@@ -55,13 +58,27 @@ public class LightSheetMicroscope extends
                           new LightSheetFastFusionProcessor("Fusion Stack Processor",
                                                             this,
                                                             pStackFusionContext);
-
     addDevice(0, mStackFusionProcessor);
-
     mStackProcessingPipeline.addStackProcessor(mStackFusionProcessor,
                                                "StackFusion",
                                                32,
                                                32);
+
+    mLiveStatisticsProcessor =
+                             new LiveStatisticsProcessor("Live statistics processor",
+                                                         this,
+                                                         pStackFusionContext);
+    addDevice(0, mLiveStatisticsProcessor);
+    mStackProcessingPipeline.addStackProcessor(mLiveStatisticsProcessor,
+                                               "LiveStatistics",
+                                               2,
+                                               2);
+
+    OfflineFastFusionEngine lOfflineFusionProcessor =
+                                                    new OfflineFastFusionEngine("Offline Fusion",
+                                                                                this,
+                                                                                pStackFusionContext);
+    addDevice(0, lOfflineFusionProcessor);
 
   }
 

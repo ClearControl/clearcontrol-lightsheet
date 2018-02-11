@@ -1,21 +1,29 @@
 package clearcontrol.microscope.lightsheet.calibrator.gui;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+
+import clearcontrol.gui.video.video2d.Stack2DDisplay;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
+import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.checkbox.VariableCheckBox;
 import clearcontrol.gui.jfx.var.onoffarray.OnOffArrayPane;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStatePanel;
 
 /**
  * Calibration Engine Toolbar
@@ -23,7 +31,11 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
  * @author royer
  */
 public class CalibrationEngineToolbar extends CustomGridPane
+                                      implements LoggingFeature
 {
+
+  ComboBox lExistingCalibrationComboBox;
+  CalibrationEngine mCalibrationEngine;
 
   /**
    * Instanciates a calibration engine toolbar
@@ -34,6 +46,8 @@ public class CalibrationEngineToolbar extends CustomGridPane
   public CalibrationEngineToolbar(CalibrationEngine pCalibrationEngine)
   {
     super();
+
+    mCalibrationEngine = pCalibrationEngine;
     // this.setStyle("-fx-background-color: yellow;");
     // mGridPane.setStyle("-fx-border-color: blue;");
 
@@ -61,6 +75,13 @@ public class CalibrationEngineToolbar extends CustomGridPane
     }
 
     {
+      Label lLabel = new Label("Z -> A -> XY -> P -> W -> Z");
+      GridPane.setColumnSpan(lLabel, 3);
+      add(lLabel, 0, lRow);
+      lRow++;
+    }
+
+    {
       Button lStopCalibration = new Button("Stop");
       lStopCalibration.setAlignment(Pos.CENTER);
       lStopCalibration.setMaxWidth(Double.MAX_VALUE);
@@ -79,7 +100,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
                                                       new ProgressIndicator(0.0);
       lCalibrationProgressIndicator.setMaxWidth(Double.MAX_VALUE);
       lCalibrationProgressIndicator.setStyle(".percentage { visibility: hidden; }");
-      GridPane.setRowSpan(lCalibrationProgressIndicator, 2);
+      GridPane.setRowSpan(lCalibrationProgressIndicator, 3);
       add(lCalibrationProgressIndicator, 2, 0);
 
       pCalibrationEngine.getProgressVariable()
@@ -95,36 +116,51 @@ public class CalibrationEngineToolbar extends CustomGridPane
     {
       Separator lSeparator = new Separator();
       lSeparator.setOrientation(Orientation.HORIZONTAL);
-      GridPane.setColumnSpan(lSeparator, 4);
+      GridPane.setColumnSpan(lSeparator, 3);
       add(lSeparator, 0, lRow);
       lRow++;
     }
 
     {
-      addCheckBoxForCalibrationModule("Z ",
+      addCheckBoxForCalibrationModule("Z (without sample)",
                                       pCalibrationEngine.getCalibrateZVariable(),
                                       0,
                                       lRow);
-      addCheckBoxForCalibrationModule("XY",
-                                      pCalibrationEngine.getCalibrateXYVariable(),
-                                      0,
-                                      lRow + 1);
-      addCheckBoxForCalibrationModule("A ",
+
+      addCheckBoxForCalibrationModule("A (without sample) ",
                                       pCalibrationEngine.getCalibrateAVariable(),
                                       1,
                                       lRow);
-      addCheckBoxForCalibrationModule("P ",
+
+      lRow++;
+      addCheckBoxForCalibrationModule("XY* (without sample)",
+                                      pCalibrationEngine.getCalibrateXYVariable(),
+                                      0,
+                                      lRow);
+
+      addCheckBoxForCalibrationModule("P* (with sample) ",
                                       pCalibrationEngine.getCalibratePVariable(),
                                       1,
-                                      lRow + 1);
+                                      lRow);
 
-      lRow += 2;
+      lRow++;
+      addCheckBoxForCalibrationModule("W* ",
+                                      pCalibrationEngine.getCalibrateWVariable(),
+                                      0,
+                                      lRow);
+
+      addCheckBoxForCalibrationModule("ZwS* ",
+                                      pCalibrationEngine.getCalibrateZWithSampleVariable(),
+                                      1,
+                                      lRow);
+
+      lRow++;
     }
 
     {
       Separator lSeparator = new Separator();
       lSeparator.setOrientation(Orientation.HORIZONTAL);
-      GridPane.setColumnSpan(lSeparator, 4);
+      GridPane.setColumnSpan(lSeparator, 3);
       add(lSeparator, 0, lRow);
       lRow++;
     }
@@ -151,7 +187,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
     {
       Separator lSeparator = new Separator();
       lSeparator.setOrientation(Orientation.HORIZONTAL);
-      GridPane.setColumnSpan(lSeparator, 4);
+      GridPane.setColumnSpan(lSeparator, 3);
       add(lSeparator, 0, lRow);
       lRow++;
     }
@@ -186,6 +222,7 @@ public class CalibrationEngineToolbar extends CustomGridPane
         try
         {
           pCalibrationEngine.save();
+          lExistingCalibrationComboBox.setItems(listExistingCalibrationFiles());
         }
         catch (Exception e1)
         {
@@ -194,6 +231,8 @@ public class CalibrationEngineToolbar extends CustomGridPane
       });
       GridPane.setColumnSpan(lSaveCalibration, 1);
       add(lSaveCalibration, 0, lRow);
+
+
 
       Button lLoadCalibration = new Button("Load");
       lLoadCalibration.setAlignment(Pos.CENTER);
@@ -208,10 +247,30 @@ public class CalibrationEngineToolbar extends CustomGridPane
           e1.printStackTrace();
         }
       });
+
       GridPane.setColumnSpan(lLoadCalibration, 1);
       add(lLoadCalibration, 1, lRow);
 
-      Button lResetCalibration = new Button("Reset");
+
+
+      Button lResetAllCalibration = new Button("Reset all");
+      lResetAllCalibration.setAlignment(Pos.CENTER);
+      lResetAllCalibration.setMaxWidth(Double.MAX_VALUE);
+      lResetAllCalibration.setOnAction((e) -> {
+        for (int i =
+                   0; i < pCalibrationEngine.getLightSheetMicroscope()
+                                            .getNumberOfLightSheets(); i++)
+        {
+          pCalibrationEngine.getCalibrateLightSheetOnOff(i).set(true);
+        }
+        pCalibrationEngine.reset();
+      });
+      GridPane.setColumnSpan(lResetAllCalibration, 1);
+      add(lResetAllCalibration, 2, lRow);
+
+      lRow++;
+
+      Button lResetCalibration = new Button("Reset selected");
       lResetCalibration.setAlignment(Pos.CENTER);
       lResetCalibration.setMaxWidth(Double.MAX_VALUE);
       lResetCalibration.setOnAction((e) -> {
@@ -223,6 +282,161 @@ public class CalibrationEngineToolbar extends CustomGridPane
       lRow++;
     }
 
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 3);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+
+    {
+      Button lShowMultichannelOverlay = new Button("Show overlays");
+      lShowMultichannelOverlay.setAlignment(Pos.CENTER);
+      lShowMultichannelOverlay.setMaxWidth(Double.MAX_VALUE);
+      lShowMultichannelOverlay.setOnAction((e) -> {
+        LightSheetMicroscope lLightSheetMicroscope = pCalibrationEngine.getLightSheetMicroscope();
+
+        ImageJOverlayViewer lImageJOverlayViewer = new ImageJOverlayViewer(lLightSheetMicroscope.getDevices(
+            Stack2DDisplay.class));
+        lImageJOverlayViewer.show();
+
+      });
+      GridPane.setColumnSpan(lShowMultichannelOverlay, 1);
+      add(lShowMultichannelOverlay, 2, lRow);
+
+      lRow++;
+    }
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 3);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+
+
+    {
+      lExistingCalibrationComboBox = new ComboBox(listExistingCalibrationFiles());
+      //GridPane.setColumnSpan(lExistingCalibrationComboBox, 3);
+      add(lExistingCalibrationComboBox, 0, lRow);
+
+      Button lLoadCalibration = new Button("Load");
+      //lLoadCalibration.setAlignment(Pos.CENTER);
+      //lLoadCalibration.setMaxWidth(Double.MAX_VALUE);
+      lLoadCalibration.setOnAction((e) -> {
+        try
+        {
+          pCalibrationEngine.load(lExistingCalibrationComboBox.getValue().toString());
+        }
+        catch (Exception e1)
+        {
+          e1.printStackTrace();
+        }
+      });
+
+      //GridPane.setColumnSpan(lLoadCalibration, 1);
+      add(lLoadCalibration, 1, lRow);
+      lRow++;
+
+    }
+
+
+
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 3);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+
+
+    {
+      TabPane lTabPane = new TabPane();
+      TitledPane lTitledPane = new TitledPane("Parameters", lTabPane);
+      lTitledPane.setAnimated(false);
+
+      ArrayList<CalibrationModuleInterface> lModuleList =
+                                                        pCalibrationEngine.getModuleList();
+
+      for (CalibrationModuleInterface lCalibrationModule : lModuleList)
+      {
+        try
+        {
+          Class<?> lCalibrationModuleClass =
+                                           lCalibrationModule.getClass();
+          String lCalibrationModuleClassName =
+                                             lCalibrationModuleClass.getSimpleName();
+          String lCalibrationModulePanelClassName =
+                                                  lCalibrationModuleClass.getPackage()
+                                                                         .getName()
+                                                    + ".gui."
+                                                    + lCalibrationModuleClassName
+                                                    + "Panel";
+          info("Searching for class %s as panel for calibration module %s \n",
+               lCalibrationModulePanelClassName,
+               lCalibrationModuleClassName);
+          Class<?> lClass =
+                          Class.forName(lCalibrationModulePanelClassName);
+          Constructor<?> lConstructor =
+                                      lClass.getConstructor(lCalibrationModule.getClass());
+          Node lPanel =
+                      (Node) lConstructor.newInstance(lCalibrationModule);
+
+          Tab lTab = new Tab(lCalibrationModule.getName());
+          lTab.setClosable(false);
+          lTab.setContent(lPanel);
+          lTabPane.getTabs().add(lTab);
+
+        }
+        catch (ClassNotFoundException e)
+        {
+          warning("Cannot find panel for module %s \n",
+                  lCalibrationModule.getClass().getSimpleName());
+          // e.printStackTrace();
+        }
+        catch (Throwable e)
+        {
+          e.printStackTrace();
+        }
+      }
+      GridPane.setColumnSpan(lTitledPane, 3);
+      add(lTitledPane, 0, lRow);
+      lRow++;
+    }
+
+    {
+
+      ConfigurationStatePanel lConfigurationStatePanel =
+                                                       new ConfigurationStatePanel(pCalibrationEngine.getModuleList(),
+                                                                                   pCalibrationEngine.getLightSheetMicroscope()
+                                                                                                     .getNumberOfLightSheets());
+      // GridPane.setColumnSpan(lConfigurationStatePanel, 4);
+      // add(lConfigurationStatePanel,0, lRow);
+      // lRow++;
+
+      TitledPane lTitledPane =
+                             new TitledPane("Calibration state",
+                                            lConfigurationStatePanel);
+      lTitledPane.setAnimated(false);
+      lTitledPane.setExpanded(true);
+      GridPane.setColumnSpan(lTitledPane, 3);
+      add(lTitledPane, 0, lRow);
+      lRow++;
+    }
+
+  }
+
+  private ObservableList<String> listExistingCalibrationFiles()
+  {
+    ArrayList<String> filenames = mCalibrationEngine.getExistingCalibrationList();
+
+
+    ObservableList<String> list =     FXCollections.observableArrayList(filenames);
+    return list;
   }
 
   private void addCheckBoxForCalibrationModule(String pName,

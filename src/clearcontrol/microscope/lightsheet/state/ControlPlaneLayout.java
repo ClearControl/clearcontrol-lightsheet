@@ -16,6 +16,11 @@ public enum ControlPlaneLayout
  Linear,
 
  /**
+  * Linear layout, but the control plane in the center exists twice
+  */
+ LinearWithDoubledCenter,
+
+ /**
   * Circular layout: control planes are laid with equal spacing on the unit
   * circle and then projected on the x axis.
   */
@@ -40,6 +45,10 @@ public enum ControlPlaneLayout
     case Linear:
       return linear(pNumberOfControlPlanes, pControlPlaneIndex);
 
+    case LinearWithDoubledCenter:
+      return linearWithDoubledCenter(pNumberOfControlPlanes,
+                                     pControlPlaneIndex);
+
     case Circular:
       return circular(pNumberOfControlPlanes, pControlPlaneIndex);
 
@@ -63,6 +72,37 @@ public enum ControlPlaneLayout
     double zc = 0.5 * (1 + cos(PI * (1 - z)));
 
     return zc;
+  }
+
+  private double linearWithDoubledCenter(int pNumberOfControlPlanes,
+                                         int pControlPlaneIndex)
+  {
+    int lFirstHalfNumberOfControlPlanes = pNumberOfControlPlanes / 2;
+    int lSecondHalfNumberOfControlPlanes = pNumberOfControlPlanes
+                                           - lFirstHalfNumberOfControlPlanes;
+
+    if (pControlPlaneIndex < lFirstHalfNumberOfControlPlanes)
+    {
+
+      return ((double) pControlPlaneIndex)
+             / (lFirstHalfNumberOfControlPlanes - 1) / 2.0;
+    }
+    else
+    {
+      return 0.5 + ((double) (pControlPlaneIndex
+                              - lFirstHalfNumberOfControlPlanes))
+                   / (lSecondHalfNumberOfControlPlanes - 1) / 2.0 + (pControlPlaneIndex == lFirstHalfNumberOfControlPlanes?0.01:0.0);
+    }
+  }
+
+  public static void main(String... args)
+  {
+    for (int i = 0; i < 7; i++)
+    {
+      System.out.println("" + i
+                         + ": "
+                         + LinearWithDoubledCenter.layout(7, i));
+    }
   }
 
 }

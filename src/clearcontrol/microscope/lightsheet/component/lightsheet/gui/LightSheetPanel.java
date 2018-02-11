@@ -66,6 +66,14 @@ public class LightSheetPanel extends CustomVariablePane
         lLaserOnOffArray.addSwitch("L" + l,
                                    pLightSheetInterface.getLaserOnOffArrayVariable(l));
       }
+
+      OnOffArrayPane lStructuredIlluminationPane =
+                                                 addOnOffArray("Structured illumination");
+      for (int l = 0; l < lNumberOfLaserDigitalControls; l++)
+      {
+        lStructuredIlluminationPane.addSwitch("L",
+                                              pLightSheetInterface.getSIPatternOnOffVariable(l));
+      }
     }
 
     {

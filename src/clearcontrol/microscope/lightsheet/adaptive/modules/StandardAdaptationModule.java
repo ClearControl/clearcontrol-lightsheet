@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import clearcontrol.core.concurrent.executors.AsynchronousExecutorFeature;
+import clearcontrol.core.device.name.ReadOnlyNameableInterface;
 import clearcontrol.core.math.argmax.SmartArgMaxFinder;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
@@ -19,8 +20,11 @@ import clearcontrol.microscope.adaptive.utils.NDIterator;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
+import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.ControlPlaneStateListener;
+import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.HasControlPlaneState;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.*;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.stack.EmptyStack;
@@ -40,7 +44,11 @@ public abstract class StandardAdaptationModule extends
                                                NDIteratorAdaptationModule<InterpolatedAcquisitionState>
                                                implements
                                                AdaptationModuleInterface<InterpolatedAcquisitionState>,
-                                               AsynchronousExecutorFeature
+                                               AsynchronousExecutorFeature,
+                                               HasConfigurationState,
+                                               ReadOnlyNameableInterface,
+                                               HasControlPlaneState,
+                                               CanBeActive
 
 {
 
@@ -60,7 +68,11 @@ public abstract class StandardAdaptationModule extends
 
   private HashMap<Triple<Integer, Integer, Integer>, Result> mResultsMap =
                                                                          new HashMap<>();
-  private LightSheetDOF mLightSheetDOF;
+  protected LightSheetDOF mLightSheetDOF;
+
+  int[][] mSelectedDetectionArms;
+  ConfigurationState[][] mControlPlaneStates = null;
+  String[][] mControlPlaneStateDescriptions = null;
 
   /**
    * Instantiates a ND iterator adaptation module
@@ -140,6 +152,32 @@ public abstract class StandardAdaptationModule extends
       LightSheetMicroscope lLightsheetMicroscope =
                                                  (LightSheetMicroscope) getAdaptiveEngine().getMicroscope();
 
+      if (mControlPlaneStates == null)
+      {
+        mControlPlaneStates =
+                            new ConfigurationState[lLightsheetMicroscope.getNumberOfLightSheets()][pStackAcquisition.getNumberOfControlPlanes()];
+        mControlPlaneStateDescriptions =
+                                       new String[lLightsheetMicroscope.getNumberOfLightSheets()][pStackAcquisition.getNumberOfControlPlanes()];
+        mSelectedDetectionArms =
+                               new int[lLightsheetMicroscope.getNumberOfLightSheets()][pStackAcquisition.getNumberOfControlPlanes()];
+        for (int lLightSheetIndex =
+                                  0; lLightSheetIndex < lLightsheetMicroscope.getNumberOfLightSheets(); lLightSheetIndex++)
+        {
+          for (int lControlPlaneIndex =
+                                      0; lControlPlaneIndex < pStackAcquisition.getNumberOfControlPlanes(); lControlPlaneIndex++)
+          {
+            mControlPlaneStates[lLightSheetIndex][lControlPlaneIndex] =
+                                                                      ConfigurationState.UNINITIALIZED;
+            mControlPlaneStateDescriptions[lLightSheetIndex][lControlPlaneIndex] =
+                                                                                 "";
+            mSelectedDetectionArms[lLightSheetIndex][lControlPlaneIndex] =
+                                                                         -1;
+            invokeControlPlaneStateChangeListeners(lLightSheetIndex,
+                                                   lControlPlaneIndex);
+          }
+        }
+      }
+
       lLightsheetMicroscope.useRecycler("adaptation", 1, 4, 4);
       final Boolean lPlayQueueAndWait =
                                       lLightsheetMicroscope.playQueueAndWaitForStacks(pQueue,
@@ -147,7 +185,16 @@ public abstract class StandardAdaptationModule extends
                                                                                       TimeUnit.SECONDS);
 
       if (!lPlayQueueAndWait)
+      {
+        mControlPlaneStates[pLightSheetIndex][pControlPlaneIndex] =
+                                                                  ConfigurationState.FAILED;
+        mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex] =
+                                                                             "Playing queue failed";
+
+        invokeControlPlaneStateChangeListeners(pLightSheetIndex,
+                                               pControlPlaneIndex);
         return null;
+      }
 
       final int lNumberOfDetectionArmDevices =
                                              lLightsheetMicroscope.getDeviceLists()
@@ -171,6 +218,11 @@ public abstract class StandardAdaptationModule extends
                                                new SmartArgMaxFinder();
 
           String lInfoString = "";
+
+          double lMaxProbability = 0;
+          double lMaxMetric = 0;
+          double lArgMax = 0;
+          int lSelectedDetectionArm = -1;
 
           for (int pDetectionArmIndex =
                                       0; pDetectionArmIndex < lNumberOfDetectionArmDevices; pDetectionArmIndex++)
@@ -221,6 +273,16 @@ public abstract class StandardAdaptationModule extends
                                       lArgmax,
                                       lMetricMax,
                                       lFitProbability);
+
+            if (lMaxProbability * lMaxMetric < lFitProbability
+                                               + lMetricMax)
+            {
+              lMaxMetric = lMetricMax;
+              lMaxProbability = lFitProbability;
+              lArgMax = lArgmax;
+              lSelectedDetectionArm = pDetectionArmIndex;
+            }
+
           }
 
           getAdaptiveEngine().addEntry(getName(),
@@ -231,6 +293,13 @@ public abstract class StandardAdaptationModule extends
                                        pLightSheetIndex,
                                        pControlPlaneIndex,
                                        lInfoString);
+
+          checkAdaptationQuality(pLightSheetIndex,
+                                 pControlPlaneIndex,
+                                 lArgMax,
+                                 lMaxMetric,
+                                 lMaxProbability,
+                                 lSelectedDetectionArm);
 
           for (StackInterface lStack : lStacks)
             lStack.free();
@@ -321,14 +390,19 @@ public abstract class StandardAdaptationModule extends
       /*System.out.format("%g\t%g \n",
                         lDOFValueList.get(i),
                         lMetricArray[i]);/**/
+      if (i < lDOFValueList.size())
+      {
+        getAdaptiveEngine().addPoint(getName(),
+                                     lChartName,
+                                     i == 0,
 
-      getAdaptiveEngine().addPoint(getName(),
-                                   lChartName,
-                                   i == 0,
-
-                                   lDOFValueList.get(i),
-                                   lMetricArray[i]);
-
+                                     lDOFValueList.get(i),
+                                     lMetricArray[i]);
+      }
+      else
+      {
+        // Todo: this should not happen, but it did on 2017-11-28
+      }
     }
 
     return lMetricArray;
@@ -354,6 +428,7 @@ public abstract class StandardAdaptationModule extends
                                                   .get()
                                                   .getNumberOfDetectionArms();
 
+    int lMissingInfoCount = 0;
     for (int cpi = 0; cpi < lNumberOfControlPlanes; cpi++)
     {
 
@@ -385,32 +460,13 @@ public abstract class StandardAdaptationModule extends
         double lCorrection = (pFlipCorrectionSign ? -1 : 1)
                              * lResult.argmax;
 
-        boolean lProbabilityInsufficient =
-                                         lResult.probability < getProbabilityThresholdVariable().get();
-
-        boolean lMetricMaxInsufficient =
-                                       lResult.metricmax < getImageMetricThresholdVariable().get();
-
-        if (lMetricMaxInsufficient)
-        {
-          warning("Metric maximum too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
-                  lResult.metricmax,
-                  getImageMetricThresholdVariable().get(),
-                  cpi,
-                  l);
-        }
-
-        if (lProbabilityInsufficient)
-        {
-          warning("Probability too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
-                  lResult.probability,
-                  getProbabilityThresholdVariable().get(),
-                  cpi,
-                  l);
-        }
-
-        boolean lMissingInfo = lMetricMaxInsufficient
-                               || lProbabilityInsufficient;
+        boolean lMissingInfo =
+                             checkAdaptationQuality(l,
+                                                    cpi,
+                                                    lCorrection,
+                                                    lResult.metricmax,
+                                                    lResult.probability,
+                                                    lSelectedDetectionArm);
 
         if (lMissingInfo)
         {
@@ -419,6 +475,7 @@ public abstract class StandardAdaptationModule extends
                                                                         pStateToUpdate,
                                                                         cpi,
                                                                         l);
+
         }
 
         info("Applying correction: %g \n", lCorrection);
@@ -444,8 +501,12 @@ public abstract class StandardAdaptationModule extends
         else
           pStateToUpdate.getInterpolationTables()
                         .set(mLightSheetDOF, cpi, l, lCorrection);
+        invokeControlPlaneStateChangeListeners(l, cpi);
       }
     }
+    setConfigurationState(ConfigurationState.fromProgressValue((double) lMissingInfoCount
+                                                               / (lNumberOfControlPlanes
+                                                                  * lNumberOfLightSheets)));
   }
 
   protected double computeCorrectionBasedOnNeighbooringControlPlanes(boolean pRelativeCorrection,
@@ -497,6 +558,81 @@ public abstract class StandardAdaptationModule extends
       lCorrection = 0.5 * (lValueAfter + lValueBefore) - lValue;
     }
     return lCorrection;
+  }
+
+  protected boolean checkAdaptationQuality(int pLightSheetIndex,
+                                           int pControlPlaneIndex,
+                                           double lCorrectionValue,
+                                           double lMetricValue,
+                                           double lPropability,
+                                           int pSelectedDetectionArm)
+  {
+
+    boolean lProbabilityInsufficient =
+                                     lPropability < getProbabilityThresholdVariable().get();
+
+    boolean lMetricMaxInsufficient =
+                                   lMetricValue < getImageMetricThresholdVariable().get();
+
+    if (lMetricMaxInsufficient)
+    {
+      warning("Metric maximum too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
+              lMetricValue,
+              getImageMetricThresholdVariable().get(),
+              pControlPlaneIndex,
+              pLightSheetIndex);
+    }
+
+    if (lProbabilityInsufficient)
+    {
+      warning("Probability too low (%g < %g) for cpi=%d, l=%d using neighbooring values\n",
+              lPropability,
+              getProbabilityThresholdVariable().get(),
+              pControlPlaneIndex,
+              pLightSheetIndex);
+    }
+
+    boolean lMissingInfo = lMetricMaxInsufficient
+                           || lProbabilityInsufficient;
+
+    if (lMissingInfo)
+    {
+      mControlPlaneStates[pLightSheetIndex][pControlPlaneIndex] =
+                                                                ConfigurationState.FAILED;
+      mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex] =
+                                                                           "";
+
+      if (lMetricMaxInsufficient)
+      {
+        mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex] =
+                                                                             "Metric max insufficient";
+      }
+      if (lMetricMaxInsufficient && lProbabilityInsufficient)
+      {
+        mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex] +=
+                                                                             "\n";
+      }
+      if (lProbabilityInsufficient)
+      {
+        mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex] +=
+                                                                             "Probability insufficient";
+      }
+      mSelectedDetectionArms[pLightSheetIndex][pControlPlaneIndex] =
+                                                                   -1;
+    }
+    else
+    {
+      mControlPlaneStates[pLightSheetIndex][pControlPlaneIndex] =
+                                                                ConfigurationState.SUCCEEDED;
+      mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex] =
+                                                                           "" + lCorrectionValue;
+      mSelectedDetectionArms[pLightSheetIndex][pControlPlaneIndex] =
+                                                                   pSelectedDetectionArm;
+    }
+    invokeControlPlaneStateChangeListeners(pLightSheetIndex,
+                                           pControlPlaneIndex);
+
+    return lMissingInfo;
   }
 
   @Override
@@ -556,4 +692,85 @@ public abstract class StandardAdaptationModule extends
     return mLaserPowerVariable;
   }
 
+  ConfigurationState mConfigurationState =
+                                         ConfigurationState.UNINITIALIZED;
+
+  protected void resetState()
+  {
+    mConfigurationState = ConfigurationState.UNINITIALIZED;
+  }
+
+  protected void setConfigurationState(ConfigurationState pConfigurationState)
+  {
+    mConfigurationState = pConfigurationState;
+
+    // call listeners
+    for (ConfigurationStateChangeListener lConfigurationStateChangeListener : mConfigurationStateChangeListeners)
+    {
+      lConfigurationStateChangeListener.configurationStateChanged(this);
+    }
+
+  }
+
+  public ConfigurationState getConfigurationState()
+  {
+
+    return mConfigurationState;
+  }
+
+  public ConfigurationState getControlPlaneState(int pLightSheetIndex,
+                                                 int pControlPlaneIndex)
+  {
+    if (mControlPlaneStates == null)
+    {
+      return ConfigurationState.UNINITIALIZED;
+    }
+    return mControlPlaneStates[pLightSheetIndex][pControlPlaneIndex];
+  }
+
+  public String getControlPlaneStateDescription(int pLightSheetIndex,
+                                                int pControlPlaneIndex)
+  {
+    if (mControlPlaneStateDescriptions == null)
+    {
+      return "";
+    }
+    return "D"
+           + mSelectedDetectionArms[pLightSheetIndex][pControlPlaneIndex]
+           + ": "
+           + mControlPlaneStateDescriptions[pLightSheetIndex][pControlPlaneIndex];
+  }
+
+  ArrayList<ConfigurationStateChangeListener> mConfigurationStateChangeListeners =
+                                                                                 new ArrayList<>();
+
+  public void addConfigurationStateChangeListener(ConfigurationStateChangeListener pConfigurationStateChangeListener)
+  {
+    mConfigurationStateChangeListeners.add(pConfigurationStateChangeListener);
+
+    setConfigurationState(getConfigurationState());
+  }
+
+  ArrayList<ControlPlaneStateListener> mControlPlaneStateListenerList =
+                                                                      new ArrayList<ControlPlaneStateListener>();
+
+  public void addControlPlaneStateChangeListener(ControlPlaneStateListener pControlPlaneStateListener)
+  {
+    mControlPlaneStateListenerList.add(pControlPlaneStateListener);
+  }
+
+  protected void invokeControlPlaneStateChangeListeners(int pLightSheetIndex,
+                                                        int pControlPlaneIndex)
+  {
+    for (ControlPlaneStateListener lControlPlaneStateListener : mControlPlaneStateListenerList)
+    {
+      lControlPlaneStateListener.controlPlaneStateChanged(pLightSheetIndex,
+                                                          pControlPlaneIndex);
+    }
+  }
+
+  public boolean isActive()
+  {
+    return super.isActive();
+  }
 }

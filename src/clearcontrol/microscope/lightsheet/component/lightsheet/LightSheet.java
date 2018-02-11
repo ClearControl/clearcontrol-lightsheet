@@ -149,6 +149,8 @@ public class LightSheet extends
     mHeightPowerFunction.addSetListener((VariableSetListener<PolynomialFunction>) lFunctionVariableListener);
 
     getHeightVariable().set(getHeightVariable().getMax());
+    // todo: uncomment this line as soon as the arduino/iris works as planned
+    //getWidthVariable().set(getWidthVariable().getMax());
 
     notifyListeners(this);
   }
@@ -456,8 +458,10 @@ public class LightSheet extends
   @Override
   public Future<Boolean> playQueue(LightSheetQueue pLightSheetQueue)
   {
+    info("playing " + pLightSheetQueue.getZVariable().get());
     // Nothing to play here
     return null;
   }
+
 
 }

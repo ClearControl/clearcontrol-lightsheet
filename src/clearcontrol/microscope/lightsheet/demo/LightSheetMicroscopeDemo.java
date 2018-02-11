@@ -4,6 +4,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -30,11 +34,12 @@ import clearcontrol.devices.signalgen.devices.sim.SignalGeneratorSimulatorDevice
 import clearcontrol.devices.stages.StageType;
 import clearcontrol.devices.stages.devices.sim.StageDeviceSimulator;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.DepthOfFocusImagingEngine;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
 import clearcontrol.microscope.lightsheet.gui.LightSheetMicroscopeGUI;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.simulation.LightSheetMicroscopeSimulationDevice;
@@ -77,8 +82,9 @@ public class LightSheetMicroscopeDemo extends Application implements
       int lMaxCameraResolution = 1024;
       long lImageResolution = 1024;
 
-      int lNumberOfLightSheets = 2;
+      int lNumberOfLightSheets = 4;
       int lNumberOfDetectionArms = 2;
+      int lNumberOfControlPlanes = 7;
 
       float lDivisionTime = 11f;
 
@@ -321,10 +327,28 @@ public class LightSheetMicroscopeDemo extends Application implements
       InterpolatedAcquisitionState lAcquisitionState =
                                                      new InterpolatedAcquisitionState("default",
                                                                                       lLightSheetMicroscope);
-      lAcquisitionState.setupControlPlanes(7,
+      lAcquisitionState.getImageWidthVariable().set(lImageResolution);
+      lAcquisitionState.getImageHeightVariable()
+                       .set(lImageResolution);
+
+      lAcquisitionState.setupControlPlanes(lNumberOfControlPlanes,
                                            ControlPlaneLayout.Circular);
       lAcquisitionStateManager.setCurrentState(lAcquisitionState);
       lLightSheetMicroscope.addInteractiveAcquisition();
+
+      // Adding adaptive engine device:
+      {
+        AdaptationStateEngine.setup(lLightSheetMicroscope,
+                                    lAcquisitionState);
+      }
+
+      SpatialPhaseModulatorDeviceBase
+          lSpatialPhaseModulatorDeviceBase = new SpatialPhaseModulatorDeviceSimulator("Simulated Spatial Phase Modulator Device", 11, 1);
+      lLightSheetMicroscope.addDevice(0, lSpatialPhaseModulatorDeviceBase);
+
+      MirrorModeScheduler lMirrorModeScheduler =
+          new MirrorModeScheduler(lSpatialPhaseModulatorDeviceBase);
+      lLightSheetMicroscope.addDevice(0, lMirrorModeScheduler);
 
       // Adding calibrator:
 
@@ -338,6 +362,11 @@ public class LightSheetMicroscopeDemo extends Application implements
                                     lLightSheetMicroscope.addTimelapse();
 
       lTimelapse.addFileStackSinkType(RawFileStackSink.class);
+
+      EDFImagingEngine lEDFImagingEngine =
+                                         new EDFImagingEngine(lSimulationGPUDevice.createContext(),
+                                                              lLightSheetMicroscope);
+      lLightSheetMicroscope.addDevice(0, lEDFImagingEngine);
 
       // Now that the microscope has been setup, we can connect the simulator to
       // it:
@@ -429,9 +458,7 @@ public class LightSheetMicroscopeDemo extends Application implements
 
     executeAsynchronously(lRunnable);
 
-
   }
-
 
   /**
    * Main

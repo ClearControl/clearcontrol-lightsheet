@@ -1,10 +1,16 @@
 package clearcontrol.microscope.lightsheet.calibrator.modules;
 
+import java.util.ArrayList;
+
+import clearcontrol.core.device.name.ReadOnlyNameableInterface;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationStateChangeListener;
+import clearcontrol.microscope.lightsheet.configurationstate.HasConfigurationState;
 
 /**
  * Base class providing common fields and methods for all calibration modules
@@ -13,23 +19,31 @@ import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterfa
  */
 public abstract class CalibrationBase implements
                                       CalibrationModuleInterface,
-                                      LoggingFeature
+                                      LoggingFeature,
+                                      HasConfigurationState,
+                                      ReadOnlyNameableInterface
 {
   private final CalibrationEngine mCalibrationEngine;
   private final LightSheetMicroscope mLightSheetMicroscope;
 
   private volatile int mIteration = 0;
 
+  private String mName;
+
   /**
    * Instantiates a calibration module given a parent calibrator and lightsheet
    * microscope.
-   * 
+   *
+   * @param pName
+   *          name of the calibrator
    * @param pCalibrationEngine
    *          parent calibrator
    */
-  public CalibrationBase(CalibrationEngine pCalibrationEngine)
+  public CalibrationBase(String pName,
+                         CalibrationEngine pCalibrationEngine)
   {
     super();
+    mName = pName;
     mCalibrationEngine = pCalibrationEngine;
     mLightSheetMicroscope =
                           pCalibrationEngine.getLightSheetMicroscope();
@@ -58,6 +72,7 @@ public abstract class CalibrationBase implements
   @Override
   public void reset()
   {
+    resetState();
     resetIteration();
   }
 
@@ -107,6 +122,48 @@ public abstract class CalibrationBase implements
   {
     return getLightSheetMicroscope().getDeviceLists()
                                     .getNumberOfDevices(DetectionArmInterface.class);
+  }
+
+  public String getName()
+  {
+    return mName;
+  }
+
+  ConfigurationState mConfigurationState =
+                                         ConfigurationState.UNINITIALIZED;
+
+  protected void resetState()
+  {
+    mConfigurationState = ConfigurationState.UNINITIALIZED;
+  }
+
+  protected void setConfigurationState(ConfigurationState pConfigurationState)
+  {
+    mConfigurationState = pConfigurationState;
+
+    // call listeners
+    for (ConfigurationStateChangeListener lConfigurationStateChangeListener : mConfigurationStateChangeListeners)
+    {
+      lConfigurationStateChangeListener.configurationStateChanged(this);
+    }
+
+  }
+
+  public ConfigurationState getConfigurationState()
+  {
+
+    return mConfigurationState;
+  }
+
+  ArrayList<ConfigurationStateChangeListener> mConfigurationStateChangeListeners =
+                                                                                 new ArrayList<>();
+
+  public void addConfigurationStateChangeListener(ConfigurationStateChangeListener pConfigurationStateChangeListener)
+  {
+    mConfigurationStateChangeListeners.add(pConfigurationStateChangeListener);
+
+    setConfigurationState(getConfigurationState());
+
   }
 
 }

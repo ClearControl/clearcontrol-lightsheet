@@ -12,16 +12,19 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
+import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescriptionPerLightSheet;
 import clearcontrol.stack.OffHeapPlanarStack;
 import gnu.trove.list.array.TDoubleArrayList;
 
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.stat.StatUtils;
+import org.ejml.factory.SingularMatrixException;
 import org.ejml.simple.SimpleMatrix;
 
 /**
@@ -29,8 +32,10 @@ import org.ejml.simple.SimpleMatrix;
  *
  * @author royer
  */
-public class CalibrationXY extends CalibrationBase
-                           implements CalibrationModuleInterface
+public class CalibrationXY extends CalibrationPerLightSheetBase
+                           implements
+                           CalibrationModuleInterface,
+                           HasStateDescriptionPerLightSheet
 {
 
   private int mNumberOfDetectionArmDevices;
@@ -40,6 +45,32 @@ public class CalibrationXY extends CalibrationBase
 
   private MultiKeyMap<Integer, SimpleMatrix> mTransformMatrices;
 
+  private BoundedVariable<Integer> mMaxIterationsVariable =
+                                                          new BoundedVariable<Integer>("Maximum number of iterations",
+                                                                                       3,
+                                                                                       0,
+                                                                                       Integer.MAX_VALUE);
+
+  BoundedVariable<Integer> mNumberOfPointsVariable =
+                                                   new BoundedVariable<Integer>("Number of points",
+                                                                                3,
+                                                                                0,
+                                                                                Integer.MAX_VALUE);
+
+  private BoundedVariable<Double> mLightSheetWidthWhileImaging =
+                                                               new BoundedVariable<Double>("Light sheet width while imaging",
+                                                                                           0.45,
+                                                                                           0.0,
+                                                                                           1.0,
+                                                                                           0.01);
+
+  private BoundedVariable<Double> mStoppingConditionErrorThreshold =
+                                                                   new BoundedVariable<Double>("Stopping condition error threshold",
+                                                                                               0.05,
+                                                                                               0.0,
+                                                                                               Double.MAX_VALUE,
+                                                                                               0.001);
+
   /**
    * Instantiates a XY calibration module given a parent calibrator.
    * 
@@ -48,7 +79,7 @@ public class CalibrationXY extends CalibrationBase
    */
   public CalibrationXY(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("XY", pCalibrator);
 
     mOriginFromX = new MultiKeyMap<>();
     mUnitVectorFromX = new MultiKeyMap<>();
@@ -58,9 +89,74 @@ public class CalibrationXY extends CalibrationBase
     mTransformMatrices = new MultiKeyMap<>();
   }
 
+  public double calibrate(int pLightSheetIndex)
+  {
+    int lIteration = 0;
+    double lError = Double.POSITIVE_INFINITY;
+    do
+    {
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.fromProgressValue((double) lIteration
+                                                                 / mMaxIterationsVariable.get()));
+
+      lError = calibrateXY(pLightSheetIndex,
+                           0,
+                           mNumberOfPointsVariable.get());
+      info("############################################## Error = "
+           + lError);
+
+      if (getCalibrationEngine().isStopRequested())
+      {
+        setConfigurationState(pLightSheetIndex,
+                              ConfigurationState.CANCELLED);
+        return Double.NaN;
+      }
+    }
+    while (lError >= mStoppingConditionErrorThreshold.get()
+           && lIteration++ < mMaxIterationsVariable.get());
+    info("############################################## Done ");
+
+    if (Double.isNaN(lError))
+    {
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.FAILED);
+    }
+    else if (lError < mStoppingConditionErrorThreshold.get())
+    {
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.SUCCEEDED);
+    }
+    else
+    {
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.ACCEPTABLE);
+    }
+    return lError;
+  }
+
+  /**
+   * Calibrates the XY position of the lighthsheets
+   *
+   * @param pLightSheetIndex
+   *          lightshet index
+   * @param pDetectionArmIndex
+   *          detection arm index
+   * @param pNumberOfPoints
+   *          number of points
+   * @return true when succeeded
+   */
+  private double calibrateXY(int pLightSheetIndex,
+                             int pDetectionArmIndex,
+                             int pNumberOfPoints)
+  {
+    calibrate(pLightSheetIndex, pDetectionArmIndex, pNumberOfPoints);
+
+    return apply(pLightSheetIndex, pDetectionArmIndex);
+  }
+
   /**
    * Calibrates
-   * 
+   *
    * @param pLightSheetIndex
    *          lightsheet index
    * @param pDetectionArmIndex
@@ -69,18 +165,24 @@ public class CalibrationXY extends CalibrationBase
    *          number of points
    * @return true for success
    */
-  public boolean calibrate(int pLightSheetIndex,
-                           int pDetectionArmIndex,
-                           int pNumberOfPoints)
+  private boolean calibrate(int pLightSheetIndex,
+                            int pDetectionArmIndex,
+                            int pNumberOfPoints)
   {
-    return calibrate(pLightSheetIndex,
-                     pDetectionArmIndex,
-                     pNumberOfPoints,
-                     true)
-           && calibrate(pLightSheetIndex,
-                        pDetectionArmIndex,
-                        pNumberOfPoints,
-                        false);
+    boolean result = calibrate(pLightSheetIndex,
+                               pDetectionArmIndex,
+                               pNumberOfPoints,
+                               true)
+                     && calibrate(pLightSheetIndex,
+                                  pDetectionArmIndex,
+                                  pNumberOfPoints,
+                                  false);
+    if (!result)
+    {
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.FAILED);
+    }
+    return result;
   }
 
   private boolean calibrate(int pLightSheetIndex,
@@ -187,8 +289,8 @@ public class CalibrationXY extends CalibrationBase
 
         if (f != 0)
         {
-          double ux = (lCenterP.getX() - lCenterN.getX()) / 2f;
-          double uy = (lCenterP.getY() - lCenterN.getY()) / 2f;
+          double ux = (lCenterP.getX() + lCenterN.getX()) / 2f;
+          double uy = (lCenterP.getY() + lCenterN.getY()) / 2f;
 
           System.out.format("Unit vector: (%g,%g) \n", ux, uy);
 
@@ -267,9 +369,12 @@ public class CalibrationXY extends CalibrationBase
     lQueue.zero();
 
     lQueue.setI(pLightSheetIndex);
+    lQueue.setIW(pLightSheetIndex,
+                 mLightSheetWidthWhileImaging.get());
     lQueue.setIZ(pLightSheetIndex, 0);
     lQueue.setIH(pLightSheetIndex, 0);
-    lQueue.setIZ(pLightSheetIndex, 0);
+    lQueue.setIZ(pLightSheetIndex, 0); // TODO: is this a type here? We do the
+                                       // same two lines above...
 
     for (int i = 0; i < mNumberOfDetectionArmDevices; i++)
       lQueue.setDZ(i, 0);
@@ -372,14 +477,23 @@ public class CalibrationXY extends CalibrationBase
     lMatrix.set(1, 1, lUnitVectorV.getY());
 
     System.out.format("lMatrix: \n");
-    lMatrix.print(4, 3);
 
     mTransformMatrices.put(pLightSheetIndex,
                            pDetectionArmIndex,
                            lMatrix);
-
-    SimpleMatrix lInverseMatrix = lMatrix.invert();
-
+    SimpleMatrix lInverseMatrix;
+    try
+    {
+      lMatrix.print(4, 3);
+      lInverseMatrix = lMatrix.invert();
+    }
+    catch (SingularMatrixException e)
+    {
+      e.printStackTrace();
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.FAILED);
+      return Double.NaN;
+    }
     System.out.format("lInverseMatrix: \n");
     lInverseMatrix.print(4, 6);
 
@@ -456,6 +570,8 @@ public class CalibrationXY extends CalibrationBase
 
     System.out.format("lError: %s \n", lError);
 
+    // setCalibrationState(pLightSheetIndex, ConfigurationState.SUCCEEDED);
+
     return lError;
   }
 
@@ -466,6 +582,12 @@ public class CalibrationXY extends CalibrationBase
   public void reset()
   {
     // check if there is nothing to do here
+
+    for (int i = 0; i < this.getLightSheetMicroscope()
+                            .getNumberOfLightSheets(); i++)
+    {
+      setConfigurationState(i, ConfigurationState.UNINITIALIZED);
+    }
   }
 
   /**
@@ -482,6 +604,56 @@ public class CalibrationXY extends CalibrationBase
   {
     return mTransformMatrices.get(pLightSheetIndex,
                                   pDetectionArmIndex);
+  }
+
+  public BoundedVariable<Integer> getMaxIterationsVariable()
+  {
+    return mMaxIterationsVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfPointsVariable()
+  {
+    return mNumberOfPointsVariable;
+  }
+
+  public BoundedVariable<Double> getStoppingConditionErrorThreshold()
+  {
+    return mStoppingConditionErrorThreshold;
+  }
+
+  public BoundedVariable<Double> getLightSheetWidthWhileImaging()
+  {
+    return mLightSheetWidthWhileImaging;
+  }
+
+  @Override
+  public String getStateDescription(int pLightSheetIndex)
+  {
+    final LightSheetInterface lLightSheetDevice =
+                                                getLightSheetMicroscope().getDeviceLists()
+                                                                         .getDevice(LightSheetInterface.class,
+                                                                                    pLightSheetIndex);
+
+    UnivariateAffineFunction lUnivariateAffineFunctionX =
+                                                        lLightSheetDevice.getXFunction()
+                                                                         .get();
+    UnivariateAffineFunction lUnivariateAffineFunctionY =
+                                                        lLightSheetDevice.getYFunction()
+                                                                         .get();
+
+    return String.format("X: y = %.3f * x + %.3f",
+                         lUnivariateAffineFunctionX.getSlope(),
+                         lUnivariateAffineFunctionX.getConstant())
+           + "\n"
+           + String.format("Y: y = %.3f * x + %.3f",
+                           lUnivariateAffineFunctionY.getSlope(),
+                           lUnivariateAffineFunctionY.getConstant());
+  }
+
+  @Override
+  public String getStateDescription()
+  {
+    return "";
   }
 
 }

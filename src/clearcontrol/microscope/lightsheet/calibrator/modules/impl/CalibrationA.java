@@ -3,6 +3,8 @@ package clearcontrol.microscope.lightsheet.calibrator.modules.impl;
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -13,14 +15,18 @@ import clearcontrol.core.math.argmax.ArgMaxFinder1DInterface;
 import clearcontrol.core.math.argmax.SmartArgMaxFinder;
 import clearcontrol.core.math.functions.UnivariateAffineFunction;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
-import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationBase;
 import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationModuleInterface;
+import clearcontrol.microscope.lightsheet.calibrator.modules.CalibrationPerLightSheetBase;
 import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
+import clearcontrol.microscope.lightsheet.configurationstate.HasStateDescriptionPerLightSheet;
 import clearcontrol.stack.OffHeapPlanarStack;
+import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
 import gnu.trove.list.array.TDoubleArrayList;
 
 /**
@@ -28,12 +34,75 @@ import gnu.trove.list.array.TDoubleArrayList;
  *
  * @author royer
  */
-public class CalibrationA extends CalibrationBase
-                          implements CalibrationModuleInterface
+public class CalibrationA extends CalibrationPerLightSheetBase
+                          implements
+                          CalibrationModuleInterface,
+                          HasStateDescriptionPerLightSheet
 {
 
   private ArgMaxFinder1DInterface mArgMaxFinder;
   private HashMap<Integer, UnivariateAffineFunction> mModels;
+
+  private BoundedVariable<Double> mAngleOptimisationRangeWidthVariable =
+                                                                       new BoundedVariable<Double>("Angle range in degrees",
+                                                                                                   20.0,
+                                                                                                   0.0,
+                                                                                                   40.0,
+                                                                                                   1.0);
+
+  private BoundedVariable<Double> mExposureTimeInSecondsVariable =
+                                                                 new BoundedVariable<Double>("Exposure time in seconds",
+                                                                                             0.04,
+                                                                                             0.0,
+                                                                                             Double.MAX_VALUE,
+                                                                                             0.001);
+
+  private BoundedVariable<Integer> mNumberOfRepeatsVariable =
+                                                            new BoundedVariable<Integer>("Number of repeats",
+                                                                                         4,
+                                                                                         1,
+                                                                                         Integer.MAX_VALUE);
+
+  private BoundedVariable<Integer> mNumberOfAnglesVariable =
+                                                           new BoundedVariable<Integer>("Number of angles",
+                                                                                        32,
+                                                                                        1,
+                                                                                        Integer.MAX_VALUE);
+
+  private BoundedVariable<Integer> mMaxIterationsVariable =
+                                                          new BoundedVariable<Integer>("Maximum number of iterations",
+                                                                                       3,
+                                                                                       0,
+                                                                                       Integer.MAX_VALUE);
+
+  private BoundedVariable<Double> mStoppingConditionErrorThreshold =
+                                                                   new BoundedVariable<Double>("Stopping condition error threshold",
+                                                                                               0.5,
+                                                                                               0.0,
+                                                                                               Double.MAX_VALUE,
+                                                                                               0.001);
+
+  private BoundedVariable<Double> mLightSheetWidthWhileImaging =
+                                                               new BoundedVariable<Double>("Light sheet width while imaging",
+                                                                                           0.25,
+                                                                                           0.0,
+                                                                                           1.0,
+                                                                                           0.01);
+  private BoundedVariable<Double> mYRangeVariable =
+                                                  new BoundedVariable<Double>("Y range for testing",
+                                                                              1.0,
+                                                                              0.0,
+                                                                              1.0,
+                                                                              0.01);
+  private BoundedVariable<Double> mZRangeVariable =
+                                                  new BoundedVariable<Double>("Z range for testing",
+                                                                              1.0,
+                                                                              0.0,
+                                                                              1.0,
+                                                                              0.01);
+  private Variable<String> mDebugPath =
+                                      new Variable<String>("Debug path",
+                                                           "");
 
   /**
    * Lightsheet Alpha angle calibration module
@@ -43,7 +112,7 @@ public class CalibrationA extends CalibrationBase
    */
   public CalibrationA(CalibrationEngine pCalibrator)
   {
-    super(pCalibrator);
+    super("A", pCalibrator);
     mModels = new HashMap<>();
   }
 
@@ -53,17 +122,63 @@ public class CalibrationA extends CalibrationBase
    * 
    * @param pLightSheetIndex
    *          lightsheet index
-   * @param pNumberOfAngles
-   *          numbe rof angles
-   * @param pNumberOfRepeats
-   *          number of repeats.
    */
-  public void calibrate(int pLightSheetIndex,
-                        int pNumberOfAngles,
-                        int pNumberOfRepeats)
+  public double calibrate(int pLightSheetIndex)
   {
+    int lIteration = 0;
+    double lError = Double.POSITIVE_INFINITY;
     int lNumberOfDetectionArmDevices = getNumberOfDetectionArms();
+    do
+    {
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.fromProgressValue((double) lIteration
+                                                                 / mMaxIterationsVariable.get()));
 
+      lError = calibrate(pLightSheetIndex,
+                         lNumberOfDetectionArmDevices);
+      info("############################################## Error = "
+           + lError);
+
+      if (getCalibrationEngine().isStopRequested())
+      {
+        setConfigurationState(pLightSheetIndex,
+                              ConfigurationState.CANCELLED);
+        return Double.NaN;
+      }
+    }
+    while (lError >= mStoppingConditionErrorThreshold.get()
+           && lIteration++ < mMaxIterationsVariable.get());
+    info("############################################## Done ");
+
+    if (Double.isNaN(lError))
+    {
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.FAILED);
+    }
+    else if (lError < mStoppingConditionErrorThreshold.get())
+    {
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.SUCCEEDED);
+    }
+    else
+    {
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.ACCEPTABLE);
+    }
+
+    return lError;
+  }
+
+  /**
+   * Calibrates the lightsheet alpha angles.
+   *
+   * @param pLightSheetIndex
+   *          lightsheet index number of repeats
+   * @return true when succeeded
+   */
+  private double calibrate(int pLightSheetIndex,
+                           int pNumberOfDetectionArmDevices)
+  {
     mArgMaxFinder = new SmartArgMaxFinder();
 
     LightSheetInterface lLightSheet =
@@ -74,22 +189,41 @@ public class CalibrationA extends CalibrationBase
     System.out.println("Current Alpha function: "
                        + lLightSheet.getAlphaFunction());
 
-    double lMinA = -7;
-    double lMaxA = 7;
+    double lMinA = -mAngleOptimisationRangeWidthVariable.get() / 2.0;
+    double lMaxA = mAngleOptimisationRangeWidthVariable.get() / 2.0;
 
     double lMinIY = lLightSheet.getYVariable().getMin().doubleValue();
     double lMaxIY = lLightSheet.getYVariable().getMax().doubleValue();
 
+    if (Math.abs(mYRangeVariable.get() - 1.0) > 0.001)
+    {
+      double lDeltaRange = (lMaxIY - lMinIY)
+                           * (1.0 - mYRangeVariable.get()) / 2.0;
+      lMinIY += lDeltaRange;
+      lMaxIY -= lDeltaRange;
+    }
+
     double lMinZ = lLightSheet.getZVariable().getMin().doubleValue();
     double lMaxZ = lLightSheet.getZVariable().getMax().doubleValue();
 
-    double[] angles = new double[lNumberOfDetectionArmDevices];
+    if (Math.abs(mZRangeVariable.get() - 1.0) > 0.001)
+    {
+      double lDeltaRange = (lMaxZ - lMinZ)
+                           * (1.0 - mZRangeVariable.get()) / 2.0;
+      lMinZ += lDeltaRange;
+      lMaxZ -= lDeltaRange;
+    }
+
+    double[] angles = new double[pNumberOfDetectionArmDevices];
     int lCount = 0;
 
     double y = 0.5 * min(abs(lMinIY), abs(lMaxIY));
     double z = 0.5 * (lMaxZ + lMinZ);
 
-    for (int r = 0; r < pNumberOfRepeats; r++)
+    int lNumberOfRepeats = mNumberOfRepeatsVariable.get();
+    int lNumberOfAngles = mNumberOfAnglesVariable.get();
+
+    for (int r = 0; r < lNumberOfRepeats; r++)
     {
       System.out.format("Searching for optimal alpha angles for lighsheet at y=+/-%g \n",
                         y);
@@ -98,7 +232,7 @@ public class CalibrationA extends CalibrationBase
                                       lMinA,
                                       lMaxA,
                                       (lMaxA - lMinA)
-                                             / (pNumberOfAngles - 1),
+                                             / (lNumberOfAngles - 1),
                                       -y,
                                       z);
 
@@ -106,7 +240,7 @@ public class CalibrationA extends CalibrationBase
                                       lMinA,
                                       lMaxA,
                                       (lMaxA - lMinA)
-                                             / (pNumberOfAngles - 1),
+                                             / (lNumberOfAngles - 1),
                                       +y,
                                       z);
 
@@ -119,14 +253,16 @@ public class CalibrationA extends CalibrationBase
 
       boolean lValid = true;
 
-      for (int i = 0; i < lNumberOfDetectionArmDevices; i++)
+      for (int i = 0; i < pNumberOfDetectionArmDevices; i++)
+      {
         lValid &=
                !Double.isNaN(anglesM[i]) && !Double.isNaN(anglesM[i]);
+      }
 
       if (lValid)
       {
         System.out.format("Angle values are valid, we proceed... \n");
-        for (int i = 0; i < lNumberOfDetectionArmDevices; i++)
+        for (int i = 0; i < pNumberOfDetectionArmDevices; i++)
         {
           angles[i] += 0.5 * (anglesM[i] + anglesP[i]);
         }
@@ -135,21 +271,33 @@ public class CalibrationA extends CalibrationBase
       }
       else
         System.out.format("Angle are not valid, we continue with next set of y values... \n");
+
+      if (getCalibrationEngine().isStopRequested())
+      {
+        setConfigurationState(pLightSheetIndex,
+                              ConfigurationState.CANCELLED);
+        return Double.NaN;
+      }
     }
 
     if (lCount == 0)
-      return;
+    {
+      return Double.NaN;
+    }
 
-    for (int i = 0; i < lNumberOfDetectionArmDevices; i++)
+    for (int i = 0; i < pNumberOfDetectionArmDevices; i++)
+    {
       angles[i] = angles[i] / lCount;
-
+    }
     System.out.format("Averaged alpha angles: %s \n",
                       Arrays.toString(angles));
 
     double angle = 0;
-    for (int i = 0; i < lNumberOfDetectionArmDevices; i++)
+    for (int i = 0; i < pNumberOfDetectionArmDevices; i++)
+    {
       angle += angles[i];
-    angle /= lNumberOfDetectionArmDevices;
+    }
+    angle /= pNumberOfDetectionArmDevices;
 
     System.out.format("Average alpha angle for all detection arms (assumes that the cameras are well aligned): %s \n",
                       angle);
@@ -162,6 +310,7 @@ public class CalibrationA extends CalibrationBase
     System.out.format("Corresponding model: %s \n",
                       lUnivariateAffineFunction);
 
+    return apply(pLightSheetIndex);
   }
 
   private double[] focusA(int pLightSheetIndex,
@@ -185,12 +334,14 @@ public class CalibrationA extends CalibrationBase
       // lQueue.zero();
 
       lQueue.setFullROI();
-      lQueue.setExp(0.04);
+      lQueue.setExp(mExposureTimeInSecondsVariable.get());
 
       lQueue.setI(pLightSheetIndex);
       lQueue.setIX(pLightSheetIndex, 0);
       lQueue.setIY(pLightSheetIndex, pY);
       lQueue.setIZ(pLightSheetIndex, pZ);
+      lQueue.setIW(pLightSheetIndex,
+                   mLightSheetWidthWhileImaging.get());
       lQueue.setIH(pLightSheetIndex, 0);
       lQueue.setIA(pLightSheetIndex, pMinA);
 
@@ -229,6 +380,7 @@ public class CalibrationA extends CalibrationBase
                                                                                           TimeUnit.SECONDS);
 
       if (lPlayQueueAndWait)
+      {
         for (int i = 0; i < lNumberOfDetectionArmDevices; i++)
         {
           final OffHeapPlanarStack lStack =
@@ -238,6 +390,17 @@ public class CalibrationA extends CalibrationBase
           final double[] lAvgIntensityArray =
                                             ImageAnalysisUtils.computeAverageSquareVariationPerPlane(lStack);
 
+          if (mDebugPath.get().length() > 0)
+          {
+            String timepoint = "" + System.currentTimeMillis();
+            RawFileStackSink lRawFileStackSink =
+                                               new RawFileStackSink();
+            lRawFileStackSink.setLocation(new File(mDebugPath.get()),
+                                          "tempA" + timepoint);
+            lRawFileStackSink.appendStack(lStack);
+            lRawFileStackSink.close();
+            info("Saved as " + timepoint);
+          }
           smooth(lAvgIntensityArray, 10);
 
           String lChartName = String.format("D=%d, I=%d, IY=%g",
@@ -282,10 +445,13 @@ public class CalibrationA extends CalibrationBase
             // lPlot.addPoint("argmax", lArgMax, 0);
 
             if (lAmplitudeRatio > 0.1 && lArgMax > lAList.get(0))
+            {
               angles[i] = lArgMax;
+            }
             else
+            {
               angles[i] = Double.NaN;
-
+            }
             /* if (mArgMaxFinder instanceof Fitting1D)
             {
               Fitting1D lFitting1D = (Fitting1D) mArgMaxFinder;
@@ -308,7 +474,7 @@ public class CalibrationA extends CalibrationBase
             System.out.println("Argmax is NULL!");
           }
         }
-
+      }
       return angles;
 
     }
@@ -321,6 +487,10 @@ public class CalibrationA extends CalibrationBase
       e.printStackTrace();
     }
     catch (final TimeoutException e)
+    {
+      e.printStackTrace();
+    }
+    catch (IOException e)
     {
       e.printStackTrace();
     }
@@ -358,7 +528,7 @@ public class CalibrationA extends CalibrationBase
    *          lightsheet index
    * @return residual error
    */
-  public double apply(int pLightSheetIndex)
+  private double apply(int pLightSheetIndex)
   {
     System.out.println("LightSheet index: " + pLightSheetIndex);
 
@@ -373,6 +543,8 @@ public class CalibrationA extends CalibrationBase
     if (lUnivariateAffineFunction == null)
     {
       System.out.format("No model available! \n");
+      setConfigurationState(pLightSheetIndex,
+                            ConfigurationState.FAILED);
       return Double.POSITIVE_INFINITY;
     }
 
@@ -392,6 +564,8 @@ public class CalibrationA extends CalibrationBase
                     + abs(lUnivariateAffineFunction.getConstant());
 
     System.out.format("Error: %g \n", lError);
+    setConfigurationState(pLightSheetIndex,
+                          ConfigurationState.SUCCEEDED);
 
     return lError;
   }
@@ -404,6 +578,86 @@ public class CalibrationA extends CalibrationBase
   {
     super.reset();
     mModels.clear();
+
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < this.getLightSheetMicroscope()
+                                                        .getNumberOfLightSheets(); lLightSheetIndex++)
+    {
+      setConfigurationState(lLightSheetIndex,
+                            ConfigurationState.UNINITIALIZED);
+    }
   }
 
+  public BoundedVariable<Double> getAngleOptimisationRangeWidthVariable()
+  {
+    return mAngleOptimisationRangeWidthVariable;
+  }
+
+  public BoundedVariable<Double> getExposureTimeInSecondsVariable()
+  {
+    return mExposureTimeInSecondsVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfRepeatsVariable()
+  {
+    return mNumberOfRepeatsVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfAnglesVariable()
+  {
+    return mNumberOfAnglesVariable;
+  }
+
+  public BoundedVariable<Integer> getMaxIterationsVariable()
+  {
+    return mMaxIterationsVariable;
+  }
+
+  public BoundedVariable<Double> getStoppingConditionErrorThreshold()
+  {
+    return mStoppingConditionErrorThreshold;
+  }
+
+  public BoundedVariable<Double> getLightSheetWidthWhileImaging()
+  {
+    return mLightSheetWidthWhileImaging;
+  }
+
+  public BoundedVariable<Double> getYRangeVariable()
+  {
+    return mYRangeVariable;
+  }
+
+  public BoundedVariable<Double> getZRangeVariable()
+  {
+    return mZRangeVariable;
+  }
+
+  @Override
+  public String getStateDescription(int pLightSheetIndex)
+  {
+    final LightSheetInterface lLightSheetDevice =
+                                                getLightSheetMicroscope().getDeviceLists()
+                                                                         .getDevice(LightSheetInterface.class,
+                                                                                    pLightSheetIndex);
+
+    UnivariateAffineFunction lUnivariateAffineFunction =
+                                                       lLightSheetDevice.getAlphaFunction()
+                                                                        .get();
+
+    return String.format("y = %.3f * x + %.3f",
+                         lUnivariateAffineFunction.getSlope(),
+                         lUnivariateAffineFunction.getConstant());
+  }
+
+  @Override
+  public String getStateDescription()
+  {
+    return "";
+  }
+
+  public Variable<String> getDebugPath()
+  {
+    return mDebugPath;
+  }
 }

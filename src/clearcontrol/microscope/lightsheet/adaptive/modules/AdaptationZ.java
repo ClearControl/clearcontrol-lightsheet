@@ -2,10 +2,11 @@ package clearcontrol.microscope.lightsheet.adaptive.modules;
 
 import java.util.concurrent.Future;
 
-import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
+import clearcontrol.microscope.lightsheet.configurationstate.ConfigurationState;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -15,13 +16,17 @@ import gnu.trove.list.array.TDoubleArrayList;
  *
  * @author royer
  */
-public class AdaptationZ extends StandardAdaptationModule implements
+public class AdaptationZ extends StandardAdaptationPerLightSheetModule
+                         implements
                          AdaptationModuleInterface<InterpolatedAcquisitionState>
 {
 
-  private final Variable<Double> mDeltaZVariable =
-                                                 new Variable<>("DeltaZ",
-                                                                1.0);
+  private final BoundedVariable<Double> mDeltaZVariable =
+                                                        new BoundedVariable<>("Delta Z",
+                                                                              1.0,
+                                                                              0.0,
+                                                                              Double.POSITIVE_INFINITY,
+                                                                              0.001);
 
   /**
    * Instantiates a Z focus adaptation module given the delta Z parameter,
@@ -45,7 +50,8 @@ public class AdaptationZ extends StandardAdaptationModule implements
                      double pProbabilityThreshold,
                      double pImageMetricThreshold,
                      double pExposureInSeconds,
-                     double pLaserPower)
+                     double pLaserPower,
+                     int pNumberOfLightSheets)
   {
     super("Z",
           LightSheetDOF.IZ,
@@ -55,6 +61,8 @@ public class AdaptationZ extends StandardAdaptationModule implements
           pExposureInSeconds,
           pLaserPower);
     getDeltaZVariable().set(pDeltaZ);
+
+    setConfigurationState(ConfigurationState.UNINITIALIZED);
 
   }
 
@@ -119,12 +127,13 @@ public class AdaptationZ extends StandardAdaptationModule implements
 
     lQueue.addMetaDataEntry(MetaDataChannel.Channel, "NoDisplay");
 
-    return findBestDOFValue(lControlPlaneIndex,
-                            lLightSheetIndex,
-                            lQueue,
-                            lAcquisitionState,
-                            lDZList);
+    Future<?> result = findBestDOFValue(lControlPlaneIndex,
+                                        lLightSheetIndex,
+                                        lQueue,
+                                        lAcquisitionState,
+                                        lDZList);
 
+    return result;
     /**/
 
   }
@@ -140,7 +149,7 @@ public class AdaptationZ extends StandardAdaptationModule implements
    * 
    * @return delta Z variable
    */
-  public Variable<Double> getDeltaZVariable()
+  public BoundedVariable<Double> getDeltaZVariable()
   {
     return mDeltaZVariable;
   }

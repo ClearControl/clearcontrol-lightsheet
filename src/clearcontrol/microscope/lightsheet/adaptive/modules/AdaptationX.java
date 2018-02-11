@@ -55,7 +55,7 @@ public class AdaptationX extends StandardAdaptationModule implements
                      double pExposureInSeconds,
                      double pLaserPower)
   {
-    super("X",
+    super("X*",
           LightSheetDOF.IX,
           pNumberOfSamples,
           pProbabilityThreshold,
@@ -65,6 +65,8 @@ public class AdaptationX extends StandardAdaptationModule implements
 
     getMinXVariable().set(pMinX);
     getMaxXVariable().set(pMaxX);
+
+    getIsActiveVariable().set(false);
   }
 
   @Override

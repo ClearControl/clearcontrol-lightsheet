@@ -16,10 +16,8 @@ import clearcontrol.devices.signalamp.devices.sim.ScalingAmplifierSimulator;
 import clearcontrol.devices.signalgen.devices.sim.SignalGeneratorSimulatorDevice;
 import clearcontrol.devices.stages.StageType;
 import clearcontrol.devices.stages.devices.sim.StageDeviceSimulator;
-import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationX;
-import clearcontrol.microscope.lightsheet.adaptive.modules.AdaptationZ;
+import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
@@ -277,7 +275,7 @@ public class SimulatedLightSheetMicroscope extends
    * Timelapse
    */
   @SuppressWarnings("unchecked")
-  public void addStandardDevices()
+  public void addStandardDevices(int pNumberOfControlPlanes)
   {
 
     // Adding calibrator:
@@ -294,7 +292,7 @@ public class SimulatedLightSheetMicroscope extends
       InterpolatedAcquisitionState lAcquisitionState =
                                                      new InterpolatedAcquisitionState("default",
                                                                                       this);
-      lAcquisitionState.setupControlPlanes(7,
+      lAcquisitionState.setupControlPlanes(pNumberOfControlPlanes,
                                            ControlPlaneLayout.Circular);
       lAcquisitionState.copyCurrentMicroscopeSettings();
       lAcquisitionStateManager.setCurrentState(lAcquisitionState);
@@ -302,21 +300,7 @@ public class SimulatedLightSheetMicroscope extends
 
       // Adding adaptive engine device:
       {
-        AdaptiveEngine<InterpolatedAcquisitionState> lAdaptiveEngine =
-                                                                     addAdaptiveEngine(lAcquisitionState);
-        lAdaptiveEngine.add(new AdaptationZ(7,
-                                            1.66,
-                                            0.95,
-                                            2e-5,
-                                            0.010,
-                                            0.5));
-        lAdaptiveEngine.add(new AdaptationX(11,
-                                            50,
-                                            200,
-                                            0.95,
-                                            2e-5,
-                                            0.010,
-                                            0.5));
+        AdaptationStateEngine.setup(this, lAcquisitionState);
       }
 
     }

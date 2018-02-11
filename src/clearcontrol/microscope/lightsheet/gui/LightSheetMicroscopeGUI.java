@@ -1,11 +1,19 @@
 package clearcontrol.microscope.lightsheet.gui;
 
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.MirrorModeSchedulerPanel;
 import javafx.stage.Stage;
 
+import clearcontrol.anything.AnythingDevice;
+import clearcontrol.anything.gui.AnythingPanel;
+import clearcontrol.devices.optomech.filterwheels.FilterWheelDeviceInterface;
+import clearcontrol.devices.optomech.filterwheels.gui.jfx.FilterWheelDevicePanel;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.gui.MicroscopeGUI;
 import clearcontrol.microscope.gui.halcyon.MicroscopeNodeType;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
+import clearcontrol.microscope.lightsheet.adaptive.gui.AdaptationStateEnginePanel;
 import clearcontrol.microscope.lightsheet.adaptive.gui.LightSheetAdaptiveEnginePanel;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.calibrator.gui.CalibrationEnginePanel;
@@ -14,14 +22,23 @@ import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterf
 import clearcontrol.microscope.lightsheet.component.detection.gui.DetectionArmPanel;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.gui.LightSheetPanel;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.gui.DepthOfFieldFocusImagingEngineToolbar;
-import clearcontrol.microscope.lightsheet.extendeddepthfield.DepthOfFocusImagingEngine;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEnginePanel;
+import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEngineToolbar;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
 import clearcontrol.microscope.lightsheet.interactive.gui.InteractiveAcquisitionToolbar;
+import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor;
+import clearcontrol.microscope.lightsheet.livestatistics.gui.LiveStatisticsPanel;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
+import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.gui.LightSheetFastFusionProcessorPanel;
+import clearcontrol.microscope.lightsheet.processor.gui.OfflineFastFusionPanel;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.signalgen.gui.LightSheetSignalGeneratorPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.AlpaoDMPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.DeformableMirrorPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.alpao.AlpaoDMDevice;
 import clearcontrol.microscope.lightsheet.state.gui.AcquisitionStateManagerPanel;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.gui.LightSheetTimelapseToolbar;
@@ -106,13 +123,52 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          LightSheetAdaptiveEnginePanel.class,
                          MicroscopeNodeType.Acquisition);
 
+    addPanelMappingEntry(AdaptationStateEngine.class,
+                         AdaptationStateEnginePanel.class,
+                         MicroscopeNodeType.Acquisition);
+
     addPanelMappingEntry(LightSheetFastFusionProcessor.class,
                          LightSheetFastFusionProcessorPanel.class,
                          MicroscopeNodeType.Acquisition);
 
-    addToolbarMappingEntry(DepthOfFocusImagingEngine.class,
-                         DepthOfFieldFocusImagingEngineToolbar.class);
+    addToolbarMappingEntry(EDFImagingEngine.class,
+                           EDFImagingEngineToolbar.class);
 
+    addPanelMappingEntry(EDFImagingEngine.class,
+                         EDFImagingEnginePanel.class,
+                         MicroscopeNodeType.Acquisition);
+
+    addPanelMappingEntry(LiveStatisticsProcessor.class,
+                         LiveStatisticsPanel.class,
+                         MicroscopeNodeType.Acquisition);
+
+    addPanelMappingEntry(LightSheetFastFusionProcessor.class,
+                         LightSheetFastFusionProcessorPanel.class,
+                         MicroscopeNodeType.Other);
+
+    addToolbarMappingEntry(OfflineFastFusionEngine.class,
+                           OfflineFastFusionPanel.class);
+
+    addPanelMappingEntry(FilterWheelDeviceInterface.class,
+                         FilterWheelDevicePanel.class,
+                         MicroscopeNodeType.FilterWheel);
+
+    addPanelMappingEntry(AlpaoDMDevice.class,
+                         AlpaoDMPanel.class,
+                         MicroscopeNodeType.AdaptiveOptics);
+
+    addPanelMappingEntry(SpatialPhaseModulatorDeviceBase.class,
+                         DeformableMirrorPanel.class,
+                         MicroscopeNodeType.AdaptiveOptics);
+
+
+    addPanelMappingEntry(MirrorModeScheduler.class,
+                         MirrorModeSchedulerPanel.class,
+                         MicroscopeNodeType.AdaptiveOptics);
+
+    addPanelMappingEntry(AnythingDevice.class,
+                         AnythingPanel.class,
+                         MicroscopeNodeType.FilterWheel);
   }
 
   @Override
