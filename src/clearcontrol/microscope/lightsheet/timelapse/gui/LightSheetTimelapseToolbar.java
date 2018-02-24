@@ -304,7 +304,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
                                new TitledPane("Adaptation state",
                                               lConfigurationStatePanel);
         lTitledPane.setAnimated(false);
-        lTitledPane.setExpanded(true);
+        lTitledPane.setExpanded(false);
         GridPane.setColumnSpan(lTitledPane, 4);
         add(lTitledPane, 0, mRow);
         mRow++;
