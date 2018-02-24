@@ -150,6 +150,7 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
 
       lMetaData.addEntry(MetaDataChannel.Channel, "C" + c + "interleaved");
     }
+    lQueue.addVoxelDimMetaData(lLightsheetMicroscope, lDetectionZStep);
 
     lQueue.finalizeQueue();
 
