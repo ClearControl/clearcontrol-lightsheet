@@ -242,8 +242,11 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                       float[] pKernelSigmasFusion,
                                                       float[] pKernelSigmasBackground)
   {
+
     if (isDownscale())
     {
+      addTask(new StackSplitTask("C0interleaved", new String[]{"C0L0d","C0L1d","C0L2d","C0L3d"}, true));
+      addTask(new StackSplitTask("C1interleaved", new String[]{"C1L0d","C1L1d","C1L2d","C1L3d"}, true));
       addTasks(DownsampleXYbyHalfTask.applyAndReleaseInputs(Type.Median,
                                                             "d",
                                                             "C0L0",
@@ -257,6 +260,8 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     }
     else
     {
+      addTask(new StackSplitTask("C0interleaved", new String[]{"C0L0d","C0L1d","C0L2d","C0L3d"}, false));
+      addTask(new StackSplitTask("C1interleaved", new String[]{"C1L0d","C1L1d","C1L2d","C1L3d"}, false));
       addTasks(IdentityTask.withSuffix("d",
                                        "C0L0",
                                        "C0L1",
