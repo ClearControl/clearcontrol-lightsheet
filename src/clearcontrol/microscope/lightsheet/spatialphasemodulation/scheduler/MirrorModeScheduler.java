@@ -46,9 +46,18 @@ public class MirrorModeScheduler extends SchedulerBase implements
     return mDelayFramesVariable;
   }
 
-  @Override public boolean doExperiment(long pTimePoint)
+  private int mTimePointCount = -1;
+
+  @Override public boolean initialize()
   {
-    if (pTimePoint % mDelayFramesVariable.get() > 0) {
+    mTimePointCount = -1;
+    return true;
+  }
+
+  @Override public boolean enqueue(long pTimePoint)
+  {
+    mTimePointCount ++;
+    if (mTimePointCount % mDelayFramesVariable.get() > 0) {
       info("Skipping time point " + pTimePoint);
       return false;
     }

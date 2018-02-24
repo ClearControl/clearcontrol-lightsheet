@@ -19,7 +19,12 @@ public class PauseScheduler extends SchedulerBase implements
     super("Pause");
   }
 
-  @Override public boolean doExperiment(long pTimePoint)
+  @Override public boolean initialize()
+  {
+    return false;
+  }
+
+  @Override public boolean enqueue(long pTimePoint)
   {
     return true;
   }

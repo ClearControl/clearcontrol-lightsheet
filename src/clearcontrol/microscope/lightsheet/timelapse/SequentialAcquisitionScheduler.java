@@ -25,13 +25,11 @@ import java.util.concurrent.TimeoutException;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
-public class SequentialAcquisitionScheduler extends SchedulerBase implements
+public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler implements
                                                                   SchedulerInterface,
                                                                   LoggingFeature
 {
-  LightSheetMicroscope mLightSheetMicroscope;
-  InterpolatedAcquisitionState mCurrentState;
-  LightSheetTimelapse mTimelapse;
+
 
   /**
    * INstanciates a virtual device with a given name
@@ -42,15 +40,13 @@ public class SequentialAcquisitionScheduler extends SchedulerBase implements
     super("Sequential acquisition");
   }
 
-  @Override public boolean doExperiment(long pTimePoint)
+
+  @Override public boolean enqueue(long pTimePoint)
   {
     if (!(mMicroscope instanceof LightSheetMicroscope)) {
       warning("" + this + " needs a lightsheet microscope!");
       return false;
     }
-    mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-    mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-    mTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
 
     int lNumberOfDetectionArms = mLightSheetMicroscope.getNumberOfDetectionArms();
 

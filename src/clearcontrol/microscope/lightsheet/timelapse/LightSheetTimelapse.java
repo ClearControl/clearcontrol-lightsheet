@@ -1,6 +1,12 @@
 package clearcontrol.microscope.lightsheet.timelapse;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -63,6 +69,11 @@ public class LightSheetTimelapse extends TimelapseBase implements
   private ArrayList<SchedulerInterface>
       mListOfActivatedSchedulers = new ArrayList<SchedulerInterface>();
 
+  int mLastExecutedSchedulerIndex = -1;
+
+
+  private BufferedWriter mLogFileWriter;
+
   /**
    * @param pLightSheetMicroscope
    *          microscope
@@ -72,7 +83,6 @@ public class LightSheetTimelapse extends TimelapseBase implements
     super(pLightSheetMicroscope);
     mLightSheetMicroscope = pLightSheetMicroscope;
 
-    mListOfActivatedSchedulers.add(pLightSheetMicroscope.getDevice(SequentialAcquisitionScheduler.class, 0));
 
     mExtendedDepthOfFieldAcquisitionVariable.addSetListener(new VariableSetListener<Boolean>()
     {
@@ -109,6 +119,34 @@ public class LightSheetTimelapse extends TimelapseBase implements
   @Override
   public void acquire()
   {
+    if (getTimePointCounterVariable().get() == 0) {
+
+      File lLogFile = new File(getRootFolderVariable().get() + "\\"
+                              + "scheduleLog.txt");
+
+      lLogFile.getParentFile().mkdir();
+
+      try
+      {
+        mLogFileWriter = new BufferedWriter(new FileWriter(lLogFile));
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace();
+        mLogFileWriter = null;
+      }
+
+      ArrayList<SchedulerInterface>
+          lSchedulerInterfaceList = getMicroscope().getDevices(SchedulerInterface.class);
+      for (SchedulerInterface lSchedulerInterface : lSchedulerInterfaceList)
+      {
+        if (mListOfActivatedSchedulers.contains(lSchedulerInterface)) {
+          lSchedulerInterface.initialize();
+        }
+      }
+    }
+
+
     try
     {
       info("acquiring timepoint: "
@@ -137,18 +175,37 @@ public class LightSheetTimelapse extends TimelapseBase implements
           sequentialAcquisition(lCurrentState);
       }
 
+      // Run the next scheduled item
+      mLastExecutedSchedulerIndex++;
+      if (mLastExecutedSchedulerIndex > mListOfActivatedSchedulers.size() - 1) {
+        mLastExecutedSchedulerIndex = 0;
+      }
+
+      SchedulerInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(mLastExecutedSchedulerIndex);
+      if (mLogFileWriter != null) {
+        mLogFileWriter.write("Starting " + lNextSchedulerToRun + " at "
+                             + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date())+ " time point " + getTimePointCounterVariable().get());
+      }
+      lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
+      if (mLogFileWriter != null) {
+        mLogFileWriter.write("Finished " + lNextSchedulerToRun + " at "
+                             + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date())+ " time point " + getTimePointCounterVariable().get());
+      }
+
+      /*
       ArrayList<SchedulerInterface>
           lSchedulerInterfaceList = getMicroscope().getDevices(SchedulerInterface.class);
       for (SchedulerInterface lSchedulerInterface : lSchedulerInterfaceList)
       {
         if (lSchedulerInterface.getActiveVariable().get()) {
           lSchedulerInterface.setMicroscope(getMicroscope());
-          lSchedulerInterface.doExperiment(getTimePointCounterVariable().get());
+          lSchedulerInterface.enqueue(getTimePointCounterVariable().get());
         }
       }
+      */
 
 
-      }
+    }
     catch (Throwable e)
     {
       e.printStackTrace();
@@ -339,4 +396,14 @@ public class LightSheetTimelapse extends TimelapseBase implements
   {
     return mListOfActivatedSchedulers;
   }
+
+  public ArrayList<SchedulerInterface> getListOfAvailableSchedulers()
+  {
+    ArrayList<SchedulerInterface> lListOfAvailabeSchedulers = new ArrayList<>();
+    for (SchedulerInterface lScheduler : mLightSheetMicroscope.getDevices(SchedulerInterface.class)) {
+      lListOfAvailabeSchedulers.add(lScheduler);
+    }
+    return lListOfAvailabeSchedulers;
+  }
+
 }

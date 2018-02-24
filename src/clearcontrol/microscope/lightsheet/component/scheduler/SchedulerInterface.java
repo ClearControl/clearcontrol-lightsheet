@@ -10,10 +10,9 @@ import clearcontrol.microscope.MicroscopeInterface;
  */
 public interface SchedulerInterface extends NameableInterface
 {
-  // todo: define an API so that the scheduler can tell its owner how often it would like to be called
+  boolean initialize();
 
-
-  boolean doExperiment(long pTimePoint);
+  boolean enqueue(long pTimePoint);
 
   Variable<Boolean> getActiveVariable();
 

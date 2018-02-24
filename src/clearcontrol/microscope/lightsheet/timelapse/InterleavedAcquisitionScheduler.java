@@ -31,9 +31,6 @@ public class InterleavedAcquisitionScheduler extends AbstractAcquistionScheduler
                                                                    SchedulerInterface,
                                                                    LoggingFeature
 {
-  LightSheetMicroscope mLightSheetMicroscope;
-  InterpolatedAcquisitionState mCurrentState;
-  LightSheetTimelapse mTimelapse;
 
   /**
    * INstanciates a virtual device with a given name
@@ -43,15 +40,12 @@ public class InterleavedAcquisitionScheduler extends AbstractAcquistionScheduler
     super("Interleaved acquisition");
   }
 
-  @Override public boolean doExperiment(long pTimePoint)
+  @Override public boolean enqueue(long pTimePoint)
   {
     if (!(mMicroscope instanceof LightSheetMicroscope)) {
       warning("" + this + " needs a lightsheet microscope!");
       return false;
     }
-    mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-    mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-    mTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
 
 
     int lImageWidth = mCurrentState.getImageWidthVariable().get().intValue();

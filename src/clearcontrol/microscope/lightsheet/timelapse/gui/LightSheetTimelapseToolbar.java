@@ -2,11 +2,11 @@ package clearcontrol.microscope.lightsheet.timelapse.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 import clearcontrol.gui.jfx.var.checkbox.VariableCheckBox;
@@ -76,6 +76,97 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       add(lTitledPane, 0, mRow);
       mRow++;
 
+      ArrayList<SchedulerInterface> lSchedulerList = pLightSheetTimelapse.getListOfActivatedSchedulers();
+      ListView<SchedulerInterface> lListView = new ListView<SchedulerInterface>();
+      lListView.setItems(FXCollections.observableArrayList (lSchedulerList));
+
+      lSchedulerChecklistGridPane.add(lListView, 0, 0, 1, 4);
+
+
+
+      {
+        Button lMinusButton = new Button("^");
+        lMinusButton.setOnAction((e) -> {
+          int i = lListView.getSelectionModel().getSelectedIndex();
+          if (i > 1)
+          {
+            SchedulerInterface lSchedulerInterface = lSchedulerList.get(i);
+            lSchedulerList.remove(i);
+            lSchedulerList.add(i - 1, lSchedulerInterface);
+            lListView.setItems(FXCollections.observableArrayList(
+                lSchedulerList));
+          }
+        });
+        lSchedulerChecklistGridPane.add(lMinusButton, 1, 0);
+      }
+
+      {
+        Button lMinusButton = new Button("v");
+        lMinusButton.setOnAction((e) -> {
+          int count = 0;
+          int i = lListView.getSelectionModel().getSelectedIndex();
+          if (i >= 0 && i < lSchedulerList.size() - 2)
+          {
+            SchedulerInterface lSchedulerInterface = lSchedulerList.get(i);
+            lSchedulerList.remove(i);
+            lSchedulerList.add(i + 1, lSchedulerInterface);
+            lListView.setItems(FXCollections.observableArrayList(
+                lSchedulerList));
+          }
+        });
+        lSchedulerChecklistGridPane.add(lMinusButton, 1, 1);
+      }
+
+
+      {
+        Button lMinusButton = new Button("-");
+        lMinusButton.setOnAction((e) -> {
+          int count = 0;
+          for (int i : lListView.getSelectionModel()
+                                .getSelectedIndices()
+                                .sorted())
+          {
+            lSchedulerList.remove(i - count);
+            count++;
+          }
+          lListView.setItems(FXCollections.observableArrayList(
+              lSchedulerList));
+        });
+        lSchedulerChecklistGridPane.add(lMinusButton, 1, 3);
+      }
+
+      {
+        ArrayList<SchedulerInterface> lAvailableSchedulersList = pLightSheetTimelapse.getListOfAvailableSchedulers();
+        ComboBox<SchedulerInterface> lAvailableSchedulers = new ComboBox<>();
+        lAvailableSchedulers.setItems(FXCollections.observableArrayList(lAvailableSchedulersList));
+        lSchedulerChecklistGridPane.add(lAvailableSchedulers, 0, 4);
+
+        Button lPlusButton = new Button("+");
+        lPlusButton.setOnAction((e) -> {
+          int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
+          if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lSchedulerList.size();
+          int lSelectedIndexInAddList = lAvailableSchedulers.getSelectionModel().getSelectedIndex();
+          lSchedulerList.add(lSelectedIndexInMainList, lAvailableSchedulersList.get(lSelectedIndexInAddList));
+          lListView.setItems(FXCollections.observableArrayList(
+              lSchedulerList));
+        });
+        lSchedulerChecklistGridPane.add(lPlusButton, 1, 4);
+      }
+    }
+
+/*
+    {
+      CustomGridPane lSchedulerChecklistGridPane = new CustomGridPane();
+
+      TitledPane lTitledPane =
+          new TitledPane("Legacy schedule",
+                         lSchedulerChecklistGridPane);
+      lTitledPane.setAnimated(false);
+      lTitledPane.setExpanded(true);
+      GridPane.setColumnSpan(lTitledPane, 4);
+      add(lTitledPane, 0, mRow);
+      mRow++;
+
 
 
       ArrayList<SchedulerInterface>
@@ -104,7 +195,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
 
 
 
-    }
+    }*/
 
 
     /*
