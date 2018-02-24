@@ -141,6 +141,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
       for (SchedulerInterface lSchedulerInterface : lSchedulerInterfaceList)
       {
         if (mListOfActivatedSchedulers.contains(lSchedulerInterface)) {
+          lSchedulerInterface.setMicroscope(getMicroscope());
           lSchedulerInterface.initialize();
         }
       }
