@@ -620,6 +620,8 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     {
       StackMetaData lStackMetaData = pStack.getMetaData();
 
+      // I commented this out, because I believe it's not necessary
+      /*
       Integer lCameraIndex =
                            lStackMetaData.getValue(MetaDataView.Camera);
       Integer lLightSheetIndex =
@@ -630,6 +632,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
         pStack.release();
         return;
       }
+      */
 
       if (mRegistrationTask != null)
       {
