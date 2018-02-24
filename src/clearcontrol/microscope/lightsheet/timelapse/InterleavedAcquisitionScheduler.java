@@ -53,10 +53,6 @@ public class InterleavedAcquisitionScheduler extends AbstractAcquistionScheduler
     mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
     mTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
 
-    // reconfigure FastFusion engine
-    LightSheetFastFusionProcessor
-        lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
-    lLightSheetFastFusionProcessor.getInterleavedSwitchVariable().set(true);
 
     int lImageWidth = mCurrentState.getImageWidthVariable().get().intValue();
     int lImageHeight = mCurrentState.getImageHeightVariable().get().intValue();

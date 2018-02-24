@@ -52,10 +52,6 @@ public class SequentialAcquisitionScheduler extends SchedulerBase implements
     mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
     mTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
 
-    // reconfigure FastFusion engine
-    LightSheetFastFusionProcessor lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
-    lLightSheetFastFusionProcessor.getInterleavedSwitchVariable().set(false);
-
     int lNumberOfDetectionArms = mLightSheetMicroscope.getNumberOfDetectionArms();
 
     int lNumberOfLightSheets = mLightSheetMicroscope.getNumberOfLightSheets();
