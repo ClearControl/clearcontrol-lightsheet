@@ -55,6 +55,9 @@ public class LightSheetTimelapse extends TimelapseBase implements
   private final Variable<Boolean> mExtendedDepthOfFieldAcquisitionVariable =
       new Variable<Boolean>("ExtendedDepthOfFieldAcquisition",
                             false);
+  private Variable<Boolean> mLegacyTimelapseAcquisitionVariable  =
+      new Variable<Boolean>("LegacyTimelapseAcquisition",
+                            true);
 
   /**
    * @param pLightSheetMicroscope
@@ -96,10 +99,15 @@ public class LightSheetTimelapse extends TimelapseBase implements
       LightSheetAcquisitionStateInterface<?> lCurrentState =
                                                            lAcquisitionStateManager.getCurrentState();
 
-      if (getInterleavedAcquisitionVariable().get())
-        interleavedAcquisition(lCurrentState);
-      else
-        sequentialAcquisition(lCurrentState);
+      // deprecated: this code block will be removed as soon as
+      // timelapse became an own Scheduler
+      if (getLegacyTimelapseAcquisitionVariable().get())
+      {
+        if (getInterleavedAcquisitionVariable().get())
+          interleavedAcquisition(lCurrentState);
+        else
+          sequentialAcquisition(lCurrentState);
+      }
 
       ArrayList<SchedulerInterface>
           lSchedulerInterfaceList = getMicroscope().getDevices(SchedulerInterface.class);
@@ -126,6 +134,16 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
   }
 
+  /**
+   * This function will be deleted as soon as the
+   * SequentialAcquisitionScheduler proved to be functional and
+   * results in equal images
+   * @param pCurrentState
+   * @throws InterruptedException
+   * @throws ExecutionException
+   * @throws TimeoutException
+   */
+  @Deprecated
   private void sequentialAcquisition(LightSheetAcquisitionStateInterface<?> pCurrentState) throws InterruptedException,
                                                                                            ExecutionException,
                                                                                            TimeoutException
@@ -197,6 +215,13 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
   }
 
+  /**
+   * This function will be removed. see SequentialAcquisitionScheduler
+   * @param pCurrentState
+   * @param pLightSheetIndex
+   * @return
+   */
+  @Deprecated
   protected LightSheetMicroscopeQueue getQueueForSingleLightSheet(LightSheetAcquisitionStateInterface<?> pCurrentState,
                                                                   int pLightSheetIndex)
   {
@@ -262,6 +287,11 @@ public class LightSheetTimelapse extends TimelapseBase implements
     return mExtendedDepthOfFieldAcquisitionVariable;
   }
 
+  public Variable<Boolean> getLegacyTimelapseAcquisitionVariable()
+  {
+    return mLegacyTimelapseAcquisitionVariable;
+  }
+
   /**
    * Returns the variable holding the boolean flag that decides whether stacks
    * should or should not be fused.
@@ -273,4 +303,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
     return mFuseStacksPerCameraVariable;
   }
 
+  public long getTimeOut() {
+    return cTimeOut;
+  }
 }
