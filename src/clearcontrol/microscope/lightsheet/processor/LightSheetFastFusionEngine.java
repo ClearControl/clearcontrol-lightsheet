@@ -18,8 +18,9 @@ import fastfuse.FastFusionEngineInterface;
 import fastfuse.FastFusionMemoryPool;
 import fastfuse.registration.AffineMatrix;
 import fastfuse.tasks.*;
+import fastfuse.tasks.DownsampleXYbyHalfTask;
 import fastfuse.tasks.DownsampleXYbyHalfTask.Type;
-import framework.Handler;
+//import framework.Handler;
 
 /**
  * Lightsheet fast fusion engine
@@ -360,7 +361,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     // TODO here is the TimeStepper stuff
 
     // this.getFusedMetaData();
-    if (mTimeStepping) {
+    /*if (mTimeStepping) {
       System.out.println("adding the stepper task now");
       try
       {
@@ -373,7 +374,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
       {
         e.printStackTrace();
       }
-    }
+    }*/
     // }
   }
 
