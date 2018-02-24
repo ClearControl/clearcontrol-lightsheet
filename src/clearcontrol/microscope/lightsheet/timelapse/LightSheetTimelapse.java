@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
@@ -67,6 +68,28 @@ public class LightSheetTimelapse extends TimelapseBase implements
   {
     super(pLightSheetMicroscope);
     mLightSheetMicroscope = pLightSheetMicroscope;
+
+    mExtendedDepthOfFieldAcquisitionVariable.addSetListener(new VariableSetListener<Boolean>()
+    {
+      @Override public void setEvent(Boolean pCurrentValue,
+                                     Boolean pNewValue)
+      {
+        if (pNewValue) {
+          mFuseStacksVariable.set(false);
+        }
+      }
+    });
+
+    mFuseStacksVariable.addSetListener(new VariableSetListener<Boolean>()
+    {
+      @Override public void setEvent(Boolean pCurrentValue,
+                                     Boolean pNewValue)
+      {
+        if (pNewValue) {
+          mExtendedDepthOfFieldAcquisitionVariable.set(false);
+        }
+      }
+    });
 
     /*
     boolean lFuseStacks = getFuseStacksVariable().get()
