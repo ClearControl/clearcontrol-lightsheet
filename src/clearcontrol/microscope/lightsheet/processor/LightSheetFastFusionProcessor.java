@@ -133,6 +133,7 @@ public class LightSheetFastFusionProcessor extends
     else
     {
       info("Received stack for processing: %s", pStack);
+      info("mets: " +pStack.getMetaData().toString());
     }
 
     if (mEngine.isDownscale())

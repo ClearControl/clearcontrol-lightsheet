@@ -12,6 +12,7 @@ import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.MetaDataChannel;
+import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.metadata.StackMetaData;
 
 import java.util.concurrent.ExecutionException;
@@ -120,8 +121,8 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
           lQueue.setIZ(k,
                        lIlluminationZStart + l * lIlluminationZStep);
         }
+        lQueue.addCurrentStateToQueue();
       }
-      lQueue.addCurrentStateToQueue();
     }
 
     // back to initial position
@@ -151,6 +152,8 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
       lMetaData.addEntry(MetaDataChannel.Channel, "C" + c + "interleaved");
     }
     lQueue.addVoxelDimMetaData(lLightsheetMicroscope, lDetectionZStep);
+    lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
+                            pTimePoint);
 
     lQueue.finalizeQueue();
 
