@@ -43,6 +43,45 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       mRow++;
     }
 
+
+
+    {
+
+      VariableCheckBox lLegacyTimelapseAcquisitionCheckBox =
+          new VariableCheckBox("Legacy timelapse acquisition",
+                               pLightSheetTimelapse.getLegacyTimelapseAcquisitionVariable());
+
+      GridPane.setHalignment(lLegacyTimelapseAcquisitionCheckBox.getCheckBox(),
+                             HPos.RIGHT);
+      GridPane.setColumnSpan(lLegacyTimelapseAcquisitionCheckBox.getLabel(), 1);
+      GridPane.setColumnSpan(lLegacyTimelapseAcquisitionCheckBox.getCheckBox(), 1);
+
+      GridPane.setColumnSpan(lLegacyTimelapseAcquisitionCheckBox.getLabel(), 3);
+      add(lLegacyTimelapseAcquisitionCheckBox.getCheckBox(), 0, mRow);
+      add(lLegacyTimelapseAcquisitionCheckBox.getLabel(), 1, mRow);
+
+      mRow++;
+    }
+
+    {
+
+      VariableCheckBox lEDFImagingCheckBox =
+          new VariableCheckBox("-> Extended depth of field (EDF)",
+                               pLightSheetTimelapse.getExtendedDepthOfFieldAcquisitionVariable());
+
+      GridPane.setHalignment(lEDFImagingCheckBox.getCheckBox(),
+                             HPos.RIGHT);
+      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 1);
+      GridPane.setColumnSpan(lEDFImagingCheckBox.getCheckBox(), 1);
+
+      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 3);
+      add(lEDFImagingCheckBox.getCheckBox(), 0, mRow);
+      add(lEDFImagingCheckBox.getLabel(), 1, mRow);
+
+      mRow++;
+    }
+
+
     {
       ArrayList<SchedulerInterface>
           lSchedulerInterfaceList = pLightSheetTimelapse.getMicroscope().getDevices(SchedulerInterface.class);
@@ -104,23 +143,6 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       GridPane.setColumnSpan(lFuseStacksCheckBox.getLabel(), 3);
       add(lFuseStacksCheckBox.getCheckBox(), 0, mRow);
       add(lFuseStacksCheckBox.getLabel(), 1, mRow);
-
-      mRow++;
-    }
-
-    {
-      VariableCheckBox lEDFImagingCheckBox =
-          new VariableCheckBox("Extenced depth of field (EDF)",
-                               pLightSheetTimelapse.getExtendedDepthOfFieldAcquisitionVariable());
-
-      GridPane.setHalignment(lEDFImagingCheckBox.getCheckBox(),
-                             HPos.RIGHT);
-      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 1);
-      GridPane.setColumnSpan(lEDFImagingCheckBox.getCheckBox(), 1);
-
-      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 3);
-      add(lEDFImagingCheckBox.getCheckBox(), 0, mRow);
-      add(lEDFImagingCheckBox.getLabel(), 1, mRow);
 
       mRow++;
     }

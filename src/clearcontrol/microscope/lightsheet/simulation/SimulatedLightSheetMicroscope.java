@@ -27,6 +27,7 @@ import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.lightsheet.timelapse.InterleavedAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.timelapse.SequentialAcquisitionScheduler;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
@@ -310,6 +311,7 @@ public class SimulatedLightSheetMicroscope extends
     // Adding timelapse device:
     {
       TimelapseInterface lTimelapse = addTimelapse();
+      lTimelapse.getAdaptiveEngineOnVariable().set(false);
 
       lTimelapse.addFileStackSinkType(RawFileStackSink.class);
       //lTimelapse.addFileStackSinkType(SqeazyFileStackSink.class);
@@ -318,6 +320,7 @@ public class SimulatedLightSheetMicroscope extends
     if (getNumberOfLightSheets() > 1) {
       addDevice(0, new InterleavedAcquisitionScheduler());
     }
+    addDevice(0, new SequentialAcquisitionScheduler());
 
 
 
