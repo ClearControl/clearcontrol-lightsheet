@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.timelapse.gui;
 
+import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
@@ -64,43 +65,39 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
     }
 
     {
+      CustomGridPane lSchedulerChecklistGridPane = new CustomGridPane();
 
-      VariableCheckBox lEDFImagingCheckBox =
-          new VariableCheckBox("-> Extended depth of field (EDF)",
-                               pLightSheetTimelapse.getExtendedDepthOfFieldAcquisitionVariable());
-
-      GridPane.setHalignment(lEDFImagingCheckBox.getCheckBox(),
-                             HPos.RIGHT);
-      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 1);
-      GridPane.setColumnSpan(lEDFImagingCheckBox.getCheckBox(), 1);
-
-      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 3);
-      add(lEDFImagingCheckBox.getCheckBox(), 0, mRow);
-      add(lEDFImagingCheckBox.getLabel(), 1, mRow);
-
+      TitledPane lTitledPane =
+          new TitledPane("Schedule",
+                         lSchedulerChecklistGridPane);
+      lTitledPane.setAnimated(false);
+      lTitledPane.setExpanded(true);
+      GridPane.setColumnSpan(lTitledPane, 4);
+      add(lTitledPane, 0, mRow);
       mRow++;
-    }
 
 
-    {
+
       ArrayList<SchedulerInterface>
           lSchedulerInterfaceList = pLightSheetTimelapse.getMicroscope().getDevices(SchedulerInterface.class);
+
+      int lRow = 0;
       for (SchedulerInterface lSchedulerInterface : lSchedulerInterfaceList) {
         VariableCheckBox lSchedulerActiveCheckBox =
             new VariableCheckBox("", lSchedulerInterface.getActiveVariable());
 
-        Label lInterleavedAcquisitionLabel =
+        Label lSchedulerTitleLabel =
             new Label(lSchedulerInterface.getName());
 
         GridPane.setHalignment(lSchedulerActiveCheckBox.getCheckBox(),
                                HPos.RIGHT);
         GridPane.setColumnSpan(lSchedulerActiveCheckBox.getCheckBox(),
                                1);
-        GridPane.setColumnSpan(lInterleavedAcquisitionLabel, 3);
+        GridPane.setColumnSpan(lSchedulerTitleLabel, 3);
 
-        add(lSchedulerActiveCheckBox.getCheckBox(), 0, mRow);
-        add(lInterleavedAcquisitionLabel, 1, mRow);
-        mRow++;
+        lSchedulerChecklistGridPane.add(lSchedulerActiveCheckBox.getCheckBox(), 0, lRow);
+        lSchedulerChecklistGridPane.add(lSchedulerTitleLabel, 1, lRow);
+        lRow++;
       }
 
 
@@ -130,6 +127,29 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       mRow++;
     }*/
 
+    CustomGridPane lAdvancedOptionsGridPane = buildAdvancedOptionsGripPane();
+    lAdvancedOptionsGridPane.addSeparator();
+    int lRow = lAdvancedOptionsGridPane.getLastUsedRow();
+
+    {
+
+      VariableCheckBox lEDFImagingCheckBox =
+          new VariableCheckBox("-> Extended depth of field (EDF)",
+                               pLightSheetTimelapse.getExtendedDepthOfFieldAcquisitionVariable());
+
+      GridPane.setHalignment(lEDFImagingCheckBox.getCheckBox(),
+                             HPos.RIGHT);
+      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 1);
+      GridPane.setColumnSpan(lEDFImagingCheckBox.getCheckBox(), 1);
+
+      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 3);
+      lAdvancedOptionsGridPane.add(lEDFImagingCheckBox.getCheckBox(), 0, lRow);
+      lAdvancedOptionsGridPane.add(lEDFImagingCheckBox.getLabel(), 1, lRow);
+
+      lRow++;
+    }
+
+
     {
       VariableCheckBox lFuseStacksCheckBox =
                                            new VariableCheckBox("Fuse stacks",
@@ -141,10 +161,10 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       GridPane.setColumnSpan(lFuseStacksCheckBox.getCheckBox(), 1);
 
       GridPane.setColumnSpan(lFuseStacksCheckBox.getLabel(), 3);
-      add(lFuseStacksCheckBox.getCheckBox(), 0, mRow);
-      add(lFuseStacksCheckBox.getLabel(), 1, mRow);
+      lAdvancedOptionsGridPane.add(lFuseStacksCheckBox.getCheckBox(), 0, lRow);
+      lAdvancedOptionsGridPane.add(lFuseStacksCheckBox.getLabel(), 1, lRow);
 
-      mRow++;
+      lRow++;
     }
 
     /*
