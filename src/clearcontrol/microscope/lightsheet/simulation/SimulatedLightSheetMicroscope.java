@@ -312,7 +312,7 @@ public class SimulatedLightSheetMicroscope extends
       TimelapseInterface lTimelapse = addTimelapse();
 
       lTimelapse.addFileStackSinkType(RawFileStackSink.class);
-      lTimelapse.addFileStackSinkType(SqeazyFileStackSink.class);
+      //lTimelapse.addFileStackSinkType(SqeazyFileStackSink.class);
     }
 
     if (getNumberOfLightSheets() > 1) {
