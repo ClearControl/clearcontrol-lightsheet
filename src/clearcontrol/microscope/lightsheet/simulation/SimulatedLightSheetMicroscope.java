@@ -29,6 +29,7 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.lightsheet.timelapse.InterleavedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.timelapse.OpticallyCameraFusedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.SequentialAcquisitionScheduler;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
@@ -329,6 +330,7 @@ public class SimulatedLightSheetMicroscope extends
     {
       ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
     }
+    addDevice(0, new OpticallyCameraFusedAcquisitionScheduler());
 
     addDevice(0, new PauseScheduler());
 
