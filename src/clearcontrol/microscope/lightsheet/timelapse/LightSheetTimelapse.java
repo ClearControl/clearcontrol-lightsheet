@@ -64,7 +64,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
                             false);
   private Variable<Boolean> mLegacyTimelapseAcquisitionVariable  =
       new Variable<Boolean>("LegacyTimelapseAcquisition",
-                            true);
+                            false);
 
   private ArrayList<SchedulerInterface>
       mListOfActivatedSchedulers = new ArrayList<SchedulerInterface>();
