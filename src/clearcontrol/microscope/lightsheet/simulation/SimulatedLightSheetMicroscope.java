@@ -22,6 +22,7 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
+import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -321,6 +322,8 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new InterleavedAcquisitionScheduler());
     }
     addDevice(0, new SequentialAcquisitionScheduler());
+
+    addDevice(0, new PauseScheduler());
 
 
 

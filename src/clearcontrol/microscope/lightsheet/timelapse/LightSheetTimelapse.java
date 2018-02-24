@@ -60,6 +60,9 @@ public class LightSheetTimelapse extends TimelapseBase implements
       new Variable<Boolean>("LegacyTimelapseAcquisition",
                             true);
 
+  private ArrayList<SchedulerInterface>
+      mListOfActivatedSchedulers = new ArrayList<SchedulerInterface>();
+
   /**
    * @param pLightSheetMicroscope
    *          microscope
@@ -68,6 +71,8 @@ public class LightSheetTimelapse extends TimelapseBase implements
   {
     super(pLightSheetMicroscope);
     mLightSheetMicroscope = pLightSheetMicroscope;
+
+    mListOfActivatedSchedulers.add(pLightSheetMicroscope.getDevice(SequentialAcquisitionScheduler.class, 0));
 
     mExtendedDepthOfFieldAcquisitionVariable.addSetListener(new VariableSetListener<Boolean>()
     {
@@ -328,5 +333,10 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
   public long getTimeOut() {
     return cTimeOut;
+  }
+
+  public ArrayList<SchedulerInterface> getListOfActivatedSchedulers()
+  {
+    return mListOfActivatedSchedulers;
   }
 }

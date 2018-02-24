@@ -57,8 +57,6 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                           .getBooleanProperty("fastfuse.downscale",
                                                                               true);
 
-  private volatile boolean mInterleaved = false;
-
 
   private volatile double mMemRatio =
                                     MachineConfiguration.get()
@@ -258,9 +256,17 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     } else*/
     if (isDownscale())
     {
+      // process optically camera-fused input
+      addTask(new DownsampleXYbyHalfTask("C0opticallycamerafused", "C0", Type.Median ));
+      addTask(new MemoryReleaseTask("C0", "C0opticallycamerafused"));
+      addTask(new DownsampleXYbyHalfTask("C1opticallycamerafused", "C1", Type.Median ));
+      addTask(new MemoryReleaseTask("C1", "C1opticallycamerafused"));
+
+      // process interleaved acquisition input
       addTasks(StackSplitTask.splitStackAndReleaseInputs("C0interleaved", new String[]{"C0L0d","C0L1d","C0L2d","C0L3d"}, true));
       addTasks(StackSplitTask.splitStackAndReleaseInputs("C1interleaved", new String[]{"C1L0d","C1L1d","C1L2d","C1L3d"}, true));
 
+      // process sequential acquisition input
       addTasks(DownsampleXYbyHalfTask.applyAndReleaseInputs(Type.Median,
                                                             "d",
                                                             "C0L0",
@@ -274,9 +280,15 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     }
     else
     {
+      // process optically camera-fused input
+      addTask(new IdentityTask("C0opticallycamerafused", "C0"));
+      addTask(new IdentityTask("C1opticallycamerafused", "C1"));
+
+      // process interleaved acquisition input
       addTasks(StackSplitTask.splitStackAndReleaseInputs("C0interleaved", new String[]{"C0L0d","C0L1d","C0L2d","C0L3d"}, false));
       addTasks(StackSplitTask.splitStackAndReleaseInputs("C1interleaved", new String[]{"C1L0d","C1L1d","C1L2d","C1L3d"}, false));
 
+      // process sequential acquisition input
       addTasks(IdentityTask.withSuffix("d",
                                        "C0L0",
                                        "C0L1",
@@ -775,15 +787,6 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
   {
     mDownscale = pDownscale;
   }
-
-  public boolean isInterleaved() {
-    return mInterleaved;
-  }
-
-  public void setInterleaved(boolean pInterleaved) {
-    mInterleaved = pInterleaved;
-  }
-
 
   @Override
   public void notifyListenersOfNewScoreForComputedTheta(double pScore)

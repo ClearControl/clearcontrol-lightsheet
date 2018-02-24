@@ -78,10 +78,6 @@ public class LightSheetFastFusionProcessor extends
                                                                        new Variable<Boolean>("BackgroundSubtractionSwitch",
                                                                                              false);
 
-  private final Variable<Boolean> mInterleavedSwitchVariable = new Variable<Boolean>("InterleavedSwitch",
-    false);
-
-
   /**
    * Instantiates a lightsheet stack processor
    *
@@ -121,15 +117,10 @@ public class LightSheetFastFusionProcessor extends
     {
       lEngineNeedsInitialisation = true;
     }
-    /*
-    if (mEngine.isInterleaved() != mInterleavedSwitchVariable.get()) {
-      lEngineNeedsInitialisation = true;
-    }*/
 
     if (lEngineNeedsInitialisation)
     {
       mEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
-      //mEngine.setInterleaved(mInterleavedSwitchVariable.get());
       mEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(),
                     mLightSheetMicroscope.getNumberOfDetectionArms());
     }
@@ -389,10 +380,5 @@ public class LightSheetFastFusionProcessor extends
   public Variable<Boolean> getBackgroundSubtractionSwitchVariable()
   {
     return mBackgroundSubtractionSwitchVariable;
-  }
-
-  public Variable<Boolean> getInterleavedSwitchVariable()
-  {
-    return mInterleavedSwitchVariable;
   }
 }

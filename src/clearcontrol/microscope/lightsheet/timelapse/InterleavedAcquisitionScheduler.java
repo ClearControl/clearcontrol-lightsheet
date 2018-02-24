@@ -8,6 +8,7 @@ import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
+import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.OffHeapPlanarStack;
@@ -26,10 +27,14 @@ import static org.python.core.Py.False;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
-public class InterleavedAcquisitionScheduler extends SchedulerBase implements
+public class InterleavedAcquisitionScheduler extends AbstractAcquistionScheduler implements
                                                                    SchedulerInterface,
                                                                    LoggingFeature
 {
+  LightSheetMicroscope mLightSheetMicroscope;
+  InterpolatedAcquisitionState mCurrentState;
+  LightSheetTimelapse mTimelapse;
+
   /**
    * INstanciates a virtual device with a given name
    */
@@ -40,42 +45,24 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
 
   @Override public boolean doExperiment(long pTimePoint)
   {
-    LightSheetMicroscope mLightSheetMicroscope;
     if (!(mMicroscope instanceof LightSheetMicroscope)) {
       warning("" + this + " needs a lightsheet microscope!");
       return false;
     }
     mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
+    mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+    mTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
 
     // reconfigure FastFusion engine
     LightSheetFastFusionProcessor
         lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
     lLightSheetFastFusionProcessor.getInterleavedSwitchVariable().set(true);
 
+    int lImageWidth = mCurrentState.getImageWidthVariable().get().intValue();
+    int lImageHeight = mCurrentState.getImageHeightVariable().get().intValue();
+    double lExposureTimeInSeconds = mCurrentState.getExposureInSecondsVariable().get().doubleValue();
 
-    if (!(mMicroscope instanceof LightSheetMicroscope))
-    {
-      warning(""
-              + this
-              + " needs a lightsheet microscope to be scheduled properly");
-      return false;
-    }
-
-    int lImageWidth = 2048;
-    int lImageHeight = 2048;
-    double lExposureTimeInSeconds = 0.05;
-
-    double lIlluminationZStart = 0;
-    double lDetectionZZStart = 0;
-
-    double lLightsheetWidth = 0.45;
-    double lLightsheetHeight = 500;
-    double lLightsheetX = 0;
-    double lLightsheetY = 0;
-
-    int lNumberOfImagesToTake = 10;
-    double lDetectionZStep = 2;
-    double lIlluminationZStep = 2;
+    int lNumberOfImagesToTake = mCurrentState.getNumberOfZPlanesVariable().get().intValue();
 
     LightSheetMicroscope
         lLightsheetMicroscope =
@@ -95,12 +82,12 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
     // initial position
     goToInitialPosition(lLightsheetMicroscope,
                         lQueue,
-                        lLightsheetWidth,
-                        lLightsheetHeight,
-                        lLightsheetX,
-                        lLightsheetY,
-                        lIlluminationZStart,
-                        lDetectionZZStart);
+                        mLightSheetMicroscope.getLightSheet(0).getWidthVariable().get().doubleValue(),
+                        mLightSheetMicroscope.getLightSheet(0).getHeightVariable().get().doubleValue(),
+                        mLightSheetMicroscope.getLightSheet(0).getXVariable().get().doubleValue(),
+                        mLightSheetMicroscope.getLightSheet(0).getYVariable().get().doubleValue(),
+                        mCurrentState.getStackZLowVariable().get().doubleValue(),
+                        mCurrentState.getStackZLowVariable().get().doubleValue());
 
     // --------------------------------------------------------------------
     // build a queue
@@ -108,15 +95,6 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
     for (int lImageCounter = 0; lImageCounter
                                 < lNumberOfImagesToTake; lImageCounter++)
     {
-      for (int d = 0; d
-                      < lLightsheetMicroscope.getNumberOfDetectionArms(); d++)
-      {
-        lQueue.setDZ(d,
-                     lDetectionZZStart
-                     + lImageCounter * lDetectionZStep);
-        lQueue.setC(d, true);
-      }
-
       // acuqire an image per light sheet + one more
       for (int l = 0; l
                       < lLightsheetMicroscope.getNumberOfLightSheets(); l++)
@@ -125,15 +103,10 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
         for (int k = 0; k
                         < lLightsheetMicroscope.getNumberOfLightSheets(); k++)
         {
-          if (l < lLightsheetMicroscope.getNumberOfLightSheets())
-          {
-            //  turn all but one light sheet off
-            lQueue.setI(k, k == l);
-          }
+          mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
+                                                        lImageCounter);
 
-          // always set position for all lightsheets
-          lQueue.setIZ(k,
-                       lIlluminationZStart + l * lIlluminationZStep);
+          lQueue.setI(k, k == l);
         }
         lQueue.addCurrentStateToQueue();
       }
@@ -142,12 +115,12 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
     // back to initial position
     goToInitialPosition(lLightsheetMicroscope,
                         lQueue,
-                        lLightsheetWidth,
-                        lLightsheetHeight,
-                        lLightsheetX,
-                        lLightsheetY,
-                        lIlluminationZStart,
-                        lDetectionZZStart);
+                        mLightSheetMicroscope.getLightSheet(0).getWidthVariable().get().doubleValue(),
+                        mLightSheetMicroscope.getLightSheet(0).getHeightVariable().get().doubleValue(),
+                        mLightSheetMicroscope.getLightSheet(0).getXVariable().get().doubleValue(),
+                        mLightSheetMicroscope.getLightSheet(0).getYVariable().get().doubleValue(),
+                        mCurrentState.getStackZLowVariable().get().doubleValue(),
+                        mCurrentState.getStackZLowVariable().get().doubleValue());
 
     lQueue.setTransitionTime(0.1);
 
@@ -165,7 +138,7 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
 
       lMetaData.addEntry(MetaDataChannel.Channel,  "interleaved");
     }
-    lQueue.addVoxelDimMetaData(lLightsheetMicroscope, lDetectionZStep);
+    lQueue.addVoxelDimMetaData(lLightsheetMicroscope, mCurrentState.getStackZStepVariable().get().doubleValue());
     lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
                             pTimePoint);
 
@@ -198,46 +171,8 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
       System.out.print("Error while imaging");
       return false;
     }
-    /*
-    for (int d = 0; d < lLightsheetMicroscope.getNumberOfDetectionArms(); d++)
-    {
-      StackInterface
-          lStack =
-          lLightsheetMicroscope.getCameraStackVariable(
-              d).get();
-    }
-    */
 
     return true;
   }
 
-  private void goToInitialPosition(LightSheetMicroscope lLightsheetMicroscope,
-                                   LightSheetMicroscopeQueue lQueue,
-                                   double lLightsheetWidth,
-                                   double lLightsheetHeight,
-                                   double lLightsheetX,
-                                   double lLightsheetY,
-                                   double lIlluminationZStart,
-                                   double lDetectionZZStart)
-  {
-
-    for (int l = 0; l
-                    < lLightsheetMicroscope.getNumberOfLightSheets(); l++)
-    {
-      lQueue.setI(l, false);
-      lQueue.setIW(l, lLightsheetWidth);
-      lQueue.setIH(l, lLightsheetHeight);
-      lQueue.setIX(l, lLightsheetX);
-      lQueue.setIY(l, lLightsheetY);
-
-      lQueue.setIZ(lIlluminationZStart);
-    }
-    for (int d = 0; d
-                    < lLightsheetMicroscope.getNumberOfDetectionArms(); d++)
-    {
-      lQueue.setDZ(d, lDetectionZZStart);
-      lQueue.setC(d, false);
-
-    } lQueue.addCurrentStateToQueue();
-  }
 }

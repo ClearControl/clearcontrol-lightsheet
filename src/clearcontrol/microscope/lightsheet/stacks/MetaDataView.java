@@ -34,9 +34,13 @@ public enum MetaDataView implements MetaDataEntryInterface<Integer>
     Integer lCameraIndex =
                          pStackMetaData.getValue(MetaDataView.Camera);
 
+
+
     if (pStackMetaData.getValue(MetaDataAcquisitionType.AcquisitionType) == AcquisitionType.TimeLapseInterleaved) {
       return "C" + pStackMetaData.getValue(MetaDataView.Camera) + "interleaved";
-    } else {
+    } else if (pStackMetaData.getValue(MetaDataAcquisitionType.AcquisitionType) == AcquisitionType.TimeLapseOpticallyCameraFused) {
+      return "C" + pStackMetaData.getValue(MetaDataView.Camera) + "opticallycamerafused";
+    } else{
       Integer lLightSheetIndex = pStackMetaData.getValue(MetaDataView.LightSheet);
 
       if (lCameraIndex == null || lLightSheetIndex == null)

@@ -104,6 +104,7 @@ public class SequentialAcquisitionScheduler extends SchedulerBase implements
                 lMetaData.addEntry(MetaDataFusion.RequestFullFusion,
                                    true);
 
+              lMetaData.addEntry(MetaDataChannel.Channel,  "sequential");
             }
             else
             {
