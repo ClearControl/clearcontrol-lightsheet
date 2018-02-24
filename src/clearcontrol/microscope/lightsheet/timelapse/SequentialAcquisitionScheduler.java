@@ -5,6 +5,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -51,6 +52,9 @@ public class SequentialAcquisitionScheduler extends SchedulerBase implements
     mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
     mTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
 
+    // reconfigure FastFusion engine
+    LightSheetFastFusionProcessor lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
+    lLightSheetFastFusionProcessor.getInterleavedSwitchVariable().set(false);
 
     int lNumberOfDetectionArms = mLightSheetMicroscope.getNumberOfDetectionArms();
 
@@ -87,7 +91,7 @@ public class SequentialAcquisitionScheduler extends SchedulerBase implements
                              .get();
 
             lMetaData.addEntry(MetaDataAcquisitionType.AcquisitionType,
-                               AcquisitionType.TimeLapse);
+                               AcquisitionType.TimelapseSequential);
             lMetaData.addEntry(MetaDataView.Camera, c);
             lMetaData.addEntry(MetaDataView.LightSheet, l);
 

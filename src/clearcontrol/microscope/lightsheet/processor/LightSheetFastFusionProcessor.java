@@ -15,6 +15,7 @@ import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataViewFlags;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
+import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataChannel;
@@ -77,6 +78,10 @@ public class LightSheetFastFusionProcessor extends
                                                                        new Variable<Boolean>("BackgroundSubtractionSwitch",
                                                                                              false);
 
+  private final Variable<Boolean> mInterleavedSwitchVariable = new Variable<Boolean>("InterleavedSwitch",
+    false);
+
+
   /**
    * Instantiates a lightsheet stack processor
    *
@@ -116,10 +121,15 @@ public class LightSheetFastFusionProcessor extends
     {
       lEngineNeedsInitialisation = true;
     }
+    /*
+    if (mEngine.isInterleaved() != mInterleavedSwitchVariable.get()) {
+      lEngineNeedsInitialisation = true;
+    }*/
 
     if (lEngineNeedsInitialisation)
     {
       mEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
+      //mEngine.setInterleaved(mInterleavedSwitchVariable.get());
       mEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(),
                     mLightSheetMicroscope.getNumberOfDetectionArms());
     }
@@ -238,9 +248,17 @@ public class LightSheetFastFusionProcessor extends
       ClearCLImage lFusedImage = mEngine.getImage("fused");
 
       return copyFusedStack(pStackRecycler,
+                                                   lFusedImage,
+                                                   mEngine.getFusedMetaData(),
+                                                   null);
+
+      /*
+      StackInterface lReturnStack = copyFusedStack(pStackRecycler,
                             lFusedImage,
                             mEngine.getFusedMetaData(),
                             null);
+      mEngine.removeImage("fused");
+      return lReturnStack;*/
     }
 
     return null;
@@ -282,7 +300,7 @@ public class LightSheetFastFusionProcessor extends
                                      pStack.getMetaData()
                                            .getValue(MetaDataAcquisitionType.AcquisitionType);
 
-    if (lAcquisitionType != AcquisitionType.TimeLapse)
+    if (lAcquisitionType == AcquisitionType.Interactive)
       return true;
 
     if (pStack.getMetaData()
@@ -373,4 +391,8 @@ public class LightSheetFastFusionProcessor extends
     return mBackgroundSubtractionSwitchVariable;
   }
 
+  public Variable<Boolean> getInterleavedSwitchVariable()
+  {
+    return mInterleavedSwitchVariable;
+  }
 }

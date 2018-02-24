@@ -1,5 +1,7 @@
 package clearcontrol.microscope.lightsheet.stacks;
 
+import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
+import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.metadata.MetaDataEntryInterface;
 import clearcontrol.stack.metadata.StackMetaData;
 
@@ -31,16 +33,18 @@ public enum MetaDataView implements MetaDataEntryInterface<Integer>
   {
     Integer lCameraIndex =
                          pStackMetaData.getValue(MetaDataView.Camera);
-    Integer lLightSheetIndex =
-                             pStackMetaData.getValue(MetaDataView.LightSheet);
 
-    if (lCameraIndex == null || lLightSheetIndex == null)
-      return null;
+    if (pStackMetaData.getValue(MetaDataAcquisitionType.AcquisitionType) == AcquisitionType.TimeLapseInterleaved) {
+      return "C" + pStackMetaData.getValue(MetaDataView.Camera) + "interleaved";
+    } else {
+      Integer lLightSheetIndex = pStackMetaData.getValue(MetaDataView.LightSheet);
 
-    String lKey = String.format("C%dL%d",
-                                (int) lCameraIndex,
-                                (int) lLightSheetIndex);
-    return lKey;
+      if (lCameraIndex == null || lLightSheetIndex == null)
+        return null;
+
+      String lKey = String.format("C%dL%d", (int) lCameraIndex, (int) lLightSheetIndex);
+      return lKey;
+    }
   }
 
 }

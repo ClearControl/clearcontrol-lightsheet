@@ -5,6 +5,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
@@ -39,6 +40,19 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
 
   @Override public boolean doExperiment(long pTimePoint)
   {
+    LightSheetMicroscope mLightSheetMicroscope;
+    if (!(mMicroscope instanceof LightSheetMicroscope)) {
+      warning("" + this + " needs a lightsheet microscope!");
+      return false;
+    }
+    mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
+
+    // reconfigure FastFusion engine
+    LightSheetFastFusionProcessor
+        lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
+    lLightSheetFastFusionProcessor.getInterleavedSwitchVariable().set(true);
+
+
     if (!(mMicroscope instanceof LightSheetMicroscope))
     {
       warning(""
@@ -144,12 +158,12 @@ public class InterleavedAcquisitionScheduler extends SchedulerBase implements
           lQueue.getCameraDeviceQueue(c).getMetaDataVariable().get();
 
       lMetaData.addEntry(MetaDataAcquisitionType.AcquisitionType,
-                         AcquisitionType.TimeLapse);
+                         AcquisitionType.TimeLapseInterleaved);
       lMetaData.addEntry(MetaDataView.Camera, c);
 
       lMetaData.addEntry(MetaDataFusion.RequestFullFusion, true);
 
-      lMetaData.addEntry(MetaDataChannel.Channel, "C" + c + "interleaved");
+      lMetaData.addEntry(MetaDataChannel.Channel,  "interleaved");
     }
     lQueue.addVoxelDimMetaData(lLightsheetMicroscope, lDetectionZStep);
     lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,

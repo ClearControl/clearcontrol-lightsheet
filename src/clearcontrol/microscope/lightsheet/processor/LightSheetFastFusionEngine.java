@@ -12,6 +12,8 @@ import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.timelapse.stepper.CacheStackTask;
+import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
+import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.metadata.StackMetaData;
@@ -248,18 +250,17 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                       float[] pKernelSigmasFusion,
                                                       float[] pKernelSigmasBackground)
   {
+    /*
     if (isInterleaved()) {
       if (isDownscale()) {
-        addTasks(StackSplitTask.splitStackAndReleaseInputs("C0interleaved", new String[]{"C0L0d","C0L1d","C0L2d","C0L3d"}, true));
-        addTasks(StackSplitTask.splitStackAndReleaseInputs("C1interleaved", new String[]{"C1L0d","C1L1d","C1L2d","C1L3d"}, true));
       } else {
-        addTasks(StackSplitTask.splitStackAndReleaseInputs("C0interleaved", new String[]{"C0L0d","C0L1d","C0L2d","C0L3d"}, false));
-        addTasks(StackSplitTask.splitStackAndReleaseInputs("C1interleaved", new String[]{"C1L0d","C1L1d","C1L2d","C1L3d"}, false));
       }
-    }
-
+    } else*/
     if (isDownscale())
     {
+      addTasks(StackSplitTask.splitStackAndReleaseInputs("C0interleaved", new String[]{"C0L0d","C0L1d","C0L2d","C0L3d"}, true));
+      addTasks(StackSplitTask.splitStackAndReleaseInputs("C1interleaved", new String[]{"C1L0d","C1L1d","C1L2d","C1L3d"}, true));
+
       addTasks(DownsampleXYbyHalfTask.applyAndReleaseInputs(Type.Median,
                                                             "d",
                                                             "C0L0",
@@ -273,6 +274,9 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     }
     else
     {
+      addTasks(StackSplitTask.splitStackAndReleaseInputs("C0interleaved", new String[]{"C0L0d","C0L1d","C0L2d","C0L3d"}, false));
+      addTasks(StackSplitTask.splitStackAndReleaseInputs("C1interleaved", new String[]{"C1L0d","C1L1d","C1L2d","C1L3d"}, false));
+
       addTasks(IdentityTask.withSuffix("d",
                                        "C0L0",
                                        "C0L1",
@@ -663,8 +667,8 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
 
       }
 
-      String lKey = lStackMetaData.getValue(MetaDataChannel.Channel);
-          //MetaDataView.getCxLyString(lStackMetaData);
+      String lKey = MetaDataView.getCxLyString(lStackMetaData);
+
 
       info("Passing stack " + lKey + " " + pStack);
 
