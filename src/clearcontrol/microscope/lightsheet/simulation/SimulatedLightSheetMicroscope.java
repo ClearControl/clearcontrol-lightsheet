@@ -27,10 +27,7 @@ import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDev
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
-import clearcontrol.microscope.lightsheet.timelapse.InterleavedAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
-import clearcontrol.microscope.lightsheet.timelapse.OpticsPrefusedAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.timelapse.SequentialAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.timelapse.*;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
@@ -329,9 +326,25 @@ public class SimulatedLightSheetMicroscope extends
     {
       ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
     }
+
+    for (int c = 0; c < getNumberOfDetectionArms(); c++) {
+      for (int l = 0; l < getNumberOfLightSheets(); l++) {
+        addDevice(0, new SingleViewAcquisitionScheduler(c, l));
+      }
+    }
+
     addDevice(0, new OpticsPrefusedAcquisitionScheduler());
 
     addDevice(0, new PauseScheduler());
+    addDevice(1, new PauseScheduler(1000));
+    addDevice(2, new PauseScheduler(10000));
+    addDevice(3, new PauseScheduler(30000));
+    addDevice(4, new PauseScheduler(60000));
+    addDevice(5, new PauseScheduler(500000));
+    addDevice(6, new PauseScheduler(600000));
+    addDevice(7, new PauseScheduler(1800000));
+    addDevice(8, new PauseScheduler(3600000));
+
 
 
 
