@@ -37,7 +37,7 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
    */
   public SequentialAcquisitionScheduler()
   {
-    super("Sequential acquisition");
+    super("Acquisition: Sequential");
   }
 
 

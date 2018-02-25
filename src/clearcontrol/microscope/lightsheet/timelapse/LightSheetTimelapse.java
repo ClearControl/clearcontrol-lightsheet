@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -183,13 +184,13 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
       SchedulerInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(mLastExecutedSchedulerIndex);
       if (mLogFileWriter != null) {
-        mLogFileWriter.write("Starting " + lNextSchedulerToRun + " at "
-                             + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date())+ " time point " + getTimePointCounterVariable().get() + "\n");
+        mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Starting " + lNextSchedulerToRun + "\r\n");
+        mLogFileWriter.flush();
       }
       lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
       if (mLogFileWriter != null) {
-        mLogFileWriter.write("Finished " + lNextSchedulerToRun + " at "
-                             + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date())+ " time point " + getTimePointCounterVariable().get() + "\n");
+        mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Finished " + lNextSchedulerToRun + "\r\n");
+        mLogFileWriter.flush();
       }
 
       /*
@@ -213,6 +214,8 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
   }
 
+
+  @Deprecated
   private void interleavedAcquisition(LightSheetAcquisitionStateInterface<?> pCurrentState)
   {
     // TODO not supported for now
@@ -403,6 +406,16 @@ public class LightSheetTimelapse extends TimelapseBase implements
     for (SchedulerInterface lScheduler : mLightSheetMicroscope.getDevices(SchedulerInterface.class)) {
       lListOfAvailabeSchedulers.add(lScheduler);
     }
+
+    lListOfAvailabeSchedulers.sort(new Comparator<SchedulerInterface>()
+    {
+      @Override public int compare(SchedulerInterface o1,
+                                   SchedulerInterface o2)
+      {
+        return o1.getName().compareTo(o2.getName());
+      }
+    });
+
     return lListOfAvailabeSchedulers;
   }
 

@@ -37,7 +37,7 @@ public class InterleavedAcquisitionScheduler extends AbstractAcquistionScheduler
    */
   public InterleavedAcquisitionScheduler()
   {
-    super("Interleaved acquisition");
+    super("Acquisition: Interleaved");
   }
 
   @Override public boolean enqueue(long pTimePoint)

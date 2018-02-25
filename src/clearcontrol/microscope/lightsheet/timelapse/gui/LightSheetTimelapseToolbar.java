@@ -6,6 +6,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
@@ -79,14 +81,17 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       ArrayList<SchedulerInterface> lSchedulerList = pLightSheetTimelapse.getListOfActivatedSchedulers();
       ListView<SchedulerInterface> lListView = new ListView<SchedulerInterface>();
       lListView.setItems(FXCollections.observableArrayList (lSchedulerList));
+      lListView.setMaxWidth(Double.MAX_VALUE);
 
       lSchedulerChecklistGridPane.add(lListView, 0, 0, 1, 4);
 
 
 
       {
-        Button lMinusButton = new Button("^");
-        lMinusButton.setOnAction((e) -> {
+        Button lMoveUpButton = new Button("^");
+        lMoveUpButton.setMinWidth(35);
+        lMoveUpButton.setMinHeight(35);
+        lMoveUpButton.setOnAction((e) -> {
           int i = lListView.getSelectionModel().getSelectedIndex();
           if (i > 1)
           {
@@ -97,12 +102,14 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
                 lSchedulerList));
           }
         });
-        lSchedulerChecklistGridPane.add(lMinusButton, 1, 0);
+        lSchedulerChecklistGridPane.add(lMoveUpButton, 1, 0);
       }
 
       {
-        Button lMinusButton = new Button("v");
-        lMinusButton.setOnAction((e) -> {
+        Button lMoveDownButton = new Button("v");
+        lMoveDownButton.setMinWidth(35);
+        lMoveDownButton.setMinHeight(35);
+        lMoveDownButton.setOnAction((e) -> {
           int count = 0;
           int i = lListView.getSelectionModel().getSelectedIndex();
           if (i >= 0 && i < lSchedulerList.size() - 2)
@@ -114,12 +121,14 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
                 lSchedulerList));
           }
         });
-        lSchedulerChecklistGridPane.add(lMinusButton, 1, 1);
+        lSchedulerChecklistGridPane.add(lMoveDownButton, 1, 1);
       }
 
 
       {
         Button lMinusButton = new Button("-");
+        lMinusButton.setMinWidth(35);
+        lMinusButton.setMinHeight(35);
         lMinusButton.setOnAction((e) -> {
           int count = 0;
           for (int i : lListView.getSelectionModel()
@@ -132,6 +141,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
           lListView.setItems(FXCollections.observableArrayList(
               lSchedulerList));
         });
+        GridPane.setValignment(lMinusButton, VPos.BOTTOM);
         lSchedulerChecklistGridPane.add(lMinusButton, 1, 3);
       }
 
@@ -139,9 +149,14 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         ArrayList<SchedulerInterface> lAvailableSchedulersList = pLightSheetTimelapse.getListOfAvailableSchedulers();
         ComboBox<SchedulerInterface> lAvailableSchedulers = new ComboBox<>();
         lAvailableSchedulers.setItems(FXCollections.observableArrayList(lAvailableSchedulersList));
+        lAvailableSchedulers.getSelectionModel().select(0);
+        lAvailableSchedulers.setMaxWidth(Double.MAX_VALUE);
+        lAvailableSchedulers.setMinHeight(35);
         lSchedulerChecklistGridPane.add(lAvailableSchedulers, 0, 4);
 
         Button lPlusButton = new Button("+");
+        lPlusButton.setMinWidth(35);
+        lPlusButton.setMinHeight(35);
         lPlusButton.setOnAction((e) -> {
           int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
           if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lSchedulerList.size();

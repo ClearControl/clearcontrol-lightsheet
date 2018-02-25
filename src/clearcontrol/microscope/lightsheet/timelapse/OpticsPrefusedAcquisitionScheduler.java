@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
-public class OpticallyCameraFusedAcquisitionScheduler extends AbstractAcquistionScheduler implements
+public class OpticsPrefusedAcquisitionScheduler extends AbstractAcquistionScheduler implements
                                                                                        SchedulerInterface,
                                                                                        LoggingFeature
 {
@@ -31,9 +31,9 @@ public class OpticallyCameraFusedAcquisitionScheduler extends AbstractAcquistion
    * INstanciates a virtual device with a given name
    *
    */
-  public OpticallyCameraFusedAcquisitionScheduler()
+  public OpticsPrefusedAcquisitionScheduler()
   {
-    super("Optically camera-fused acquisition");
+    super("Acquisition: optics-prefused");
   }
 
   @Override public boolean enqueue(long pTimePoint)
@@ -118,7 +118,7 @@ public class OpticallyCameraFusedAcquisitionScheduler extends AbstractAcquistion
 
       lMetaData.addEntry(MetaDataFusion.RequestFullFusion, true);
 
-      lMetaData.addEntry(MetaDataChannel.Channel, "opticallycamerafused");
+      lMetaData.addEntry(MetaDataChannel.Channel, "opticsprefused");
     }
     lQueue.addVoxelDimMetaData(lLightsheetMicroscope, mCurrentState.getStackZStepVariable().get().doubleValue());
     lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
