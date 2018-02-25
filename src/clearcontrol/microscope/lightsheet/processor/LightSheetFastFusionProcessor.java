@@ -381,4 +381,13 @@ public class LightSheetFastFusionProcessor extends
   {
     return mBackgroundSubtractionSwitchVariable;
   }
+
+  /*
+  *  This function was just introduced for debugging and will soon be deletec
+  */
+  @Deprecated
+  public LightSheetFastFusionEngine getmEngine()
+  {
+    return mEngine;
+  }
 }

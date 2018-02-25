@@ -19,6 +19,8 @@ import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
+import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
@@ -147,6 +149,30 @@ public class LightSheetTimelapse extends TimelapseBase implements
       }
     }
 
+    if (getStopSignalVariable().get()) {
+      return;
+    }
+
+    LightSheetFastFusionProcessor lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
+    LightSheetFastFusionEngine lLightSheetFastFusionEngine = lLightSheetFastFusionProcessor.getmEngine();
+
+    if (lLightSheetFastFusionEngine != null) {
+      while(lLightSheetFastFusionEngine.getAvailableImagesSlotKeys().size() > 0) {
+        info("Waiting because fastfuse is still working... " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys());
+        try
+        {
+          Thread.sleep(1000);
+          if (getStopSignalVariable().get()) {
+            return;
+          }
+        }
+        catch (InterruptedException e)
+        {
+          e.printStackTrace();
+        }
+      }
+    }
+
 
     try
     {
@@ -182,14 +208,23 @@ public class LightSheetTimelapse extends TimelapseBase implements
         mLastExecutedSchedulerIndex = 0;
       }
 
+
       SchedulerInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(mLastExecutedSchedulerIndex);
       if (mLogFileWriter != null) {
         mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Starting " + lNextSchedulerToRun + "\r\n");
+        if (lLightSheetFastFusionEngine != null)
+        {
+          mLogFileWriter.write("FastFuse knows about " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys());
+        }
         mLogFileWriter.flush();
       }
       lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
       if (mLogFileWriter != null) {
         mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Finished " + lNextSchedulerToRun + "\r\n");
+        if (lLightSheetFastFusionEngine != null)
+        {
+          mLogFileWriter.write("FastFuse knows about " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys());
+        }
         mLogFileWriter.flush();
       }
 
@@ -334,14 +369,14 @@ public class LightSheetTimelapse extends TimelapseBase implements
                                                             lNumberOfLaserLines,
                                                             lNumberOfEDFSlices);
 
-    for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
+    /*for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
     {
       info("Light sheet " + l + " W: " + lQueue.getIW(l));
     }
     for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
     {
       info("Light sheet " + l + " H: " + lQueue.getIH(l));
-    }
+    }*/
 
     lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
                             getTimePointCounterVariable().get());

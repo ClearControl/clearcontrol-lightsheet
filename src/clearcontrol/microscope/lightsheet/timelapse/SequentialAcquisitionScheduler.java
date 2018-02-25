@@ -40,6 +40,10 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
     super("Acquisition: Sequential");
   }
 
+  public SequentialAcquisitionScheduler(String pName) {
+    super(pName);
+  }
+
 
   @Override public boolean enqueue(long pTimePoint)
   {
@@ -56,7 +60,7 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
 
     // preparing queues:
     for (int l = 0; l < lNumberOfLightSheets; l++)
-      if (mCurrentState.getLightSheetOnOffVariable(l).get())
+      if (isLightSheetOn(l))
       {
         LightSheetMicroscopeQueue
             lQueueForView =
@@ -68,12 +72,12 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
     // playing the queues in sequence:
 
     for (int l = 0; l < lNumberOfLightSheets; l++) {
-      if (mCurrentState.getLightSheetOnOffVariable(l).get())
+      if (isLightSheetOn(l))
       {
         LightSheetMicroscopeQueue lQueueForView = lViewToQueueMap.get(l);
 
         for (int c = 0; c < lNumberOfDetectionArms; c++)
-          if (mCurrentState.getCameraOnOffVariable(c).get())
+          if (isCameraOn(c))
           {
 
             StackMetaData
@@ -87,13 +91,9 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
             lMetaData.addEntry(MetaDataView.Camera, c);
             lMetaData.addEntry(MetaDataView.LightSheet, l);
 
-            if (mTimelapse.getFuseStacksVariable().get())
+            if (isFused())
             {
-              if (mTimelapse.getFuseStacksPerCameraVariable().get())
-                lMetaData.addEntry(MetaDataFusion.RequestPerCameraFusion,
-                                   true);
-              else
-                lMetaData.addEntry(MetaDataFusion.RequestFullFusion,
+              lMetaData.addEntry(MetaDataFusion.RequestFullFusion,
                                    true);
 
               lMetaData.addEntry(MetaDataChannel.Channel,  "sequential");
@@ -171,6 +171,18 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
                             mTimelapse.getTimePointCounterVariable().get());
 
     return lQueue;
+  }
+
+  protected boolean isLightSheetOn(int pLightIndex) {
+    return mCurrentState.getLightSheetOnOffVariable(pLightIndex).get();
+  }
+
+  protected boolean isCameraOn(int pCameraIndex) {
+    return mCurrentState.getCameraOnOffVariable(pCameraIndex).get();
+  }
+
+  protected boolean isFused() {
+    return true;
   }
 
 }

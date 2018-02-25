@@ -104,7 +104,9 @@ public class OpticsPrefusedAcquisitionScheduler extends AbstractAcquistionSchedu
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
 
-    lQueue.setTransitionTime(0.1);
+    //lQueue.setTransitionTime(0.1);
+    lQueue.setTransitionTime(0.5);
+    lQueue.setFinalisationTime(0.005);
 
     for (int c = 0; c < lLightsheetMicroscope.getNumberOfDetectionArms(); c++)
     {
@@ -130,7 +132,7 @@ public class OpticsPrefusedAcquisitionScheduler extends AbstractAcquistionSchedu
     boolean lPlayQueueAndWait = false;
     try
     {
-      lPlayQueueAndWait = lLightsheetMicroscope.playQueueAndWaitForStacks(lQueue,
+      lPlayQueueAndWait = lLightsheetMicroscope.playQueueAndWait(lQueue,
                                                                           100 + lQueue
                                                                               .getQueueLength(),
                                                                           TimeUnit.SECONDS);
