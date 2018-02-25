@@ -121,8 +121,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
   {
     if (getTimePointCounterVariable().get() == 0) {
 
-      File lLogFile = new File(getRootFolderVariable().get() + "\\"
-                              + "scheduleLog.txt");
+      File lLogFile = new File(getWorkingDirectory(), "scheduleLog.txt");
 
       lLogFile.getParentFile().mkdir();
 
@@ -185,12 +184,12 @@ public class LightSheetTimelapse extends TimelapseBase implements
       SchedulerInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(mLastExecutedSchedulerIndex);
       if (mLogFileWriter != null) {
         mLogFileWriter.write("Starting " + lNextSchedulerToRun + " at "
-                             + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date())+ " time point " + getTimePointCounterVariable().get());
+                             + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date())+ " time point " + getTimePointCounterVariable().get() + "\n");
       }
       lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
       if (mLogFileWriter != null) {
         mLogFileWriter.write("Finished " + lNextSchedulerToRun + " at "
-                             + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date())+ " time point " + getTimePointCounterVariable().get());
+                             + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS-").format(new Date())+ " time point " + getTimePointCounterVariable().get() + "\n");
       }
 
       /*
