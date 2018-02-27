@@ -254,12 +254,17 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
       } else {
       }
     } else*/
+
+    ImageChannelDataType lInitialFusionDataType =
+        isRegistration() ? ImageChannelDataType.Float
+                         : ImageChannelDataType.UnsignedInt16;
+
     if (isDownscale())
     {
       // process optically camera-fused input
-      addTask(new DownsampleXYbyHalfTask("C0opticallycamerafused", "C0", Type.Median ));
+      addTask(new DownsampleXYbyHalfTask("C0opticallycamerafused", "C0", Type.Median, lInitialFusionDataType ));
       addTask(new MemoryReleaseTask("C0", "C0opticallycamerafused"));
-      addTask(new DownsampleXYbyHalfTask("C1opticallycamerafused", "C1", Type.Median ));
+      addTask(new DownsampleXYbyHalfTask("C1opticallycamerafused", "C1", Type.Median, lInitialFusionDataType ));
       addTask(new MemoryReleaseTask("C1", "C1opticallycamerafused"));
 
       // process interleaved acquisition input
@@ -300,9 +305,6 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                        "C1L3"));
     }
 
-    ImageChannelDataType lInitialFusionDataType =
-                                                isRegistration() ? ImageChannelDataType.Float
-                                                                 : ImageChannelDataType.UnsignedInt16;
 
     addTasks(CompositeTasks.fuseWithSmoothWeights("C0",
                                                   lInitialFusionDataType,
