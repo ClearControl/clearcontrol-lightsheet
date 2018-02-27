@@ -131,12 +131,15 @@ public class LightSheetTimelapse extends TimelapseBase implements
       try
       {
         mLogFileWriter = new BufferedWriter(new FileWriter(lLogFile));
+        mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Starting log\r\n");
       }
       catch (IOException e)
       {
         e.printStackTrace();
         mLogFileWriter = null;
       }
+
+
 
       ArrayList<SchedulerInterface>
           lSchedulerInterfaceList = getMicroscope().getDevices(SchedulerInterface.class);
@@ -155,29 +158,39 @@ public class LightSheetTimelapse extends TimelapseBase implements
       return;
     }
 
-    LightSheetFastFusionProcessor lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
-    LightSheetFastFusionEngine lLightSheetFastFusionEngine = lLightSheetFastFusionProcessor.getmEngine();
-
-    if (lLightSheetFastFusionEngine != null) {
-      while(lLightSheetFastFusionEngine.getAvailableImagesSlotKeys().size() > 0) {
-        info("Waiting because fastfuse is still working... " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys());
-        try
-        {
-          Thread.sleep(1000);
-          if (getStopSignalVariable().get()) {
-            return;
-          }
-        }
-        catch (InterruptedException e)
-        {
-          e.printStackTrace();
-        }
-      }
-    }
-
-
     try
     {
+      LightSheetFastFusionProcessor lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
+      LightSheetFastFusionEngine lLightSheetFastFusionEngine = lLightSheetFastFusionProcessor.getmEngine();
+
+      if (lLightSheetFastFusionEngine != null) {
+        while(lLightSheetFastFusionEngine.getAvailableImagesSlotKeys().size() > 0) {
+          if (mLogFileWriter != null) {
+            mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Waiting for fastfuse to finish....\r\n");
+            if (lLightSheetFastFusionEngine != null)
+            {
+              mLogFileWriter.write("FastFuse knows about " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys() + "\r\n");
+            }
+            mLogFileWriter.flush();
+          }
+
+
+          info("Waiting because fastfuse is still working... " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys());
+          try
+          {
+            Thread.sleep(1000);
+            if (getStopSignalVariable().get()) {
+              return;
+            }
+          }
+          catch (InterruptedException e)
+          {
+            e.printStackTrace();
+          }
+        }
+      }
+
+
       info("acquiring timepoint: "
            + getTimePointCounterVariable().get());
 
@@ -216,7 +229,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
         mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Starting " + lNextSchedulerToRun + "\r\n");
         if (lLightSheetFastFusionEngine != null)
         {
-          mLogFileWriter.write("FastFuse knows about " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys());
+          mLogFileWriter.write("FastFuse knows about " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys() + "\r\n");
         }
         mLogFileWriter.flush();
       }
@@ -225,7 +238,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
         mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Finished " + lNextSchedulerToRun + "\r\n");
         if (lLightSheetFastFusionEngine != null)
         {
-          mLogFileWriter.write("FastFuse knows about " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys());
+          mLogFileWriter.write("FastFuse knows about " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys() + "\r\n");
         }
         mLogFileWriter.flush();
       }
