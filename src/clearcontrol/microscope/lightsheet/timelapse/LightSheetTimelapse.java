@@ -147,6 +147,8 @@ public class LightSheetTimelapse extends TimelapseBase implements
           lSchedulerInterface.initialize();
         }
       }
+
+      mLastExecutedSchedulerIndex = -1;
     }
 
     if (getStopSignalVariable().get()) {
