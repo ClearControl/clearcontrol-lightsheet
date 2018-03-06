@@ -63,16 +63,16 @@ public class LightSheetMicroscope extends
                                                "StackFusion",
                                                32,
                                                32);
-
+/*
     mLiveStatisticsProcessor =
                              new LiveStatisticsProcessor("Live statistics processor",
                                                          this,
                                                          pStackFusionContext);
-    addDevice(0, mLiveStatisticsProcessor);
-    mStackProcessingPipeline.addStackProcessor(mLiveStatisticsProcessor,
+    addDevice(0, mLiveStatisticsProcessor);*/
+    /*mStackProcessingPipeline.addStackProcessor(mLiveStatisticsProcessor,
                                                "LiveStatistics",
                                                2,
-                                               2);
+                                               2);*/
 
     OfflineFastFusionEngine lOfflineFusionProcessor =
                                                     new OfflineFastFusionEngine("Offline Fusion",
