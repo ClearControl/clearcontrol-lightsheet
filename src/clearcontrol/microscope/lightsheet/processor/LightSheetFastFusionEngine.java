@@ -63,6 +63,8 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                         .getDoubleProperty("fastfuse.memratio",
                                                                            0.8);
 
+  private Object mRunningLock = new Object();
+
 
   private boolean mTimeStepping = true;
 
@@ -684,23 +686,26 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
       String lKey = MetaDataView.getCxLyString(lStackMetaData);
 
 
-      info("Passing stack " + lKey + " " + pStack);
 
-      Runnable lRunnable = () -> {
-        passImage(lKey,
-                  pStack.getContiguousMemory(),
-                  ImageChannelDataType.UnsignedInt16,
-                  pStack.getDimensions());
+      synchronized (mRunningLock)
+      {
+        info("Passing stack " + lKey + " " + pStack);
+        Runnable lRunnable = () -> {
+          passImage(lKey,
+                    pStack.getContiguousMemory(),
+                    ImageChannelDataType.UnsignedInt16,
+                    pStack.getDimensions());
 
-        fuseMetaData(pStack);
+          fuseMetaData(pStack);
 
-        pStack.release();
-      };
+          pStack.release();
+        };
 
-      if (pWaitToFinish)
-        lRunnable.run();
-      else
-        executeAsynchronously(lRunnable);
+        if (pWaitToFinish)
+          lRunnable.run();
+        else
+          executeAsynchronously(lRunnable);
+      }
     }
     catch (Throwable e)
     {

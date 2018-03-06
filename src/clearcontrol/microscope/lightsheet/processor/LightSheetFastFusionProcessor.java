@@ -15,7 +15,6 @@ import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataViewFlags;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
-import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataChannel;
@@ -78,6 +77,7 @@ public class LightSheetFastFusionProcessor extends
                                                                        new Variable<Boolean>("BackgroundSubtractionSwitch",
                                                                                              false);
 
+
   /**
    * Instantiates a lightsheet stack processor
    *
@@ -96,18 +96,31 @@ public class LightSheetFastFusionProcessor extends
     mLightSheetMicroscope = pLightSheetMicroscope;
   }
 
+  public void initializeEngine() {
+    if (mEngine == null)
+    {
+      mEngine =
+          new LightSheetFastFusionEngine(getContext(),
+                                         (VisualConsoleInterface) this,
+                                         mLightSheetMicroscope.getNumberOfLightSheets(),
+                                         mLightSheetMicroscope.getNumberOfDetectionArms());
+    }
+  }
+
+  public void reInitializeEngine() {
+    mEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
+    mEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(),
+                  mLightSheetMicroscope.getNumberOfDetectionArms());
+  }
+
   @Override
-  public StackInterface process(StackInterface pStack,
+  public synchronized StackInterface process(StackInterface pStack,
                                 RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
   {
     boolean lEngineNeedsInitialisation = false;
     if (mEngine == null)
     {
-      mEngine =
-              new LightSheetFastFusionEngine(getContext(),
-                                             (VisualConsoleInterface) this,
-                                             mLightSheetMicroscope.getNumberOfLightSheets(),
-                                             mLightSheetMicroscope.getNumberOfDetectionArms());
+      initializeEngine();
 
       lEngineNeedsInitialisation = true;
     }
@@ -120,9 +133,7 @@ public class LightSheetFastFusionProcessor extends
 
     if (lEngineNeedsInitialisation)
     {
-      mEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
-      mEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(),
-                    mLightSheetMicroscope.getNumberOfDetectionArms());
+      reInitializeEngine();
     }
 
     if (isPassThrough(pStack))
@@ -255,6 +266,17 @@ public class LightSheetFastFusionProcessor extends
     return null;
   }
 
+  /**
+   * This function has been marked as deprecated, because it does a
+   * lot more things than its name suggests. Stack saving has been
+   * moved to a new class, SaveImageStackTask
+   * @param pStackRecycler
+   * @param lFusedImage
+   * @param pStackMetaData
+   * @param pChannel
+   * @return
+   */
+  @Deprecated
   protected StackInterface copyFusedStack(RecyclerInterface<StackInterface, StackRequest> pStackRecycler,
                                           ClearCLImage lFusedImage,
                                           StackMetaData pStackMetaData,
@@ -383,10 +405,10 @@ public class LightSheetFastFusionProcessor extends
   }
 
   /*
-  *  This function was just introduced for debugging and will soon be deletec
+  *  This function was just introduced for debugging and will soon be delete
   */
   @Deprecated
-  public LightSheetFastFusionEngine getmEngine()
+  public LightSheetFastFusionEngine getEngine()
   {
     return mEngine;
   }

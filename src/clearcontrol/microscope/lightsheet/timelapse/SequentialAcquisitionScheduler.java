@@ -3,12 +3,9 @@ package clearcontrol.microscope.lightsheet.timelapse;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
-import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
-import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
@@ -47,6 +44,8 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
 
   @Override public boolean enqueue(long pTimePoint)
   {
+    boolean lFastFusionEngineInitialized = false;
+
     if (!(mMicroscope instanceof LightSheetMicroscope)) {
       warning("" + this + " needs a lightsheet microscope!");
       return false;
@@ -111,6 +110,14 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
           mLightSheetMicroscope.playQueueAndWait(lQueueForView,
                                                  mTimelapse.getTimeOut(),
                                                  TimeUnit.SECONDS);
+          if (!lFastFusionEngineInitialized) {
+            lFastFusionEngineInitialized = true;
+            // todo: check if the engine is still running
+
+            initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get(), "sequential");
+          }
+
+          handleImageFromCameras(pTimePoint);
         }
         catch (InterruptedException e)
         {
@@ -130,6 +137,8 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
 
       }
     }
+
+
 
     return true;
   }

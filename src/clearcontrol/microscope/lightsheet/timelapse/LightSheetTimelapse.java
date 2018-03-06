@@ -151,6 +151,12 @@ public class LightSheetTimelapse extends TimelapseBase implements
         }
       }
 
+      LightSheetFastFusionProcessor lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
+      LightSheetFastFusionEngine lLightSheetFastFusionEngine = lLightSheetFastFusionProcessor.getEngine();
+      if (lLightSheetFastFusionEngine != null)
+      {
+        lLightSheetFastFusionEngine.reset(true);
+      }
       mLastExecutedSchedulerIndex = -1;
     }
 
@@ -161,8 +167,9 @@ public class LightSheetTimelapse extends TimelapseBase implements
     try
     {
       LightSheetFastFusionProcessor lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
-      LightSheetFastFusionEngine lLightSheetFastFusionEngine = lLightSheetFastFusionProcessor.getmEngine();
+      LightSheetFastFusionEngine lLightSheetFastFusionEngine = lLightSheetFastFusionProcessor.getEngine();
 
+      /*
       if (lLightSheetFastFusionEngine != null) {
         while(lLightSheetFastFusionEngine.getAvailableImagesSlotKeys().size() > 0) {
           if (mLogFileWriter != null) {
@@ -188,7 +195,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
             e.printStackTrace();
           }
         }
-      }
+      }*/
 
 
       info("acquiring timepoint: "

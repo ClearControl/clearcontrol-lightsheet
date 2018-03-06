@@ -3,12 +3,9 @@ package clearcontrol.microscope.lightsheet.timelapse;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
-import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
-import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.metadata.MetaDataChannel;
@@ -155,6 +152,9 @@ public class OpticsPrefusedAcquisitionScheduler extends AbstractAcquistionSchedu
       System.out.print("Error while imaging");
       return false;
     }
+
+    initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get(), "opticsprefused");
+    handleImageFromCameras(pTimePoint);
 
     return true;
   }
