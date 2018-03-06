@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.timelapse;
 
+import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
@@ -22,6 +23,9 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
                                                                         SchedulerInterface,
                                                                         LoggingFeature
 {
+
+
+  protected StackInterface mLastAcquiredStack;
 
   /**
    * INstanciates a virtual device with a given name
@@ -74,10 +78,19 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
                              .getRecyclerOfProcessor(
                                  lProcessor);
 
-    if (lProcessor != null) {
+    if (lProcessor != null)
+    {
       lProcessor.reInitializeEngine();
-      lProcessor.getEngine().addTask(new SaveImageStackTask("fused", "fused-saved", pFileStackSinkInterface, lRecyclerOfProcessor, pChannel));
-      lProcessor.getEngine().addTask(new ResetFastFusionEngineTask("fused-saved"));
+      if (pFileStackSinkInterface != null)
+      {
+        lProcessor.getEngine()
+                  .addTask(new SaveImageStackTask("fused",
+                                                  "fused-saved",
+                                                  pFileStackSinkInterface,
+                                                  lRecyclerOfProcessor,
+                                                  pChannel));
+        lProcessor.getEngine().addTask(new ResetFastFusionEngineTask("fused-saved"));
+      }
     }
   }
 
@@ -118,32 +131,33 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
     for (int c = 0; c < mLightSheetMicroscope.getNumberOfDetectionArms(); c ++ )
     {
       final int lFinalCameraIndex = c;
-      new Runnable()
+      ElapsedTime.measure("Handle camera output and fuse", () ->
       {
-        @Override public void run()
+        synchronized (lLock)
         {
-          synchronized (lLock)
-          {
-            StackInterface
-                lResultingStack =
-                mLightSheetMicroscope.getCameraStackVariable(lFinalCameraIndex).get();
+          StackInterface
+              lResultingStack =
+              mLightSheetMicroscope.getCameraStackVariable(lFinalCameraIndex).get();
 
-            LightSheetFastFusionProcessor
-                lProcessor =
-                mLightSheetMicroscope.getDevice(
-                    LightSheetFastFusionProcessor.class,
-                    0);
+          LightSheetFastFusionProcessor
+              lProcessor =
+              mLightSheetMicroscope.getDevice(
+                  LightSheetFastFusionProcessor.class,
+                  0);
 
-            RecyclerInterface<StackInterface, StackRequest>
-                lRecyclerOfProcessor =
-                mLightSheetMicroscope.getStackProcesssingPipeline()
-                                     .getRecyclerOfProcessor(
-                                         lProcessor);
+          RecyclerInterface<StackInterface, StackRequest>
+              lRecyclerOfProcessor =
+              mLightSheetMicroscope.getStackProcesssingPipeline()
+                                   .getRecyclerOfProcessor(
+                                       lProcessor);
 
-            lProcessor.process(lResultingStack, lRecyclerOfProcessor);
+          StackInterface lStackInterface = lProcessor.process(lResultingStack, lRecyclerOfProcessor);
+          info("Got back: " + lStackInterface);
+          if (lStackInterface != null) {
+            mLastAcquiredStack = lStackInterface;
           }
         }
-      }.run();
+      });
     }
   }
 
@@ -215,4 +229,8 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
 
   }
 */
+  public StackInterface getLastAcquiredStack()
+  {
+    return mLastAcquiredStack;
+  }
 }

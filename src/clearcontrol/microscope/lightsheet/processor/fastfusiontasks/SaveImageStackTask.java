@@ -85,10 +85,15 @@ public class SaveImageStackTask extends TaskBase
 
       lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
 
-      ElapsedTime.measureForceOutput("FastFuse stack saving",
-                                     () -> mSinkInterface.appendStack(mChannel,
-                                                                          lFusedStack));
-
+      if (mSinkInterface != null)
+      {
+        ElapsedTime.measureForceOutput("FastFuse stack saving",
+                                       () -> mSinkInterface.appendStack(
+                                           mChannel,
+                                           lFusedStack));
+      } else {
+        warning("Target folder for saving not set. Skipping.");
+      }
       MutablePair<Boolean, ClearCLImage>
           lDestImageAndFlag =
           pFastFusionEngine.ensureImageAllocated(mAfterDoneImageFlagKey,
