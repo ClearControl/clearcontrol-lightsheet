@@ -28,9 +28,13 @@ import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.lightsheet.timelapse.*;
+import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
+import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
+import coremem.recycling.RecyclerInterface;
 
 /**
  * Simulated lightsheet microscope
@@ -307,8 +311,14 @@ public class SimulatedLightSheetMicroscope extends
 
     }
 
-    // Adding timelapse device:
+    // make a recycler for acquisition devices:
+    StackRecyclerManager lStackRecyclerManager = getDevice(StackRecyclerManager.class, 0);
+    RecyclerInterface<StackInterface, StackRequest> lRecycler = lStackRecyclerManager.getRecycler("StackFusion",
+            32,
+            32);
 
+
+    // Adding timelapse device:
     TimelapseInterface lTimelapse = addTimelapse();
     lTimelapse.getAdaptiveEngineOnVariable().set(false);
 
@@ -317,10 +327,10 @@ public class SimulatedLightSheetMicroscope extends
 
 
     if (getNumberOfLightSheets() > 1) {
-      addDevice(0, new InterleavedAcquisitionScheduler());
+      addDevice(0, new InterleavedAcquisitionScheduler(lRecycler));
     }
 
-    SequentialAcquisitionScheduler lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler();
+    SequentialAcquisitionScheduler lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler(lRecycler);
     addDevice(0, lSequentialAcquisitionScheduler);
     if (lTimelapse instanceof LightSheetTimelapse)
     {
@@ -329,11 +339,11 @@ public class SimulatedLightSheetMicroscope extends
 
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
       for (int l = 0; l < getNumberOfLightSheets(); l++) {
-        addDevice(0, new SingleViewAcquisitionScheduler(c, l));
+        addDevice(0, new SingleViewAcquisitionScheduler(c, l, lRecycler));
       }
     }
 
-    addDevice(0, new OpticsPrefusedAcquisitionScheduler());
+    addDevice(0, new OpticsPrefusedAcquisitionScheduler(lRecycler));
 
     addDevice(0, new PauseScheduler());
     addDevice(1, new PauseScheduler(1000));

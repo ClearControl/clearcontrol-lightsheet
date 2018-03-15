@@ -9,9 +9,12 @@ import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
+import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.metadata.StackMetaData;
+import coremem.recycling.RecyclerInterface;
 
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -32,13 +35,13 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
    * INstanciates a virtual device with a given name
    *
    */
-  public SequentialAcquisitionScheduler()
+  public SequentialAcquisitionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
   {
-    super("Acquisition: Sequential");
+    super("Acquisition: Sequential", pRecycler);
   }
 
-  public SequentialAcquisitionScheduler(String pName) {
-    super(pName);
+  public SequentialAcquisitionScheduler(String pName, RecyclerInterface<StackInterface, StackRequest> pRecycler) {
+    super(pName, pRecycler);
   }
 
 

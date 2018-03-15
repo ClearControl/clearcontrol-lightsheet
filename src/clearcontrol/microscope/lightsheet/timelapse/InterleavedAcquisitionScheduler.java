@@ -8,9 +8,12 @@ import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
+import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.metadata.StackMetaData;
+import coremem.recycling.RecyclerInterface;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -29,9 +32,9 @@ public class InterleavedAcquisitionScheduler extends AbstractAcquistionScheduler
   /**
    * INstanciates a virtual device with a given name
    */
-  public InterleavedAcquisitionScheduler()
+  public InterleavedAcquisitionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
   {
-    super("Acquisition: Interleaved");
+    super("Acquisition: Interleaved", pRecycler);
   }
 
   @Override public boolean enqueue(long pTimePoint)

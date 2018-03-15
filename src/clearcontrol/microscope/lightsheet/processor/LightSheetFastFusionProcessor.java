@@ -113,9 +113,8 @@ public class LightSheetFastFusionProcessor extends
                   mLightSheetMicroscope.getNumberOfDetectionArms());
   }
 
-  @Override
   public synchronized StackInterface process(StackInterface pStack,
-                                RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
+                                RecyclerInterface<StackInterface, StackRequest> pStackRecycler, boolean test)
   {
     boolean lEngineNeedsInitialisation = false;
     if (mEngine == null)
@@ -411,5 +410,11 @@ public class LightSheetFastFusionProcessor extends
   public LightSheetFastFusionEngine getEngine()
   {
     return mEngine;
+  }
+
+  @Override
+  public StackInterface process(StackInterface stackInterface, RecyclerInterface<StackInterface, StackRequest> recyclerInterface) {
+    System.out.print("I'm called! process " + stackInterface);
+    return null;
   }
 }

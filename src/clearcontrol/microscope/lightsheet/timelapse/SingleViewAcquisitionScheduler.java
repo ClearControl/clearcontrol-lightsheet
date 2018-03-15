@@ -2,6 +2,9 @@ package clearcontrol.microscope.lightsheet.timelapse;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.StackRequest;
+import coremem.recycling.RecyclerInterface;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
@@ -14,8 +17,10 @@ public class SingleViewAcquisitionScheduler extends SequentialAcquisitionSchedul
   int mCameraIndex;
   int mLightSheetIndex;
 
-  public SingleViewAcquisitionScheduler(int pCameraIndex, int pLightSheetIndex) {
-    super("Acquisition: Single view C" + pCameraIndex + "L" + pLightSheetIndex);
+  public SingleViewAcquisitionScheduler(int pCameraIndex, int pLightSheetIndex, RecyclerInterface<StackInterface, StackRequest> pRecycler) {
+    super("Acquisition: Single view C" + pCameraIndex + "L" + pLightSheetIndex, pRecycler);
+    mCameraIndex = pCameraIndex;
+    mLightSheetIndex = pLightSheetIndex;
   }
 
 

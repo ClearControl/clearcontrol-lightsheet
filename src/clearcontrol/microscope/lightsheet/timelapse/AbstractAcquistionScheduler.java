@@ -26,15 +26,17 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
 
 
   protected StackInterface mLastAcquiredStack;
+  RecyclerInterface<StackInterface, StackRequest> mRecycler;
 
   /**
    * INstanciates a virtual device with a given name
    *
    * @param pDeviceName device name
    */
-  public AbstractAcquistionScheduler(String pDeviceName)
+  public AbstractAcquistionScheduler(String pDeviceName, RecyclerInterface<StackInterface, StackRequest> pRecycler)
   {
     super(pDeviceName);
+    mRecycler = pRecycler;
   }
 
   protected LightSheetMicroscope mLightSheetMicroscope;
@@ -125,13 +127,13 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
   }
 
   protected void handleImageFromCameras(long pTimepoint) {
-
+    System.out.print("handleImageFromCameras " +pTimepoint );
     final Object lLock = new Object();
 
     for (int c = 0; c < mLightSheetMicroscope.getNumberOfDetectionArms(); c ++ )
     {
       final int lFinalCameraIndex = c;
-      ElapsedTime.measure("Handle camera output and fuse", () ->
+      ElapsedTime.measure("Handle camera output (of camera " + c + ") and fuse", () ->
       {
         synchronized (lLock)
         {
@@ -146,12 +148,13 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
                   0);
 
           RecyclerInterface<StackInterface, StackRequest>
-              lRecyclerOfProcessor =
-              mLightSheetMicroscope.getStackProcesssingPipeline()
-                                   .getRecyclerOfProcessor(
-                                       lProcessor);
+              lRecyclerOfProcessor = mRecycler;
+//              mLightSheetMicroscope.getStackProcesssingPipeline()
+  //                                 .getRecyclerOfProcessor(
+    //                                   lProcessor);
 
-          StackInterface lStackInterface = lProcessor.process(lResultingStack, lRecyclerOfProcessor);
+          info("sending: " + lResultingStack);
+          StackInterface lStackInterface = lProcessor.process(lResultingStack, lRecyclerOfProcessor, true);
           info("Got back: " + lStackInterface);
           if (lStackInterface != null) {
             mLastAcquiredStack = lStackInterface;
