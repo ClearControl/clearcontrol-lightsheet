@@ -154,7 +154,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
     //                                   lProcessor);
 
           info("sending: " + lResultingStack);
-          StackInterface lStackInterface = lProcessor.process(lResultingStack, lRecyclerOfProcessor, true);
+          StackInterface lStackInterface = lProcessor.process(lResultingStack, lRecyclerOfProcessor);
           info("Got back: " + lStackInterface);
           if (lStackInterface != null) {
             mLastAcquiredStack = lStackInterface;

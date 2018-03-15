@@ -117,7 +117,6 @@ public class DetectionArm extends
   @Override
   public Future<Boolean> playQueue(DetectionArmQueue pDetectionArmQueue)
   {
-    info ("DZ: " + pDetectionArmQueue.getZVariable().get());
     // do nothing
     return null;
   }

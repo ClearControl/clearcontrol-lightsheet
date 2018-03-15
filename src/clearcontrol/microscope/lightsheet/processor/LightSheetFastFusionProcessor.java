@@ -114,7 +114,7 @@ public class LightSheetFastFusionProcessor extends
   }
 
   public synchronized StackInterface process(StackInterface pStack,
-                                RecyclerInterface<StackInterface, StackRequest> pStackRecycler, boolean test)
+                                RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
   {
     boolean lEngineNeedsInitialisation = false;
     if (mEngine == null)
@@ -412,9 +412,4 @@ public class LightSheetFastFusionProcessor extends
     return mEngine;
   }
 
-  @Override
-  public StackInterface process(StackInterface stackInterface, RecyclerInterface<StackInterface, StackRequest> recyclerInterface) {
-    System.out.print("I'm called! process2 " + stackInterface);
-    return stackInterface;
-  }
 }
