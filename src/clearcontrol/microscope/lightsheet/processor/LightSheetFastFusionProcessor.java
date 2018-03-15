@@ -414,7 +414,7 @@ public class LightSheetFastFusionProcessor extends
 
   @Override
   public StackInterface process(StackInterface stackInterface, RecyclerInterface<StackInterface, StackRequest> recyclerInterface) {
-    System.out.print("I'm called! process " + stackInterface);
-    return null;
+    System.out.print("I'm called! process2 " + stackInterface);
+    return stackInterface;
   }
 }

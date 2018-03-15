@@ -59,11 +59,11 @@ public class LightSheetMicroscope extends
                                                             this,
                                                             pStackFusionContext);
     addDevice(0, mStackFusionProcessor);
-    mStackProcessingPipeline.addStackProcessor(mStackFusionProcessor,
+/*    mStackProcessingPipeline.addStackProcessor(mStackFusionProcessor,
                                                "StackFusion",
                                                32,
                                                32);
-/*
+
     mLiveStatisticsProcessor =
                              new LiveStatisticsProcessor("Live statistics processor",
                                                          this,
