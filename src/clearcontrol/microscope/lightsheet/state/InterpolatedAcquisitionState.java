@@ -413,6 +413,7 @@ public class InterpolatedAcquisitionState extends
     }
 
     mInterpolationTables.set(lInterpolationTables);
+    setupDefaultValues();
 
     notifyListeners(this);
   }
