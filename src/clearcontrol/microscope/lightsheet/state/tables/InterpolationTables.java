@@ -3,6 +3,8 @@ package clearcontrol.microscope.lightsheet.state.tables;
 import java.util.ArrayList;
 
 import clearcontrol.core.device.change.ChangeListeningBase;
+import clearcontrol.core.math.interpolation.AbstractInterpolationTable;
+import clearcontrol.core.math.interpolation.LinearInterpolationTable;
 import clearcontrol.core.math.interpolation.Row;
 import clearcontrol.core.math.interpolation.SplineInterpolationTable;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
@@ -18,8 +20,8 @@ public class InterpolationTables extends
 {
   private int mNumberOfLightSheetDevices;
   private int mNumberOfDetectionArmDevices;
-  private ArrayList<SplineInterpolationTable> mInterpolationTableList =
-                                                                      new ArrayList<SplineInterpolationTable>();
+  private ArrayList<AbstractInterpolationTable> mInterpolationTableList =
+                                                                      new ArrayList<AbstractInterpolationTable>();
 
   /**
    * Instanciates an interpolation table given a number of detection arms and
@@ -38,26 +40,26 @@ public class InterpolationTables extends
     mNumberOfDetectionArmDevices = pNumberOfDetectionArmDevices;
     mNumberOfLightSheetDevices = pNumberOfLightSheetDevices;
 
-    SplineInterpolationTable lInterpolationTableDZ =
-                                                   new SplineInterpolationTable(mNumberOfDetectionArmDevices);
+    AbstractInterpolationTable lInterpolationTableDZ =
+                                                   new LinearInterpolationTable(mNumberOfDetectionArmDevices);
 
-    SplineInterpolationTable lInterpolationTableIX =
-                                                   new SplineInterpolationTable(mNumberOfLightSheetDevices);
-    SplineInterpolationTable lInterpolationTableIY =
-                                                   new SplineInterpolationTable(mNumberOfLightSheetDevices);
-    SplineInterpolationTable lInterpolationTableIZ =
-                                                   new SplineInterpolationTable(mNumberOfLightSheetDevices);
+    AbstractInterpolationTable lInterpolationTableIX =
+                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+    AbstractInterpolationTable lInterpolationTableIY =
+                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+    AbstractInterpolationTable lInterpolationTableIZ =
+                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
 
-    SplineInterpolationTable lInterpolationTableIA =
-                                                   new SplineInterpolationTable(mNumberOfLightSheetDevices);
-    SplineInterpolationTable lInterpolationTableIB =
-                                                   new SplineInterpolationTable(mNumberOfLightSheetDevices);
-    SplineInterpolationTable lInterpolationTableIW =
-                                                   new SplineInterpolationTable(mNumberOfLightSheetDevices);
-    SplineInterpolationTable lInterpolationTableIH =
-                                                   new SplineInterpolationTable(mNumberOfLightSheetDevices);
-    SplineInterpolationTable lInterpolationTableIP =
-                                                   new SplineInterpolationTable(mNumberOfLightSheetDevices);
+    AbstractInterpolationTable lInterpolationTableIA =
+                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+    AbstractInterpolationTable lInterpolationTableIB =
+                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+    AbstractInterpolationTable lInterpolationTableIW =
+                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+    AbstractInterpolationTable lInterpolationTableIH =
+                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+    AbstractInterpolationTable lInterpolationTableIP =
+                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
 
     mInterpolationTableList.add(lInterpolationTableDZ);
     mInterpolationTableList.add(lInterpolationTableIX);
@@ -105,9 +107,17 @@ public class InterpolationTables extends
 
     mInterpolationTableList = new ArrayList<>();
 
-    for (SplineInterpolationTable lSplineInterpolationTable : pInterpolationTable.mInterpolationTableList)
+
+
+    for (AbstractInterpolationTable lSplineInterpolationTable : pInterpolationTable.mInterpolationTableList)
     {
-      mInterpolationTableList.add(lSplineInterpolationTable.clone());
+      // I would explain the following 6 lines if I could. Sorry, Robert
+      if (lSplineInterpolationTable instanceof LinearInterpolationTable)
+      {
+        mInterpolationTableList.add(((LinearInterpolationTable)lSplineInterpolationTable).clone());
+      } else if (lSplineInterpolationTable instanceof SplineInterpolationTable) {
+        mInterpolationTableList.add(((SplineInterpolationTable)lSplineInterpolationTable).clone());
+      }
     }
   }
 
@@ -119,7 +129,7 @@ public class InterpolationTables extends
    */
   public void addControlPlane(double pZ)
   {
-    for (SplineInterpolationTable lSplineInterpolationTable : mInterpolationTableList)
+    for (AbstractInterpolationTable lSplineInterpolationTable : mInterpolationTableList)
       lSplineInterpolationTable.addRow(pZ);
     notifyListeners(this);
   }
@@ -140,9 +150,9 @@ public class InterpolationTables extends
 
     for (int j = 0; j < lNumberOfTables; j++)
     {
-      SplineInterpolationTable lSplineInterpolationTable =
+      AbstractInterpolationTable lSplineInterpolationTable =
                                                          mInterpolationTableList.get(j);
-      SplineInterpolationTable lOtherSplineInterpolationTable =
+      AbstractInterpolationTable lOtherSplineInterpolationTable =
                                                               pInterpolationTables.mInterpolationTableList.get(j);
 
       Row lRow = lSplineInterpolationTable.addRow(pZ);
@@ -170,7 +180,7 @@ public class InterpolationTables extends
    */
   public void addControlPlaneAfter(double pZ)
   {
-    for (SplineInterpolationTable lSplineInterpolationTable : mInterpolationTableList)
+    for (AbstractInterpolationTable lSplineInterpolationTable : mInterpolationTableList)
       lSplineInterpolationTable.addRowAfter(pZ);
     notifyListeners(this);
   }
@@ -183,7 +193,7 @@ public class InterpolationTables extends
    */
   public void removeControlPlane(double pZ)
   {
-    for (SplineInterpolationTable lSplineInterpolationTable : mInterpolationTableList)
+    for (AbstractInterpolationTable lSplineInterpolationTable : mInterpolationTableList)
       lSplineInterpolationTable.removeRow(pZ);
     notifyListeners(this);
   }
@@ -198,7 +208,7 @@ public class InterpolationTables extends
    */
   public void changeControlPlane(int pControlPlaneIndex, double pNewZ)
   {
-    for (SplineInterpolationTable lSplineInterpolationTable : mInterpolationTableList)
+    for (AbstractInterpolationTable lSplineInterpolationTable : mInterpolationTableList)
       lSplineInterpolationTable.moveRow(pControlPlaneIndex, pNewZ);
     notifyListeners(this);
   }
@@ -208,7 +218,7 @@ public class InterpolationTables extends
    */
   public void removeAllControlPlanes()
   {
-    for (SplineInterpolationTable lSplineInterpolationTable : mInterpolationTableList)
+    for (AbstractInterpolationTable lSplineInterpolationTable : mInterpolationTableList)
       lSplineInterpolationTable.clear();
 
     notifyListeners(this);
@@ -389,7 +399,7 @@ public class InterpolationTables extends
     notifyListeners(this);
   }
 
-  private SplineInterpolationTable getTable(LightSheetDOF pLightSheetDOF)
+  private AbstractInterpolationTable getTable(LightSheetDOF pLightSheetDOF)
   {
     return mInterpolationTableList.get(pLightSheetDOF.ordinal());
   }
