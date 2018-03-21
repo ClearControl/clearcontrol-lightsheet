@@ -123,44 +123,46 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
       lQueue.setDZ(d, lDetectionZZStart);
       lQueue.setC(d, false);
 
-    } lQueue.addCurrentStateToQueue();
+    }
+    lQueue.addCurrentStateToQueue();
+    lQueue.addCurrentStateToQueue();
   }
 
   protected void handleImageFromCameras(long pTimepoint) {
     System.out.print("handleImageFromCameras " +pTimepoint );
     final Object lLock = new Object();
 
-    for (int c = 0; c < mLightSheetMicroscope.getNumberOfDetectionArms(); c ++ )
-    {
-      final int lFinalCameraIndex = c;
-      ElapsedTime.measure("Handle camera output (of camera " + c + ") and fuse", () ->
-      {
-        synchronized (lLock)
+    for (int c = 0; c < mLightSheetMicroscope.getNumberOfDetectionArms(); c ++ ) {
+      if (isCameraOn(c)) {
+        final int lFinalCameraIndex = c;
+        ElapsedTime.measure("Handle camera output (of camera " + c + ") and fuse", () ->
         {
-          StackInterface
-              lResultingStack =
-              mLightSheetMicroscope.getCameraStackVariable(lFinalCameraIndex).get();
+          synchronized (lLock) {
+            StackInterface
+                    lResultingStack =
+                    mLightSheetMicroscope.getCameraStackVariable(lFinalCameraIndex).get();
 
-          LightSheetFastFusionProcessor
-              lProcessor =
-              mLightSheetMicroscope.getDevice(
-                  LightSheetFastFusionProcessor.class,
-                  0);
+            LightSheetFastFusionProcessor
+                    lProcessor =
+                    mLightSheetMicroscope.getDevice(
+                            LightSheetFastFusionProcessor.class,
+                            0);
 
-          RecyclerInterface<StackInterface, StackRequest>
-              lRecyclerOfProcessor = mRecycler;
+            RecyclerInterface<StackInterface, StackRequest>
+                    lRecyclerOfProcessor = mRecycler;
 //              mLightSheetMicroscope.getStackProcesssingPipeline()
-  //                                 .getRecyclerOfProcessor(
-    //                                   lProcessor);
+            //                                 .getRecyclerOfProcessor(
+            //                                   lProcessor);
 
-          info("sending: " + lResultingStack);
-          StackInterface lStackInterface = lProcessor.process(lResultingStack, lRecyclerOfProcessor);
-          info("Got back: " + lStackInterface);
-          if (lStackInterface != null) {
-            mLastAcquiredStack = lStackInterface;
+            info("sending: " + lResultingStack);
+            StackInterface lStackInterface = lProcessor.process(lResultingStack, lRecyclerOfProcessor);
+            info("Got back: " + lStackInterface);
+            if (lStackInterface != null) {
+              mLastAcquiredStack = lStackInterface;
+            }
           }
-        }
-      });
+        });
+      }
     }
   }
 
@@ -235,5 +237,14 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
   public StackInterface getLastAcquiredStack()
   {
     return mLastAcquiredStack;
+  }
+
+
+  protected boolean isCameraOn(int pCameraIndex) {
+    return mCurrentState.getCameraOnOffVariable(pCameraIndex).get();
+  }
+
+  protected boolean isFused() {
+    return true;
   }
 }
