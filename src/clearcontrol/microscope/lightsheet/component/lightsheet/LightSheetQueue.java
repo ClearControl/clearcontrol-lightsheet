@@ -89,7 +89,7 @@ public class LightSheetQueue extends VariableQueueBase implements
                                                          0.0);
     mWidthVariable = new BoundedVariable<Number>(lNamePrefix
                                                  + "-LightSheetRange",
-                                                 0.0);
+                                                 0.45); // this value is XWing specific. Its config should be somewhere in the config file
     mHeightVariable = new BoundedVariable<Number>(lNamePrefix
                                                   + "-LightSheetLength",
                                                   0.0);
