@@ -156,12 +156,32 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
     int lNumberOfLightSheets =
         mLightSheetMicroscope.getNumberOfLightSheets();
 
-    int lNumberOfLaserLines =
-        mLightSheetMicroscope.getNumberOfLaserLines();
+    int lNumberOfImagesToTake = mCurrentState.getNumberOfZPlanesVariable().get().intValue();
 
-    int lNumberOfEDFSlices = mTimelapse.getExtendedDepthOfFieldAcquisitionVariable().get()?10:0;
+    LightSheetMicroscopeQueue lQueue = mLightSheetMicroscope.requestQueue();
+    lQueue.clearQueue();
 
-    LightSheetMicroscopeQueue lQueue =
+    // initial position
+    goToInitialPosition(mLightSheetMicroscope,
+            lQueue,
+            mLightSheetMicroscope.getLightSheet(0).getWidthVariable().get().doubleValue(),
+            mLightSheetMicroscope.getLightSheet(0).getHeightVariable().get().doubleValue(),
+            mLightSheetMicroscope.getLightSheet(0).getXVariable().get().doubleValue(),
+            mLightSheetMicroscope.getLightSheet(0).getYVariable().get().doubleValue(),
+            mCurrentState.getStackZLowVariable().get().doubleValue(),
+            mCurrentState.getStackZLowVariable().get().doubleValue());
+
+
+    for (int lImageCounter = 0; lImageCounter
+            < lNumberOfImagesToTake; lImageCounter++)
+    {
+      mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
+              lImageCounter);
+      lQueue.setI(pLightSheetIndex, true);
+
+      lQueue.addCurrentStateToQueue();
+    }
+/*
         pCurrentState.getQueue(0,
                                lNumberOfDetectionArms,
                                pLightSheetIndex,
@@ -169,7 +189,19 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
                                0,
                                lNumberOfLaserLines,
                                lNumberOfEDFSlices);
+*/
 
+    // initial position
+    goToInitialPosition(mLightSheetMicroscope,
+            lQueue,
+            mLightSheetMicroscope.getLightSheet(0).getWidthVariable().get().doubleValue(),
+            mLightSheetMicroscope.getLightSheet(0).getHeightVariable().get().doubleValue(),
+            mLightSheetMicroscope.getLightSheet(0).getXVariable().get().doubleValue(),
+            mLightSheetMicroscope.getLightSheet(0).getYVariable().get().doubleValue(),
+            mCurrentState.getStackZLowVariable().get().doubleValue(),
+            mCurrentState.getStackZLowVariable().get().doubleValue());
+
+    /*
     for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
     {
       info("Light sheet " + l + " W: " + lQueue.getIW(l));
@@ -177,10 +209,15 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
     for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
     {
       info("Light sheet " + l + " H: " + lQueue.getIH(l));
-    }
+    }*/
 
     lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
                             mTimelapse.getTimePointCounterVariable().get());
+
+
+    lQueue.setTransitionTime(0.5);
+    lQueue.setFinalisationTime(0.005);
+    lQueue.finalizeQueue();
 
     return lQueue;
   }
@@ -189,12 +226,5 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
     return mCurrentState.getLightSheetOnOffVariable(pLightIndex).get();
   }
 
-  protected boolean isCameraOn(int pCameraIndex) {
-    return mCurrentState.getCameraOnOffVariable(pCameraIndex).get();
-  }
-
-  protected boolean isFused() {
-    return true;
-  }
 
 }
