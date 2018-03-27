@@ -161,6 +161,16 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
     LightSheetMicroscopeQueue lQueue = mLightSheetMicroscope.requestQueue();
     lQueue.clearQueue();
 
+
+    int lImageWidth = mCurrentState.getImageWidthVariable().get().intValue();
+    int lImageHeight = mCurrentState.getImageHeightVariable().get().intValue();
+    double lExposureTimeInSeconds = mCurrentState.getExposureInSecondsVariable().get().doubleValue();
+
+    lQueue.setCenteredROI(lImageWidth, lImageHeight);
+    lQueue.setExp(lExposureTimeInSeconds);
+
+
+
     // initial position
     goToInitialPosition(mLightSheetMicroscope,
             lQueue,
@@ -177,7 +187,12 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
     {
       mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
               lImageCounter);
-      lQueue.setI(pLightSheetIndex, true);
+      for (int k = 0; k
+              < mLightSheetMicroscope.getNumberOfLightSheets(); k++)
+      {
+
+        lQueue.setI(k, pLightSheetIndex == k);
+      }
 
       lQueue.addCurrentStateToQueue();
     }
