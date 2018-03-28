@@ -4,6 +4,8 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 
 /**
+ * This imager takes images of a whole stack (e.g. in Z) and returns it.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
@@ -38,16 +40,28 @@ public class SingleStackImager extends ImagerBase
     return true;
   }
 
+  /**
+   * Set the stack slice distance of the illumination plane in Z.
+   * @param mIlluminationZStepDistance DeltaZ in microns
+   */
   public void setIlluminationZStepDistance(double mIlluminationZStepDistance)
   {
     this.mIlluminationZStepDistance = mIlluminationZStepDistance;
   }
 
+  /**
+   * Set the stack slice distance of the detection/focal plane in Z.
+   * @param mDetectionZStepDistance  DeltaZ in microns
+   */
   public void setDetectionZStepDistance(double mDetectionZStepDistance)
   {
     this.mDetectionZStepDistance = mDetectionZStepDistance;
   }
 
+  /**
+   * Configure how many slices you want to image
+   * @param mNumberOfRequestedImages
+   */
   public void setNumberOfRequestedImages(int mNumberOfRequestedImages)
   {
     this.mNumberOfRequestedImages = mNumberOfRequestedImages;

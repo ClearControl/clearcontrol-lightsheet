@@ -9,6 +9,10 @@ import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
 
 /**
+ * The fused imager is a sychronous imager.
+ * After calling its acquire method, it will take 8 image stacks, fuse
+ * them and return the resulting stack
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * March 2018
  */

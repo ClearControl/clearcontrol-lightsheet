@@ -4,6 +4,10 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.stack.StackInterface;
 
 /**
+ * This is the interface for all Imagers. Imager is a convenience layer for
+ * sychronous image acquisition, e.g. from within scripts.
+ *
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * March 2018
  */
