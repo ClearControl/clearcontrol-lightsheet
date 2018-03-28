@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.stack.StackInterface;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
@@ -14,4 +15,6 @@ public interface ImagerInterface
 
   void setImageWidth(int pImageWidth);
   void setImageHeight(int pImageHeight);
+
+  StackInterface acquire();
 }
