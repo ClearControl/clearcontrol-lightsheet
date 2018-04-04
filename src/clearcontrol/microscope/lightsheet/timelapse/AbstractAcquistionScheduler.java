@@ -98,10 +98,6 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
 
   protected void goToInitialPosition(LightSheetMicroscope lLightsheetMicroscope,
                                    LightSheetMicroscopeQueue lQueue,
-                                   double lLightsheetWidth,
-                                   double lLightsheetHeight,
-                                   double lLightsheetX,
-                                   double lLightsheetY,
                                    double lIlluminationZStart,
                                    double lDetectionZZStart)
   {
@@ -110,11 +106,6 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
                     < lLightsheetMicroscope.getNumberOfLightSheets(); l++)
     {
       lQueue.setI(l, false);
-      lQueue.setIW(l, lLightsheetWidth);
-      lQueue.setIH(l, lLightsheetHeight);
-      lQueue.setIX(l, lLightsheetX);
-      lQueue.setIY(l, lLightsheetY);
-
       lQueue.setIZ(lIlluminationZStart);
     }
     for (int d = 0; d

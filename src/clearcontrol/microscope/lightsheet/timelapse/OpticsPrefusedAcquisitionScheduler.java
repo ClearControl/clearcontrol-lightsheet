@@ -67,10 +67,6 @@ public class OpticsPrefusedAcquisitionScheduler extends AbstractAcquistionSchedu
     // initial position
     goToInitialPosition(lLightsheetMicroscope,
                         lQueue,
-                        mLightSheetMicroscope.getLightSheet(0).getWidthVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getHeightVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getXVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getYVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
 
@@ -97,10 +93,6 @@ public class OpticsPrefusedAcquisitionScheduler extends AbstractAcquistionSchedu
     // back to initial position
     goToInitialPosition(lLightsheetMicroscope,
                         lQueue,
-                        mLightSheetMicroscope.getLightSheet(0).getWidthVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getHeightVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getXVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getYVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
 

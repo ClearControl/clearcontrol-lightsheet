@@ -174,10 +174,6 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
     // initial position
     goToInitialPosition(mLightSheetMicroscope,
             lQueue,
-            mLightSheetMicroscope.getLightSheet(0).getWidthVariable().get().doubleValue(),
-            mLightSheetMicroscope.getLightSheet(0).getHeightVariable().get().doubleValue(),
-            mLightSheetMicroscope.getLightSheet(0).getXVariable().get().doubleValue(),
-            mLightSheetMicroscope.getLightSheet(0).getYVariable().get().doubleValue(),
             mCurrentState.getStackZLowVariable().get().doubleValue(),
             mCurrentState.getStackZLowVariable().get().doubleValue());
 
@@ -209,14 +205,10 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
     // initial position
     goToInitialPosition(mLightSheetMicroscope,
             lQueue,
-            mLightSheetMicroscope.getLightSheet(0).getWidthVariable().get().doubleValue(),
-            mLightSheetMicroscope.getLightSheet(0).getHeightVariable().get().doubleValue(),
-            mLightSheetMicroscope.getLightSheet(0).getXVariable().get().doubleValue(),
-            mLightSheetMicroscope.getLightSheet(0).getYVariable().get().doubleValue(),
             mCurrentState.getStackZLowVariable().get().doubleValue(),
             mCurrentState.getStackZLowVariable().get().doubleValue());
 
-    /*
+
     for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
     {
       info("Light sheet " + l + " W: " + lQueue.getIW(l));
@@ -224,7 +216,7 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
     for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
     {
       info("Light sheet " + l + " H: " + lQueue.getIH(l));
-    }*/
+    }
 
     lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
                             mTimelapse.getTimePointCounterVariable().get());

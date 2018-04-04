@@ -69,10 +69,6 @@ public class InterleavedAcquisitionScheduler extends AbstractAcquistionScheduler
     // initial position
     goToInitialPosition(lLightsheetMicroscope,
                         lQueue,
-                        mLightSheetMicroscope.getLightSheet(0).getWidthVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getHeightVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getXVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getYVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
 
@@ -102,10 +98,6 @@ public class InterleavedAcquisitionScheduler extends AbstractAcquistionScheduler
     // back to initial position
     goToInitialPosition(lLightsheetMicroscope,
                         lQueue,
-                        mLightSheetMicroscope.getLightSheet(0).getWidthVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getHeightVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getXVariable().get().doubleValue(),
-                        mLightSheetMicroscope.getLightSheet(0).getYVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
 
