@@ -21,6 +21,7 @@ public class SingleStackImager extends ImagerBase
 
   @Override protected boolean configureQueue(LightSheetMicroscopeQueue pQueue)
   {
+    // Todo: use acquisition state
     for (int lImageCount = 0; lImageCount < mNumberOfRequestedImages; lImageCount++)
     {
       if (lImageCount == 0) {

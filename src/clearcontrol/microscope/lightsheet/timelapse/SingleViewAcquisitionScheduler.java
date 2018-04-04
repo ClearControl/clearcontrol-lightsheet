@@ -36,6 +36,12 @@ public class SingleViewAcquisitionScheduler extends SequentialAcquisitionSchedul
     return false;
   }
 
+  public int getLightSheetIndex() {
+    return mLightSheetIndex;
+  }
 
+  public int getCameraIndex() {
+    return mCameraIndex;
+  }
 
 }
