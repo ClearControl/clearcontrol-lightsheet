@@ -732,12 +732,10 @@ public class InterpolatedAcquisitionState extends
                      pPlaneIndex,
                      pLightSheetIndex));
 
-    // The following block is commented out because the current arduino setting does not allow changing individual W parameters of light sheets
-    /*pQueue.setIW(pLightSheetIndex,
-                 pQueue.getIW(pLightSheetIndex) + // todo: This line may be removed in case a better solution, e.g. proper W-calibration is found
+    pQueue.setIW(pLightSheetIndex,
                  get(LightSheetDOF.IW,
                      pPlaneIndex,
-                     pLightSheetIndex));*/
+                     pLightSheetIndex));
 
     pQueue.setIH(pLightSheetIndex,
                  get(LightSheetDOF.IH,
