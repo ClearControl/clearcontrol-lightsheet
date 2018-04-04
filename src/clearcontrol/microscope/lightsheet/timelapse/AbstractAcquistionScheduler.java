@@ -101,7 +101,9 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
                                    double lIlluminationZStart,
                                    double lDetectionZZStart)
   {
+    double widthBefore = lQueue.getIW(0);
 
+    ((InterpolatedAcquisitionState)lLightsheetMicroscope.getAcquisitionStateManager().getCurrentState()).applyAcquisitionStateAtZ(lQueue, lIlluminationZStart);
     for (int l = 0; l
                     < lLightsheetMicroscope.getNumberOfLightSheets(); l++)
     {
@@ -114,6 +116,14 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
       lQueue.setDZ(d, lDetectionZZStart);
       lQueue.setC(d, false);
 
+    }
+    double widthAfter = lQueue.getIW(0);
+
+    if (Math.abs(widthAfter - widthBefore) > 0.1)
+    {
+      // if the width of the light sheets changed significantly, we
+      // need to wait a second until the iris has been moved...
+      lQueue.setExp(0.5);
     }
     lQueue.addCurrentStateToQueue();
     lQueue.addCurrentStateToQueue();
