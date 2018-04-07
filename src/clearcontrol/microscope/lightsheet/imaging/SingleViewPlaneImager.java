@@ -9,7 +9,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 public class SingleViewPlaneImager extends SingleViewStackImager
 {
 
-  public SingleViewPlaneImager(LightSheetMicroscope pLightSheetMicroscope, int pZ)
+  public SingleViewPlaneImager(LightSheetMicroscope pLightSheetMicroscope, double pZ)
   {
     super(pLightSheetMicroscope);
     mMinZ = pZ;
