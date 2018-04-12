@@ -35,7 +35,7 @@ public class InterleavedAcquisitionScheduler extends AbstractAcquistionScheduler
   public InterleavedAcquisitionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
   {
     super("Acquisition: Interleaved", pRecycler);
-    mImageKeyToSave = "interleaved";
+    mChannelName = "interleaved";
   }
 
   @Override public boolean enqueue(long pTimePoint)
