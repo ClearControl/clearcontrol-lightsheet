@@ -74,11 +74,6 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
             LightSheetFastFusionProcessor.class,
             0);
 
-    RecyclerInterface<StackInterface, StackRequest>
-        lRecyclerOfProcessor =
-        mLightSheetMicroscope.getStackProcesssingPipeline()
-                             .getRecyclerOfProcessor(
-                                 lProcessor);
 
     if (lProcessor != null)
     {
@@ -89,7 +84,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
                   .addTask(new SaveImageStackTask("fused",
                                                   "fused-saved",
                                                   pFileStackSinkInterface,
-                                                  lRecyclerOfProcessor,
+                                                  mRecycler,
                                                   pChannel));
         lProcessor.getEngine().addTask(new ResetFastFusionEngineTask("fused-saved"));
       }
