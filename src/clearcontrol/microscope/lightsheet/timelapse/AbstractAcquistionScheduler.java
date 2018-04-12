@@ -24,6 +24,8 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
                                                                         LoggingFeature
 {
 
+  protected String mImageKeyToSave = "fused";
+  protected String mChannelName = "default";
 
   protected StackInterface mLastAcquiredStack;
   RecyclerInterface<StackInterface, StackRequest> mRecycler;
@@ -66,7 +68,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
     return true;
   }
 
-  protected void initializeStackSaving(FileStackSinkInterface pFileStackSinkInterface, String pChannel) {
+  protected void initializeStackSaving(FileStackSinkInterface pFileStackSinkInterface) {
 
     LightSheetFastFusionProcessor
         lProcessor =
@@ -80,13 +82,23 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
       lProcessor.reInitializeEngine();
       if (pFileStackSinkInterface != null)
       {
+        // The save tasks exists twice in the compute graph. That should be improved in the future.
+        // At the moment it only works because C101 is either saved (single acquisition) and
+        // afterwards, the second task does not see it anymore because its memory was freed
+
         lProcessor.getEngine()
-                  .addTask(new SaveImageStackTask("fused",
-                                                  "fused-saved",
+                  .addTask(new SaveImageStackTask(mImageKeyToSave,
+                                                  mImageKeyToSave + "-saved",
                                                   pFileStackSinkInterface,
                                                   mRecycler,
-                                                  pChannel));
-        lProcessor.getEngine().addTask(new ResetFastFusionEngineTask("fused-saved"));
+                                                  mChannelName), true);
+        lProcessor.getEngine()
+                  .addTask(new SaveImageStackTask(mImageKeyToSave,
+                                                  mImageKeyToSave + "-saved",
+                                                  pFileStackSinkInterface,
+                                                  mRecycler,
+                                                  mChannelName), false);
+        lProcessor.getEngine().addTask(new ResetFastFusionEngineTask(mImageKeyToSave + "-saved"));
       }
     }
   }
@@ -122,6 +134,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
     }
     lQueue.addCurrentStateToQueue();
     lQueue.addCurrentStateToQueue();
+    lQueue.addVoxelDimMetaData(lLightsheetMicroscope, mCurrentState.getStackZStepVariable().get().doubleValue());
   }
 
   protected void handleImageFromCameras(long pTimepoint) {

@@ -666,7 +666,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
       }
       */
 
-      if (mRegistrationTask != null)
+      if (mRegistrationTask != null && lStackMetaData != null && lStackMetaData.getVoxelDimX() != null && lStackMetaData.getVoxelDimZ() != null)
       {
         float lZAspectRatio =
                             (float) (lStackMetaData.getVoxelDimZ()

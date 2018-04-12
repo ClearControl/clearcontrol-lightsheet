@@ -21,6 +21,9 @@ public class SingleViewAcquisitionScheduler extends SequentialAcquisitionSchedul
     super("Acquisition: Single view C" + pCameraIndex + "L" + pLightSheetIndex, pRecycler);
     mCameraIndex = pCameraIndex;
     mLightSheetIndex = pLightSheetIndex;
+
+    mImageKeyToSave = "C" + pCameraIndex + "L" + pLightSheetIndex;
+    mChannelName = mImageKeyToSave;
   }
 
 
@@ -33,7 +36,7 @@ public class SingleViewAcquisitionScheduler extends SequentialAcquisitionSchedul
   }
 
   protected boolean isFused() {
-    return false;
+    return true;
   }
 
   public int getLightSheetIndex() {

@@ -34,6 +34,7 @@ public class OpticsPrefusedAcquisitionScheduler extends AbstractAcquistionSchedu
   public OpticsPrefusedAcquisitionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
   {
     super("Acquisition: optics-prefused", pRecycler);
+    mChannelName = "opticsprefused";
   }
 
   @Override public boolean enqueue(long pTimePoint)
@@ -148,7 +149,7 @@ public class OpticsPrefusedAcquisitionScheduler extends AbstractAcquistionSchedu
       return false;
     }
 
-    initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get(), "opticsprefused");
+    initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get());
     handleImageFromCameras(pTimePoint);
 
     return true;

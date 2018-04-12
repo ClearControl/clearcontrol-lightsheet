@@ -149,11 +149,17 @@ public class LightSheetFastFusionProcessor extends
 
     if (mEngine.isDownscale())
     {
-      double lVoxelDimX = pStack.getMetaData().getVoxelDimX();
-      double lVoxelDimY = pStack.getMetaData().getVoxelDimY();
+      if (pStack != null && pStack.getMetaData() != null && pStack.getMetaData().getVoxelDimX() != null && pStack.getMetaData().getVoxelDimY() != null)
+      {
+        System.out.println("pStack" + pStack);
+        System.out.println("pStack.getMetaData()" + pStack.getMetaData());
+        System.out.println("pStack.getMetaData().getVoxelDimX()" + pStack.getMetaData().getVoxelDimX());
+        double lVoxelDimX = pStack.getMetaData().getVoxelDimX();
+        double lVoxelDimY = pStack.getMetaData().getVoxelDimY();
 
-      pStack.getMetaData().setVoxelDimX(2 * lVoxelDimX);
-      pStack.getMetaData().setVoxelDimY(2 * lVoxelDimY);
+        pStack.getMetaData().setVoxelDimX(2 * lVoxelDimX);
+        pStack.getMetaData().setVoxelDimY(2 * lVoxelDimY);
+      }
     }
 
     mEngine.passStack(true, pStack);
@@ -210,6 +216,10 @@ public class LightSheetFastFusionProcessor extends
         int lNumberOfTasksExecuted = mEngine.executeAllTasks();
         info("executed %d fusion tasks", lNumberOfTasksExecuted);
       });
+
+      for (String key : mEngine.getAvailableImagesSlotKeys()) {
+        info("Available: " + key);
+      }
     }
 
     if (pStack.getMetaData()

@@ -38,6 +38,7 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
   public SequentialAcquisitionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
   {
     super("Acquisition: Sequential", pRecycler);
+    mChannelName = "sequential";
   }
 
   public SequentialAcquisitionScheduler(String pName, RecyclerInterface<StackInterface, StackRequest> pRecycler) {
@@ -108,6 +109,9 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
             }
           }
 
+
+
+
         try
         {
           mLightSheetMicroscope.playQueueAndWait(lQueueForView,
@@ -117,7 +121,7 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
             lFastFusionEngineInitialized = true;
             // todo: check if the engine is still running
 
-            initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get(), "sequential");
+            initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get());
           }
 
           handleImageFromCameras(pTimePoint);
