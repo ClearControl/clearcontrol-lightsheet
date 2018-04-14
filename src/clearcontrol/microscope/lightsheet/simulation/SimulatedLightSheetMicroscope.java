@@ -359,22 +359,28 @@ public class SimulatedLightSheetMicroscope extends
 
     if (getNumberOfLightSheets() > 1) {
       addDevice(0, new InterleavedAcquisitionScheduler(lRecycler));
+      SequentialAcquisitionScheduler lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler(lRecycler);
+      if (lTimelapse instanceof LightSheetTimelapse)
+      {
+        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
+      }
+
+      addDevice(0, lSequentialAcquisitionScheduler);
+      addDevice(0, new OpticsPrefusedAcquisitionScheduler(lRecycler));
     }
 
-    SequentialAcquisitionScheduler lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler(lRecycler);
-    addDevice(0, lSequentialAcquisitionScheduler);
-    if (lTimelapse instanceof LightSheetTimelapse)
-    {
-      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
-    }
 
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
       for (int l = 0; l < getNumberOfLightSheets(); l++) {
-        addDevice(0, new SingleViewAcquisitionScheduler(c, l, lRecycler));
+        SingleViewAcquisitionScheduler lScheduler = new SingleViewAcquisitionScheduler(c, l, lRecycler);
+        addDevice(0, lScheduler);
+        if (lTimelapse instanceof LightSheetTimelapse && ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().size() == 0)
+        {
+          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lScheduler);
+        }
       }
     }
 
-    addDevice(0, new OpticsPrefusedAcquisitionScheduler(lRecycler));
 
     addDevice(0, new PauseScheduler());
 
