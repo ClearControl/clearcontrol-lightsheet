@@ -22,7 +22,7 @@ public class LaserOnOffScheduler extends SchedulerBase implements
    */
   public LaserOnOffScheduler(LaserDeviceInterface pLaserDevice, boolean pTurnOn)
   {
-    super("Turn " + pLaserDevice.getName() + " " + (pTurnOn?"ON":"OFF"));
+    super("Laser: Turn " + pLaserDevice.getName() + " " + (pTurnOn?"ON":"OFF"));
     mLaserDevice = pLaserDevice;
     mTurnOn = pTurnOn;
   }

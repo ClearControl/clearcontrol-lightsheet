@@ -30,7 +30,7 @@ public class InterpolatedAcquisitionStateLogScheduler extends SchedulerBase impl
    */
   public InterpolatedAcquisitionStateLogScheduler()
   {
-    super("Adaptation: Log current state");
+    super("State: Log current state to disc");
   }
 
   @Override public boolean initialize()

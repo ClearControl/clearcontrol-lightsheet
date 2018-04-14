@@ -24,7 +24,7 @@ public class AcquisitionStateResetScheduler extends SchedulerBase implements
    */
   public AcquisitionStateResetScheduler()
   {
-    super("Adaptation: Reset all control planes");
+    super("State: Reset");
   }
 
   @Override public boolean initialize()

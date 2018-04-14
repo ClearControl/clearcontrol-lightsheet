@@ -33,6 +33,7 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateResetScheduler;
+import clearcontrol.microscope.lightsheet.state.schedulers.InterpolatedAcquisitionStateLogScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.*;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -327,6 +328,8 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new AcquisitionStateBackupRestoreScheduler(false));
 
       addDevice(0, new AcquisitionStateResetScheduler());
+
+      addDevice(0, new InterpolatedAcquisitionStateLogScheduler());
 
 
 
