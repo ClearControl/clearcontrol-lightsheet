@@ -21,28 +21,15 @@ public class PauseScheduler extends SchedulerBase implements
 
   public PauseScheduler(long pPauseTimeInMilliseconds)
   {
-    super("Pause " + humanReadableTime(pPauseTimeInMilliseconds));
+    super("Timing: Pause " + Utilities.humanReadableTime(pPauseTimeInMilliseconds));
     mPauseTimeInMilliseconds = pPauseTimeInMilliseconds;
   }
 
-  private static String humanReadableTime(long pPauseTimeInMilliseconds) {
-    String lPauseTimeHumanReadable = "";
-    if (pPauseTimeInMilliseconds == 0) {}
-    else if (pPauseTimeInMilliseconds < 1000) {
-      lPauseTimeHumanReadable = "" + pPauseTimeInMilliseconds + " msec";
-    } else if (pPauseTimeInMilliseconds < 60000) {
-      lPauseTimeHumanReadable = "" + (pPauseTimeInMilliseconds / 1000) + " sec";
-    } else if (pPauseTimeInMilliseconds < 3600000) {
-      lPauseTimeHumanReadable = "" + (pPauseTimeInMilliseconds / 60000) + " min";
-    } else {
-      lPauseTimeHumanReadable = "" + (pPauseTimeInMilliseconds / 3600000) + " h";
-    }
-    return lPauseTimeHumanReadable;
-  }
+
 
   @Override public boolean initialize()
   {
-    return false;
+    return true;
   }
 
   @Override public boolean enqueue(long pTimePoint)

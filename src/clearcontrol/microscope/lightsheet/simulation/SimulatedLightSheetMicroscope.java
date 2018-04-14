@@ -26,7 +26,9 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
+import clearcontrol.microscope.lightsheet.component.scheduler.implementations.MeasureTimeScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseScheduler;
+import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -375,14 +377,32 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new OpticsPrefusedAcquisitionScheduler(lRecycler));
 
     addDevice(0, new PauseScheduler());
-    addDevice(1, new PauseScheduler(1000));
-    addDevice(2, new PauseScheduler(10000));
-    addDevice(3, new PauseScheduler(30000));
-    addDevice(4, new PauseScheduler(60000));
-    addDevice(5, new PauseScheduler(500000));
-    addDevice(6, new PauseScheduler(600000));
-    addDevice(7, new PauseScheduler(1800000));
-    addDevice(8, new PauseScheduler(3600000));
+
+    int[] pauseTimes = {
+        1000,  // 1 s
+        10000, // 10 s
+        30000, // 30 s
+        60000, // 1 min
+        300000, // 5 min
+        600000, // 10 min
+        3600000 // 1 h
+        };
+    String[] timeMeasurementKeys = {"A", "B", "C"};
+    for (int i = 0; i < pauseTimes.length; i++)
+    {
+      addDevice(0, new PauseScheduler(pauseTimes[i]));
+    }
+    for (int k = 0; k < timeMeasurementKeys.length; k++)
+    {
+      addDevice(0, new MeasureTimeScheduler(timeMeasurementKeys[k]));
+      for (int i = 0; i < pauseTimes.length; i++)
+      {
+        addDevice(9,
+                  new PauseUntilTimeAfterMeasuredTimeScheduler(
+                      timeMeasurementKeys[k],
+                      pauseTimes[i]));
+      }
+    }
 
     int lNumberOfControlPlanes = ((InterpolatedAcquisitionState)(getAcquisitionStateManager().getCurrentState())).getNumberOfControlPlanes();
     for (int cpi = 0; cpi < lNumberOfControlPlanes; cpi++)
