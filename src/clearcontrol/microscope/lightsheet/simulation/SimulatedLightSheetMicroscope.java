@@ -18,6 +18,8 @@ import clearcontrol.devices.stages.StageType;
 import clearcontrol.devices.stages.devices.sim.StageDeviceSimulator;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderAlphaByVariationScheduler;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderZScheduler;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
@@ -27,6 +29,8 @@ import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDev
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
+import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreScheduler;
+import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateResetScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.*;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -304,6 +308,13 @@ public class SimulatedLightSheetMicroscope extends
       lAcquisitionStateManager.setCurrentState(lAcquisitionState);
       addInteractiveAcquisition();
 
+      addDevice(0, new AcquisitionStateBackupRestoreScheduler(true));
+      addDevice(0, new AcquisitionStateBackupRestoreScheduler(false));
+
+      addDevice(0, new AcquisitionStateResetScheduler());
+
+
+
       // Adding adaptive engine device:
       {
         AdaptationStateEngine.setup(this, lAcquisitionState);
@@ -355,6 +366,24 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(7, new PauseScheduler(1800000));
     addDevice(8, new PauseScheduler(3600000));
 
+    int lNumberOfControlPlanes = ((InterpolatedAcquisitionState)(getAcquisitionStateManager().getCurrentState())).getNumberOfControlPlanes();
+    for (int cpi = 0; cpi < lNumberOfControlPlanes; cpi++)
+    {
+      for (int d = 0; d < getNumberOfDetectionArms(); d++)
+      {
+        for (int l = 0; l < getNumberOfLightSheets(); l++)
+        {
+          addDevice(0, new FocusFinderZScheduler(
+              l,
+              d,
+              cpi));
+          addDevice(0, new FocusFinderAlphaByVariationScheduler(
+              l,
+              d,
+              cpi));
+        }
+      }
+    }
 
 
 
