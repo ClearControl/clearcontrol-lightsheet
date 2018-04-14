@@ -9,6 +9,8 @@ import clearcontrol.devices.cameras.devices.sim.StackCameraSimulationProvider;
 import clearcontrol.devices.cameras.devices.sim.providers.FractalStackProvider;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
 import clearcontrol.devices.lasers.devices.sim.LaserDeviceSimulator;
+import clearcontrol.devices.lasers.schedulers.LaserOnOffScheduler;
+import clearcontrol.devices.lasers.schedulers.LaserPowerScheduler;
 import clearcontrol.devices.optomech.filterwheels.FilterWheelDeviceInterface;
 import clearcontrol.devices.optomech.filterwheels.devices.sim.FilterWheelDeviceSimulator;
 import clearcontrol.devices.signalamp.ScalingAmplifierDeviceInterface;
@@ -113,6 +115,19 @@ public class SimulatedLightSheetMicroscope extends
                                                              100);
         lLaserList.add(lLaser);
         addDevice(l, lLaser);
+
+        addDevice(0, new LaserPowerScheduler(lLaser, 0.0));
+        addDevice(0, new LaserPowerScheduler(lLaser, 1.0));
+        addDevice(0, new LaserPowerScheduler(lLaser, 5.0));
+        addDevice(0, new LaserPowerScheduler(lLaser, 10.0));
+        addDevice(0, new LaserPowerScheduler(lLaser, 20.0));
+        addDevice(0, new LaserPowerScheduler(lLaser, 50.0));
+        addDevice(0, new LaserPowerScheduler(lLaser, 100.0));
+
+        addDevice(0, new LaserOnOffScheduler(lLaser, true));
+        addDevice(0, new LaserOnOffScheduler(lLaser, false));
+
+
       }
     }
 
