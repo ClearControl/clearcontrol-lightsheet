@@ -25,7 +25,7 @@ public class AcquisitionStateBackupRestoreScheduler extends
   /**
    * INstanciates a virtual device with a given name
    *
-   * @Parameter pBackup: If true, the scheduler puts a new entry in
+   * @param pBackup: If true, the scheduler puts a new entry in
    * the LIFO list, if false it will restore the last entry.
    */
   public AcquisitionStateBackupRestoreScheduler(boolean pBackup)
