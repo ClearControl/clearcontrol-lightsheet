@@ -20,6 +20,8 @@ import clearcontrol.devices.stages.StageType;
 import clearcontrol.devices.stages.devices.sim.StageDeviceSimulator;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.ControlPlaneFocusFinderAlphaByVariationScheduler;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.ControlPlaneFocusFinderZScheduler;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderAlphaByVariationScheduler;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderZScheduler;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
@@ -426,6 +428,8 @@ public class SimulatedLightSheetMicroscope extends
               d,
               cpi));
         }
+        addDevice(0, new ControlPlaneFocusFinderAlphaByVariationScheduler(d, cpi));
+        addDevice(0, new ControlPlaneFocusFinderZScheduler(d, cpi));
       }
     }
 

@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.adaptive.schedulers;
 import clearcl.ClearCLImage;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.math.argmax.SmartArgMaxFinder;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -44,6 +45,9 @@ public class FocusFinderZScheduler extends SchedulerBase implements
   private BoundedVariable<Integer> mImageHeightVariable = new BoundedVariable<Integer>("image height", 2048, 16, 2048, 1);
   private BoundedVariable<Integer> mNumberOfImagesToTakeVariable = new BoundedVariable<Integer>("number of samples", 25, 3, 1000, 1);
   private BoundedVariable<Double> mDeltaZVariable = new BoundedVariable<Double>("deltaZ", 1.0, 0.01, Double.MAX_VALUE, 0.01);
+  private Variable<Boolean> mResetAllTheTime = new Variable<Boolean>("resetAllTheTime", false);
+
+  boolean mNeedsReset = true;
 
   public static boolean debug = false;
 
@@ -60,6 +64,7 @@ public class FocusFinderZScheduler extends SchedulerBase implements
     if (mMicroscope instanceof LightSheetMicroscope){
       mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
     }
+    mNeedsReset = true;
     return true;
   }
 
@@ -97,6 +102,7 @@ public class FocusFinderZScheduler extends SchedulerBase implements
     lAcquisitionState.applyAcquisitionStateAtZ(lQueue, lCPPositionZ);
     System.out.println("Z1: " + lQueue.getIZ(lLightSheetIndex));
 
+    mNeedsReset = false;
     return false;
   }
 
@@ -154,7 +160,12 @@ public class FocusFinderZScheduler extends SchedulerBase implements
       //lQueue.setIZ(lIlluminationArmIndex, lIlluminationZStart);
 
       double lPositionZ = lDetectionZZStart + illuminationZIndex * lDetectionZStep;
-      lQueue.setDZ(lDetectionArmIndex, lPositionZ);
+      if (mNeedsReset || mResetAllTheTime.get())
+      {
+        lQueue.setDZ(lDetectionArmIndex, lPositionZ);
+      } else {
+        lQueue.setDZ(lDetectionArmIndex, lQueue.getDZ(lDetectionArmIndex) + lPositionZ);
+      }
 
       lQueue.setC(lDetectionArmIndex, true);
       lQueue.setExp(lExposureTimeInSeconds);
@@ -293,5 +304,10 @@ public class FocusFinderZScheduler extends SchedulerBase implements
   public BoundedVariable<Double> getDeltaZVariable()
   {
     return mDeltaZVariable;
+  }
+
+  public Variable<Boolean> getResetAllTheTime()
+  {
+    return mResetAllTheTime;
   }
 }
