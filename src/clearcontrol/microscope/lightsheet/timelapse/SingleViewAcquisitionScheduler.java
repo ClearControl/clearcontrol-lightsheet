@@ -47,4 +47,9 @@ public class SingleViewAcquisitionScheduler extends SequentialAcquisitionSchedul
     return mCameraIndex;
   }
 
+  @Override
+  public StackInterface getLastAcquiredStack()
+  {
+    return mLastAcquiredStack;
+  }
 }

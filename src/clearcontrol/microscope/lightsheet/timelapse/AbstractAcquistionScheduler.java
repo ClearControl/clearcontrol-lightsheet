@@ -27,8 +27,9 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
   protected String mImageKeyToSave = "fused";
   protected String mChannelName = "default";
 
-  protected StackInterface mLastAcquiredStack;
+  protected StackInterface mLastFusedStack;
   RecyclerInterface<StackInterface, StackRequest> mRecycler;
+  protected StackInterface mLastAcquiredStack;
 
   /**
    * INstanciates a virtual device with a given name
@@ -163,11 +164,13 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
             //                                 .getRecyclerOfProcessor(
             //                                   lProcessor);
 
+            mLastAcquiredStack = lResultingStack;
+
             info("sending: " + lResultingStack);
             StackInterface lStackInterface = lProcessor.process(lResultingStack, lRecyclerOfProcessor);
             info("Got back: " + lStackInterface);
             if (lStackInterface != null) {
-              mLastAcquiredStack = lStackInterface;
+              mLastFusedStack = lStackInterface;
             }
           }
         });
@@ -245,7 +248,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
 */
   public StackInterface getLastAcquiredStack()
   {
-    return mLastAcquiredStack;
+    return mLastFusedStack;
   }
 
 
