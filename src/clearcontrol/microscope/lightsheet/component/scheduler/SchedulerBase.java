@@ -11,9 +11,6 @@ import clearcontrol.microscope.MicroscopeInterface;
 public abstract class SchedulerBase extends VirtualDevice implements
                                                           SchedulerInterface
 {
-  private Variable<Boolean>
-      mActiveVariable = new Variable<Boolean>("active", false);
-
   protected MicroscopeInterface mMicroscope = null;
 
   /**
@@ -24,11 +21,6 @@ public abstract class SchedulerBase extends VirtualDevice implements
   public SchedulerBase(String pDeviceName)
   {
     super(pDeviceName);
-  }
-
-  @Override public Variable<Boolean> getActiveVariable()
-  {
-    return mActiveVariable;
   }
 
   public void setMicroscope(MicroscopeInterface pMicroscope) {

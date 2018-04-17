@@ -14,7 +14,5 @@ public interface SchedulerInterface extends NameableInterface
 
   boolean enqueue(long pTimePoint);
 
-  Variable<Boolean> getActiveVariable();
-
   public void setMicroscope(MicroscopeInterface pMicroscope);
 }
