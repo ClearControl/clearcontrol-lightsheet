@@ -1,5 +1,9 @@
 package clearcontrol.microscope.lightsheet.gui;
 
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderAlphaByVariationScheduler;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderZScheduler;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderAlphaByVariationSchedulerPanel;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderZSchedulerPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.MirrorModeSchedulerPanel;
 import javafx.stage.Stage;
@@ -169,6 +173,15 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
     addPanelMappingEntry(AnythingDevice.class,
                          AnythingPanel.class,
                          MicroscopeNodeType.FilterWheel);
+
+    addPanelMappingEntry(FocusFinderAlphaByVariationScheduler.class,
+                         FocusFinderAlphaByVariationSchedulerPanel.class,
+                         MicroscopeNodeType.AdaptiveOptics);
+
+    addPanelMappingEntry(FocusFinderZScheduler.class,
+                         FocusFinderZSchedulerPanel.class,
+                         MicroscopeNodeType.AdaptiveOptics);
+
   }
 
   @Override
