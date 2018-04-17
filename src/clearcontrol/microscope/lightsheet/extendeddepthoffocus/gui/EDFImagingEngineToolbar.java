@@ -293,47 +293,4 @@ public class EDFImagingEngineToolbar extends CustomGridPane
 
   }
 
-  private void addIntegerField(BoundedVariable<Integer> variable,
-                               int pRow)
-  {
-    NumberVariableTextField<Integer> lField =
-                                            new NumberVariableTextField<Integer>(variable.getName(),
-                                                                                 variable,
-                                                                                 variable.getMin(),
-                                                                                 variable.getMax(),
-                                                                                 variable.getGranularity());
-    this.add(lField.getLabel(), 0, pRow);
-    this.add(lField.getTextField(), 1, pRow);
-
-  }
-
-  private void addDoubleField(BoundedVariable<Double> variable,
-                              int pRow)
-  {
-    NumberVariableTextField<Double> lField =
-                                           new NumberVariableTextField<Double>(variable.getName(),
-                                                                               variable,
-                                                                               variable.getMin(),
-                                                                               variable.getMax(),
-                                                                               variable.getGranularity());
-    this.add(lField.getLabel(), 0, pRow);
-    this.add(lField.getTextField(), 1, pRow);
-  }
-
-  private void addCheckbox(Variable<Boolean> pBooleanVariable,
-                           int pRow)
-  {
-    VariableCheckBox lCheckBox =
-                               new VariableCheckBox("",
-                                                    pBooleanVariable);
-
-    Label lLabel = new Label(pBooleanVariable.getName());
-
-    GridPane.setHalignment(lCheckBox.getCheckBox(), HPos.RIGHT);
-    GridPane.setColumnSpan(lCheckBox.getCheckBox(), 1);
-    GridPane.setColumnSpan(lLabel, 3);
-
-    add(lLabel, 0, pRow);
-    add(lCheckBox.getCheckBox(), 1, pRow);
-  }
 }
