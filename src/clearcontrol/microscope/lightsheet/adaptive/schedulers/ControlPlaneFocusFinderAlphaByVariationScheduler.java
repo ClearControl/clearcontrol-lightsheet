@@ -19,7 +19,7 @@ public class ControlPlaneFocusFinderAlphaByVariationScheduler extends SchedulerB
 
   public ControlPlaneFocusFinderAlphaByVariationScheduler(int pDetectionArmIndex, int pControlPlaneIndex)
   {
-    super("Adaptation: Focus finder Z for C" + pDetectionArmIndex + "LxCPI" + pControlPlaneIndex);
+    super("Adaptation: Focus finder alpha for C" + pDetectionArmIndex + "LxCPI" + pControlPlaneIndex);
     mDetectionArmIndex = pDetectionArmIndex;
     mControlPlaneIndex = pControlPlaneIndex;
   }
