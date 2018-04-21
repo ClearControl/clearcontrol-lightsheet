@@ -51,14 +51,11 @@ import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterf
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateResetScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.InterpolatedAcquisitionStateLogScheduler;
-import clearcontrol.microscope.lightsheet.warehouse.DataWarehouseResetScheduler;
-import clearcontrol.microscope.stacks.StackRecyclerManager;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
-import clearcontrol.stack.StackInterface;
-import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
-import coremem.recycling.RecyclerInterface;
 
 /**
  * Simulated lightsheet microscope
@@ -408,13 +405,11 @@ public class SimulatedLightSheetMicroscope extends
       }
     }
 
-    DataWarehouseResetScheduler lDataWarehouseResetScheduler = new DataWarehouseResetScheduler();
     if (lTimelapse instanceof LightSheetTimelapse)
     {
       ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers()
-                                        .add(lDataWarehouseResetScheduler);
+                                        .add(getDevice(DropOldestStackInterfaceContainerScheduler.class, 0));
     }
-    addDevice(0, lDataWarehouseResetScheduler);
 
 
     addDevice(0, new PauseScheduler());

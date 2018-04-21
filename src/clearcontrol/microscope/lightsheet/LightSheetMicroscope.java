@@ -12,6 +12,7 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
+import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
 import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
@@ -19,7 +20,8 @@ import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.imaging.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
-import clearcontrol.microscope.lightsheet.warehouse.DataWarehouseResetScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 import clearcontrol.stack.StackInterface;
@@ -76,10 +78,9 @@ public class LightSheetMicroscope extends
                                                       128);
     mDataWarehouse = new DataWarehouse(lRecycler);
 
-    DataWarehouseResetScheduler lDataWarehouseResetScheduler = new DataWarehouseResetScheduler();
-    lDataWarehouseResetScheduler.setMicroscope(this);
-    lDataWarehouseResetScheduler.initialize();
-    addDevice(0, lDataWarehouseResetScheduler);
+    addDevice(0, new DataWarehouseResetScheduler());
+
+    addDevice(0, new DropOldestStackInterfaceContainerScheduler());
 
 /*    mStackProcessingPipeline.addStackProcessor(mStackFusionProcessor,
                                                "StackFusion",
@@ -145,6 +146,10 @@ public class LightSheetMicroscope extends
                                                        (StackCameraDeviceInterface<?>) pDevice;
       lStackCameraDevice.getStackVariable()
                         .sendUpdatesTo(getStackProcesssingPipeline().getInputVariable());
+    }
+    if (pDevice instanceof SchedulerInterface) {
+      ((SchedulerInterface) pDevice).setMicroscope(this);
+      ((SchedulerInterface) pDevice).initialize();
     }
   }
 

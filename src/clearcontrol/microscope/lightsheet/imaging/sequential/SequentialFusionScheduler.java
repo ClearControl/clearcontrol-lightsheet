@@ -22,7 +22,7 @@ public class SequentialFusionScheduler extends FusionScheduler implements
    */
   public SequentialFusionScheduler()
   {
-    super("Fusion: Sequential");
+    super("Fusion: Sequential (heap++)");
   }
 
 

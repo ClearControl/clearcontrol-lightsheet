@@ -43,7 +43,7 @@ public class SequentialAcquisitionScheduler extends
    */
   public SequentialAcquisitionScheduler()
   {
-    super("Acquisition: Sequential");
+    super("Acquisition: Sequential (heap++)");
     mChannelName = "sequential";
   }
 

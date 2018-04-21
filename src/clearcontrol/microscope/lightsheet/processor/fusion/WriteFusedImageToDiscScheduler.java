@@ -16,6 +16,6 @@ public class WriteFusedImageToDiscScheduler extends
    */
   public WriteFusedImageToDiscScheduler(String pChannelName)
   {
-    super("IO: Write fused " + pChannelName + " stack to disc", FusedImageDataContainer.class, new String[]{"fused"}, pChannelName);
+    super("IO: Write " + pChannelName + " fused stack to disc", FusedImageDataContainer.class, new String[]{"fused"}, pChannelName);
   }
 }

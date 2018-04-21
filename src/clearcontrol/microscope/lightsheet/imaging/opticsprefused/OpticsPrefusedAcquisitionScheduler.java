@@ -36,7 +36,7 @@ public class OpticsPrefusedAcquisitionScheduler extends
    */
   public OpticsPrefusedAcquisitionScheduler()
   {
-    super("Acquisition: optics-prefused");
+    super("Acquisition: optics-prefused (heap++)");
     mChannelName = "opticsprefused";
   }
 

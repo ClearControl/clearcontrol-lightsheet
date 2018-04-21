@@ -20,7 +20,7 @@ public class SingleViewAcquisitionScheduler extends
   int mLightSheetIndex;
 
   public SingleViewAcquisitionScheduler(int pCameraIndex, int pLightSheetIndex) {
-    super("Acquisition: Single view C" + pCameraIndex + "L" + pLightSheetIndex);
+    super("Acquisition: Single view C" + pCameraIndex + "L" + pLightSheetIndex + " (heap++)");
     mCameraIndex = pCameraIndex;
     mLightSheetIndex = pLightSheetIndex;
 
