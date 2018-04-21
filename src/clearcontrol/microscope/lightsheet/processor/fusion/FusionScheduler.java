@@ -74,8 +74,8 @@ public abstract class FusionScheduler extends SchedulerBase implements
           StackInterface lResultingStack = pContainer.get(key);
 
 
-          info("sending(" + key + "): " + lResultingStack + " aka " + MetaDataView
-              .getCxLyString(lResultingStack.getMetaData()));
+          //info("sending(" + key + "): " + lResultingStack + " aka " + MetaDataView
+          //    .getCxLyString(lResultingStack.getMetaData()));
           StackInterface
               lStackInterface =
               lProcessor.process(lResultingStack, lRecycler);
