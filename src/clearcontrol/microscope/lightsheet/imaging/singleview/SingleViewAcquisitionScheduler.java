@@ -19,8 +19,8 @@ public class SingleViewAcquisitionScheduler extends
   int mCameraIndex;
   int mLightSheetIndex;
 
-  public SingleViewAcquisitionScheduler(int pCameraIndex, int pLightSheetIndex, RecyclerInterface<StackInterface, StackRequest> pRecycler) {
-    super("Acquisition: Single view C" + pCameraIndex + "L" + pLightSheetIndex, pRecycler);
+  public SingleViewAcquisitionScheduler(int pCameraIndex, int pLightSheetIndex) {
+    super("Acquisition: Single view C" + pCameraIndex + "L" + pLightSheetIndex);
     mCameraIndex = pCameraIndex;
     mLightSheetIndex = pLightSheetIndex;
 

@@ -33,8 +33,11 @@ import clearcontrol.microscope.lightsheet.component.scheduler.implementations.Pa
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
 import clearcontrol.microscope.lightsheet.imaging.*;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
@@ -364,23 +367,28 @@ public class SimulatedLightSheetMicroscope extends
 
 
     if (getNumberOfLightSheets() > 1) {
-      addDevice(0, new InterleavedAcquisitionScheduler(lRecycler));
+      addDevice(0, new InterleavedAcquisitionScheduler());
+      addDevice(0, new InterleavedFusionScheduler(lRecycler));
       SequentialAcquisitionScheduler
-          lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler(lRecycler);
+          lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler();
+      SequentialFusionScheduler lSequentialFusionScheduler = new SequentialFusionScheduler(lRecycler);
+
       if (lTimelapse instanceof LightSheetTimelapse)
       {
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
+        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialFusionScheduler);
       }
 
       addDevice(0, lSequentialAcquisitionScheduler);
-      addDevice(0, new OpticsPrefusedAcquisitionScheduler(lRecycler));
+      addDevice(0, new OpticsPrefusedAcquisitionScheduler());
+      addDevice(0, new OpticsPrefusedFusionScheduler(lRecycler));
     }
 
 
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
       for (int l = 0; l < getNumberOfLightSheets(); l++) {
         SingleViewAcquisitionScheduler
-            lScheduler = new SingleViewAcquisitionScheduler(c, l, lRecycler);
+            lScheduler = new SingleViewAcquisitionScheduler(c, l);
         addDevice(0, lScheduler);
         if (lTimelapse instanceof LightSheetTimelapse && ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().size() == 0)
         {

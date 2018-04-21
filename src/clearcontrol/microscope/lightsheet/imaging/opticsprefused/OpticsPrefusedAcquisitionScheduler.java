@@ -34,9 +34,9 @@ public class OpticsPrefusedAcquisitionScheduler extends
    * INstanciates a virtual device with a given name
    *
    */
-  public OpticsPrefusedAcquisitionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
+  public OpticsPrefusedAcquisitionScheduler()
   {
-    super("Acquisition: optics-prefused", pRecycler);
+    super("Acquisition: optics-prefused");
     mChannelName = "opticsprefused";
   }
 

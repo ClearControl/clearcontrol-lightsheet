@@ -28,7 +28,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
   protected String mChannelName = "default";
 
   protected StackInterface mLastFusedStack;
-  RecyclerInterface<StackInterface, StackRequest> mRecycler;
+  //RecyclerInterface<StackInterface, StackRequest> mRecycler;
   protected StackInterface mLastAcquiredStack;
 
   /**
@@ -36,10 +36,10 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
    *
    * @param pDeviceName device name
    */
-  public AbstractAcquistionScheduler(String pDeviceName, RecyclerInterface<StackInterface, StackRequest> pRecycler)
+  public AbstractAcquistionScheduler(String pDeviceName/*, RecyclerInterface<StackInterface, StackRequest> pRecycler*/)
   {
     super(pDeviceName);
-    mRecycler = pRecycler;
+    //mRecycler = pRecycler;
   }
 
   protected LightSheetMicroscope mLightSheetMicroscope;
@@ -78,6 +78,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
             0);
 
 
+    /*
     if (lProcessor != null)
     {
       lProcessor.reInitializeEngine();
@@ -93,15 +94,15 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
                                                   pFileStackSinkInterface,
                                                   mRecycler,
                                                   mChannelName), true);
-        /*lProcessor.getEngine()
+        lProcessor.getEngine()
                   .addTask(new SaveImageStackTask(mImageKeyToSave,
                                                   mImageKeyToSave + "-saved",
                                                   pFileStackSinkInterface,
                                                   mRecycler,
-                                                  mChannelName), false);*/
+                                                  mChannelName), false);
         lProcessor.getEngine().addTask(new ResetFastFusionEngineTask(mImageKeyToSave + "-saved"));
       }
-    }
+    }*/
   }
 
   protected void goToInitialPosition(LightSheetMicroscope lLightsheetMicroscope,
@@ -138,6 +139,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
     lQueue.addVoxelDimMetaData(lLightsheetMicroscope, mCurrentState.getStackZStepVariable().get().doubleValue());
   }
 
+  /*
   @Deprecated
   protected void handleImageFromCameras(long pTimepoint) {
     System.out.print("handleImageFromCameras " +pTimepoint );
@@ -178,6 +180,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
       }
     }
   }
+  */
 
   /*
   Pair<AbstractAcquistionScheduler, Long> mLock = null;

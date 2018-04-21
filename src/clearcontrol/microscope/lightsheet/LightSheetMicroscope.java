@@ -19,6 +19,7 @@ import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.imaging.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.DataWarehouseResetScheduler;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 
 /**
@@ -61,6 +62,12 @@ public class LightSheetMicroscope extends
                                                             this,
                                                             pStackFusionContext);
     addDevice(0, mStackFusionProcessor);
+
+    DataWarehouseResetScheduler lDataWarehouseResetScheduler = new DataWarehouseResetScheduler();
+    lDataWarehouseResetScheduler.setMicroscope(this);
+    lDataWarehouseResetScheduler.initialize();
+    addDevice(0, lDataWarehouseResetScheduler);
+
 /*    mStackProcessingPipeline.addStackProcessor(mStackFusionProcessor,
                                                "StackFusion",
                                                32,

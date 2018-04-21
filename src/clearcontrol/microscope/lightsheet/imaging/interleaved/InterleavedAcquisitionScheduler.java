@@ -35,9 +35,9 @@ public class InterleavedAcquisitionScheduler extends
   /**
    * INstanciates a virtual device with a given name
    */
-  public InterleavedAcquisitionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
+  public InterleavedAcquisitionScheduler()
   {
-    super("Acquisition: Interleaved", pRecycler);
+    super("Acquisition: Interleaved");
     mChannelName = "interleaved";
   }
 

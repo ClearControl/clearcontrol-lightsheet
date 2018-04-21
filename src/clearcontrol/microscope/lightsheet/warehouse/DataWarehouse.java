@@ -20,5 +20,19 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
     return value;
   }
 
+  public <DCI extends DataContainerInterface> DCI getOldestContainer(Class pClass) {
+    long lMinimumTimePoint = Long.MAX_VALUE;
+    DCI lOldestContainer = null;
+    for (String key : keySet()) {
+      DataContainerInterface lContainer = get(key);
+      if (lContainer.getClass() == pClass && lContainer.getTimepoint() < lMinimumTimePoint) {
+        lMinimumTimePoint = lContainer.getTimepoint();
+        lOldestContainer = (DCI)lContainer;
+      }
+    }
+
+    return lOldestContainer;
+  }
+
 
 }

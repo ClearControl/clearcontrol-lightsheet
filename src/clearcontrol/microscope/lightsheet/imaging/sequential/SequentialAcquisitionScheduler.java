@@ -38,14 +38,14 @@ public class SequentialAcquisitionScheduler extends
    * INstanciates a virtual device with a given name
    *
    */
-  public SequentialAcquisitionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
+  public SequentialAcquisitionScheduler()
   {
-    super("Acquisition: Sequential", pRecycler);
+    super("Acquisition: Sequential");
     mChannelName = "sequential";
   }
 
-  public SequentialAcquisitionScheduler(String pName, RecyclerInterface<StackInterface, StackRequest> pRecycler) {
-    super(pName, pRecycler);
+  public SequentialAcquisitionScheduler(String pName) {
+    super(pName);
   }
 
 
