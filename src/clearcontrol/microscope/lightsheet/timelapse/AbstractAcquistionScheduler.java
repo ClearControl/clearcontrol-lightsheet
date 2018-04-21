@@ -93,12 +93,12 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
                                                   pFileStackSinkInterface,
                                                   mRecycler,
                                                   mChannelName), true);
-        lProcessor.getEngine()
+        /*lProcessor.getEngine()
                   .addTask(new SaveImageStackTask(mImageKeyToSave,
                                                   mImageKeyToSave + "-saved",
                                                   pFileStackSinkInterface,
                                                   mRecycler,
-                                                  mChannelName), false);
+                                                  mChannelName), false);*/
         lProcessor.getEngine().addTask(new ResetFastFusionEngineTask(mImageKeyToSave + "-saved"));
       }
     }

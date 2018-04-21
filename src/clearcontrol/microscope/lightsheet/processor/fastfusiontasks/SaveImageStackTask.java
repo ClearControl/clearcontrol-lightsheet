@@ -63,10 +63,11 @@ public class SaveImageStackTask extends TaskBase
                                    TimeUnit.SECONDS,
                                    StackRequest.build(lFusedImage.getDimensions()));
 
-
       if (pFastFusionEngine instanceof LightSheetFastFusionEngine)
       {
-        LightSheetFastFusionEngine lLightSheetFastFusionEngine = (LightSheetFastFusionEngine)pFastFusionEngine;
+        LightSheetFastFusionEngine
+            lLightSheetFastFusionEngine =
+            (LightSheetFastFusionEngine) pFastFusionEngine;
 
         lFusedStack.setMetaData(lLightSheetFastFusionEngine.getFusedMetaData());
         lFusedStack.getMetaData().addEntry(MetaDataFusion.Fused, true);
@@ -75,31 +76,36 @@ public class SaveImageStackTask extends TaskBase
         lFusedStack.getMetaData().addEntry(MetaDataChannel.Channel,
                                            pChannel);
       */
-      lFusedStack.getMetaData().removeAllEntries(MetaDataView.class);
-      lFusedStack.getMetaData()
-                 .removeAllEntries(MetaDataViewFlags.class);
-      lFusedStack.getMetaData().removeEntry(MetaDataOrdinals.Index);
-
-      info("Resulting fused stack metadata:"
-           + lFusedStack.getMetaData());
-
-      lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
-
-      if (mSinkInterface != null)
+      if (lFusedStack.getMetaData().getValue(MetaDataOrdinals.Index) != null) // by checking this, we can ensure that stacks are not saved twice
       {
-        ElapsedTime.measureForceOutput("FastFuse stack saving",
-                                       () -> mSinkInterface.appendStack(
-                                           mChannel,
-                                           lFusedStack));
-      } else {
-        warning("Target folder for saving not set. Skipping.");
+        lFusedStack.getMetaData().removeAllEntries(MetaDataView.class);
+        lFusedStack.getMetaData().removeAllEntries(MetaDataViewFlags.class);
+        lFusedStack.getMetaData().removeEntry(MetaDataOrdinals.Index);
+
+        info("Resulting fused stack metadata:" + lFusedStack.getMetaData());
+
+        lFusedImage.writeTo(lFusedStack.getContiguousMemory(), true);
+
+        if (mSinkInterface != null)
+        {
+          ElapsedTime.measureForceOutput("FastFuse stack saving",
+                                         () -> mSinkInterface.appendStack(
+                                             mChannel,
+                                             lFusedStack));
+        }
+        else
+        {
+          warning("Target folder for saving not set. Skipping.");
+        }
+        //}
+        MutablePair<Boolean, ClearCLImage>
+            lDestImageAndFlag =
+            pFastFusionEngine.ensureImageAllocated(
+                mAfterDoneImageFlagKey,
+                lFusedImage.getChannelDataType(),
+                new long[] { 1, 1, 1 });
+        lDestImageAndFlag.setLeft(true);
       }
-      MutablePair<Boolean, ClearCLImage>
-          lDestImageAndFlag =
-          pFastFusionEngine.ensureImageAllocated(mAfterDoneImageFlagKey,
-                                                 lFusedImage.getChannelDataType(),
-                                                 new long[] {1,1,1});
-      lDestImageAndFlag.setLeft(true);
 
       return true;
     }

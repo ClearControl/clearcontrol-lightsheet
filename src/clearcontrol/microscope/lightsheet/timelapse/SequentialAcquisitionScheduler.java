@@ -117,13 +117,12 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
           mLightSheetMicroscope.playQueueAndWait(lQueueForView,
                                                  mTimelapse.getTimeOut(),
                                                  TimeUnit.SECONDS);
-          if (!lFastFusionEngineInitialized) {
-            lFastFusionEngineInitialized = true;
-            // todo: check if the engine is still running
 
-            initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get());
+          if (l == lNumberOfLightSheets - 1 || this instanceof SingleViewAcquisitionScheduler) // dirty workaround
+          {
+            initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable()
+                                            .get());
           }
-
           handleImageFromCameras(pTimePoint);
         }
         catch (InterruptedException e)
