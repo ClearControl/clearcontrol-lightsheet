@@ -2,8 +2,13 @@ package clearcontrol.microscope.lightsheet.warehouse;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
+import clearcontrol.microscope.lightsheet.warehouse.containers.RecyclableContainer;
+import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.StackRequest;
+import coremem.recycling.RecyclerInterface;
 
 import java.util.HashMap;
+import java.util.Stack;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
@@ -12,6 +17,12 @@ import java.util.HashMap;
 public class DataWarehouse extends HashMap<String, DataContainerInterface> implements
                                                            LoggingFeature
 {
+  RecyclerInterface<StackInterface, StackRequest> mRecycler;
+
+  public DataWarehouse (RecyclerInterface<StackInterface, StackRequest> pRecycler) {
+    mRecycler = pRecycler;
+  }
+
   @Override
   public DataContainerInterface put(String key, DataContainerInterface value) {
     if (containsKey(key)) {
@@ -35,5 +46,41 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
     return lOldestContainer;
   }
 
+  public void dispostContainer(String key) {
+    disposeContainer(get(key));
+  }
 
+  public void disposeContainer(DataContainerInterface pContainer) {
+    if (pContainer instanceof RecyclableContainer) {
+      ((RecyclableContainer) pContainer).recycle(mRecycler);
+    } else {
+      pContainer.dispose();
+    }
+
+    for (String key : keySet())
+    {
+      DataContainerInterface lContainer = get(key);
+      if (lContainer == pContainer)
+      {
+        remove(key);
+        return;
+      }
+    }
+  }
+
+  @Override public void clear()
+  {
+    for (DataContainerInterface lContainer : values()) {
+      if (lContainer instanceof RecyclableContainer) {
+        ((RecyclableContainer) lContainer).recycle(mRecycler);
+      } else {
+        lContainer.dispose();
+      }
+    }
+    super.clear();
+  }
+
+  public RecyclerInterface<StackInterface, StackRequest> getRecycler() {
+    return mRecycler;
+  }
 }

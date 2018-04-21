@@ -21,7 +21,7 @@ public class WriteSequentialRawDataToDiscScheduler  extends
   }
 
   private static String[] listKeys(int pNumberOfDetectionArms, int pNumberOfLightSheets) {
-    String[] result = new String[pNumberOfDetectionArms];
+    String[] result = new String[pNumberOfDetectionArms * pNumberOfLightSheets];
     int count = 0;
     for (int l = 0; l < pNumberOfLightSheets; l++)
     {

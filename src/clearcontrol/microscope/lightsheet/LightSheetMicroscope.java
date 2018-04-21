@@ -20,7 +20,11 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.imaging.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouseResetScheduler;
+import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
+import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.StackRequest;
+import coremem.recycling.RecyclerInterface;
 
 /**
  * Lightsheet microscope class
@@ -34,7 +38,7 @@ public class LightSheetMicroscope extends
 {
   private LightSheetFastFusionProcessor mStackFusionProcessor;
   private LiveStatisticsProcessor mLiveStatisticsProcessor;
-  private DataWarehouse mDataWarehouse = new DataWarehouse();
+  private DataWarehouse mDataWarehouse;
 
   /**
    * Instantiates a lightsheet microscope with a given name.
@@ -62,6 +66,15 @@ public class LightSheetMicroscope extends
                                                             this,
                                                             pStackFusionContext);
     addDevice(0, mStackFusionProcessor);
+
+
+    StackRecyclerManager
+        lStackRecyclerManager = getDevice(StackRecyclerManager.class, 0);
+    RecyclerInterface<StackInterface, StackRequest>
+        lRecycler = lStackRecyclerManager.getRecycler("StackFusion",
+                                                      32,
+                                                      32);
+    mDataWarehouse = new DataWarehouse(lRecycler);
 
     DataWarehouseResetScheduler lDataWarehouseResetScheduler = new DataWarehouseResetScheduler();
     lDataWarehouseResetScheduler.setMicroscope(this);

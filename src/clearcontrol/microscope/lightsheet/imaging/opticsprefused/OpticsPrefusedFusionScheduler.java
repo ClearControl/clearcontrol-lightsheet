@@ -20,11 +20,10 @@ public class OpticsPrefusedFusionScheduler extends FusionScheduler implements
   /**
    * INstanciates a virtual device with a given name
    *
-   * @param pRecycler
    */
-  public OpticsPrefusedFusionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
+  public OpticsPrefusedFusionScheduler()
   {
-    super("Fusion: Optics prefused", pRecycler);
+    super("Fusion: Optics prefused");
   }
 
 

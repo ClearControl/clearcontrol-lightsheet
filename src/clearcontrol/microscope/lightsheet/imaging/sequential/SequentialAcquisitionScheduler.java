@@ -1,10 +1,13 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
+import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
@@ -63,6 +66,10 @@ public class SequentialAcquisitionScheduler extends
     int lNumberOfLightSheets = mLightSheetMicroscope.getNumberOfLightSheets();
 
     HashMap<Integer, LightSheetMicroscopeQueue> lViewToQueueMap = new HashMap<>();
+
+    SequentialImageDataContainer
+        lContainer = new SequentialImageDataContainer(mLightSheetMicroscope);
+
 
     // preparing queues:
     for (int l = 0; l < lNumberOfLightSheets; l++)
@@ -145,25 +152,26 @@ public class SequentialAcquisitionScheduler extends
           return false;
         }
 
-        SequentialImageDataContainer
-            lContainer = new SequentialImageDataContainer(mLightSheetMicroscope);
         for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
         {
           if (isCameraOn(d))
           {
-            lContainer.put("C" + d + "L" + l,
-                           mLightSheetMicroscope.getCameraStackVariable(
-                               d).get());
+            StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(
+                d).get();
+
+            putStackInContainer("C" + d + "L" + l, lStack, lContainer);
+
           }
         }
-
       }
     }
 
+    mLightSheetMicroscope.getDataWarehouse().put("sequential_raw_" + pTimePoint, lContainer);
 
 
     return true;
   }
+
 
   protected LightSheetMicroscopeQueue getQueueForSingleLightSheet(LightSheetAcquisitionStateInterface<?> pCurrentState,
                                                                   int pLightSheetIndex)
@@ -227,7 +235,7 @@ public class SequentialAcquisitionScheduler extends
             mCurrentState.getStackZLowVariable().get().doubleValue(),
             mCurrentState.getStackZLowVariable().get().doubleValue());
 
-
+/*
     for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
     {
       info("Light sheet " + l + " W: " + lQueue.getIW(l));
@@ -236,7 +244,7 @@ public class SequentialAcquisitionScheduler extends
     {
       info("Light sheet " + l + " H: " + lQueue.getIH(l));
     }
-
+*/
     lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
                             mTimelapse.getTimePointCounterVariable().get());
 

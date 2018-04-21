@@ -116,6 +116,7 @@ public class LightSheetFastFusionProcessor extends
   public synchronized StackInterface process(StackInterface pStack,
                                 RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
   {
+    info("forwarding " + pStack.getMetaData().getValue(MetaDataChannel.Channel));
     boolean lEngineNeedsInitialisation = false;
     if (mEngine == null)
     {
@@ -162,6 +163,7 @@ public class LightSheetFastFusionProcessor extends
       }
     }
 
+    info("Passing " + MetaDataView.getCxLyString(pStack.getMetaData()));
     mEngine.passStack(true, pStack);
 
     if (mEngine.getRegistrationTask() != null)

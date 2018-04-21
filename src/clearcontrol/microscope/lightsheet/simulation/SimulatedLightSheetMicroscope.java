@@ -357,13 +357,6 @@ public class SimulatedLightSheetMicroscope extends
 
     }
 
-    // make a recycler for acquisition devices:
-    StackRecyclerManager lStackRecyclerManager = getDevice(StackRecyclerManager.class, 0);
-    RecyclerInterface<StackInterface, StackRequest> lRecycler = lStackRecyclerManager.getRecycler("StackFusion",
-            32,
-            32);
-
-
     // Adding timelapse device:
     TimelapseInterface lTimelapse = addTimelapse();
     lTimelapse.getAdaptiveEngineOnVariable().set(false);
@@ -374,13 +367,13 @@ public class SimulatedLightSheetMicroscope extends
 
     if (getNumberOfLightSheets() > 1) {
       addDevice(0, new InterleavedAcquisitionScheduler());
-      addDevice(0, new InterleavedFusionScheduler(lRecycler));
+      addDevice(0, new InterleavedFusionScheduler());
       addDevice(0, new WriteInterleavedRawDataToDiscScheduler(getNumberOfDetectionArms()));
       addDevice(0, new WriteFusedImageToDiscScheduler("interleaved"));
 
       SequentialAcquisitionScheduler
           lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler();
-      SequentialFusionScheduler lSequentialFusionScheduler = new SequentialFusionScheduler(lRecycler);
+      SequentialFusionScheduler lSequentialFusionScheduler = new SequentialFusionScheduler();
       WriteFusedImageToDiscScheduler lWriteSequentialFusedImageToDiscScheduler = new WriteFusedImageToDiscScheduler("sequential");
       if (lTimelapse instanceof LightSheetTimelapse)
       {
@@ -394,7 +387,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
 
       addDevice(0, new OpticsPrefusedAcquisitionScheduler());
-      addDevice(0, new OpticsPrefusedFusionScheduler(lRecycler));
+      addDevice(0, new OpticsPrefusedFusionScheduler());
       addDevice(0, new WriteOpticsPrefusedRawDataToDiscScheduler(getNumberOfDetectionArms()));
       addDevice(0, new WriteFusedImageToDiscScheduler("opticsprefused"));
     }

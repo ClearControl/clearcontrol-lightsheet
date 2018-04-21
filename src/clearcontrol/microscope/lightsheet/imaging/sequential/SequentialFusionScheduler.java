@@ -19,11 +19,10 @@ public class SequentialFusionScheduler extends FusionScheduler implements
   /**
    * INstanciates a virtual device with a given name
    *
-   * @param pRecycler
    */
-  public SequentialFusionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
+  public SequentialFusionScheduler()
   {
-    super("Fusion: Sequential", pRecycler);
+    super("Fusion: Sequential");
   }
 
 

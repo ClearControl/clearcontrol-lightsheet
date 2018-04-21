@@ -20,11 +20,10 @@ public class InterleavedFusionScheduler extends FusionScheduler implements
   /**
    * INstanciates a virtual device with a given name
    *
-   * @param pRecycler
    */
-  public InterleavedFusionScheduler(RecyclerInterface<StackInterface, StackRequest> pRecycler)
+  public InterleavedFusionScheduler()
   {
-    super("Fusion: Interleaved", pRecycler);
+    super("Fusion: Interleaved");
   }
 
 

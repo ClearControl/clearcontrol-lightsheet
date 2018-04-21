@@ -164,9 +164,17 @@ public class InterleavedAcquisitionScheduler extends
     InterleavedImageDataContainer lContainer = new InterleavedImageDataContainer(mLightSheetMicroscope);
     for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
     {
-      lContainer.put("C" + d + "interleaved",
-          mLightSheetMicroscope.getCameraStackVariable(d).get());
+      /*lContainer.put("C" + d + "interleaved",
+          mLightSheetMicroscope.getCameraStackVariable(d).get());*/
+
+      StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(
+          d).get();
+
+      putStackInContainer("C" + d + "interleaved", lStack, lContainer);
     }
+
+
+    mLightSheetMicroscope.getDataWarehouse().put("interleaved_raw_" + pTimePoint, lContainer);
 
     return true;
   }

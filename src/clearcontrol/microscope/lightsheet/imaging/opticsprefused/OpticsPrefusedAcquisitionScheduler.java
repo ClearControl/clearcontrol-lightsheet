@@ -156,9 +156,17 @@ public class OpticsPrefusedAcquisitionScheduler extends
         lContainer = new OpticsPrefusedImageDataContainer(mLightSheetMicroscope);
     for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
     {
-      lContainer.put("C" + d + "opticsprefused",
-                     mLightSheetMicroscope.getCameraStackVariable(d).get());
+      /*lContainer.put("C" + d + "opticsprefused",
+                     mLightSheetMicroscope.getCameraStackVariable(d).get());*/
+      StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(
+          d).get();
+
+      putStackInContainer("C" + d + "opticsprefused", lStack, lContainer);
+
     }
+
+
+    mLightSheetMicroscope.getDataWarehouse().put("opticsprefused_raw_" + pTimePoint, lContainer);
 
     //initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get());
     //handleImageFromCameras(pTimePoint);
