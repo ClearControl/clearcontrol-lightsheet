@@ -83,4 +83,11 @@ public abstract class StackInterfaceContainer extends DataContainerBase implemen
   {
     return mData.entrySet();
   }
+
+  public void dispose() {
+    for (String key : keySet()) {
+      get(key).free();
+    }
+    clear();
+  }
 }

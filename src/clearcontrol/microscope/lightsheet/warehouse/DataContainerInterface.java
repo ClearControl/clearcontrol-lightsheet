@@ -12,4 +12,5 @@ public interface DataContainerInterface
 {
   public long getTimepoint();
   public boolean isDataComplete();
+  public void dispose();
 }
