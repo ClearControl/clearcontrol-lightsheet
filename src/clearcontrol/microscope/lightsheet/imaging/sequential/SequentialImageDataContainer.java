@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.timelapse.containers;
+package clearcontrol.microscope.lightsheet.imaging.sequential;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.StackInterfaceContainer;

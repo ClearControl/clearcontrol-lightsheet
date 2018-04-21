@@ -44,7 +44,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.Deforma
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.alpao.AlpaoDMDevice;
 import clearcontrol.microscope.lightsheet.state.gui.AcquisitionStateManagerPanel;
-import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.imaging.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.gui.LightSheetTimelapseToolbar;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.gui.TimelapsePanel;

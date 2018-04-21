@@ -1,14 +1,12 @@
 package clearcontrol.microscope.lightsheet.state.schedulers;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.io.InterpolatedAcquisitionStateWriter;
-import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
-import ij.IJ;
+import clearcontrol.microscope.lightsheet.imaging.LightSheetTimelapse;
 
 import java.io.File;
 

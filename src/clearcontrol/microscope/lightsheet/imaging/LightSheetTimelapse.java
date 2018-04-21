@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.timelapse;
+package clearcontrol.microscope.lightsheet.imaging;
 
 import java.io.BufferedWriter;
 import java.io.File;

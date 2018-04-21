@@ -31,6 +31,11 @@ import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpti
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.MeasureTimeScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
+import clearcontrol.microscope.lightsheet.imaging.*;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -38,7 +43,6 @@ import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterf
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateResetScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.InterpolatedAcquisitionStateLogScheduler;
-import clearcontrol.microscope.lightsheet.timelapse.*;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
@@ -361,7 +365,8 @@ public class SimulatedLightSheetMicroscope extends
 
     if (getNumberOfLightSheets() > 1) {
       addDevice(0, new InterleavedAcquisitionScheduler(lRecycler));
-      SequentialAcquisitionScheduler lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler(lRecycler);
+      SequentialAcquisitionScheduler
+          lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler(lRecycler);
       if (lTimelapse instanceof LightSheetTimelapse)
       {
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
@@ -374,7 +379,8 @@ public class SimulatedLightSheetMicroscope extends
 
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
       for (int l = 0; l < getNumberOfLightSheets(); l++) {
-        SingleViewAcquisitionScheduler lScheduler = new SingleViewAcquisitionScheduler(c, l, lRecycler);
+        SingleViewAcquisitionScheduler
+            lScheduler = new SingleViewAcquisitionScheduler(c, l, lRecycler);
         addDevice(0, lScheduler);
         if (lTimelapse instanceof LightSheetTimelapse && ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().size() == 0)
         {

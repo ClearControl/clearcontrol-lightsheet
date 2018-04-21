@@ -1,7 +1,8 @@
-package clearcontrol.microscope.lightsheet.timelapse;
+package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import coremem.recycling.RecyclerInterface;
@@ -10,7 +11,8 @@ import coremem.recycling.RecyclerInterface;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
-public class SingleViewAcquisitionScheduler extends SequentialAcquisitionScheduler implements
+public class SingleViewAcquisitionScheduler extends
+                                            SequentialAcquisitionScheduler implements
                                                                                 SchedulerInterface,
                                                                                 LoggingFeature
 {

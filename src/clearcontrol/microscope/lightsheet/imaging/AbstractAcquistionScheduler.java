@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.timelapse;
+package clearcontrol.microscope.lightsheet.imaging;
 
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;

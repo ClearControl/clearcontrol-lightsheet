@@ -1,13 +1,13 @@
-package clearcontrol.microscope.lightsheet.timelapse;
+package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionScheduler;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
-import clearcontrol.microscope.lightsheet.timelapse.containers.InterleavedImageDataContainer;
-import clearcontrol.microscope.lightsheet.timelapse.containers.OpticsPrefusedImageDataContainer;
+import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
@@ -25,7 +25,8 @@ import java.util.concurrent.TimeoutException;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
-public class OpticsPrefusedAcquisitionScheduler extends AbstractAcquistionScheduler implements
+public class OpticsPrefusedAcquisitionScheduler extends
+                                                AbstractAcquistionScheduler implements
                                                                                        SchedulerInterface,
                                                                                        LoggingFeature
 {
