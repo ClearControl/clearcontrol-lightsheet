@@ -6,6 +6,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
+import clearcontrol.microscope.lightsheet.timelapse.containers.InterleavedImageDataContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
@@ -155,8 +156,15 @@ public class InterleavedAcquisitionScheduler extends AbstractAcquistionScheduler
       return false;
     }
 
-    initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get());
-    handleImageFromCameras(pTimePoint);
+    // initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get());
+    // handleImageFromCameras(pTimePoint);
+
+    InterleavedImageDataContainer lContainer = new InterleavedImageDataContainer(mLightSheetMicroscope);
+    for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
+    {
+      lContainer.put("C" + d + "interleaved",
+          mLightSheetMicroscope.getCameraStackVariable(d).get());
+    }
 
     return true;
   }

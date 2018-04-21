@@ -6,6 +6,8 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
+import clearcontrol.microscope.lightsheet.timelapse.containers.InterleavedImageDataContainer;
+import clearcontrol.microscope.lightsheet.timelapse.containers.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
@@ -149,8 +151,16 @@ public class OpticsPrefusedAcquisitionScheduler extends AbstractAcquistionSchedu
       return false;
     }
 
-    initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get());
-    handleImageFromCameras(pTimePoint);
+    OpticsPrefusedImageDataContainer
+        lContainer = new OpticsPrefusedImageDataContainer(mLightSheetMicroscope);
+    for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
+    {
+      lContainer.put("C" + d + "opticsprefused",
+                     mLightSheetMicroscope.getCameraStackVariable(d).get());
+    }
+
+    //initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get());
+    //handleImageFromCameras(pTimePoint);
 
     return true;
   }

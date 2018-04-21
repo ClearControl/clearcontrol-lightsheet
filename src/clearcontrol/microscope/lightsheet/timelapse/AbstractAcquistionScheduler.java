@@ -138,6 +138,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
     lQueue.addVoxelDimMetaData(lLightsheetMicroscope, mCurrentState.getStackZStepVariable().get().doubleValue());
   }
 
+  @Deprecated
   protected void handleImageFromCameras(long pTimepoint) {
     System.out.print("handleImageFromCameras " +pTimepoint );
     final Object lLock = new Object();

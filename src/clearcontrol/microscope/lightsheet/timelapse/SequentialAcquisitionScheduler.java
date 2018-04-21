@@ -7,6 +7,8 @@ import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
+import clearcontrol.microscope.lightsheet.timelapse.containers.OpticsPrefusedImageDataContainer;
+import clearcontrol.microscope.lightsheet.timelapse.containers.SequentialImageDataContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
@@ -118,12 +120,13 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
                                                  mTimelapse.getTimeOut(),
                                                  TimeUnit.SECONDS);
 
+          /*
           if (l == lNumberOfLightSheets - 1 || this instanceof SingleViewAcquisitionScheduler) // dirty workaround
           {
             initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable()
                                             .get());
           }
-          handleImageFromCameras(pTimePoint);
+          handleImageFromCameras(pTimePoint);*/
         }
         catch (InterruptedException e)
         {
@@ -139,6 +142,18 @@ public class SequentialAcquisitionScheduler extends AbstractAcquistionScheduler 
         {
           e.printStackTrace();
           return false;
+        }
+
+        SequentialImageDataContainer
+            lContainer = new SequentialImageDataContainer(mLightSheetMicroscope);
+        for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
+        {
+          if (isCameraOn(d))
+          {
+            lContainer.put("C" + d + "L" + l,
+                           mLightSheetMicroscope.getCameraStackVariable(
+                               d).get());
+          }
         }
 
       }
