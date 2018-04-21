@@ -18,6 +18,7 @@ import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcesso
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 
 /**
@@ -32,6 +33,7 @@ public class LightSheetMicroscope extends
 {
   private LightSheetFastFusionProcessor mStackFusionProcessor;
   private LiveStatisticsProcessor mLiveStatisticsProcessor;
+  private DataWarehouse mDataWarehouse = new DataWarehouse();
 
   /**
    * Instantiates a lightsheet microscope with a given name.
@@ -346,6 +348,10 @@ public class LightSheetMicroscope extends
   public FutureBooleanList playQueue(LightSheetMicroscopeQueue pQueue)
   {
     return super.playQueue(pQueue);
+  }
+
+  public DataWarehouse getDataWarehouse() {
+    return mDataWarehouse;
   }
 
 }
