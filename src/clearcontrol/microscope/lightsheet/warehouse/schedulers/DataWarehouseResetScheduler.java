@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.warehouse;
+package clearcontrol.microscope.lightsheet.warehouse.schedulers;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -19,7 +19,7 @@ public class DataWarehouseResetScheduler extends SchedulerBase implements
    */
   public DataWarehouseResetScheduler()
   {
-    super("Memory: Reset data warehouse");
+    super("Memory: Reset memory (heap=0)");
   }
 
   @Override public boolean initialize()
