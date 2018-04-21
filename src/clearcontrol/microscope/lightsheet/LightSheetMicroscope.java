@@ -71,9 +71,9 @@ public class LightSheetMicroscope extends
     StackRecyclerManager
         lStackRecyclerManager = getDevice(StackRecyclerManager.class, 0);
     RecyclerInterface<StackInterface, StackRequest>
-        lRecycler = lStackRecyclerManager.getRecycler("StackFusion",
-                                                      32,
-                                                      32);
+        lRecycler = lStackRecyclerManager.getRecycler("warehouse",
+        128,
+                                                      128);
     mDataWarehouse = new DataWarehouse(lRecycler);
 
     DataWarehouseResetScheduler lDataWarehouseResetScheduler = new DataWarehouseResetScheduler();
