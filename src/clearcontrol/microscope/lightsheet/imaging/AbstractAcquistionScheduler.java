@@ -83,7 +83,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
 
     Variable<StackInterface>
         lStackCopyVariable = new Variable<StackInterface>("stackcopy", null);
-    ElapsedTime.measure("Copy stack (" + pKey + ") for container", () -> {
+    ElapsedTime.measureForceOutput("Copy stack (" + pKey + ") for container", () -> {
       lStackCopyVariable.set(
           lRecycler.getOrWait(1000, TimeUnit.SECONDS, StackRequest.build(pStack.getDimensions())));
 
