@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.warehouse;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 
 import java.util.HashMap;
 
@@ -25,7 +26,7 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
     DCI lOldestContainer = null;
     for (String key : keySet()) {
       DataContainerInterface lContainer = get(key);
-      if (lContainer.getClass() == pClass && lContainer.getTimepoint() < lMinimumTimePoint) {
+      if (pClass.isInstance(lContainer) && lContainer.getTimepoint() < lMinimumTimePoint) {
         lMinimumTimePoint = lContainer.getTimepoint();
         lOldestContainer = (DCI)lContainer;
       }

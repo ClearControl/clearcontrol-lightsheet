@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.imaging.interleaved;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
-import clearcontrol.microscope.lightsheet.processor.FusionScheduler;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusionScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;

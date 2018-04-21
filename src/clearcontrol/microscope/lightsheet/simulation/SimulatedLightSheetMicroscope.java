@@ -34,11 +34,16 @@ import clearcontrol.microscope.lightsheet.component.scheduler.implementations.Pa
 import clearcontrol.microscope.lightsheet.imaging.*;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.WriteInterleavedRawDataToDiscScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedFusionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.opticsprefused.WriteOpticsPrefusedRawDataToDiscScheduler;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialFusionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.sequential.WriteSequentialRawDataToDiscScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageToDiscScheduler;
+import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageToDiscScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -46,6 +51,7 @@ import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterf
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateResetScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.InterpolatedAcquisitionStateLogScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.DataWarehouseResetScheduler;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
@@ -369,19 +375,28 @@ public class SimulatedLightSheetMicroscope extends
     if (getNumberOfLightSheets() > 1) {
       addDevice(0, new InterleavedAcquisitionScheduler());
       addDevice(0, new InterleavedFusionScheduler(lRecycler));
+      addDevice(0, new WriteInterleavedRawDataToDiscScheduler(getNumberOfDetectionArms()));
+      addDevice(0, new WriteFusedImageToDiscScheduler("interleaved"));
+
       SequentialAcquisitionScheduler
           lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler();
       SequentialFusionScheduler lSequentialFusionScheduler = new SequentialFusionScheduler(lRecycler);
-
+      WriteFusedImageToDiscScheduler lWriteSequentialFusedImageToDiscScheduler = new WriteFusedImageToDiscScheduler("sequential");
       if (lTimelapse instanceof LightSheetTimelapse)
       {
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialFusionScheduler);
+        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSequentialFusedImageToDiscScheduler);
       }
-
       addDevice(0, lSequentialAcquisitionScheduler);
+      addDevice(0, lSequentialFusionScheduler);
+      addDevice(0, new WriteSequentialRawDataToDiscScheduler(getNumberOfDetectionArms(), getNumberOfLightSheets()));
+      addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
+
       addDevice(0, new OpticsPrefusedAcquisitionScheduler());
       addDevice(0, new OpticsPrefusedFusionScheduler(lRecycler));
+      addDevice(0, new WriteOpticsPrefusedRawDataToDiscScheduler(getNumberOfDetectionArms()));
+      addDevice(0, new WriteFusedImageToDiscScheduler("opticsprefused"));
     }
 
 
@@ -393,9 +408,20 @@ public class SimulatedLightSheetMicroscope extends
         if (lTimelapse instanceof LightSheetTimelapse && ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().size() == 0)
         {
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lScheduler);
+          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new WriteSingleLightSheetImageToDiscScheduler(c, l));
         }
+        addDevice(0, new WriteSingleLightSheetImageToDiscScheduler(c, l));
+
       }
     }
+
+    DataWarehouseResetScheduler lDataWarehouseResetScheduler = new DataWarehouseResetScheduler();
+    if (lTimelapse instanceof LightSheetTimelapse)
+    {
+      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers()
+                                        .add(lDataWarehouseResetScheduler);
+    }
+    addDevice(0, lDataWarehouseResetScheduler);
 
 
     addDevice(0, new PauseScheduler());

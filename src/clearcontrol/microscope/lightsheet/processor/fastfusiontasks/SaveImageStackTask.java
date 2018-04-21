@@ -23,9 +23,12 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Deprecated: This functionaliy has been reimplemented as SaveContainerScheduler
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * March 2018
  */
+@Deprecated
 public class SaveImageStackTask extends TaskBase
     implements TaskInterface, LoggingFeature
 {

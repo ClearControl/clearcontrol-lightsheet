@@ -1,17 +1,9 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
-import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.core.variable.Variable;
-import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
-import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionScheduler;
-import clearcontrol.microscope.lightsheet.processor.FusedImageDataContainer;
-import clearcontrol.microscope.lightsheet.processor.FusionScheduler;
-import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusionScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
-import clearcontrol.microscope.lightsheet.warehouse.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import coremem.recycling.RecyclerInterface;

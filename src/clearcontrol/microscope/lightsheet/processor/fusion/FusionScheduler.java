@@ -1,11 +1,12 @@
-package clearcontrol.microscope.lightsheet.processor;
+package clearcontrol.microscope.lightsheet.processor.fusion;
 
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
-import clearcontrol.microscope.lightsheet.warehouse.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import coremem.recycling.RecyclerInterface;
@@ -85,7 +86,8 @@ public abstract class FusionScheduler extends SchedulerBase implements
 
   protected void storeFusedContainer(StackInterface lFusedStack) {
     DataWarehouse lDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
-    FusedImageDataContainer lFusedContainer = new FusedImageDataContainer(mLightSheetMicroscope);
+    FusedImageDataContainer
+        lFusedContainer = new FusedImageDataContainer(mLightSheetMicroscope);
     lFusedContainer.put("fused", lFusedStack);
     lDataWarehouse.put("fused", lFusedContainer);
   }

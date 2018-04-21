@@ -6,9 +6,13 @@ import fastfuse.tasks.TaskBase;
 import fastfuse.tasks.TaskInterface;
 
 /**
+ * Deprecated: As stack saving dependent on what has been imaged is no
+ * longer a FastFuseTask, resetting the engine is no longer needed
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * March 2018
  */
+@Deprecated
 public class ResetFastFusionEngineTask extends TaskBase
     implements TaskInterface, LoggingFeature
 {

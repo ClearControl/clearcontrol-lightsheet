@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.warehouse;
+package clearcontrol.microscope.lightsheet.warehouse.containers;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.stack.StackInterface;

@@ -1,7 +1,7 @@
-package clearcontrol.microscope.lightsheet.processor;
+package clearcontrol.microscope.lightsheet.processor.fusion;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.warehouse.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
