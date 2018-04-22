@@ -408,6 +408,8 @@ public class SimulatedLightSheetMicroscope extends
     {
       ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers()
                                         .add(getDevice(DropOldestStackInterfaceContainerScheduler.class, 0));
+      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers()
+                                        .add(getDevice(DropOldestStackInterfaceContainerScheduler.class, 0));
     }
 
 
