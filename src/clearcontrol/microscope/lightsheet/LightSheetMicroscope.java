@@ -28,6 +28,8 @@ import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import coremem.recycling.RecyclerInterface;
 
+import java.util.ArrayList;
+
 /**
  * Lightsheet microscope class
  *
@@ -378,5 +380,36 @@ public class LightSheetMicroscope extends
   public DataWarehouse getDataWarehouse() {
     return mDataWarehouse;
   }
+
+  public SchedulerInterface getSchedulerDevice(String... pMustContainStrings) {
+    return getDevice(SchedulerInterface.class, 0, pMustContainStrings);
+  }
+
+  public <O extends Object> O getDevice(Class<O> pClass, int pDeviceIndex, String ... pMustContainStrings)
+  {
+    int lDeviceIndex = 0;
+    ArrayList<O>
+        lDeviceList = getDevices(pClass);
+    for (O lDevice : lDeviceList) {
+      String lName = lDevice.toString();
+      boolean lNameMatches = true;
+      for (String lMustContainString : pMustContainStrings) {
+        lNameMatches = lName.contains(lMustContainString);
+        if (!lNameMatches) {
+          break;
+        }
+      }
+      if (lNameMatches) {
+        if (lDeviceIndex == pDeviceIndex)
+        {
+          return lDevice;
+        } else {
+          lDeviceIndex++;
+        }
+      }
+    }
+    return null;
+  }
+
 
 }
