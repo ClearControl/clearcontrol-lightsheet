@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
 import clearcontrol.devices.lasers.schedulers.LaserOnOffScheduler;
 import clearcontrol.devices.lasers.schedulers.LaserPowerScheduler;
-import clearcontrol.microscope.lightsheet.imaging.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import javafx.application.Application;
 import javafx.stage.Stage;

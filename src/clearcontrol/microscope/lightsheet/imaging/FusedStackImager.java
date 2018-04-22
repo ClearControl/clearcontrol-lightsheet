@@ -12,6 +12,7 @@ import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcesso
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionScheduler;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
 
@@ -48,7 +49,8 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
 
     // set the imaging state
     InterpolatedAcquisitionState lCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-    LightSheetTimelapse lTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
+    LightSheetTimelapse
+        lTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
     lCurrentState.getExposureInSecondsVariable().set(mExposureTimeInSeconds);
     lCurrentState.getStackZLowVariable().set(mMinZ);
     lCurrentState.getStackZHighVariable().set(mMaxZ);

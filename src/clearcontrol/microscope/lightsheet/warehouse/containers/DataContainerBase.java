@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.warehouse.containers;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.imaging.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

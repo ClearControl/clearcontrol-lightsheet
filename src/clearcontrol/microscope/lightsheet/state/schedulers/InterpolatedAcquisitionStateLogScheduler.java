@@ -6,7 +6,7 @@ import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.io.InterpolatedAcquisitionStateWriter;
-import clearcontrol.microscope.lightsheet.imaging.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 
 import java.io.File;
 

@@ -14,7 +14,7 @@ import clearcontrol.microscope.MicroscopeInterface;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStatePanel;
-import clearcontrol.microscope.lightsheet.imaging.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.timelapse.gui.TimelapseToolbar;
 
 import java.util.ArrayList;

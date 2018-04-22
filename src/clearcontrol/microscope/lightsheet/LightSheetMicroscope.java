@@ -18,7 +18,7 @@ import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.imaging.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;

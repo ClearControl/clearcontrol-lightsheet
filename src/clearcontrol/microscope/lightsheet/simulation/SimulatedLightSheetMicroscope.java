@@ -31,7 +31,6 @@ import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpti
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.MeasureTimeScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
-import clearcontrol.microscope.lightsheet.imaging.*;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.WriteInterleavedRawDataToDiscScheduler;
@@ -51,7 +50,7 @@ import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterf
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateResetScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.InterpolatedAcquisitionStateLogScheduler;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
