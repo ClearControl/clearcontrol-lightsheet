@@ -457,11 +457,20 @@ public class LightSheetTimelapse extends TimelapseBase implements
     return mListOfActivatedSchedulers;
   }
 
-  public ArrayList<SchedulerInterface> getListOfAvailableSchedulers()
+  public ArrayList<SchedulerInterface> getListOfAvailableSchedulers(String... pMustContainStrings)
   {
     ArrayList<SchedulerInterface> lListOfAvailabeSchedulers = new ArrayList<>();
     for (SchedulerInterface lScheduler : mLightSheetMicroscope.getDevices(SchedulerInterface.class)) {
-      lListOfAvailabeSchedulers.add(lScheduler);
+      boolean lNamePatternMatches = true;
+      for (String part : pMustContainStrings) {
+        if (!lScheduler.toString().contains(part)) {
+          lNamePatternMatches = false;
+          break;
+        }
+      }
+      if (lNamePatternMatches) {
+        lListOfAvailabeSchedulers.add(lScheduler);
+      }
     }
 
     lListOfAvailabeSchedulers.sort(new Comparator<SchedulerInterface>()
