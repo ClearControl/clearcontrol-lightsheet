@@ -1,10 +1,18 @@
 package clearcontrol.microscope.lightsheet.timelapse.gui;
 
+import clearcontrol.core.configuration.MachineConfiguration;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FWriter;
+import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleReader;
+import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -16,7 +24,9 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStatePanel;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.timelapse.gui.TimelapseToolbar;
+import org.ejml.data.DenseMatrix64F;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -26,6 +36,13 @@ import java.util.ArrayList;
  */
 public class LightSheetTimelapseToolbar extends TimelapseToolbar
 {
+  final LightSheetTimelapse mLightSheetTimelapse;
+
+
+  private File mProgramTemplateDirectory =
+      MachineConfiguration.get()
+                          .getFolder("ProgramTemplates");
+
   /**
    * Instanciates a lightsheet timelapse toolbar.
    * 
@@ -35,6 +52,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
   public LightSheetTimelapseToolbar(LightSheetTimelapse pLightSheetTimelapse)
   {
     super(pLightSheetTimelapse);
+    mLightSheetTimelapse = pLightSheetTimelapse;
 
     {
       Separator lSeparator = new Separator();
@@ -93,8 +111,6 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       lListView.setMinWidth(300);
 
       lSchedulerChecklistGridPane.add(lListView, 0, lRow, 1, lFilters.length);
-
-
 
       {
         Button lMoveUpButton = new Button("^");
@@ -156,6 +172,79 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         lSchedulerChecklistGridPane.add(lMinusButton, 1, lRow);
         lRow++;
       }
+
+      lRow = lFilters.length + 1;
+      {
+        ComboBox lExistingScheduleTemplates;
+        {
+          // load
+          lExistingScheduleTemplates = new ComboBox(
+              listExistingSchedulerTemplateFiles());
+          lSchedulerChecklistGridPane.add(lExistingScheduleTemplates, 0, lRow);
+
+          Button lLoadScheduleTemplateBytton = new Button("Load");
+          lLoadScheduleTemplateBytton.setMaxWidth(Double.MAX_VALUE);
+          lLoadScheduleTemplateBytton.setOnAction((e) -> {
+            try
+            {
+              mLightSheetTimelapse.getListOfActivatedSchedulers().clear();
+              new ScheduleReader(lSchedulerList,
+                                 (LightSheetMicroscope) mLightSheetTimelapse.getMicroscope(), getFile(lExistingScheduleTemplates.getValue().toString())).read();
+              lListView.setItems(FXCollections.observableArrayList(
+                  lSchedulerList));
+            }
+            catch (Exception e1)
+            {
+              e1.printStackTrace();
+            }
+          });
+
+          lSchedulerChecklistGridPane.add(lLoadScheduleTemplateBytton, 1, lRow);
+          lRow++;
+
+        }
+
+        {
+          // save
+          Variable<String>
+              lFileNameVariable = new Variable<String>("filename", "Program");
+
+          TextField lFileNameTextField =
+              new TextField(lFileNameVariable.get());
+          lFileNameTextField.setMaxWidth(Double.MAX_VALUE);
+          lFileNameTextField.textProperty()
+                            .addListener((obs, o, n) -> {
+                              String lName = n.trim();
+                              if (!lName.isEmpty())
+                                lFileNameVariable.set(lName);
+                            });
+          lSchedulerChecklistGridPane.add(lFileNameTextField, 0, lRow);
+
+          Button lSaveScheduleButton = new Button("Save");
+          lSaveScheduleButton.setAlignment(Pos.CENTER);
+          lSaveScheduleButton.setMaxWidth(Double.MAX_VALUE);
+          lSaveScheduleButton.setOnAction((e) -> {
+            try
+            {
+              new ScheduleWriter(mLightSheetTimelapse.getListOfActivatedSchedulers(), getFile(lFileNameVariable.get())).write();
+              lExistingScheduleTemplates.setItems(listExistingSchedulerTemplateFiles());
+            }
+            catch (Exception e1)
+            {
+              e1.printStackTrace();
+            }
+          });
+          GridPane.setColumnSpan(lSaveScheduleButton, 1);
+          lSchedulerChecklistGridPane.add(lSaveScheduleButton, 1, lRow);
+          lRow++;
+        }
+
+      }
+
+
+
+
+
 
       lRow = 0;
       {
@@ -349,5 +438,36 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
     }
 
   }
+
+  private ObservableList<String> listExistingSchedulerTemplateFiles()
+  {
+    ArrayList<String> filenames = getScheduleTemplateNames();
+    ObservableList<String> list =     FXCollections.observableArrayList(filenames);
+    return list;
+  }
+
+
+  private File getFile(String pName)
+  {
+    return new File(mProgramTemplateDirectory, pName + ".txt");
+  }
+
+  ArrayList<String> mExistingTemplateFileList = new ArrayList<String>();
+  private ArrayList<String> getScheduleTemplateNames() {
+    File folder = mProgramTemplateDirectory;
+
+    mExistingTemplateFileList.clear();
+    for (File file : folder.listFiles()) {
+      if (!file.isDirectory() && file.getAbsolutePath().endsWith(".txt")) {
+        String fileName = file.getName();
+        fileName = fileName.substring(0, fileName.length() - 4);
+
+        mExistingTemplateFileList.add(fileName);
+      }
+    }
+
+    return mExistingTemplateFileList;
+  }
+
 
 }
