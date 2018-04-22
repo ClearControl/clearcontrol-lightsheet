@@ -23,6 +23,24 @@ import java.util.concurrent.TimeoutException;
 
 
 /**
+ * This scheduler acquires an image stack per camera where every slice
+ * is imaged several times for each light sheet. A stack might contain
+ * slices like:
+ *
+ * C0L0Z0
+ * C0L1Z0
+ * C0L2Z0
+ * C0L3Z0
+ * C0L0Z1
+ * C0L1Z1
+ * C0L2Z1
+ * C0L3Z1
+ * ...
+ *
+ * The image stacks are stored in the DataWarehouse in a
+ * InterleavedImageDataContainer with keys like CXinterleaved with X
+ * representing the camera number.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
@@ -105,7 +123,6 @@ public class InterleavedAcquisitionScheduler extends
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
 
-    //lQueue.setTransitionTime(0.1);
     lQueue.setTransitionTime(0.5);
     lQueue.setFinalisationTime(0.005);
 
@@ -158,22 +175,15 @@ public class InterleavedAcquisitionScheduler extends
       return false;
     }
 
-    // initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get());
-    // handleImageFromCameras(pTimePoint);
-
+    // Store results in the DataWarehouse
     InterleavedImageDataContainer lContainer = new InterleavedImageDataContainer(mLightSheetMicroscope);
     for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
     {
-      /*lContainer.put("C" + d + "interleaved",
-          mLightSheetMicroscope.getCameraStackVariable(d).get());*/
-
       StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(
           d).get();
 
       putStackInContainer("C" + d + "interleaved", lStack, lContainer);
     }
-
-
     mLightSheetMicroscope.getDataWarehouse().put("interleaved_raw_" + pTimePoint, lContainer);
 
     return true;

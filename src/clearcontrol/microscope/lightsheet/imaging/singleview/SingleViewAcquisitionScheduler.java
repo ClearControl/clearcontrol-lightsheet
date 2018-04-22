@@ -8,6 +8,13 @@ import clearcontrol.stack.StackRequest;
 import coremem.recycling.RecyclerInterface;
 
 /**
+ * This scheduler acquires a single image stack for a defined camera
+ * and light sheet.
+ * The image stacks are stored in the DataWarehouse in
+ * an SingleLightSheetImageDataContainer with a key like:
+ *
+ * C0L0
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */

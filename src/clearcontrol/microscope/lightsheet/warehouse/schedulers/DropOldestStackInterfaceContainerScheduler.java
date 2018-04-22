@@ -8,6 +8,9 @@ import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
+ * This scheduler takes the oldest StackInterfaceContainer from the
+ * DataWarehouse and recycles it. Its memory is freed then.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */

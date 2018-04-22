@@ -22,6 +22,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * This scheduler acquires an image stack per camera where all light
+ * sheets are on. The image stacks are stored in the DataWarehouse in
+ * an OpticsPrefusedImageDataContainer with keys like CXopticsprefused
+ * with X representing the camera number.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
@@ -100,7 +105,6 @@ public class OpticsPrefusedAcquisitionScheduler extends
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
 
-    //lQueue.setTransitionTime(0.1);
     lQueue.setTransitionTime(0.5);
     lQueue.setFinalisationTime(0.005);
 
@@ -152,24 +156,16 @@ public class OpticsPrefusedAcquisitionScheduler extends
       return false;
     }
 
+    // store resulting stacks in the DataWarehouse
     OpticsPrefusedImageDataContainer
         lContainer = new OpticsPrefusedImageDataContainer(mLightSheetMicroscope);
     for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
     {
-      /*lContainer.put("C" + d + "opticsprefused",
-                     mLightSheetMicroscope.getCameraStackVariable(d).get());*/
       StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(
           d).get();
-
       putStackInContainer("C" + d + "opticsprefused", lStack, lContainer);
-
     }
-
-
     mLightSheetMicroscope.getDataWarehouse().put("opticsprefused_raw_" + pTimePoint, lContainer);
-
-    //initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable().get());
-    //handleImageFromCameras(pTimePoint);
 
     return true;
   }

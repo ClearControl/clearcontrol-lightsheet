@@ -4,6 +4,13 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
+ * This container contains the raw images resulting from optics prefused
+ * acquisition. For example for a microscope with two cameras, the
+ * stack have these keys:
+ *
+ * C0opticsprefused
+ * C1opticsprefused
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */

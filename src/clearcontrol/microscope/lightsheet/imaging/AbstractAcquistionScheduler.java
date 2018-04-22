@@ -20,6 +20,9 @@ import coremem.recycling.RecyclerInterface;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * This class contains generalised methods for all AcquisitionSchedulers
+ *
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
@@ -32,7 +35,6 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
   protected String mChannelName = "default";
 
   protected StackInterface mLastFusedStack;
-  //RecyclerInterface<StackInterface, StackRequest> mRecycler;
   protected StackInterface mLastAcquiredStack;
 
   /**
@@ -40,10 +42,9 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
    *
    * @param pDeviceName device name
    */
-  public AbstractAcquistionScheduler(String pDeviceName/*, RecyclerInterface<StackInterface, StackRequest> pRecycler*/)
+  public AbstractAcquistionScheduler(String pDeviceName)
   {
     super(pDeviceName);
-    //mRecycler = pRecycler;
   }
 
   protected LightSheetMicroscope mLightSheetMicroscope;
@@ -97,40 +98,9 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
   }
 
 
+  @Deprecated
   protected void initializeStackSaving(FileStackSinkInterface pFileStackSinkInterface) {
-
-    LightSheetFastFusionProcessor
-        lProcessor =
-        mLightSheetMicroscope.getDevice(
-            LightSheetFastFusionProcessor.class,
-            0);
-
-
-    /*
-    if (lProcessor != null)
-    {
-      lProcessor.reInitializeEngine();
-      if (pFileStackSinkInterface != null)
-      {
-        // The save tasks exists twice in the compute graph. That should be improved in the future.
-        // At the moment it only works because C101 is either saved (single acquisition) and
-        // afterwards, the second task does not see it anymore because its memory was freed
-
-        lProcessor.getEngine()
-                  .addTask(new SaveImageStackTask(mImageKeyToSave,
-                                                  mImageKeyToSave + "-saved",
-                                                  pFileStackSinkInterface,
-                                                  mRecycler,
-                                                  mChannelName), true);
-        lProcessor.getEngine()
-                  .addTask(new SaveImageStackTask(mImageKeyToSave,
-                                                  mImageKeyToSave + "-saved",
-                                                  pFileStackSinkInterface,
-                                                  mRecycler,
-                                                  mChannelName), false);
-        lProcessor.getEngine().addTask(new ResetFastFusionEngineTask(mImageKeyToSave + "-saved"));
-      }
-    }*/
+    warning("initializeStackSaving is deprecated and will be removed");
   }
 
   protected void goToInitialPosition(LightSheetMicroscope lLightsheetMicroscope,
@@ -167,117 +137,11 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
     lQueue.addVoxelDimMetaData(lLightsheetMicroscope, mCurrentState.getStackZStepVariable().get().doubleValue());
   }
 
-  /*
+
   @Deprecated
   protected void handleImageFromCameras(long pTimepoint) {
-    System.out.print("handleImageFromCameras " +pTimepoint );
-    final Object lLock = new Object();
-
-    for (int c = 0; c < mLightSheetMicroscope.getNumberOfDetectionArms(); c ++ ) {
-      if (isCameraOn(c)) {
-        final int lFinalCameraIndex = c;
-        ElapsedTime.measure("Handle camera output (of camera " + c + ") and fuse", () ->
-        {
-          synchronized (lLock) {
-            StackInterface
-                    lResultingStack =
-                    mLightSheetMicroscope.getCameraStackVariable(lFinalCameraIndex).get();
-
-            LightSheetFastFusionProcessor
-                    lProcessor =
-                    mLightSheetMicroscope.getDevice(
-                            LightSheetFastFusionProcessor.class,
-                            0);
-
-            RecyclerInterface<StackInterface, StackRequest>
-                    lRecyclerOfProcessor = mRecycler;
-//              mLightSheetMicroscope.getStackProcesssingPipeline()
-            //                                 .getRecyclerOfProcessor(
-            //                                   lProcessor);
-
-            mLastAcquiredStack = lResultingStack;
-
-            info("sending: " + lResultingStack);
-            StackInterface lStackInterface = lProcessor.process(lResultingStack, lRecyclerOfProcessor);
-            info("Got back: " + lStackInterface);
-            if (lStackInterface != null) {
-              mLastFusedStack = lStackInterface;
-            }
-          }
-        });
-      }
-    }
+    warning("handleImagesFromCameras is deprecated and will be removed ");
   }
-  */
-
-  /*
-  Pair<AbstractAcquistionScheduler, Long> mLock = null;
-  protected synchronized  void sendToPostProcessingAndSaving(StackInterface pStackInterface, long pTimepoint) {
-    LightSheetFastFusionProcessor lProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
-
-    Pair<AbstractAcquistionScheduler, Long> lPotentialNewLock = new Pair<>(this, pTimepoint);
-    if (mLock != null && lPotentialNewLock.getKey() == mLock.getKey() && lPotentialNewLock.getValue() == mLock.getValue()) {
-      lPotentialNewLock = mLock;
-    }
-
-    info("Trying to lock " + lPotentialNewLock);
-    try
-    {
-      if (lProcessor.getMutex().lock(lPotentialNewLock)) {
-        mLock = lPotentialNewLock;
-        info("Got the lock " + lPotentialNewLock);
-
-        // actually do the postprocessing
-        RecyclerInterface<StackInterface, StackRequest>
-            lRecyclerOfProcessor =
-            mLightSheetMicroscope.getStackProcesssingPipeline()
-                                 .getRecyclerOfProcessor(lProcessor);
-
-        // Variable<StackInterface> lPipelineStackVariable = mMicroscope.getPipelineStackVariable();
-        //lPipelineStackVariable.get().get
-
-        StackInterface lResultStack = lProcessor.process(pStackInterface, lRecyclerOfProcessor);
-        if (lResultStack != null) {
-          lProcessor.getMutex().unlock(mLock);
-          info("Unlocked " + lPotentialNewLock);
-          sendToStackSaving(lResultStack);
-        } else
-        {
-          info("Don't unlock " + lPotentialNewLock);
-        }
-
-      }
-    }
-    catch (InterruptedException e)
-    {
-      e.printStackTrace();
-    }
-  }*/
-/*
-  protected synchronized void sendToStackSaving(StackInterface pStackInterface) {
-
-    Variable<FileStackSinkInterface> lStackSinkVariable = mTimelapse.getCurrentFileStackSinkVariable();
-
-    info("Appending new stack %s to the file sink %s",
-         pStackInterface,
-         lStackSinkVariable);
-
-    String lChannelInMetaData =
-        pStackInterface.getMetaData()
-         .getValue(MetaDataChannel.Channel);
-
-    final String lChannel =
-        lChannelInMetaData != null ? lChannelInMetaData
-                                   : StackSinkSourceInterface.cDefaultChannel;
-
-    ElapsedTime.measureForceOutput("TimeLapse stack saving",
-                                   () -> lStackSinkVariable.get()
-                                                           .appendStack(lChannel,
-                                                                        pStackInterface));
-
-
-  }
-*/
 
   /**
    * Deprecated: access resultimg image stacks from the data warehouse
@@ -286,6 +150,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
   @Deprecated
   public StackInterface getLastAcquiredStack()
   {
+    warning("getLastAcquiredStack is deprecated and will be removed. Access acquired images via the DataWarehouse instead!");
     return mLastFusedStack;
   }
 

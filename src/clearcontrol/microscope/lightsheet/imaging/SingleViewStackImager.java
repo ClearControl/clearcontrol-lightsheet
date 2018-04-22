@@ -43,8 +43,6 @@ public class SingleViewStackImager implements ImagerInterface,
 
     InterpolatedAcquisitionState
         lCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-    LightSheetTimelapse
-        lTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
     lCurrentState.getExposureInSecondsVariable().set(mExposureTimeInSeconds);
     lCurrentState.getStackZLowVariable().set(mMinZ);
     lCurrentState.getStackZHighVariable().set(mMaxZ);
@@ -52,14 +50,12 @@ public class SingleViewStackImager implements ImagerInterface,
     lCurrentState.getImageWidthVariable().set(mImageWidth);
     lCurrentState.getImageHeightVariable().set(mImageHeight);
 
-
     LightSheetFastFusionProcessor
         lProcessor =
         mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
     lProcessor.initializeEngine();
     lProcessor.reInitializeEngine();
     lProcessor.getEngine().reset(true);
-
 
     AbstractAcquistionScheduler lAcquisitionScheduler = null;
     for (SingleViewAcquisitionScheduler lScheduler : mLightSheetMicroscope.getDevices(SingleViewAcquisitionScheduler.class)) {
@@ -80,8 +76,6 @@ public class SingleViewStackImager implements ImagerInterface,
     StackInterface lStack = ((StackInterfaceContainer)mLightSheetMicroscope.getDataWarehouse().getOldestContainer(StackInterfaceContainer.class)).get("C" + mDetectionArmIndex + "L" + mLightSheetIndex);
         lAcquisitionScheduler.getLastAcquiredStack();
     return lStack;
-
-
   }
 
   public LightSheetMicroscope getLightSheetMicroscope()
@@ -108,7 +102,6 @@ public class SingleViewStackImager implements ImagerInterface,
   {
     this.mExposureTimeInSeconds = pExposureTimeInSeconds;
   }
-
 
   public void setImageHeight(int pImageHeight)
   {

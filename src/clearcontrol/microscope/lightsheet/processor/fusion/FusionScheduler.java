@@ -16,13 +16,17 @@ import coremem.recycling.RecyclerInterface;
 import java.util.Arrays;
 
 /**
+ * This generalised fusion scheduler executes the actual fast fusion
+ * operation. Depending on how the images were acquired, they might
+ * have to be passed differently to the FastFuse engine. Details are
+ * available in derived classes.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
 public abstract class FusionScheduler extends SchedulerBase implements
                                                    LoggingFeature
 {
-
   private static Object mLock = new Object();
   private StackInterface mFusedStack = null;
 
@@ -72,10 +76,6 @@ public abstract class FusionScheduler extends SchedulerBase implements
         for (String key : pImageKeys)
         {
           StackInterface lResultingStack = pContainer.get(key);
-
-
-          //info("sending(" + key + "): " + lResultingStack + " aka " + MetaDataView
-          //    .getCxLyString(lResultingStack.getMetaData()));
           StackInterface
               lStackInterface =
               lProcessor.process(lResultingStack, lRecycler);
@@ -105,6 +105,13 @@ public abstract class FusionScheduler extends SchedulerBase implements
     lDataWarehouse.put("fused_" + lTimePoint, lFusedContainer);
   }
 
+  /**
+   * Deprecated: consider accessing resulting fused stacks from the
+   * DataWarehouse
+   *
+   * @return
+   */
+  @Deprecated
   public StackInterface getFusedStack()
   {
     return mFusedStack;

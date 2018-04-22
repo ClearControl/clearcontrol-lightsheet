@@ -18,8 +18,9 @@ import clearcontrol.stack.StackInterface;
 
 /**
  * The fused imager is a sychronous imager.
- * After calling its acquire method, it will take 8 image stacks, fuse
- * them and return the resulting stack
+ * After calling its acquire method, it will e.g. take 8 image stacks
+ * in sequential acquisition mode, fuse them and return the resulting
+ * stack
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * March 2018
@@ -49,15 +50,12 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
 
     // set the imaging state
     InterpolatedAcquisitionState lCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-    LightSheetTimelapse
-        lTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
     lCurrentState.getExposureInSecondsVariable().set(mExposureTimeInSeconds);
     lCurrentState.getStackZLowVariable().set(mMinZ);
     lCurrentState.getStackZHighVariable().set(mMaxZ);
     lCurrentState.getNumberOfZPlanesVariable().set((mMaxZ - mMinZ) / mSliceDistance + 1);
     lCurrentState.getImageWidthVariable().set(mImageWidth);
     lCurrentState.getImageHeightVariable().set(mImageHeight);
-
 
     LightSheetFastFusionProcessor
         lProcessor =

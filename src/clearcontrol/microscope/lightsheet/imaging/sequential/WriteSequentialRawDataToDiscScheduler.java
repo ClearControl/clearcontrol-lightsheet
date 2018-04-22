@@ -4,6 +4,9 @@ import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDa
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerToDiscScheduler;
 
 /**
+ * This scheduler writes the raw data from the sequential
+ * acquisition stored in the DataWarehouse to disc.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */

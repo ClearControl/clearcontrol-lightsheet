@@ -14,9 +14,6 @@ import javafx.beans.DefaultProperty;
 @Deprecated
 public class SinglePlaneImager extends ImagerBase implements LoggingFeature
 {
-
-
-
   public SinglePlaneImager(LightSheetMicroscope pLightSheetMicroscope) {
     super(pLightSheetMicroscope);
   }

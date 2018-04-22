@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * This DataContainer is used to store several image stack which
+ * belong together because they were acquired together.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */

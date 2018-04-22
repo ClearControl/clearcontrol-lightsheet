@@ -11,13 +11,18 @@ import java.util.HashMap;
 import java.util.Stack;
 
 /**
+ * The DataWarehouse represents central data storage. It allows
+ * collecting a number of DataContainers containing image data grouped
+ * per timepoint. It has its own recycler to ensure memory stays under
+ * a certain limit.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
 public class DataWarehouse extends HashMap<String, DataContainerInterface> implements
                                                            LoggingFeature
 {
-  RecyclerInterface<StackInterface, StackRequest> mRecycler;
+  private RecyclerInterface<StackInterface, StackRequest> mRecycler;
 
   public DataWarehouse (RecyclerInterface<StackInterface, StackRequest> pRecycler) {
     mRecycler = pRecycler;
@@ -44,10 +49,6 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
     }
 
     return lOldestContainer;
-  }
-
-  public void dispostContainer(String key) {
-    disposeContainer(get(key));
   }
 
   public void disposeContainer(DataContainerInterface pContainer) {

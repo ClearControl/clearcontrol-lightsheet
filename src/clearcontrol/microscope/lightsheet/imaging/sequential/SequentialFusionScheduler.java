@@ -9,6 +9,11 @@ import clearcontrol.stack.StackRequest;
 import coremem.recycling.RecyclerInterface;
 
 /**
+ * This FusionScheduler takes the oldest
+ * SequentialImageDataContainer from the DataWarehouse and fuses
+ * the images. Results are saved as FusedImageContainer back to the
+ * DataWarehouse.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */

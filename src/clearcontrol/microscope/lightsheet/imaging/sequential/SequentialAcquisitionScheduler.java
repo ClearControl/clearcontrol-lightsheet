@@ -27,6 +27,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * This scheduler acquires an image stack per camera per light sheet.
+ * The image stacks are stored in the DataWarehouse in
+ * an SequentialImageDataContainer with keys like:
+ *
+ * C0L0
+ * C1L0
+ * C0L1
+ * C1L1
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
@@ -54,8 +63,6 @@ public class SequentialAcquisitionScheduler extends
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    boolean lFastFusionEngineInitialized = false;
-
     if (!(mMicroscope instanceof LightSheetMicroscope)) {
       warning("" + this + " needs a lightsheet microscope!");
       return false;
@@ -90,6 +97,7 @@ public class SequentialAcquisitionScheduler extends
         LightSheetMicroscopeQueue lQueueForView = lViewToQueueMap.get(l);
 
         for (int c = 0; c < lNumberOfDetectionArms; c++)
+        {
           if (isCameraOn(c))
           {
 
@@ -107,9 +115,9 @@ public class SequentialAcquisitionScheduler extends
             if (isFused())
             {
               lMetaData.addEntry(MetaDataFusion.RequestFullFusion,
-                                   true);
+                                 true);
 
-              lMetaData.addEntry(MetaDataChannel.Channel,  "sequential");
+              lMetaData.addEntry(MetaDataChannel.Channel, "sequential");
             }
             else
             {
@@ -118,23 +126,13 @@ public class SequentialAcquisitionScheduler extends
                                  lCxLyString);
             }
           }
-
-
-
+        }
 
         try
         {
           mLightSheetMicroscope.playQueueAndWait(lQueueForView,
                                                  mTimelapse.getTimeOut(),
                                                  TimeUnit.SECONDS);
-
-          /*
-          if (l == lNumberOfLightSheets - 1 || this instanceof SingleViewAcquisitionScheduler) // dirty workaround
-          {
-            initializeStackSaving(mTimelapse.getCurrentFileStackSinkVariable()
-                                            .get());
-          }
-          handleImageFromCameras(pTimePoint);*/
         }
         catch (InterruptedException e)
         {
@@ -152,22 +150,21 @@ public class SequentialAcquisitionScheduler extends
           return false;
         }
 
+        // store results in a DataContainer
         for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
         {
           if (isCameraOn(d))
           {
             StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(
                 d).get();
-
             putStackInContainer("C" + d + "L" + l, lStack, lContainer);
-
           }
         }
       }
     }
 
+    // store container in the DataWarehouse
     mLightSheetMicroscope.getDataWarehouse().put("sequential_raw_" + pTimePoint, lContainer);
-
 
     return true;
   }

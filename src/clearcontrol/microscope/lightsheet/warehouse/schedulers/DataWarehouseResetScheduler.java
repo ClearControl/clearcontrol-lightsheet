@@ -6,6 +6,9 @@ import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 
 /**
+ * This scheduler recycles or disposes all DataContainers in the
+ * DataWarehouse.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */

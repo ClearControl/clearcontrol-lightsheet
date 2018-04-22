@@ -4,6 +4,12 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
+ * This container contains the raw images resulting from single view
+ * acquisition. For example for a microscope with two cameras, the
+ * stack have such a key:
+ *
+ * C0L0
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
