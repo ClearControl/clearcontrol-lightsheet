@@ -3,9 +3,14 @@ package clearcontrol.microscope.lightsheet.imaging;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialFusionScheduler;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusionScheduler;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
@@ -38,6 +43,10 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
   }
 
   public StackInterface acquire() {
+    // Reset the data warehouse
+    mLightSheetMicroscope.getDataWarehouse().clear();
+
+    // set the imaging state
     InterpolatedAcquisitionState lCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
     LightSheetTimelapse lTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
     lCurrentState.getExposureInSecondsVariable().set(mExposureTimeInSeconds);
@@ -57,16 +66,20 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
 
 
     AbstractAcquistionScheduler lAcquisitionScheduler;
+    FusionScheduler lFusionScheduler;
     switch (mAcquisitionType) {
     case TimelapseSequential:
       lAcquisitionScheduler = mLightSheetMicroscope.getDevice(SequentialAcquisitionScheduler.class, 0);
+      lFusionScheduler = mLightSheetMicroscope.getDevice(SequentialFusionScheduler.class, 0);
       break;
     case TimeLapseOpticallyCameraFused:
       lAcquisitionScheduler = mLightSheetMicroscope.getDevice(OpticsPrefusedAcquisitionScheduler.class, 0);
+      lFusionScheduler = mLightSheetMicroscope.getDevice(OpticsPrefusedFusionScheduler.class, 0);
       break;
     case TimeLapseInterleaved:
     default:
       lAcquisitionScheduler = mLightSheetMicroscope.getDevice(InterleavedAcquisitionScheduler.class, 0);
+      lFusionScheduler = mLightSheetMicroscope.getDevice(InterleavedFusionScheduler.class, 0);
       break;
     }
 
@@ -74,10 +87,12 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
     lAcquisitionScheduler.initialize();
     lAcquisitionScheduler.enqueue(0);
 
-    StackInterface lStack = lAcquisitionScheduler.getLastAcquiredStack();
+    lFusionScheduler.setMicroscope(mLightSheetMicroscope);
+    lFusionScheduler.initialize();
+    lFusionScheduler.enqueue(0);
+
+    StackInterface lStack = ((FusedImageDataContainer)mLightSheetMicroscope.getDataWarehouse().getOldestContainer(FusedImageDataContainer.class)).get("fused");
     return lStack;
-
-
   }
 
   public LightSheetMicroscope getLightSheetMicroscope()

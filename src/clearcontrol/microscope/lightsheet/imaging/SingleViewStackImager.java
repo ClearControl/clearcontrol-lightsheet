@@ -5,6 +5,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
 
@@ -36,6 +37,9 @@ public class SingleViewStackImager implements ImagerInterface,
   }
 
   public StackInterface acquire() {
+    // reset warehouse
+    mLightSheetMicroscope.getDataWarehouse().clear();
+
     InterpolatedAcquisitionState
         lCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
     LightSheetTimelapse
@@ -72,7 +76,8 @@ public class SingleViewStackImager implements ImagerInterface,
     lAcquisitionScheduler.initialize();
     lAcquisitionScheduler.enqueue(0);
 
-    StackInterface lStack = lAcquisitionScheduler.getLastAcquiredStack();
+    StackInterface lStack = ((StackInterfaceContainer)mLightSheetMicroscope.getDataWarehouse().getOldestContainer(StackInterfaceContainer.class)).get("C" + mDetectionArmIndex + "L" + mLightSheetIndex);
+        lAcquisitionScheduler.getLastAcquiredStack();
     return lStack;
 
 
