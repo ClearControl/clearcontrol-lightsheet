@@ -57,6 +57,9 @@ public abstract class FusionScheduler extends SchedulerBase implements
 
   protected StackInterface fuseStacks(StackInterfaceContainer pContainer, String[] pImageKeys)
   {
+    if (pContainer == null) {
+      return null;
+    }
     mFusedStack = null;
 
     final LightSheetFastFusionProcessor

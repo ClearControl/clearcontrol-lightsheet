@@ -52,6 +52,9 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
   }
 
   public void disposeContainer(DataContainerInterface pContainer) {
+    if (pContainer == null) {
+      return;
+    }
     if (pContainer instanceof RecyclableContainer) {
       ((RecyclableContainer) pContainer).recycle(mRecycler);
     } else {
