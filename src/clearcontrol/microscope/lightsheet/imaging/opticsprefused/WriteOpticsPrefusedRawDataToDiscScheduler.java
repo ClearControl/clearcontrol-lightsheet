@@ -17,7 +17,7 @@ public class WriteOpticsPrefusedRawDataToDiscScheduler extends
    */
   public WriteOpticsPrefusedRawDataToDiscScheduler(int pNumberOfDetectionArms)
   {
-    super("IO: Write optics prefused raw data to disc", InterleavedImageDataContainer.class, listKeys(pNumberOfDetectionArms), null);
+    super("IO: Write optics prefused raw data to disc", OpticsPrefusedImageDataContainer.class, listKeys(pNumberOfDetectionArms), null);
   }
 
   private static String[] listKeys(int pNumberOfDetectionArms) {
