@@ -280,6 +280,12 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
 
   }
 */
+
+  /**
+   * Deprecated: access resultimg image stacks from the data warehouse
+   * @return
+   */
+  @Deprecated
   public StackInterface getLastAcquiredStack()
   {
     return mLastFusedStack;
