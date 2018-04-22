@@ -158,6 +158,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         lMinusButton.setMinHeight(35);
         lMinusButton.setOnAction((e) -> {
           int count = 0;
+          int lSelectedIndex = lListView.getSelectionModel().getSelectedIndex();
           for (int i : lListView.getSelectionModel()
                                 .getSelectedIndices()
                                 .sorted())
@@ -167,6 +168,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
           }
           lListView.setItems(FXCollections.observableArrayList(
               lSchedulerList));
+          lListView.getSelectionModel().select(lSelectedIndex);
         });
         GridPane.setValignment(lMinusButton, VPos.BOTTOM);
         lSchedulerChecklistGridPane.add(lMinusButton, 1, lRow);
