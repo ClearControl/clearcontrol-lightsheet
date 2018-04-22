@@ -41,7 +41,9 @@ import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisiti
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.sequential.WriteSequentialRawDataToDiscScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightSheetStackScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageToDiscScheduler;
+import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageToDiscScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
@@ -371,16 +373,23 @@ public class SimulatedLightSheetMicroscope extends
           lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler();
       SequentialFusionScheduler lSequentialFusionScheduler = new SequentialFusionScheduler();
       WriteFusedImageToDiscScheduler lWriteSequentialFusedImageToDiscScheduler = new WriteFusedImageToDiscScheduler("sequential");
+
+      ViewFusedStackScheduler lViewFusedStackScheduler = new ViewFusedStackScheduler();
+
       if (lTimelapse instanceof LightSheetTimelapse)
       {
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialFusionScheduler);
+        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewFusedStackScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSequentialFusedImageToDiscScheduler);
+
+
       }
       addDevice(0, lSequentialAcquisitionScheduler);
       addDevice(0, lSequentialFusionScheduler);
       addDevice(0, new WriteSequentialRawDataToDiscScheduler(getNumberOfDetectionArms(), getNumberOfLightSheets()));
       addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
+      addDevice(0, lViewFusedStackScheduler);
 
       addDevice(0, new OpticsPrefusedAcquisitionScheduler());
       addDevice(0, new OpticsPrefusedFusionScheduler());
@@ -392,14 +401,22 @@ public class SimulatedLightSheetMicroscope extends
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
       for (int l = 0; l < getNumberOfLightSheets(); l++) {
         SingleViewAcquisitionScheduler
-            lScheduler = new SingleViewAcquisitionScheduler(c, l);
-        addDevice(0, lScheduler);
+            lSingleViewAcquisitionScheduler = new SingleViewAcquisitionScheduler(c, l);
+        addDevice(0, lSingleViewAcquisitionScheduler);
+
+        ViewSingleLightSheetStackScheduler lViewSingleLightSheetStackScheduler = new ViewSingleLightSheetStackScheduler(c, l);
+        WriteSingleLightSheetImageToDiscScheduler lWriteSingleLightSheetImageToDiscScheduler = new WriteSingleLightSheetImageToDiscScheduler(c, l);
+
+
         if (lTimelapse instanceof LightSheetTimelapse && ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().size() == 0)
         {
-          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lScheduler);
-          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new WriteSingleLightSheetImageToDiscScheduler(c, l));
+          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSingleViewAcquisitionScheduler);
+          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewSingleLightSheetStackScheduler);
+          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSingleLightSheetImageToDiscScheduler);
         }
-        addDevice(0, new WriteSingleLightSheetImageToDiscScheduler(c, l));
+
+        addDevice(0, lViewSingleLightSheetStackScheduler);
+        addDevice(0, lWriteSingleLightSheetImageToDiscScheduler);
 
       }
     }
@@ -461,8 +478,6 @@ public class SimulatedLightSheetMicroscope extends
         addDevice(0, new ControlPlaneFocusFinderZScheduler(d, cpi));
       }
     }
-
-
 
   }
 

@@ -68,7 +68,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       int lRow = 0;
       CustomGridPane lSchedulerChecklistGridPane = new CustomGridPane();
 
-      String[] lFilters = {"Acquisition:", "Adaptation:", "Fusion:", "IO:", "Laser:", "Memory:", "State:", "Timing:", ""};
+      String[] lFilters = {"Acquisition:", "Adaptation:", "Fusion:", "IO:", "Laser:", "Memory:", "State:", "Timing:", "Visualisation:", ""};
 
       TitledPane lTitledPane =
               new TitledPane("Schedule",
