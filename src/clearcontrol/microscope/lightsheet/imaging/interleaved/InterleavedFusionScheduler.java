@@ -30,9 +30,9 @@ public class InterleavedFusionScheduler extends FusionScheduler implements
   @Override public boolean enqueue(long pTimePoint)
   {
     DataWarehouse lDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
-    final SequentialImageDataContainer
-        lContainer = lDataWarehouse.getOldestContainer(SequentialImageDataContainer.class);
-    String[] lInputImageKeys = new String[mLightSheetMicroscope.getNumberOfDetectionArms() * mLightSheetMicroscope.getNumberOfLightSheets()];
+    final InterleavedImageDataContainer
+        lContainer = lDataWarehouse.getOldestContainer(InterleavedImageDataContainer.class);
+    String[] lInputImageKeys = new String[mLightSheetMicroscope.getNumberOfDetectionArms()];
 
     int count = 0;
     for (int d = 0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++) {

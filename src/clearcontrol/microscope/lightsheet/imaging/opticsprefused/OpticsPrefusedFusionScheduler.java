@@ -30,9 +30,9 @@ public class OpticsPrefusedFusionScheduler extends FusionScheduler implements
   @Override public boolean enqueue(long pTimePoint)
   {
     DataWarehouse lDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
-    final SequentialImageDataContainer
-        lContainer = lDataWarehouse.getOldestContainer(SequentialImageDataContainer.class);
-    String[] lInputImageKeys = new String[mLightSheetMicroscope.getNumberOfDetectionArms() * mLightSheetMicroscope.getNumberOfLightSheets()];
+    final OpticsPrefusedImageDataContainer
+        lContainer = lDataWarehouse.getOldestContainer(OpticsPrefusedImageDataContainer.class);
+    String[] lInputImageKeys = new String[mLightSheetMicroscope.getNumberOfDetectionArms()];
 
     int count = 0;
     for (int d = 0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++) {
