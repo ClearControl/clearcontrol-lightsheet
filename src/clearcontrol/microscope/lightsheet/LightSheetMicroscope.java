@@ -20,6 +20,8 @@ import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
@@ -82,7 +84,8 @@ public class LightSheetMicroscope extends
 
     addDevice(0, new DataWarehouseResetScheduler());
 
-    addDevice(0, new DropOldestStackInterfaceContainerScheduler());
+    addDevice(0, new DropOldestStackInterfaceContainerScheduler(StackInterfaceContainer.class));
+    addDevice(0, new DropOldestStackInterfaceContainerScheduler(DataContainerInterface.class));
 
 /*    mStackProcessingPipeline.addStackProcessor(mStackFusionProcessor,
                                                "StackFusion",

@@ -33,16 +33,20 @@ import clearcontrol.microscope.lightsheet.component.scheduler.implementations.Pa
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.WriteInterleavedRawDataToDiscScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedFusionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.WriteOpticsPrefusedRawDataToDiscScheduler;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialFusionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.sequential.WriteSequentialRawDataToDiscScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightSheetStackScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageToDiscScheduler;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageToDiscScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
@@ -53,6 +57,7 @@ import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBacku
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateResetScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.InterpolatedAcquisitionStateLogScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
@@ -374,6 +379,9 @@ public class SimulatedLightSheetMicroscope extends
       SequentialFusionScheduler lSequentialFusionScheduler = new SequentialFusionScheduler();
       WriteFusedImageToDiscScheduler lWriteSequentialFusedImageToDiscScheduler = new WriteFusedImageToDiscScheduler("sequential");
 
+
+      DropOldestStackInterfaceContainerScheduler lDropContainerScheduler = new DropOldestStackInterfaceContainerScheduler(InterleavedImageDataContainer.class);
+
       ViewFusedStackScheduler lViewFusedStackScheduler = new ViewFusedStackScheduler();
 
       if (lTimelapse instanceof LightSheetTimelapse)
@@ -382,19 +390,23 @@ public class SimulatedLightSheetMicroscope extends
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialFusionScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewFusedStackScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSequentialFusedImageToDiscScheduler);
-
-
+        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lDropContainerScheduler);
       }
       addDevice(0, lSequentialAcquisitionScheduler);
       addDevice(0, lSequentialFusionScheduler);
       addDevice(0, new WriteSequentialRawDataToDiscScheduler(getNumberOfDetectionArms(), getNumberOfLightSheets()));
       addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
-      addDevice(0, lViewFusedStackScheduler);
+      addDevice(0, new DropOldestStackInterfaceContainerScheduler(SequentialImageDataContainer.class));
 
       addDevice(0, new OpticsPrefusedAcquisitionScheduler());
       addDevice(0, new OpticsPrefusedFusionScheduler());
       addDevice(0, new WriteOpticsPrefusedRawDataToDiscScheduler(getNumberOfDetectionArms()));
       addDevice(0, new WriteFusedImageToDiscScheduler("opticsprefused"));
+      addDevice(0, new DropOldestStackInterfaceContainerScheduler(OpticsPrefusedImageDataContainer.class));
+
+
+      addDevice(0, new DropOldestStackInterfaceContainerScheduler(FusedImageDataContainer.class));
+      addDevice(0, lViewFusedStackScheduler);
     }
 
 

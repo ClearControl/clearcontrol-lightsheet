@@ -19,13 +19,16 @@ public class DropOldestStackInterfaceContainerScheduler extends
                                                                       SchedulerInterface,
                                                                       LoggingFeature
 {
+  Class mContainerClassToDrop;
+
   /**
    * INstanciates a virtual device with a given name
    *
    */
-  public DropOldestStackInterfaceContainerScheduler()
+  public DropOldestStackInterfaceContainerScheduler(Class pContainerClassToDrop)
   {
-    super("Memory: Recycle memory (heap--)");
+    super("Memory: Recycle container of type " + pContainerClassToDrop.getSimpleName() + "(heap--)");
+    mContainerClassToDrop = pContainerClassToDrop;
   }
 
   @Override public boolean initialize()
@@ -37,7 +40,7 @@ public class DropOldestStackInterfaceContainerScheduler extends
   {
     if (mMicroscope instanceof LightSheetMicroscope) {
       DataWarehouse lWarehouse = ((LightSheetMicroscope) mMicroscope).getDataWarehouse();
-      StackInterfaceContainer lContainer = lWarehouse.getOldestContainer(StackInterfaceContainer.class);
+      StackInterfaceContainer lContainer = lWarehouse.getOldestContainer(mContainerClassToDrop);
       lWarehouse.disposeContainer(lContainer);
     } else {
       warning("I need a LightSheetMicroscope!");
