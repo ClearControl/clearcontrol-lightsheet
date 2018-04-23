@@ -198,8 +198,8 @@ public class LightSheetTimelapse extends TimelapseBase implements
       }*/
 
 
-      info("acquiring timepoint: "
-           + getTimePointCounterVariable().get());
+      info("Executing timepoint: "
+           + getTimePointCounterVariable().get() + " data warehouse holds " + mLightSheetMicroscope.getDataWarehouse().size() + " items");
 
       mLightSheetMicroscope.useRecycler("3DTimelapse",
                                         cMinimumNumberOfAvailableStacks,

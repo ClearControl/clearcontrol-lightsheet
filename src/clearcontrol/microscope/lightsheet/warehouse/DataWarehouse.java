@@ -48,6 +48,12 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
       }
     }
 
+    if (lOldestContainer != null)
+    {
+      info("Oldest container is from timepoint " + lOldestContainer.getTimepoint());
+    } else {
+      warning("Warning, no container to return!");
+    }
     return lOldestContainer;
   }
 
@@ -66,6 +72,7 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
       DataContainerInterface lContainer = get(key);
       if (lContainer == pContainer)
       {
+        info("Disposing container: " + key);
         remove(key);
         return;
       }
