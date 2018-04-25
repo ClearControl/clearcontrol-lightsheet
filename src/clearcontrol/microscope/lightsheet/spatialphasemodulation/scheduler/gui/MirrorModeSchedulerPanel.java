@@ -45,17 +45,5 @@ public class MirrorModeSchedulerPanel extends
       lRow++;
     }
 
-    {
-      BoundedVariable<Integer>
-          lDelayFramesVariable = pMirrorModeScheduler.getDelayFramesVariable();
-      NumberVariableTextField<Integer> lField =
-          new NumberVariableTextField<Integer>(lDelayFramesVariable.getName(),
-                                               lDelayFramesVariable,
-                                               lDelayFramesVariable.getMin(),
-                                               lDelayFramesVariable.getMax(),
-                                               lDelayFramesVariable.getGranularity());
-      this.add(lField.getLabel(), 0, lRow);
-      this.add(lField.getTextField(), 1, lRow);
-    }
   }
 }

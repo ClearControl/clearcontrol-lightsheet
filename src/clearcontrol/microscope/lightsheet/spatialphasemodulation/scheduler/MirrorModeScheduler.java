@@ -23,13 +23,10 @@ public class MirrorModeScheduler extends SchedulerBase implements
       new Variable("RootFolder",
                    (Object) null);
 
-  private BoundedVariable<Integer>
-      mDelayFramesVariable = new BoundedVariable<Integer>("Run every ... time points", 2, 0, Integer.MAX_VALUE, 1);
-
   private SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
 
   public MirrorModeScheduler(SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
-    super("Mirror mode scheduler for " + pSpatialPhaseModulatorDeviceInterface.getName());
+    super("Adaptive Optics: Mirror mode scheduler for " + pSpatialPhaseModulatorDeviceInterface.getName());
 
     mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
   }
@@ -39,11 +36,6 @@ public class MirrorModeScheduler extends SchedulerBase implements
   public Variable<File> getRootFolderVariable()
   {
     return mRootFolderVariable;
-  }
-
-  public BoundedVariable<Integer> getDelayFramesVariable()
-  {
-    return mDelayFramesVariable;
   }
 
   private int mTimePointCount = -1;
@@ -56,11 +48,7 @@ public class MirrorModeScheduler extends SchedulerBase implements
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    mTimePointCount ++;
-    if (mTimePointCount % mDelayFramesVariable.get() > 0) {
-      info("Skipping time point " + pTimePoint);
-      return false;
-    }
+
 
 
     File lFolder = mRootFolderVariable.get();
@@ -68,7 +56,7 @@ public class MirrorModeScheduler extends SchedulerBase implements
       warning("Error: given root folder is no directory");
       return false;
     }
-    long lFileIndex = (pTimePoint / mDelayFramesVariable.get()) % lFolder.listFiles().length;
+    long lFileIndex = pTimePoint % lFolder.listFiles().length;
 
     File lFile = lFolder.listFiles()[(int)lFileIndex];
 
