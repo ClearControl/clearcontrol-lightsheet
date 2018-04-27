@@ -27,7 +27,7 @@ public class InterleavedFusionScheduler extends FusionScheduler implements
    */
   public InterleavedFusionScheduler()
   {
-    super("Fusion: Interleaved (heap++)");
+    super("Fusion: Interleaved");
   }
 
 

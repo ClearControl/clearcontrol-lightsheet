@@ -277,7 +277,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       lRow = 0;
       {
         Label lLabel = new Label("Add instruction");
-        lSchedulerChecklistGridPane.add(lLabel, 2, lRow);
+        lSchedulerChecklistGridPane.add(lLabel, 2, lRow, 2, 1);
         lRow++;
       }
 

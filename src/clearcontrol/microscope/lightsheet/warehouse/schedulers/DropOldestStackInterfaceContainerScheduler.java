@@ -27,7 +27,7 @@ public class DropOldestStackInterfaceContainerScheduler extends
    */
   public DropOldestStackInterfaceContainerScheduler(Class pContainerClassToDrop)
   {
-    super("Memory: Recycle container of type " + pContainerClassToDrop.getSimpleName() + "(heap--)");
+    super("Memory: Recycle container of type " + pContainerClassToDrop.getSimpleName());
     mContainerClassToDrop = pContainerClassToDrop;
   }
 

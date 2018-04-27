@@ -55,7 +55,7 @@ public class InterleavedAcquisitionScheduler extends
    */
   public InterleavedAcquisitionScheduler()
   {
-    super("Acquisition: Interleaved (heap++)");
+    super("Acquisition: Interleaved");
     mChannelName = "interleaved";
   }
 

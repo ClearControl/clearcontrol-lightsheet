@@ -36,7 +36,7 @@ public class ExposureModulatedAcquisitionScheduler extends
 
 
   public ExposureModulatedAcquisitionScheduler(int pCameraIndex, int pLightSheetIndex) {
-    super("Acquisition: Exposure modulated C" + pCameraIndex + "L" + pLightSheetIndex + " (heap++)");
+    super("Acquisition: Exposure modulated C" + pCameraIndex + "L" + pLightSheetIndex);
     mCameraIndex = pCameraIndex;
     mLightSheetIndex = pLightSheetIndex;
 

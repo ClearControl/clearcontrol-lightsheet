@@ -22,7 +22,7 @@ public class DataWarehouseResetScheduler extends SchedulerBase implements
    */
   public DataWarehouseResetScheduler()
   {
-    super("Memory: Reset memory (heap=0)");
+    super("Memory: Reset memory");
   }
 
   @Override public boolean initialize()

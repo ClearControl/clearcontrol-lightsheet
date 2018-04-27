@@ -400,8 +400,6 @@ public class SimulatedLightSheetMicroscope extends
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewFusedStackScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSequentialFusedImageToDiscScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lFusedThumbnailScheduler);
-        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lDropFusedContainerScheduler);
-        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lDropContainerScheduler);
       }
       addDevice(0, lSequentialAcquisitionScheduler);
       addDevice(0, lSequentialFusionScheduler);
@@ -441,8 +439,6 @@ public class SimulatedLightSheetMicroscope extends
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewSingleLightSheetStackScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSingleLightSheetImageToDiscScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lStackThumbnailScheduler);
-          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers()
-                  .add(getDevice(DropOldestStackInterfaceContainerScheduler.class, 0));
         }
 
         addDevice(0, lViewSingleLightSheetStackScheduler);
