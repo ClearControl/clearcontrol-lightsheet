@@ -373,14 +373,13 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new InterleavedFusionScheduler());
       addDevice(0, new WriteInterleavedRawDataToDiscScheduler(getNumberOfDetectionArms()));
       addDevice(0, new WriteFusedImageToDiscScheduler("interleaved"));
+      addDevice(0, new DropOldestStackInterfaceContainerScheduler(InterleavedImageDataContainer.class));
 
       SequentialAcquisitionScheduler
           lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler();
       SequentialFusionScheduler lSequentialFusionScheduler = new SequentialFusionScheduler();
       WriteFusedImageToDiscScheduler lWriteSequentialFusedImageToDiscScheduler = new WriteFusedImageToDiscScheduler("sequential");
-
-
-      DropOldestStackInterfaceContainerScheduler lDropContainerScheduler = new DropOldestStackInterfaceContainerScheduler(InterleavedImageDataContainer.class);
+      DropOldestStackInterfaceContainerScheduler lDropContainerScheduler = new DropOldestStackInterfaceContainerScheduler(SequentialImageDataContainer.class);
 
       ViewFusedStackScheduler lViewFusedStackScheduler = new ViewFusedStackScheduler();
 
@@ -396,7 +395,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, lSequentialFusionScheduler);
       addDevice(0, new WriteSequentialRawDataToDiscScheduler(getNumberOfDetectionArms(), getNumberOfLightSheets()));
       addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
-      addDevice(0, new DropOldestStackInterfaceContainerScheduler(SequentialImageDataContainer.class));
+      addDevice(0, lDropContainerScheduler);
 
       addDevice(0, new OpticsPrefusedAcquisitionScheduler());
       addDevice(0, new OpticsPrefusedFusionScheduler());
@@ -425,6 +424,8 @@ public class SimulatedLightSheetMicroscope extends
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSingleViewAcquisitionScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewSingleLightSheetStackScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSingleLightSheetImageToDiscScheduler);
+          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers()
+                  .add(getDevice(DropOldestStackInterfaceContainerScheduler.class, 0));
         }
 
         addDevice(0, lViewSingleLightSheetStackScheduler);
@@ -432,15 +433,6 @@ public class SimulatedLightSheetMicroscope extends
 
       }
     }
-
-    if (lTimelapse instanceof LightSheetTimelapse)
-    {
-      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers()
-                                        .add(getDevice(DropOldestStackInterfaceContainerScheduler.class, 0));
-      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers()
-                                        .add(getDevice(DropOldestStackInterfaceContainerScheduler.class, 0));
-    }
-
 
     addDevice(0, new PauseScheduler());
 
