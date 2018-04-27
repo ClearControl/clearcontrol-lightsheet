@@ -15,6 +15,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
 import clearcontrol.gui.jfx.var.checkbox.VariableCheckBox;
@@ -52,6 +53,20 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
   public LightSheetTimelapseToolbar(LightSheetTimelapse pLightSheetTimelapse)
   {
     super(pLightSheetTimelapse);
+
+    this.setAlignment(Pos.TOP_LEFT);
+
+    setPrefSize(400, 200);
+
+    int[] lPercent = new int[]
+            { 10, 40, 40, 10 };
+    for (int i = 0; i < lPercent.length; i++)
+    {
+      ColumnConstraints lColumnConstraints = new ColumnConstraints();
+      lColumnConstraints.setPercentWidth(lPercent[i]);
+      getColumnConstraints().add(lColumnConstraints);
+    }
+
     mLightSheetTimelapse = pLightSheetTimelapse;
 
     {
@@ -85,8 +100,16 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
     {
       int lRow = 0;
       CustomGridPane lSchedulerChecklistGridPane = new CustomGridPane();
+      /*lPercent = new int[]
+              { 45, 5, 45, 5};
+      for (int i = 0; i < lPercent.length; i++)
+      {
+        ColumnConstraints lColumnConstraints = new ColumnConstraints();
+        lColumnConstraints.setPercentWidth(lPercent[i]);
+        lSchedulerChecklistGridPane.getColumnConstraints().add(lColumnConstraints);
+      }*/
 
-      String[] lFilters = {"Acquisition:", "Adaptation:", "Fusion:", "IO:", "Laser:", "Memory:", "State:", "Timing:", "Visualisation:", ""};
+      String[] lFilters = {"Acquisition:", "Adaptation:", "Fusion:", "IO:", "Laser:", "Memory:", "Post-processing:", "State:", "Timing:", "Visualisation:", ""};
 
       TitledPane lTitledPane =
               new TitledPane("Schedule",
@@ -107,8 +130,11 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       ArrayList<SchedulerInterface> lSchedulerList = pLightSheetTimelapse.getListOfActivatedSchedulers();
       ListView<SchedulerInterface> lListView = new ListView<SchedulerInterface>();
       lListView.setItems(FXCollections.observableArrayList(lSchedulerList));
-      lListView.setMaxWidth(Double.MAX_VALUE);
-      lListView.setMinWidth(300);
+      //lListView.setPrefWidth(Double.MAX_VALUE);
+      //lListView.setMaxWidth(Double.MAX_VALUE);
+      //lListView.setMinHeight(35);
+      //lListView.setMaxHeight(Double.MAX_VALUE);
+      lListView.setMinWidth(450);
 
       lSchedulerChecklistGridPane.add(lListView, 0, lRow, 1, lFilters.length);
 
@@ -201,7 +227,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
             }
           });
 
-          lSchedulerChecklistGridPane.add(lLoadScheduleTemplateBytton, 1, lRow);
+          lSchedulerChecklistGridPane.add(lLoadScheduleTemplateBytton, 1, lRow, 2, 1);
           lRow++;
 
         }
@@ -237,7 +263,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
             }
           });
           GridPane.setColumnSpan(lSaveScheduleButton, 1);
-          lSchedulerChecklistGridPane.add(lSaveScheduleButton, 1, lRow);
+          lSchedulerChecklistGridPane.add(lSaveScheduleButton, 1, lRow, 2, 1);
           lRow++;
         }
 
@@ -251,7 +277,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       lRow = 0;
       {
         Label lLabel = new Label("Add instruction");
-        lSchedulerChecklistGridPane.add(lLabel, 3, lRow);
+        lSchedulerChecklistGridPane.add(lLabel, 2, lRow);
         lRow++;
       }
 
@@ -278,7 +304,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
           lListView.setItems(FXCollections.observableArrayList(
               lSchedulerList));
         });
-        lSchedulerChecklistGridPane.add(lPlusButton, 4, lRow + i);
+        lSchedulerChecklistGridPane.add(lPlusButton, 2, lRow + i);
       }
     }
 
