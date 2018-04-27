@@ -31,6 +31,7 @@ import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpti
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.MeasureTimeScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
+import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.ExposureModulatedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
@@ -446,6 +447,8 @@ public class SimulatedLightSheetMicroscope extends
 
         addDevice(0, lViewSingleLightSheetStackScheduler);
         addDevice(0, lWriteSingleLightSheetImageToDiscScheduler);
+
+        addDevice(0, new ExposureModulatedAcquisitionScheduler(c, l));
 
       }
     }
