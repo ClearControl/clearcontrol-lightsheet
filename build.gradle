@@ -93,6 +93,8 @@ dependencies
 
     //compile ('net.clearcontrol:ClearStep:0.1.0-RH')  {transitive= true; changing= true}
 
+    // post processing:
+    compile ('net.clearcontrol:clearclij:0.2.8')      {transitive= true; changing= true}
 
     // FastFuse:
     compile ('net.clearcontrol:fastfuse:0.6.3')      {transitive= true; changing= true}
