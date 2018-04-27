@@ -26,7 +26,7 @@ public class MirrorModeScheduler extends SchedulerBase implements
   private SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
 
   public MirrorModeScheduler(SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
-    super("Adaptive Optics: Mirror mode scheduler for " + pSpatialPhaseModulatorDeviceInterface.getName());
+    super("Adaptation: Mirror mode scheduler for " + pSpatialPhaseModulatorDeviceInterface.getName());
 
     mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
   }
