@@ -59,6 +59,7 @@ import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateReset
 import clearcontrol.microscope.lightsheet.state.schedulers.InterpolatedAcquisitionStateLogScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
@@ -368,6 +369,10 @@ public class SimulatedLightSheetMicroscope extends
     lTimelapse.addFileStackSinkType(RawFileStackSink.class);
     //lTimelapse.addFileStackSinkType(SqeazyFileStackSink.class);
 
+    if (lTimelapse instanceof LightSheetTimelapse) {
+      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(getDevice(DataWarehouseResetScheduler.class, 0));
+    }
+
 
     if (getNumberOfLightSheets() > 1) {
       addDevice(0, new InterleavedAcquisitionScheduler());
@@ -384,6 +389,7 @@ public class SimulatedLightSheetMicroscope extends
       DropOldestStackInterfaceContainerScheduler lDropContainerScheduler = new DropOldestStackInterfaceContainerScheduler(SequentialImageDataContainer.class);
       DropOldestStackInterfaceContainerScheduler lDropFusedContainerScheduler = new DropOldestStackInterfaceContainerScheduler(FusedImageDataContainer.class);
 
+      ThumbnailScheduler<FusedImageDataContainer> lFusedThumbnailScheduler =  new ThumbnailScheduler<FusedImageDataContainer>(FusedImageDataContainer.class);
       ViewFusedStackScheduler lViewFusedStackScheduler = new ViewFusedStackScheduler();
 
       if (lTimelapse instanceof LightSheetTimelapse)
@@ -392,6 +398,7 @@ public class SimulatedLightSheetMicroscope extends
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialFusionScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewFusedStackScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSequentialFusedImageToDiscScheduler);
+        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lFusedThumbnailScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lDropFusedContainerScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lDropContainerScheduler);
       }
@@ -412,9 +419,10 @@ public class SimulatedLightSheetMicroscope extends
 
       addDevice(0, lDropFusedContainerScheduler);
       addDevice(0, lViewFusedStackScheduler);
-      addDevice(0, new ThumbnailScheduler<FusedImageDataContainer>(FusedImageDataContainer.class));
+      addDevice(0, lFusedThumbnailScheduler);
     }
 
+    ThumbnailScheduler<StackInterfaceContainer> lStackThumbnailScheduler = new ThumbnailScheduler<StackInterfaceContainer>(StackInterfaceContainer.class);
 
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
       for (int l = 0; l < getNumberOfLightSheets(); l++) {
@@ -431,6 +439,7 @@ public class SimulatedLightSheetMicroscope extends
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSingleViewAcquisitionScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewSingleLightSheetStackScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSingleLightSheetImageToDiscScheduler);
+          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lStackThumbnailScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers()
                   .add(getDevice(DropOldestStackInterfaceContainerScheduler.class, 0));
         }
@@ -440,6 +449,7 @@ public class SimulatedLightSheetMicroscope extends
 
       }
     }
+    addDevice(0, lStackThumbnailScheduler);
 
     addDevice(0, new PauseScheduler());
 

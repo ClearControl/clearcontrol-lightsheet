@@ -33,7 +33,7 @@ public class ThumbnailScheduler<T extends StackInterfaceContainer> extends Sched
      *
      */
     public ThumbnailScheduler(Class<T> pClass) {
-        super("Post-processing: Thumbnail generator for " + pClass);
+        super("Post-processing: Thumbnail generator for " + pClass.getSimpleName());
         mClass = pClass;
     }
 
