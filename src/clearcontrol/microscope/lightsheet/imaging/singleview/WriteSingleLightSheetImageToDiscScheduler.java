@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerToDiscScheduler;
 
 /**
@@ -19,7 +20,7 @@ public class WriteSingleLightSheetImageToDiscScheduler extends
    */
   public WriteSingleLightSheetImageToDiscScheduler(int pDetectionArmIndex, int pLightSheetIndex)
   {
-    super("IO: Write C" + pDetectionArmIndex + "L" + pLightSheetIndex + " raw data to disc", SequentialImageDataContainer.class, new String[] {"C" + pDetectionArmIndex + "L" + pLightSheetIndex}, null);
+    super("IO: Write C" + pDetectionArmIndex + "L" + pLightSheetIndex + " raw data to disc", StackInterfaceContainer.class, new String[] {"C" + pDetectionArmIndex + "L" + pLightSheetIndex}, null);
   }
 }
 

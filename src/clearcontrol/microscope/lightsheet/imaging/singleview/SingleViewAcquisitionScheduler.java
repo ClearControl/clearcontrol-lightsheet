@@ -11,7 +11,7 @@ import coremem.recycling.RecyclerInterface;
  * This scheduler acquires a single image stack for a defined camera
  * and light sheet.
  * The image stacks are stored in the DataWarehouse in
- * an SingleLightSheetImageDataContainer with a key like:
+ * an StackInterfaceContainer with a key like:
  *
  * C0L0
  *
