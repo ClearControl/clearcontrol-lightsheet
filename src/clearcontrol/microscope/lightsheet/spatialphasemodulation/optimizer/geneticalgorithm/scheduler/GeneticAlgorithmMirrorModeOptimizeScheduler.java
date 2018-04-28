@@ -21,7 +21,7 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase implements LoggingFeature {
 
     private BoundedVariable<Integer> mNumberOfEpochsPerTimePoint = new BoundedVariable<Integer>("Number of epochs per time point",10, 0, Integer.MAX_VALUE);
-    private BoundedVariable<Integer> mPopulationSize = new BoundedVariable<Integer>("Population size",100, 0, Integer.MAX_VALUE);
+    private BoundedVariable<Integer> mPopulationSize = new BoundedVariable<Integer>("Population size",10, 0, Integer.MAX_VALUE);
     private BoundedVariable<Integer> mNumberOfMutations = new BoundedVariable<Integer>("NumberOfMutations",1, 0, Integer.MAX_VALUE);
 
     private BoundedVariable<Double> mPositionZ = null;

@@ -7,6 +7,9 @@ import java.util.concurrent.TimeUnit;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
 import clearcontrol.devices.lasers.schedulers.LaserOnOffScheduler;
 import clearcontrol.devices.lasers.schedulers.LaserPowerScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LogMirrorModeToFileScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import javafx.application.Application;
@@ -104,6 +107,20 @@ public class SimulatedLightSheetMicroscopeDemo extends Application
                                       lSimulatorDevice);
 
       lMicroscope.addStandardDevices(lNumberOfControlPlanes);
+
+
+      // Setting up deformable mirror
+      /*{
+        SpatialPhaseModulatorDeviceSimulator lMirror = new SpatialPhaseModulatorDeviceSimulator("SimDM", 11, 1);
+        lMicroscope.addDevice(0, lMirror);
+
+        GeneticAlgorithmMirrorModeOptimizeScheduler lMirrorOptimizer = new GeneticAlgorithmMirrorModeOptimizeScheduler(lMirror);
+        lMicroscope.addDevice(0, lMirrorOptimizer);
+
+        LogMirrorModeToFileScheduler lMirrorModeSaver = new LogMirrorModeToFileScheduler(lMirror);
+        lMicroscope.addDevice(0, lMirrorModeSaver);
+      }*/
+
 
       LightSheetTimelapse lLightSheetTimelapse = lMicroscope.getDevice(LightSheetTimelapse.class, 0);
       LaserDeviceInterface lLaser = lMicroscope.getDevice(
