@@ -1,12 +1,13 @@
-package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.demo;
+package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.actuator.demo;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.actuator.ActuatorSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import org.ejml.data.DenseMatrix64F;
 
 /**
- * ZernikeDemoSolution
+ * ActuatorDemoSolution
  *
  * In this class we override the fitnesses function to make it compare to a reference solution. In that way, the genetic
  * algorithm can be tested without a real microscope.
@@ -14,14 +15,14 @@ import org.ejml.data.DenseMatrix64F;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class ZernikeDemoSolution extends ZernikeSolution {
+public class ActuatorDemoSolution extends ActuatorSolution {
 
 
     DenseMatrix64F mReferenceMatrix;
 
-    public ZernikeDemoSolution(double[] pFactors, LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ, DenseMatrix64F pReference) {
-        super(pFactors, pLightSheetMicroscope, pSpatialPhaseModulatorDeviceInterface, pPositionZ);
-        mReferenceMatrix = pReference;
+    public ActuatorDemoSolution(DenseMatrix64F pMatrix, LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ, DenseMatrix64F pReferenceMatrix) {
+        super(pMatrix, pLightSheetMicroscope, pSpatialPhaseModulatorDeviceInterface, pPositionZ);
+        mReferenceMatrix = pReferenceMatrix;
     }
 
     @Override

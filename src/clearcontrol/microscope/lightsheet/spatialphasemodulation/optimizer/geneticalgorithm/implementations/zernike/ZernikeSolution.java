@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gene
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.fitness.MirrorModeImageQualityDeterminer;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.SolutionInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
@@ -47,14 +48,8 @@ public class ZernikeSolution implements SolutionInterface {
 
         DenseMatrix64F lMatrix = getMatrix();
 
-        mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(lMatrix);
+        return new MirrorModeImageQualityDeterminer(mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, lMatrix).getFitness();
 
-
-        SingleViewPlaneImager lImager = new SingleViewPlaneImager(mLightSheetMicroscope, mPositionZ);
-        StackInterface lStack = lImager.acquire();
-
-        DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
-        return lQualityEstimator.getQualityArray()[0];
     }
 
     public DenseMatrix64F getMatrix() {

@@ -5,6 +5,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.genet
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolutionFactory;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
+import org.ejml.data.DenseMatrix64F;
 
 /**
  * The ZernikeDemoSolutionFactory allows to create ZernikeDemoSolutions which don't need a real microscope to calculate
@@ -17,24 +18,24 @@ public class ZernikeDemoSolutionFactory implements SolutionFactory<ZernikeDemoSo
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
     private final LightSheetMicroscope mLightSheetMicroscope;
     private final double mPositionZ;
-    private final ZernikeSolution mReferenceSolution;
+    private final DenseMatrix64F mReferenceMatrix;
     private ZernikeSolutionFactory mFactory;
 
 
-    public ZernikeDemoSolutionFactory(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ, int pZernikeCount, ZernikeSolution pReferenceSolution) {
+    public ZernikeDemoSolutionFactory(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ, int pZernikeCount, DenseMatrix64F pReferenceMatrix) {
 
         mFactory = new ZernikeSolutionFactory(pLightSheetMicroscope, pSpatialPhaseModulatorDeviceInterface, pPositionZ, pZernikeCount);
         mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
         mLightSheetMicroscope = pLightSheetMicroscope;
         mPositionZ = pPositionZ;
-        mReferenceSolution = pReferenceSolution;
+        mReferenceMatrix = pReferenceMatrix;
     }
 
     @Override
     public ZernikeDemoSolution random() {
         ZernikeSolution lSolution = mFactory.random();
 
-        return new ZernikeDemoSolution(lSolution.mFactors, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, mReferenceSolution);
+        return new ZernikeDemoSolution(lSolution.mFactors, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, mReferenceMatrix);
     }
 
 
@@ -42,6 +43,6 @@ public class ZernikeDemoSolutionFactory implements SolutionFactory<ZernikeDemoSo
     public ZernikeDemoSolution crossover(ZernikeDemoSolution pSolution1, ZernikeDemoSolution pSolution2) {
         ZernikeSolution lSolution = mFactory.crossover(pSolution1, pSolution2);
 
-        return new ZernikeDemoSolution(lSolution.mFactors, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, mReferenceSolution);
+        return new ZernikeDemoSolution(lSolution.mFactors, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, mReferenceMatrix);
     }
 }
