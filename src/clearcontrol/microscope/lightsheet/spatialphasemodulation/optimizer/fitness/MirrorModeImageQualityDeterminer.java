@@ -38,6 +38,11 @@ public class MirrorModeImageQualityDeterminer {
         mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(mMatrix);
 
         SingleViewPlaneImager lImager = new SingleViewPlaneImager(mLightSheetMicroscope, mPositionZ);
+        lImager.setImageWidth(1024);
+        lImager.setImageHeight(1024);
+        lImager.setExposureTimeInSeconds(0.01);
+        lImager.setDetectionArmIndex(0);
+        lImager.setLightSheetIndex(0);
         StackInterface lStack = lImager.acquire();
 
         DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
