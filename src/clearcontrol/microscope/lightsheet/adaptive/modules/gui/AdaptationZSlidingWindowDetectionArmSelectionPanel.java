@@ -28,7 +28,7 @@ public class AdaptationZSlidingWindowDetectionArmSelectionPanel extends
                                   Double.POSITIVE_INFINITY,
                                   0.001);
 
-    addNumberTextFieldForVariable("Sliding window width for detection arm selection (no of control planes)): ",
+    addNumberTextFieldForVariable("Sliding window width for detection arm runEpoch (no of control planes)): ",
                                   pAdaptationZSlidingWindowDetectionArmSelection.getSlidingWindowWidthVariable(),
                                   0,
                                   Integer.MAX_VALUE,

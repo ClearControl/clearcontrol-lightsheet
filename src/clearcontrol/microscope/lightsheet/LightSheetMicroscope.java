@@ -152,10 +152,7 @@ public class LightSheetMicroscope extends
       lStackCameraDevice.getStackVariable()
                         .sendUpdatesTo(getStackProcesssingPipeline().getInputVariable());
     }
-    if (pDevice instanceof SchedulerInterface) {
-      ((SchedulerInterface) pDevice).setMicroscope(this);
-      ((SchedulerInterface) pDevice).initialize();
-    }
+
   }
 
   /**
@@ -414,5 +411,14 @@ public class LightSheetMicroscope extends
     return null;
   }
 
+  @Override
+  public boolean start() {
+    boolean result = super.start();
+    for (SchedulerInterface pDevice : getDevices(SchedulerInterface.class)) {
+      pDevice.setMicroscope(this);
+      pDevice.initialize();
+    }
+    return result;
+  }
 
 }
