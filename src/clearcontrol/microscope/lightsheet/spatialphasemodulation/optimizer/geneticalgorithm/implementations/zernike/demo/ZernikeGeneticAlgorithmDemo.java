@@ -34,7 +34,7 @@ public class ZernikeGeneticAlgorithmDemo {
         Population<ZernikeDemoSolution> lPopulation = lInitialPopulation;
 
         for (int i = 0; i < 200; i ++) {
-            lPopulation = lPopulation.selection();
+            lPopulation = lPopulation.runEpoch();
         }
         //System.out.println("Population [" + i + "] fitness: " + lPopulation.fitness());
         ZernikeDemoSolution lSolution = lPopulation.best();

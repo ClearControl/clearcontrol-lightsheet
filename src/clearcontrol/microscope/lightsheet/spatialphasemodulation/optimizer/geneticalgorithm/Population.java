@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * The Population represents a list of solutions undergoing selection, recombination (crossover) and mutation to make
+ * The Population represents a list of solutions undergoing runEpoch, recombination (crossover) and mutation to make
  * a new Population.
  *
  * https://en.wikipedia.org/wiki/Genetic_algorithm
@@ -66,7 +66,7 @@ public class Population<S extends SolutionInterface> {
 
 
 
-    public Population selection() {
+    public Population runEpoch() {
         // determine fitnesses for all solutions
         double[] lFitnesses = fitnesses();
 

@@ -3,10 +3,6 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gene
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.Population;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
-import com.sun.media.imageioimpl.plugins.jpeg2000.DataEntryURLBox;
-import org.ejml.data.DenseMatrix64F;
-
-import java.util.Arrays;
 
 /**
  * The ActuatorGeneticAlgorithmDemo sets a certain combination of Zernike modes as ground truth and asks a genetic
@@ -38,7 +34,7 @@ public class ActuatorGeneticAlgorithmDemo {
         Population<ActuatorDemoSolution> lPopulation = lInitialPopulation;
 
         for (int i = 0; i < 2000; i ++) {
-            lPopulation = lPopulation.selection();
+            lPopulation = lPopulation.runEpoch();
         }
         //System.out.println("Population [" + i + "] fitness: " + lPopulation.fitness());
         ActuatorDemoSolution lSolution = lPopulation.best();
