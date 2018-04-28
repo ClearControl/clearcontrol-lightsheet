@@ -89,7 +89,9 @@ public class Population<S extends SolutionInterface> {
             }
 
             S lSolution = mFactory.crossover(lNewSolutionList.get(lRandomA), lNewSolutionList.get(lRandomB));
-            lSolution.mutate();
+            for (int m = 0; m < mNumberOfMutations; m++) {
+                lSolution.mutate();
+            }
             lNewSolutionList.add(lSolution);
         }
 
