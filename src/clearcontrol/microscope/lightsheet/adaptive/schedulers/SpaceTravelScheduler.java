@@ -4,17 +4,13 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import com.sun.corba.se.impl.logging.POASystemException;
-import javafx.geometry.Pos;
-import javafx.scene.effect.Light;
 
 import java.util.ArrayList;
 
 /**
- * SpaceTravelScheduler
- * <p>
- * <p>
- * <p>
+ * The SpaceTravelScheduler allows to move the FOV between timepoints along a given travel route. It works by moving
+ * three BasicStages: X, Y and Z
+ *
  * Author: @haesleinhuepf
  * 04 2018
  */
