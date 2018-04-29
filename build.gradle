@@ -95,6 +95,8 @@ dependencies
 
     // post processing:
     compile ('net.clearcontrol:clearclij:0.2.8')      {transitive= true; changing= true}
+    compile ('de.mpicbg.spimcat:spimcelldetection:0.1.3') {transitive= true; changing= true}
+
 
     // FastFuse:
     compile ('net.clearcontrol:fastfuse:0.6.3')      {transitive= true; changing= true}

@@ -12,6 +12,8 @@ import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelSchedul
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderAlphaByVariationSchedulerPanel;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderZSchedulerPanel;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.SpaceTravelPathPlanningPanel;
+import clearcontrol.microscope.lightsheet.postprocessing.schedulers.SpotDetectionScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.schedulers.gui.SpotDetectionSchedulerPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.MirrorModeSchedulerPanel;
 import javafx.stage.Stage;
@@ -205,6 +207,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
     addPanelMappingEntry(BasicThreeAxesStageScheduler.class,
                         BasicThreeAxesStageSchedulerPanel.class,
                         MicroscopeNodeType.Stage);
+
+    addPanelMappingEntry(SpotDetectionScheduler.class,
+                        SpotDetectionSchedulerPanel.class,
+                        MicroscopeNodeType.Other);
 
   }
 

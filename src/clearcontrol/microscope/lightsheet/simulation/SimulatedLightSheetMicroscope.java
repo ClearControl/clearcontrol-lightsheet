@@ -48,6 +48,7 @@ import clearcontrol.microscope.lightsheet.imaging.sequential.WriteSequentialRawD
 import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightSheetStackScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageToDiscScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.schedulers.SpotDetectionScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.schedulers.ThumbnailScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackScheduler;
@@ -461,6 +462,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, lFusedThumbnailScheduler);
     }
 
+
     ThumbnailScheduler<StackInterfaceContainer> lStackThumbnailScheduler = new ThumbnailScheduler<StackInterfaceContainer>(StackInterfaceContainer.class);
 
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
@@ -489,6 +491,9 @@ public class SimulatedLightSheetMicroscope extends
       }
     }
     addDevice(0, lStackThumbnailScheduler);
+
+    addDevice(0, new SpotDetectionScheduler<FusedImageDataContainer>(FusedImageDataContainer.class));
+    addDevice(0, new SpotDetectionScheduler<StackInterfaceContainer>(StackInterfaceContainer.class));
 
     addDevice(0, new PauseScheduler());
 
