@@ -1,9 +1,17 @@
 package clearcontrol.microscope.lightsheet.gui;
 
+import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
+import clearcontrol.devices.stages.kcube.gui.BasicThreeAxesStagePanel;
+import clearcontrol.devices.stages.kcube.gui.KCubePane;
+import clearcontrol.devices.stages.kcube.impl.KCubeDevice;
+import clearcontrol.devices.stages.kcube.scheduler.BasicThreeAxesStageScheduler;
+import clearcontrol.devices.stages.kcube.scheduler.gui.BasicThreeAxesStageSchedulerPanel;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderAlphaByVariationScheduler;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderZScheduler;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderAlphaByVariationSchedulerPanel;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderZSchedulerPanel;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.SpaceTravelPathPlanningPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.MirrorModeSchedulerPanel;
 import javafx.stage.Stage;
@@ -181,6 +189,22 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
     addPanelMappingEntry(FocusFinderZScheduler.class,
                          FocusFinderZSchedulerPanel.class,
                          MicroscopeNodeType.AdaptiveOptics);
+
+    addPanelMappingEntry(SpaceTravelScheduler.class,
+                         SpaceTravelPathPlanningPanel.class,
+                         MicroscopeNodeType.Stage);
+
+    addPanelMappingEntry(KCubeDevice.class,
+                        KCubePane.class,
+                        MicroscopeNodeType.Stage);
+
+    addPanelMappingEntry(BasicThreeAxesStageInterface.class,
+                        BasicThreeAxesStagePanel.class,
+                        MicroscopeNodeType.Stage);
+
+    addPanelMappingEntry(BasicThreeAxesStageScheduler.class,
+                        BasicThreeAxesStageSchedulerPanel.class,
+                        MicroscopeNodeType.Stage);
 
   }
 
