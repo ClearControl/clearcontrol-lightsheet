@@ -16,14 +16,15 @@ import clearcontrol.devices.optomech.filterwheels.devices.sim.FilterWheelDeviceS
 import clearcontrol.devices.signalamp.ScalingAmplifierDeviceInterface;
 import clearcontrol.devices.signalamp.devices.sim.ScalingAmplifierSimulator;
 import clearcontrol.devices.signalgen.devices.sim.SignalGeneratorSimulatorDevice;
+import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
 import clearcontrol.devices.stages.StageType;
 import clearcontrol.devices.stages.devices.sim.StageDeviceSimulator;
+import clearcontrol.devices.stages.kcube.scheduler.BasicThreeAxesStageScheduler;
+import clearcontrol.devices.stages.kcube.sim.SimulatedBasicStageDevice;
+import clearcontrol.devices.stages.kcube.sim.SimulatedThreeAxesStageDevice;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.ControlPlaneFocusFinderAlphaByVariationScheduler;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.ControlPlaneFocusFinderZScheduler;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderAlphaByVariationScheduler;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderZScheduler;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.*;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
@@ -170,6 +171,30 @@ public class SimulatedLightSheetMicroscope extends
 
       addDevice(0, lStageDeviceSimulator);
     }
+
+    {
+      //KCubeDeviceFactory lKCubeDeviceFactory = KCubeDeviceFactory.getInstance();
+      //addDevice(0, lKCubeDeviceFactory);
+      //addDevice(0, lKCubeDeviceFactory.createKCubeDevice(26000318, "I3B")); // XWing LS3 beta angle
+
+      BasicThreeAxesStageInterface lBasicThreeAxesStageInterface = new SimulatedThreeAxesStageDevice();
+
+      addDevice(0, lBasicThreeAxesStageInterface);
+
+      BasicThreeAxesStageScheduler lBasicThreeAxesStageScheduler = new BasicThreeAxesStageScheduler(lBasicThreeAxesStageInterface);
+      addDevice(0, lBasicThreeAxesStageScheduler);
+
+      addDevice(0, new SimulatedBasicStageDevice("X"));
+      addDevice(0, new SimulatedBasicStageDevice("Y"));
+      addDevice(0, new SimulatedBasicStageDevice("Z"));
+
+      addDevice(0, new CenterSampleInXYScheduler());
+      addDevice(0, new CenterSampleInZScheduler());
+    }
+
+
+
+
 
     // Setting up Filterwheel:
     {
