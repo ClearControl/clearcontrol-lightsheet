@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.adaptive.schedulers.gui;
 
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
@@ -9,7 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 
-import javax.swing.text.Position;
 import java.util.ArrayList;
 
 /**
@@ -29,7 +29,7 @@ public class SpaceTravelPathPlanningPanel extends CustomGridPane {
         lListView.setItems(FXCollections.observableArrayList(lTravelPathList));
         lListView.setMinWidth(450);
 
-        add(lListView, 0, 0, 1, 5);
+        add(lListView, 0, 0, 3, 5);
 
         int lRow = 0;
         {
@@ -47,7 +47,7 @@ public class SpaceTravelPathPlanningPanel extends CustomGridPane {
                             lTravelPathList));
                 }
             });
-            add(lMoveUpButton, 1, lRow);
+            add(lMoveUpButton, 3, lRow);
             lRow++;
         }
 
@@ -67,7 +67,7 @@ public class SpaceTravelPathPlanningPanel extends CustomGridPane {
                             lTravelPathList));
                 }
             });
-            add(lMoveDownButton, 1, lRow);
+            add(lMoveDownButton, 3, lRow);
             lRow++;
         }
 
@@ -91,7 +91,7 @@ public class SpaceTravelPathPlanningPanel extends CustomGridPane {
                 lListView.getSelectionModel().select(lSelectedIndex);
             });
             GridPane.setValignment(lMinusButton, VPos.BOTTOM);
-            add(lMinusButton, 1, lRow);
+            add(lMinusButton, 3, lRow);
             lRow++;
         }
 
@@ -99,30 +99,58 @@ public class SpaceTravelPathPlanningPanel extends CustomGridPane {
         // add current position button
         {
             Button lAddCurrentPositionButton = new Button("+");
+            lAddCurrentPositionButton.setMinWidth(35);
+            lAddCurrentPositionButton.setMinHeight(35);
             lAddCurrentPositionButton.setOnAction((e) -> {
-                pSpaceTravelScheduler.appendCurrentPositionToPath();
+                int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
+                if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lTravelPathList.size();
+                pSpaceTravelScheduler.appendCurrentPositionToPath(lSelectedIndexInMainList);
                 lListView.setItems(FXCollections.observableArrayList(lTravelPathList));
             });
-            add(lAddCurrentPositionButton, 1, lRow);
+            add(lAddCurrentPositionButton, 3, lRow);
             lRow++;
         }
 
         // go to current position
         {
-            Button lMoveUpButton = new Button("^");
-            lMoveUpButton.setMinWidth(35);
-            lMoveUpButton.setMinHeight(35);
-            lMoveUpButton.setOnAction((e) -> {
+            Button lGotoPositionButton = new Button(">");
+            lGotoPositionButton.setMinWidth(35);
+            lGotoPositionButton.setMinHeight(35);
+            lGotoPositionButton.setOnAction((e) -> {
                 int i = lListView.getSelectionModel().getSelectedIndex();
                 if (i > -1)
                 {
                     pSpaceTravelScheduler.goToPosition(i);
                 }
             });
-            add(lMoveUpButton, 1, lRow);
+            add(lGotoPositionButton, 3, lRow);
             lRow++;
         }
 
+        BoundedVariable<Double> lPositionX = new BoundedVariable<Double>("X", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
+        BoundedVariable<Double> lPositionY = new BoundedVariable<Double>("Y", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
+        BoundedVariable<Double> lPositionZ = new BoundedVariable<Double>("Z", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
+
+
+        addDoubleField(lPositionX, lRow);
+        lRow++;
+        addDoubleField(lPositionY, lRow);
+        lRow++;
+        addDoubleField(lPositionZ, lRow);
+        {
+            Button lManualAddPosition = new Button("+");
+            lManualAddPosition.setMinWidth(35);
+            lManualAddPosition.setMinHeight(35);
+            lManualAddPosition.setOnAction((e) -> {
+                int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
+                if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lTravelPathList.size();
+                lTravelPathList.add(lSelectedIndexInMainList, new SpaceTravelScheduler.Position(lPositionX.get(), lPositionY.get(), lPositionZ.get()));
+                lListView.setItems(FXCollections.observableArrayList(lTravelPathList));
+            });
+            add(lManualAddPosition, 3, lRow);
+
+        }
+        lRow++;
 
         addIntegerField(pSpaceTravelScheduler.getSleepAfterMotionInMilliSeconds(), lRow);
     }

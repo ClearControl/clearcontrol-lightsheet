@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public class SpaceTravelScheduler extends SchedulerBase {
 
-    public class Position{
+    public static class Position{
         public Position(double x, double y, double z) {
             mX = x;
             mY = y;
@@ -85,7 +85,7 @@ public class SpaceTravelScheduler extends SchedulerBase {
         return true;
     }
 
-    public boolean appendCurrentPositionToPath() {
+    public boolean appendCurrentPositionToPath(int lTargetIndex) {
         if (!initializeStages()) {
             return false;
         }
@@ -93,7 +93,7 @@ public class SpaceTravelScheduler extends SchedulerBase {
         Position here = new Position(mStageX.getPositionVariable().get(),
                 mStageY.getPositionVariable().get(),
                 mStageZ.getPositionVariable().get());
-        mTravelPath.add(here);
+        mTravelPath.add(lTargetIndex, here);
 
         return true;
     }
