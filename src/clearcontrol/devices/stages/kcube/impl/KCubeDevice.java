@@ -98,37 +98,19 @@ public class KCubeDevice extends VirtualDevice
 
   public boolean moveBy(double pStep, boolean pWaitToFinish) {
     double lNewPosition = getCurrentPosition() + pStep;
-    if (lNewPosition > getMaxPosition() || lNewPosition < getMinPosition()) {
+    /*if (lNewPosition > getMaxPosition() || lNewPosition < getMinPosition()) {
       warning("The KCube controlled motor " + mSerialId + " cannot be moved to position " + lNewPosition + ", it would be out of [" + getMinPosition() + ", " + getMaxPosition() + "]");
       return false;
-    }
-
-
+    }*/
     info("Moving KCube " + mSerialId + " by " + pStep);
-
-    return moveTo(pStep, pWaitToFinish);
-  }
-
-  @Override public Variable<Double> getPositionVariable()
-  {
-    return mPositionVariable;
-  }
-
-  public boolean moveTo(double pPosition)
-  {
-    return moveTo(pPosition, false);
-  }
-
-  public boolean moveTo(double pPosition, boolean pWaitToFinish) {
-    info("Moving KCube " + mSerialId + " to " + pPosition);
     try
     {
-      mKCubeAPTJDevice.moveBy(pPosition);
+      mKCubeAPTJDevice.moveBy(pStep);
       if (pWaitToFinish)
       {
         mKCubeAPTJDevice.waitWhileMoving(mPollPeriodWhileWaiting,
-                                         mTimeoutWhileWaiting,
-                                         mTimeUnit);
+                mTimeoutWhileWaiting,
+                mTimeUnit);
         mPositionVariable.set(mKCubeAPTJDevice.getCurrentPosition());
       }
       return true;
@@ -138,7 +120,11 @@ public class KCubeDevice extends VirtualDevice
       aptjExeption.printStackTrace();
     }
     return false;
+
   }
 
-
+  @Override public Variable<Double> getPositionVariable()
+  {
+    return mPositionVariable;
+  }
 }
