@@ -127,9 +127,9 @@ public class SpaceTravelPathPlanningPanel extends CustomGridPane {
             lRow++;
         }
 
-        BoundedVariable<Double> lPositionX = new BoundedVariable<Double>("X", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
-        BoundedVariable<Double> lPositionY = new BoundedVariable<Double>("Y", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
-        BoundedVariable<Double> lPositionZ = new BoundedVariable<Double>("Z", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.1);
+        BoundedVariable<Double> lPositionX = new BoundedVariable<Double>("X", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.0001);
+        BoundedVariable<Double> lPositionY = new BoundedVariable<Double>("Y", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.0001);
+        BoundedVariable<Double> lPositionZ = new BoundedVariable<Double>("Z", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.0001);
 
 
         addDoubleField(lPositionX, lRow);
