@@ -38,11 +38,11 @@ public class MirrorModeScheduler extends SchedulerBase implements
     return mRootFolderVariable;
   }
 
-  private int mTimePointCount = -1;
+  private int mTimePointCount = 0;
 
   @Override public boolean initialize()
   {
-    mTimePointCount = -1;
+    mTimePointCount = 0;
     return true;
   }
 
@@ -56,7 +56,7 @@ public class MirrorModeScheduler extends SchedulerBase implements
       warning("Error: given root folder is no directory");
       return false;
     }
-    long lFileIndex = pTimePoint % lFolder.listFiles().length;
+    long lFileIndex = mTimePointCount;
 
     File lFile = lFolder.listFiles()[(int)lFileIndex];
 
@@ -64,7 +64,6 @@ public class MirrorModeScheduler extends SchedulerBase implements
         //new DenseMatrix64F(mSpatialPhaseModulatorDeviceInterface.getMatrixHeight(), mSpatialPhaseModulatorDeviceInterface.getMatrixWidth());
 
     info("Loading " + lFile);
-
     DenseMatrix64FReader lMatrixReader = new DenseMatrix64FReader(lFile, lMatrix);
     if (!lMatrixReader.read()) {
       warning("Error: matrix file could not be loaded");
@@ -72,8 +71,14 @@ public class MirrorModeScheduler extends SchedulerBase implements
 
     info("Sending matrix to mirror");
     mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(lMatrix);
-
+    System.out.println("I am HERE" + lMatrix);
     info("Sent. Scheduler done");
+
+    mTimePointCount++;
+    if(mTimePointCount >= lFolder.listFiles().length)
+    {
+      mTimePointCount = 0;
+    }
     return true;
   }
 }
