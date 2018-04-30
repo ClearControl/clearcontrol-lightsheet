@@ -74,6 +74,10 @@ public class ThumbnailScheduler<T extends StackInterfaceContainer> extends Sched
         lCLMaximumProjectionImage.close();
 
         new File(targetFolder + "/stacks/thumbnails/").mkdirs();
+
+
+        IJ.run(lImpMaximumProjection, "8-bit", "");
+        IJ.run(lImpMaximumProjection, "Enhance Contrast", "saturated=0.35");
         IJ.saveAs(lImpMaximumProjection, "JPEG", targetFolder + "/stacks/thumbnails/" +  String.format("%0" + lDigits + "d", lTimePoint) + ".jpg");
         return true;
     }
