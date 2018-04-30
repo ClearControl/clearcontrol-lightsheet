@@ -4,6 +4,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
+import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreScheduler;
 import clearcontrol.stack.StackInterface;
 import org.ejml.data.DenseMatrix64F;
 
@@ -36,6 +37,7 @@ public class MirrorModeImageQualityDeterminer {
     private void determineQuality()
     {
         mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(mMatrix);
+        backupState();
 
         SingleViewPlaneImager lImager = new SingleViewPlaneImager(mLightSheetMicroscope, mPositionZ);
         lImager.setImageWidth(1024);
@@ -47,11 +49,29 @@ public class MirrorModeImageQualityDeterminer {
 
         DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
         mQuality = lQualityEstimator.getQualityArray()[0];
+
+        restoreState();
     }
 
     public double getFitness() {
         determineQuality();
         return mQuality;
+    }
+
+    private void backupState() {
+        for (AcquisitionStateBackupRestoreScheduler lScheduler : mLightSheetMicroscope.getDevices(AcquisitionStateBackupRestoreScheduler.class)) {
+            if (lScheduler.isBackup()) {
+                lScheduler.enqueue(-1);
+            }
+        }
+    }
+
+    private void restoreState() {
+        for (AcquisitionStateBackupRestoreScheduler lScheduler : mLightSheetMicroscope.getDevices(AcquisitionStateBackupRestoreScheduler.class)) {
+            if (!lScheduler.isBackup()) {
+                lScheduler.enqueue(-1);
+            }
+        }
     }
 
 }

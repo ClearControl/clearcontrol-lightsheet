@@ -48,8 +48,9 @@ public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase i
 
         mLightSheetMicroscope = (LightSheetMicroscope)mMicroscope;
         InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-        mPositionZ = new BoundedVariable<Double>("position Z", (lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2, lState.getStackZLowVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue(), lState.getStackZLowVariable().getGranularity().doubleValue() );
-
+        if (mPositionZ == null) {
+            mPositionZ = new BoundedVariable<Double>("position Z", (lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2, lState.getStackZLowVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue(), lState.getStackZLowVariable().getGranularity().doubleValue());
+        }
         ZernikeSolutionFactory lFactory = new ZernikeSolutionFactory(mLightSheetMicroscope, mMirror, mPositionZ.get(), 6);
         mPopulation = new Population<ZernikeSolution>(lFactory, mPopulationSize.get(), mNumberOfMutations.get());
 
@@ -72,5 +73,19 @@ public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase i
         return true;
     }
 
+    public BoundedVariable<Double> getPositionZ() {
+        return mPositionZ;
+    }
 
+    public BoundedVariable<Integer> getNumberOfEpochsPerTimePoint() {
+        return mNumberOfEpochsPerTimePoint;
+    }
+
+    public BoundedVariable<Integer> getNumberOfMutations() {
+        return mNumberOfMutations;
+    }
+
+    public BoundedVariable<Integer> getPopulationSize() {
+        return mPopulationSize;
+    }
 }
