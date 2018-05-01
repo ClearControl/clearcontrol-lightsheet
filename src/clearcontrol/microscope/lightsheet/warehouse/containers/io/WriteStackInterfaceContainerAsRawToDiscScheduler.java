@@ -18,7 +18,7 @@ import clearcontrol.stack.sourcesink.sink.FileStackSinkInterface;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
-public class WriteStackInterfaceContainerToDiscScheduler extends
+public class WriteStackInterfaceContainerAsRawToDiscScheduler extends
                                                          SchedulerBase implements
                                                                        LoggingFeature
 {
@@ -31,7 +31,7 @@ public class WriteStackInterfaceContainerToDiscScheduler extends
      *
      * @param pDeviceName device name
      */
-  public WriteStackInterfaceContainerToDiscScheduler(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName)
+  public WriteStackInterfaceContainerAsRawToDiscScheduler(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName)
   {
     super(pDeviceName);
     mContainerClass = pContainerClass;

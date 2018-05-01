@@ -1,7 +1,6 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerToDiscScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscScheduler;
 
 /**
  * This scheduler writes the raw data from the sequential
@@ -10,8 +9,8 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
-public class WriteSequentialRawDataToDiscScheduler  extends
-                                                    WriteStackInterfaceContainerToDiscScheduler
+public class WriteSequentialRawDataToDiscScheduler extends
+        WriteStackInterfaceContainerAsRawToDiscScheduler
 {
   /**
    * INstanciates a virtual device with a given name

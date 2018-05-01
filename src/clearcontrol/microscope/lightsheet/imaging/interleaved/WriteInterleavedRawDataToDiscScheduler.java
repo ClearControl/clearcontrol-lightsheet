@@ -1,6 +1,6 @@
 package clearcontrol.microscope.lightsheet.imaging.interleaved;
 
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerToDiscScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscScheduler;
 
 /**
  * This scheduler writes the raw data from the oldest interleaved
@@ -10,7 +10,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * April 2018
  */
 public class WriteInterleavedRawDataToDiscScheduler extends
-                                                    WriteStackInterfaceContainerToDiscScheduler
+        WriteStackInterfaceContainerAsRawToDiscScheduler
 {
   /**
    * INstanciates a virtual device with a given name
