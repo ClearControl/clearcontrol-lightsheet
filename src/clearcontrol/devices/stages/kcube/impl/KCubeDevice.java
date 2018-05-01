@@ -40,7 +40,7 @@ public class KCubeDevice extends VirtualDevice
    */
   KCubeDevice(APTJDevice pKCubeDevice, String pName)
   {
-    super(pName + " (Thorlabs K-cube, " + pKCubeDevice.getSerialNumber() + ") test");
+    super(pName + " (Thorlabs K-cube, " + pKCubeDevice.getSerialNumber() + ")");
     mKCubeAPTJDevice = pKCubeDevice;
     mSerialId = mKCubeAPTJDevice.getSerialNumber();
     try
@@ -125,6 +125,7 @@ public class KCubeDevice extends VirtualDevice
 
   @Override public Variable<Double> getPositionVariable()
   {
+    mPositionVariable.set(getCurrentPosition());
     return mPositionVariable;
   }
 }
