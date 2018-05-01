@@ -130,6 +130,7 @@ public class SequentialAcquisitionScheduler extends
 
         try
         {
+          mTimeStampBeforeImaging = System.nanoTime();
           mLightSheetMicroscope.playQueueAndWait(lQueueForView,
                                                  mTimelapse.getTimeOut(),
                                                  TimeUnit.SECONDS);

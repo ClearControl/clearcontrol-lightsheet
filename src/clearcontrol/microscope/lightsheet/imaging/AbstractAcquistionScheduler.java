@@ -14,9 +14,11 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
+import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.sourcesink.sink.FileStackSinkInterface;
 import coremem.recycling.RecyclerInterface;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,6 +52,7 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
   protected LightSheetMicroscope mLightSheetMicroscope;
   protected InterpolatedAcquisitionState mCurrentState;
   protected LightSheetTimelapse mTimelapse;
+  protected Long mTimeStampBeforeImaging = 0L;
 
   @Override public boolean initialize()
   {
@@ -90,13 +93,15 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
       pStack.getContiguousMemory().copyTo(lStackCopyVariable.get().getContiguousMemory());
       lStackCopyVariable.get().setMetaData(pStack.getMetaData().clone());
     });
+    if ((lStackCopyVariable.get().getMetaData().getTimeStampInNanoseconds() - mTimeStampBeforeImaging) < 0) {
+      warning("Error: an acquired image is older than its request!");
+    }
 
-    info(pKey + " in a container " + MetaDataView.getCxLyString(lStackCopyVariable.get().getMetaData()));
+    info(pKey + " (" + lStackCopyVariable.get().getMetaData().getValue(MetaDataOrdinals.TimePoint) + ") in a container " + MetaDataView.getCxLyString(lStackCopyVariable.get().getMetaData()));
     pContainer.put(pKey,
                    lStackCopyVariable.get());
 
   }
-
 
   @Deprecated
   protected void initializeStackSaving(FileStackSinkInterface pFileStackSinkInterface) {

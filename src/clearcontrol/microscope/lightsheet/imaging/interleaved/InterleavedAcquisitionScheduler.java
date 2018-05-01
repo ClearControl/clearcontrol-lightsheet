@@ -150,6 +150,7 @@ public class InterleavedAcquisitionScheduler extends
     boolean lPlayQueueAndWait = false;
     try
     {
+      mTimeStampBeforeImaging = System.nanoTime();
       lPlayQueueAndWait = lLightsheetMicroscope.playQueueAndWait(lQueue,
                                                       100 + lQueue
                                                           .getQueueLength(),
