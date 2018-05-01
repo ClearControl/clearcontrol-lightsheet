@@ -28,6 +28,9 @@ public class BasicThreeAxesStageSchedulerPanel extends CustomGridPane
     this.add(lField.getTextField(), 1, mRow);
     mRow++;
 
+    addCheckbox(pBasicThreeAxesStageScheduler.getRestartAfterFinishVariable(), mRow);
+    mRow++;
+
   }
 
   private void addVariableTextField(BoundedVariable<Double> pVariable) {

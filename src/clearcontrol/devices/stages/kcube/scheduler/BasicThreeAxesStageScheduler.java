@@ -1,11 +1,14 @@
 package clearcontrol.devices.stages.kcube.scheduler;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+
+import java.time.temporal.ValueRange;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
@@ -23,8 +26,11 @@ public class BasicThreeAxesStageScheduler extends SchedulerBase implements
   private BoundedVariable<Double> mStopYVariable;
   private BoundedVariable<Double> mStopZVariable;
   private BoundedVariable<Integer> mNumberOfStepsVariable;
+  private Variable<Boolean> mRestartAfterFinishVariable = new Variable<Boolean>("Restart after finish", true);
 
   private BasicThreeAxesStageInterface mBasicThreeAxesStageInterface;
+
+  private int mStepCount = 0;
 
   public BasicThreeAxesStageScheduler(BasicThreeAxesStageInterface pBasicThreeAxesStageInterface) {
     super("Devices: Linear stage motion scheduler");
@@ -54,6 +60,8 @@ public class BasicThreeAxesStageScheduler extends SchedulerBase implements
     mBasicThreeAxesStageInterface.moveYBy(stepDistanceY, true);
     mBasicThreeAxesStageInterface.moveZBy(stepDistanceZ, true);
 
+    mStepCount = 0;
+
     return true;
   }
 
@@ -75,10 +83,15 @@ public class BasicThreeAxesStageScheduler extends SchedulerBase implements
             mNumberOfStepsVariable.get()
             - 1);
 
+    if (mStepCount > mNumberOfStepsVariable.get()) {
+      initialize();
+    }
     mBasicThreeAxesStageInterface.moveXBy(lStepDistanceX, true);
     mBasicThreeAxesStageInterface.moveYBy(lStepDistanceY, true);
     mBasicThreeAxesStageInterface.moveZBy(lStepDistanceZ, true);
 
+    mStepCount ++;
+    
     return true;
   }
 
@@ -115,5 +128,9 @@ public class BasicThreeAxesStageScheduler extends SchedulerBase implements
   public BoundedVariable<Integer> getNumberOfStepsVariable()
   {
     return mNumberOfStepsVariable;
+  }
+
+  public Variable<Boolean> getRestartAfterFinishVariable() {
+    return mRestartAfterFinishVariable;
   }
 }
