@@ -285,26 +285,29 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       for (int i = 0; i < lFilters.length; i++)
       {
         ArrayList<SchedulerInterface> lAvailableSchedulersList = pLightSheetTimelapse.getListOfAvailableSchedulers(lFilters[i]);
-        ComboBox<SchedulerInterface> lAvailableSchedulers = new ComboBox<>();
-        lAvailableSchedulers.setItems(FXCollections.observableArrayList(lAvailableSchedulersList));
-        lAvailableSchedulers.getSelectionModel().select(0);
-        lAvailableSchedulers.setMaxWidth(Double.MAX_VALUE);
-        lAvailableSchedulers.setMinHeight(35);
-        lAvailableSchedulers.setMinWidth(300);
-        lSchedulerChecklistGridPane.add(lAvailableSchedulers, 3, lRow + i);
+        if (lAvailableSchedulersList.size() > 0) {
+          ComboBox<SchedulerInterface> lAvailableSchedulers = new ComboBox<>();
+          lAvailableSchedulers.setItems(FXCollections.observableArrayList(lAvailableSchedulersList));
+          lAvailableSchedulers.getSelectionModel().select(0);
+          lAvailableSchedulers.setMaxWidth(Double.MAX_VALUE);
+          lAvailableSchedulers.setMinHeight(35);
+          lAvailableSchedulers.setMinWidth(300);
+          lSchedulerChecklistGridPane.add(lAvailableSchedulers, 3, lRow);
 
-        Button lPlusButton = new Button("+");
-        lPlusButton.setMinWidth(35);
-        lPlusButton.setMinHeight(35);
-        lPlusButton.setOnAction((e) -> {
-          int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
-          if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lSchedulerList.size();
-          int lSelectedIndexInAddList = lAvailableSchedulers.getSelectionModel().getSelectedIndex();
-          lSchedulerList.add(lSelectedIndexInMainList, lAvailableSchedulersList.get(lSelectedIndexInAddList));
-          lListView.setItems(FXCollections.observableArrayList(
-              lSchedulerList));
-        });
-        lSchedulerChecklistGridPane.add(lPlusButton, 2, lRow + i);
+          Button lPlusButton = new Button("+");
+          lPlusButton.setMinWidth(35);
+          lPlusButton.setMinHeight(35);
+          lPlusButton.setOnAction((e) -> {
+            int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
+            if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lSchedulerList.size();
+            int lSelectedIndexInAddList = lAvailableSchedulers.getSelectionModel().getSelectedIndex();
+            lSchedulerList.add(lSelectedIndexInMainList, lAvailableSchedulersList.get(lSelectedIndexInAddList));
+            lListView.setItems(FXCollections.observableArrayList(
+                    lSchedulerList));
+          });
+          lSchedulerChecklistGridPane.add(lPlusButton, 2, lRow);
+          lRow++;
+        }
       }
     }
 
