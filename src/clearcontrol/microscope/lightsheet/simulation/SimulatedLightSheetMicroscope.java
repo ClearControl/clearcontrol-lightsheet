@@ -7,6 +7,7 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.devices.cameras.devices.sim.StackCameraDeviceSimulator;
 import clearcontrol.devices.cameras.devices.sim.StackCameraSimulationProvider;
 import clearcontrol.devices.cameras.devices.sim.providers.FractalStackProvider;
+import clearcontrol.devices.filterwheel.schedulers.FilterWheelScheduler;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
 import clearcontrol.devices.lasers.devices.sim.LaserDeviceSimulator;
 import clearcontrol.devices.lasers.schedulers.LaserOnOffScheduler;
@@ -161,6 +162,8 @@ public class SimulatedLightSheetMicroscope extends
       }
     }
 
+
+
     // Setting up Stage:
     if (pXYZRStage)
     {
@@ -210,6 +213,12 @@ public class SimulatedLightSheetMicroscope extends
       lFilterWheelDevice.setPositionName(2, "561 filter");
       lFilterWheelDevice.setPositionName(3, "594 filter");
       getDeviceLists().addDevice(0, lFilterWheelDevice);
+
+
+      for(int f:lFilterWheelDevice.getValidPositions()) {
+        addDevice(0, new FilterWheelScheduler(lFilterWheelDevice, f));
+      }
+
     }
 
     // Setting up trigger:

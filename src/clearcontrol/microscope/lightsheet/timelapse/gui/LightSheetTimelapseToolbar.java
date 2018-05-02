@@ -109,7 +109,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         lSchedulerChecklistGridPane.getColumnConstraints().add(lColumnConstraints);
       }*/
 
-      String[] lFilters = {"Acquisition:", "Adaptation:", "Fusion:", "IO:", "Laser:", "Memory:", "Post-processing:", "State:", "Timing:", "Visualisation:", ""};
+      String[] lFilters = {"Acquisition:", "Adaptation:", "Fusion:", "IO:", "Laser:", "Memory:", "Post-processing:", "State:", "Timing:", "Visualisation:", "FilterWheel:"};
 
       TitledPane lTitledPane =
               new TitledPane("Schedule",
