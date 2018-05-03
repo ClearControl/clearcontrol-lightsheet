@@ -20,15 +20,16 @@ public class ZernikeSolutionFactory implements SolutionFactory<ZernikeSolution> 
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
     private final double mPositionZ;
     private final int mZernikeCount;
-    private final double sBound = 1.0;
+    private final double mRangeFactor;
 
     private Random mRandom = new Random();
 
-    public ZernikeSolutionFactory(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ, int pZernikeCount) {
+    public ZernikeSolutionFactory(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ, int pZernikeCount, double pRangeFactor) {
       mLightSheetMicroscope = pLightSheetMicroscope;
       mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
       mPositionZ = pPositionZ;
       mZernikeCount = pZernikeCount;
+      mRangeFactor = pRangeFactor;
     }
 
 
@@ -36,7 +37,7 @@ public class ZernikeSolutionFactory implements SolutionFactory<ZernikeSolution> 
     public ZernikeSolution random() {
         double[] lFactors = new double[mZernikeCount];
         for (int i = 0; i < lFactors.length; i++){
-            lFactors[i] = mRandom.nextDouble() * sBound * 2 - sBound;
+            lFactors[i] = mRandom.nextDouble() * mRangeFactor * 2 - mRangeFactor;
         }
 
         return new ZernikeSolution(lFactors, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ);

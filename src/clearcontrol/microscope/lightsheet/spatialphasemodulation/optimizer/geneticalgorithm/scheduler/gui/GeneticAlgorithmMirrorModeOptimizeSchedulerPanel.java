@@ -17,5 +17,6 @@ public class GeneticAlgorithmMirrorModeOptimizeSchedulerPanel extends CustomGrid
         addIntegerField(pGAScheduler.getNumberOfMutations(), 1);
         addIntegerField(pGAScheduler.getPopulationSize(), 2);
         addDoubleField(pGAScheduler.getPositionZ(), 3);
+        addDoubleField(pGAScheduler.getZernikeRangeFactor(), 4);
     }
 }
