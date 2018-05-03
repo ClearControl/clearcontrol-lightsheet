@@ -22,9 +22,9 @@ public class ZernikeDemoSolutionFactory implements SolutionFactory<ZernikeDemoSo
     private ZernikeSolutionFactory mFactory;
 
 
-    public ZernikeDemoSolutionFactory(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ, int pZernikeCount, DenseMatrix64F pReferenceMatrix) {
+    public ZernikeDemoSolutionFactory(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ, int pZernikeCount, double pRangeFactor, DenseMatrix64F pReferenceMatrix) {
 
-        mFactory = new ZernikeSolutionFactory(pLightSheetMicroscope, pSpatialPhaseModulatorDeviceInterface, pPositionZ, pZernikeCount);
+        mFactory = new ZernikeSolutionFactory(pLightSheetMicroscope, pSpatialPhaseModulatorDeviceInterface, pPositionZ, pZernikeCount, pRangeFactor);
         mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
         mLightSheetMicroscope = pLightSheetMicroscope;
         mPositionZ = pPositionZ;

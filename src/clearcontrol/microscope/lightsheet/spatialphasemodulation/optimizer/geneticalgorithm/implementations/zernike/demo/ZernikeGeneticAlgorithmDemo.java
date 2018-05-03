@@ -25,7 +25,7 @@ public class ZernikeGeneticAlgorithmDemo {
         //System.out.println("Test: " + mReferenceSolution.fitness());
         //if (true) return;
 
-        ZernikeDemoSolutionFactory lSolutionFactory = new ZernikeDemoSolutionFactory(null, lDMSimulator, 160, 6, lReferenceSolution.getMatrix());
+        ZernikeDemoSolutionFactory lSolutionFactory = new ZernikeDemoSolutionFactory(null, lDMSimulator, 160, 6, 1.0, lReferenceSolution.getMatrix());
 
         Population<ZernikeDemoSolution> lInitialPopulation = new Population<ZernikeDemoSolution>(lSolutionFactory, 100, 1);
 
