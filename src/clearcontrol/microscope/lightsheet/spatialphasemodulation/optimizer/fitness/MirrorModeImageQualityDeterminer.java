@@ -1,10 +1,14 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.fitness;
 
+import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 import clearcontrol.stack.StackInterface;
 import org.ejml.data.DenseMatrix64F;
 
@@ -16,7 +20,7 @@ import org.ejml.data.DenseMatrix64F;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class MirrorModeImageQualityDeterminer {
+public class MirrorModeImageQualityDeterminer implements LoggingFeature {
 
     // Input
     private final LightSheetMicroscope mLightSheetMicroscope;
@@ -36,7 +40,17 @@ public class MirrorModeImageQualityDeterminer {
 
     private void determineQuality()
     {
-        mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(mMatrix);
+        DenseMatrix64F lMatrixToTest = mMatrix;
+
+        DataContainerInterface lContainer = mLightSheetMicroscope.getDataWarehouse().get(mSpatialPhaseModulatorDeviceInterface.getName() + "_flat");
+        if (lContainer instanceof MirrorModeContainer) {
+            DenseMatrix64F lFlatMirrorMatrix = ((MirrorModeContainer) lContainer).getMirrorMode();
+            lMatrixToTest = TransformMatrices.sum(lMatrixToTest, lFlatMirrorMatrix);
+        } else {
+            warning("No flat mirror matix found!");
+        }
+
+        mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(lMatrixToTest);
         backupState();
 
         SingleViewPlaneImager lImager = new SingleViewPlaneImager(mLightSheetMicroscope, mPositionZ);

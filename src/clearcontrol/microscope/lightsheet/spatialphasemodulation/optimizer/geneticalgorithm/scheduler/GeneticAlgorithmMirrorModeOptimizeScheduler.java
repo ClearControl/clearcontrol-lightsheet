@@ -1,15 +1,21 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler;
 
+import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.Population;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolutionFactory;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
+import org.ejml.data.DenseMatrix64F;
+
+import java.io.File;
 
 /**
  * GeneticAlgorithmMirrorModeOptimizeScheduler
@@ -31,6 +37,8 @@ public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase i
     Population<ZernikeSolution> mPopulation;
     SpatialPhaseModulatorDeviceInterface mMirror;
 
+    DenseMatrix64F mFlatMirrorMatrix = null;
+
     /**
      * INstanciates a virtual device with a given name
      *
@@ -38,6 +46,14 @@ public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase i
     public GeneticAlgorithmMirrorModeOptimizeScheduler(SpatialPhaseModulatorDeviceInterface pMirror) {
         super("Adaptation: GA Mirror optimizer for " + pMirror);
         mMirror = pMirror;
+
+
+        File lMirrorModeDirectory =
+                MachineConfiguration.get()
+                        .getFolder("MirrorModes");
+
+        mFlatMirrorMatrix = pMirror.getMatrixReference().get().copy();
+        new DenseMatrix64FReader(new File(lMirrorModeDirectory, pMirror.getName() + "_flat.json"), mFlatMirrorMatrix).read();
     }
 
     @Override
@@ -64,6 +80,11 @@ public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase i
             warning("Not initialized");
             return false;
         }
+
+        MirrorModeContainer lContainer = new MirrorModeContainer(mLightSheetMicroscope);
+        lContainer.setMirrorMode(mFlatMirrorMatrix);
+        mLightSheetMicroscope.getDataWarehouse().put(mMirror.getName() + "_flat", lContainer);
+
 
         for (int e = 0; e < mNumberOfEpochsPerTimePoint.get(); e++) {
             mPopulation = mPopulation.runEpoch();
