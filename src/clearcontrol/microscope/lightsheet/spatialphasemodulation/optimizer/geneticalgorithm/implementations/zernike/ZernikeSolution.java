@@ -34,6 +34,9 @@ public class ZernikeSolution implements SolutionInterface {
     private static Random sRandom = new Random();
     private DenseMatrix64F mMatrix = null;
 
+    boolean fitnessInitialized = false;
+    double fitness = 0;
+
 
     public ZernikeSolution(double[] pFactors, LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ) {
         mFactors = pFactors;
@@ -46,10 +49,15 @@ public class ZernikeSolution implements SolutionInterface {
     @Override
     public double fitness() {
 
+        if (fitnessInitialized) {
+            return fitness;
+        }
+
         DenseMatrix64F lMatrix = getMatrix();
 
-        return new MirrorModeImageQualityDeterminer(mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, lMatrix).getFitness();
-
+        fitness = new MirrorModeImageQualityDeterminer(mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, lMatrix).getFitness();
+        fitnessInitialized = true;
+        return fitness;
     }
 
     public DenseMatrix64F getMatrix() {

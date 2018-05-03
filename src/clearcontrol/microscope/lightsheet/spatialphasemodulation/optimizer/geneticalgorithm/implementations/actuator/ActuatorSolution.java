@@ -27,6 +27,9 @@ public class ActuatorSolution implements SolutionInterface {
 
     private DenseMatrix64F mMatrix = null;
 
+    boolean fitnessInitialized = false;
+    double fitness = 0;
+
 
     public ActuatorSolution(DenseMatrix64F pMatrix, LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ) {
         mMatrix = pMatrix;
@@ -37,7 +40,14 @@ public class ActuatorSolution implements SolutionInterface {
 
     @Override
     public double fitness() {
-        return new MirrorModeImageQualityDeterminer(mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, mMatrix).getFitness();
+        if (fitnessInitialized) {
+            return fitness;
+        }
+
+
+        fitness = new MirrorModeImageQualityDeterminer(mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, mMatrix).getFitness();
+        fitnessInitialized = true;
+        return fitness;
     }
 
     @Override
