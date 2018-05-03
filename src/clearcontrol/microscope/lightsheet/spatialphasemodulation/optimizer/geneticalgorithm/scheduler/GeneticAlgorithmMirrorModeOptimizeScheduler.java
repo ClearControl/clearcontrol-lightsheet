@@ -9,6 +9,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.genet
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolutionFactory;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 
 /**
  * GeneticAlgorithmMirrorModeOptimizeScheduler
@@ -66,6 +67,9 @@ public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase i
 
         for (int e = 0; e < mNumberOfEpochsPerTimePoint.get(); e++) {
             mPopulation = mPopulation.runEpoch();
+            if (mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0).getStopSignalVariable().get()) {
+                return false;
+            }
         }
 
         mMirror.getMatrixReference().set(mPopulation.best().getMatrix());
