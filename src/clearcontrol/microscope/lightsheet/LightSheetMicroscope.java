@@ -205,6 +205,10 @@ public class LightSheetMicroscope extends
     return lTimelapseInterface;
   }
 
+  public LightSheetTimelapse getTimelapse() {
+    return getDevice(LightSheetTimelapse.class, 0);
+  }
+
   /**
    * Adds the adaptive engine
    * 
