@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public class SpaceTravelScheduler extends SchedulerBase {
 
+
     public static class Position{
         public Position(double x, double y, double z) {
             mX = x;
@@ -46,6 +47,11 @@ public class SpaceTravelScheduler extends SchedulerBase {
     public SpaceTravelScheduler() {
         super("Adaptation: Move in space");
     }
+
+    public SpaceTravelScheduler(String pDeviceName) {
+        super(pDeviceName);
+    }
+
 
     @Override
     public boolean initialize() {
