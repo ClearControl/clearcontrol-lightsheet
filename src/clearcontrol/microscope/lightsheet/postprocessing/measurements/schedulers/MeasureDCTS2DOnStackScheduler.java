@@ -23,10 +23,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * MeasureDCTS2DOnStackScheduler
- * <p>
- * <p>
- * <p>
+ * The MeasureDCTS2DOnStackScheduler measures average image quality of a stack, puts the result in the data warehouse
+ * together with spatial (stage) position, timepoint. Furthermore, the measurement is saved in a TSV log file.
+ *
  * Author: @haesleinhuepf
  * 05 2018
  */
@@ -98,7 +97,7 @@ public class MeasureDCTS2DOnStackScheduler<T extends StackInterfaceContainer> ex
             File lOutputFile = new File(targetFolder + "/dcts2d.tsv");
 
             try {
-                boolean existedBefore = (!lOutputFile.exists());
+                boolean existedBefore = (lOutputFile.exists());
 
                 BufferedWriter writer = new BufferedWriter(new FileWriter(lOutputFile, true));
                 if (!existedBefore) {

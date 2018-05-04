@@ -129,7 +129,7 @@ public class CountsSpotsScheduler<T extends StackInterfaceContainer> extends Sch
             File lOutputFile = new File(targetFolder + "/spotcount.tsv");
 
             try {
-                boolean existedBefore = (!lOutputFile.exists());
+                boolean existedBefore = (lOutputFile.exists());
 
 
                 BufferedWriter writer = new BufferedWriter(new FileWriter(lOutputFile, true));
