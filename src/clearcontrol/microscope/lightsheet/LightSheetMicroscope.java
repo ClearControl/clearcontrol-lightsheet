@@ -18,6 +18,7 @@ import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
+import clearcontrol.microscope.lightsheet.state.schedulers.ChangeExposureTimeScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
@@ -167,6 +168,15 @@ public class LightSheetMicroscope extends
                                                    new InteractiveAcquisition("Interactive",
                                                                               this);
     addDevice(0, lInteractiveAcquisition);
+
+    addDevice(0, new ChangeExposureTimeScheduler(1));
+    addDevice(0, new ChangeExposureTimeScheduler(0.5));
+    addDevice(0, new ChangeExposureTimeScheduler(0.2));
+    addDevice(0, new ChangeExposureTimeScheduler(0.1));
+    addDevice(0, new ChangeExposureTimeScheduler(0.05));
+    addDevice(0, new ChangeExposureTimeScheduler(0.02));
+    addDevice(0, new ChangeExposureTimeScheduler(0.01));
+
     return lInteractiveAcquisition;
   }
 
