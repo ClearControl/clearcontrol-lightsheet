@@ -17,7 +17,7 @@ import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackIn
 import java.util.ArrayList;
 
 /**
- * The AppendConsecutiveSequentialImagingScheduler appends a list of imaging, fusion and io schedulers at the current position
+ * The AppendConsecutiveInterleavedImagingScheduler appends a list of imaging, fusion and io schedulers at the current position
  * in the timelapse
  *
  * Author: @haesleinhuepf

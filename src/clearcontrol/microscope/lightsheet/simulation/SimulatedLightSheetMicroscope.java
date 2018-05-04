@@ -34,18 +34,10 @@ import clearcontrol.microscope.lightsheet.component.scheduler.implementations.Me
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
 import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.ExposureModulatedAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.WriteInterleavedRawDataToDiscScheduler;
-import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedFusionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
-import clearcontrol.microscope.lightsheet.imaging.opticsprefused.WriteOpticsPrefusedRawDataAsRawToDiscScheduler;
-import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialFusionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
-import clearcontrol.microscope.lightsheet.imaging.sequential.WriteSequentialRawDataToDiscScheduler;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.*;
+import clearcontrol.microscope.lightsheet.imaging.opticsprefused.*;
+import clearcontrol.microscope.lightsheet.imaging.sequential.*;
+import clearcontrol.microscope.lightsheet.imaging.singleview.AppendConsecutiveSingleViewImagingScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightSheetStackScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsRawToDiscScheduler;
@@ -57,6 +49,9 @@ import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackSchedul
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
+import clearcontrol.microscope.lightsheet.smart.samplesearch.FOVBoundingBox;
+import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DScheduler;
+import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DScheduler;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.SampleSelectorScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LogMirrorModeToFileScheduler;
@@ -68,6 +63,7 @@ import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBacku
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateResetScheduler;
 import clearcontrol.microscope.lightsheet.state.schedulers.InterpolatedAcquisitionStateLogScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.timelapse.schedulers.TimelapseStopScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
@@ -570,6 +566,26 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new SampleSearch2DScheduler());
     addDevice(0, new SampleSelectorScheduler());
 
+    addDevice(0, new AppendConsecutiveHyperDriveImagingScheduler(100, 5));
+    addDevice(0, new AppendConsecutiveHyperDriveImagingScheduler(100, 10));
+    addDevice(0, new AppendConsecutiveHyperDriveImagingScheduler(100, 15));
+
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(10, 15));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(10, 30));
+
+    addDevice(0, new AppendConsecutiveInterleavedImagingScheduler(10, 30));
+    addDevice(0, new AppendConsecutiveInterleavedImagingScheduler(10, 60));
+    addDevice(0, new AppendConsecutiveInterleavedImagingScheduler(10, 90));
+
+    addDevice(0, new AppendConsecutiveSequentialImagingScheduler(10, 30));
+    addDevice(0, new AppendConsecutiveSequentialImagingScheduler(10, 60));
+    addDevice(0, new AppendConsecutiveSequentialImagingScheduler(10, 90));
+
+    addDevice(0, new AppendConsecutiveSingleViewImagingScheduler(0,0, 10, 10));
+    addDevice(0, new AppendConsecutiveSingleViewImagingScheduler(0,0, 10, 30));
+    addDevice(0, new AppendConsecutiveSingleViewImagingScheduler(0,0, 10, 60));
+
+    addDevice(0, new TimelapseStopScheduler());
   }
 
 }
