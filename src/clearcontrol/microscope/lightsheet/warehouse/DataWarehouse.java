@@ -7,6 +7,7 @@ import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import coremem.recycling.RecyclerInterface;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -55,6 +56,18 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
       warning("Warning, no container to return!");
     }
     return lOldestContainer;
+  }
+
+  public <DCI extends DataContainerInterface> ArrayList<DCI> getContainers(Class pClass) {
+    ArrayList<DCI> lContainerList = new ArrayList<DCI>();
+    for (String key : keySet()) {
+      DataContainerInterface lContainer = get(key);
+      if (pClass.isInstance(lContainer)) {
+        lContainerList.add((DCI)lContainer);
+      }
+    }
+
+    return lContainerList;
   }
 
   public void disposeContainer(DataContainerInterface pContainer) {

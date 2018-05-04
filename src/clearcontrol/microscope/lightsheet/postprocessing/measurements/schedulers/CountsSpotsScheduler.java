@@ -10,6 +10,8 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotCountContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -122,6 +124,11 @@ public class CountsSpotsScheduler<T extends StackInterfaceContainer> extends Sch
                     lZ = lStage.getPositionVariable().get();
                 }
             }
+
+
+            SpotCountContainer lSpotCountContainer = new SpotCountContainer(lLightSheetMicroscope, lX, lY, lZ, lSpotCount);
+
+            lLightSheetMicroscope.getDataWarehouse().put("SPOTCOUNT_" + pTimePoint, lSpotCountContainer);
 
             String headline = "t\tX\tY\tZ\tspotcount\n";
             String resultTableLine = pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" + lSpotCount + "\n" ;
