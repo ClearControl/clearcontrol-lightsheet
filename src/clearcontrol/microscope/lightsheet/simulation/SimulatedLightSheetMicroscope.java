@@ -57,6 +57,7 @@ import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackSchedul
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
+import clearcontrol.microscope.lightsheet.smart.sampleselection.SampleSelectorScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LogMirrorModeToFileScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
@@ -563,6 +564,11 @@ public class SimulatedLightSheetMicroscope extends
 
     addDevice(0, new XWingRapidAutoFocusScheduler());
     addDevice(0, new SpaceTravelScheduler());
+
+    addDevice( 0, new FOVBoundingBox());
+    addDevice(0, new SampleSearch1DScheduler());
+    addDevice(0, new SampleSearch2DScheduler());
+    addDevice(0, new SampleSelectorScheduler());
 
   }
 
