@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.postprocessing.schedulers.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.microscope.lightsheet.postprocessing.schedulers.SpotDetectionScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
@@ -13,20 +13,20 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * 04 2018
  */
 public class SpotDetectionSchedulerPanel extends CustomGridPane {
-    public SpotDetectionSchedulerPanel(SpotDetectionScheduler<StackInterfaceContainer> pSpotDetectionScheduler) {
+    public SpotDetectionSchedulerPanel(CountsSpotsScheduler<StackInterfaceContainer> pCountsSpotsScheduler) {
 
-        addDoubleField(pSpotDetectionScheduler.getXYDownsamplingFactor(), 0);
-        addDoubleField(pSpotDetectionScheduler.getZDownsamplingFactor(), 1);
+        addDoubleField(pCountsSpotsScheduler.getXYDownsamplingFactor(), 0);
+        addDoubleField(pCountsSpotsScheduler.getZDownsamplingFactor(), 1);
 
-        addIntegerField(pSpotDetectionScheduler.getDoGRadius(), 2);
-        addDoubleField(pSpotDetectionScheduler.getDoGSigmaMinued(), 3);
-        addDoubleField(pSpotDetectionScheduler.getDoGSigmaSubtrahend(), 4);
+        addIntegerField(pCountsSpotsScheduler.getDoGRadius(), 2);
+        addDoubleField(pCountsSpotsScheduler.getDoGSigmaMinued(), 3);
+        addDoubleField(pCountsSpotsScheduler.getDoGSigmaSubtrahend(), 4);
 
-        addDoubleField(pSpotDetectionScheduler.getBlurSigma(), 5);
-        addIntegerField(pSpotDetectionScheduler.getBlurRadius(), 6);
+        addDoubleField(pCountsSpotsScheduler.getBlurSigma(), 5);
+        addIntegerField(pCountsSpotsScheduler.getBlurRadius(), 6);
 
-        addDoubleField(pSpotDetectionScheduler.getThreshold(), 7);
+        addDoubleField(pCountsSpotsScheduler.getThreshold(), 7);
 
-        addCheckbox(pSpotDetectionScheduler.getShowIntermediateResults(), 8);
+        addCheckbox(pCountsSpotsScheduler.getShowIntermediateResults(), 8);
     }
 }

@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.postprocessing.schedulers;
+package clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers;
 
 import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
@@ -22,13 +22,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * The SpotDetectionScheduler takes the image stack out of a the olderst of a given container type and counts spots in
+ * The CountsSpotsScheduler takes the image stack out of a the olderst of a given container type and counts spots in
  * the data set. The number of spots is then saved to a txt file in the current working directory.
  *
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class SpotDetectionScheduler <T extends StackInterfaceContainer> extends SchedulerBase implements LoggingFeature {
+public class CountsSpotsScheduler<T extends StackInterfaceContainer> extends SchedulerBase implements LoggingFeature {
     private final Class<T> mClass;
 
     BoundedVariable<Double> mThreshold = new BoundedVariable<Double>("threshold", 200.0, 0.0, Double.MAX_VALUE, 0.1);
@@ -46,7 +46,7 @@ public class SpotDetectionScheduler <T extends StackInterfaceContainer> extends 
      * INstanciates a virtual device with a given name
      *
      */
-    public SpotDetectionScheduler(Class<T> pClass) {
+    public CountsSpotsScheduler(Class<T> pClass) {
         super("Post-processing: Spot detection for " + pClass.getSimpleName());
         mClass = pClass;
     }
@@ -123,12 +123,19 @@ public class SpotDetectionScheduler <T extends StackInterfaceContainer> extends 
                 }
             }
 
-            String resultTableLine = "t\tX\tY\tZ\tn\n" + pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" + lSpotCount + "\n" ;
+            String headline = "t\tX\tY\tZ\tspotcount\n";
+            String resultTableLine = pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" + lSpotCount + "\n" ;
 
-            File lOutputFile = new File(targetFolder + "/cellcount" + String.format("%0" + lDigits + "d", lTimePoint) + ".txt");
+            File lOutputFile = new File(targetFolder + "/spotcount.tsv");
 
             try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(lOutputFile));
+                boolean existedBefore = (!lOutputFile.exists());
+
+
+                BufferedWriter writer = new BufferedWriter(new FileWriter(lOutputFile, true));
+                if (!existedBefore) {
+                    writer.write(headline);
+                }
                 writer.write (resultTableLine);
                 writer.close();
             } catch (IOException e) {

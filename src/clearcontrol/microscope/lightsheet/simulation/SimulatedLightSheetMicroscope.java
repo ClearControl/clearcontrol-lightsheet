@@ -49,7 +49,8 @@ import clearcontrol.microscope.lightsheet.imaging.sequential.WriteSequentialRawD
 import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightSheetStackScheduler;
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsRawToDiscScheduler;
-import clearcontrol.microscope.lightsheet.postprocessing.schedulers.SpotDetectionScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.MeasureDCTS2DOnStackScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.schedulers.ThumbnailScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackScheduler;
@@ -505,8 +506,11 @@ public class SimulatedLightSheetMicroscope extends
     }
     addDevice(0, lStackThumbnailScheduler);
 
-    addDevice(0, new SpotDetectionScheduler<FusedImageDataContainer>(FusedImageDataContainer.class));
-    addDevice(0, new SpotDetectionScheduler<StackInterfaceContainer>(StackInterfaceContainer.class));
+    addDevice(0, new CountsSpotsScheduler<FusedImageDataContainer>(FusedImageDataContainer.class));
+    addDevice(0, new CountsSpotsScheduler<StackInterfaceContainer>(StackInterfaceContainer.class));
+
+    addDevice(0, new MeasureDCTS2DOnStackScheduler<FusedImageDataContainer>(FusedImageDataContainer.class));
+    addDevice(0, new MeasureDCTS2DOnStackScheduler<StackInterfaceContainer>(StackInterfaceContainer.class));
 
     addDevice(0, new PauseScheduler());
 
