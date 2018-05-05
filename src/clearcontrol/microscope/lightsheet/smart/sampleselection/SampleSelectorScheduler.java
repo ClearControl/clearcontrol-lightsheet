@@ -5,9 +5,8 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.MeasureDCTS2DOnStackScheduler;
+import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
-import mpicbg.util.DCT;
 
 import java.util.ArrayList;
 
@@ -61,9 +60,9 @@ public class SampleSelectorScheduler extends SchedulerBase implements LoggingFea
         info("Best position was " + lMaxmimumQualityContainer.getX() + "/"  + lMaxmimumQualityContainer.getY() + "/"  + lMaxmimumQualityContainer.getZ() + " (DCTS2D = " + lMaxmimumQualityContainer.getMeasurement() + ")");
 
         SpaceTravelScheduler lSpaceTravelScheduler = lLightSheetMicroscope.getDevice(SpaceTravelScheduler.class, 0);
-        ArrayList<SpaceTravelScheduler.Position> lPositionList = lSpaceTravelScheduler.getTravelPathList();
+        ArrayList<Position> lPositionList = lSpaceTravelScheduler.getTravelPathList();
         lPositionList.clear();
-        lPositionList.add(new SpaceTravelScheduler.Position(lMaxmimumQualityContainer.getX(), lMaxmimumQualityContainer.getY(), lMaxmimumQualityContainer.getZ()));
+        lPositionList.add(new Position(lMaxmimumQualityContainer.getX(), lMaxmimumQualityContainer.getY(), lMaxmimumQualityContainer.getZ()));
 
         return true;
     }

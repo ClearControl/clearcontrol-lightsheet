@@ -1,9 +1,8 @@
 package clearcontrol.microscope.lightsheet.smart.samplesearch;
 
-import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.SpaceTravelPathPlanningPanel;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
+import clearcontrol.microscope.lightsheet.state.spatial.Position;
 
 import java.util.ArrayList;
 
@@ -25,15 +24,15 @@ public class SampleSearch1DScheduler extends SampleSearchScheduler {
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        SpaceTravelScheduler lFOV = mLightSheetMicroscope.getDevice(FOVBoundingBox.class, 0);
+        FOVBoundingBox lFOV = mLightSheetMicroscope.getDevice(FOVBoundingBox.class, 0);
 
-        ArrayList<SpaceTravelScheduler.Position> lTravelPathList = lFOV.getTravelPathList();
+        ArrayList<Position> lTravelPathList = lFOV.getTravelPathList();
 
         int steps = 0;
 
         for (int i = 0; i < lTravelPathList.size() - 1; i++) {
-            SpaceTravelScheduler.Position lStartPosition = lTravelPathList.get(i);
-            SpaceTravelScheduler.Position lEndPosition = lTravelPathList.get(i+1);
+            Position lStartPosition = lTravelPathList.get(i);
+            Position lEndPosition = lTravelPathList.get(i+1);
 
             double distance = Math.sqrt(
                     Math.pow(lStartPosition.mX - lEndPosition.mX, 2) +
@@ -47,7 +46,7 @@ public class SampleSearch1DScheduler extends SampleSearchScheduler {
             double stepZ = (lEndPosition.mZ - lStartPosition.mZ) / (steps - 1);
 
             for (int s = 0; s < steps; s++) {
-                SpaceTravelScheduler.Position lPosition = new SpaceTravelScheduler.Position(
+                Position lPosition = new Position(
                         lStartPosition.mX + s * stepX,
                         lStartPosition.mY + s * stepY,
                         lStartPosition.mZ + s * stepZ
@@ -59,7 +58,7 @@ public class SampleSearch1DScheduler extends SampleSearchScheduler {
 
 
         SpaceTravelScheduler lSpaceTravelScheduler = mLightSheetMicroscope.getDevice(SpaceTravelScheduler.class, 0);
-        ArrayList<SpaceTravelScheduler.Position> lDetectedSamplesPositionList = lSpaceTravelScheduler.getTravelPathList();
+        ArrayList<Position> lDetectedSamplesPositionList = lSpaceTravelScheduler.getTravelPathList();
         lDetectedSamplesPositionList.clear();
 
 

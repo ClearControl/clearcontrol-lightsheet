@@ -3,7 +3,9 @@ package clearcontrol.microscope.lightsheet.adaptive.schedulers.gui;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.microscope.lightsheet.state.spatial.Position;
+import clearcontrol.microscope.lightsheet.state.spatial.PositionListContainer;
+import clearcontrol.microscope.lightsheet.state.spatial.gui.PositionListContainerPanel;
 import javafx.collections.FXCollections;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
@@ -20,81 +22,11 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class SpaceTravelPathPlanningPanel extends CustomGridPane {
+public class SpaceTravelPathPlanningPanel extends PositionListContainerPanel {
     public SpaceTravelPathPlanningPanel(SpaceTravelScheduler pSpaceTravelScheduler) {
+        super(pSpaceTravelScheduler.getTravelPathList());
 
-
-        ArrayList<SpaceTravelScheduler.Position> lTravelPathList = pSpaceTravelScheduler.getTravelPathList();
-        ListView<SpaceTravelScheduler.Position> lListView = new ListView<SpaceTravelScheduler.Position>();
-        lListView.setItems(FXCollections.observableArrayList(lTravelPathList));
-        lListView.setMinWidth(450);
-
-        add(lListView, 0, 0, 3, 5);
-
-        int lRow = 0;
-        {
-            Button lMoveUpButton = new Button("^");
-            lMoveUpButton.setMinWidth(35);
-            lMoveUpButton.setMinHeight(35);
-            lMoveUpButton.setOnAction((e) -> {
-                int i = lListView.getSelectionModel().getSelectedIndex();
-                if (i > 1)
-                {
-                    SpaceTravelScheduler.Position lPosition = lTravelPathList.get(i);
-                    lTravelPathList.remove(i);
-                    lTravelPathList.add(i - 1, lPosition);
-                    lListView.setItems(FXCollections.observableArrayList(
-                            lTravelPathList));
-                }
-            });
-            add(lMoveUpButton, 3, lRow);
-            lRow++;
-        }
-
-        {
-            Button lMoveDownButton = new Button("v");
-            lMoveDownButton.setMinWidth(35);
-            lMoveDownButton.setMinHeight(35);
-            lMoveDownButton.setOnAction((e) -> {
-                int count = 0;
-                int i = lListView.getSelectionModel().getSelectedIndex();
-                if (i >= 0 && i < lTravelPathList.size() - 1)
-                {
-                    SpaceTravelScheduler.Position lPosition = lTravelPathList.get(i);
-                    lTravelPathList.remove(i);
-                    lTravelPathList.add(i + 1, lPosition);
-                    lListView.setItems(FXCollections.observableArrayList(
-                            lTravelPathList));
-                }
-            });
-            add(lMoveDownButton, 3, lRow);
-            lRow++;
-        }
-
-
-        {
-            Button lMinusButton = new Button("-");
-            lMinusButton.setMinWidth(35);
-            lMinusButton.setMinHeight(35);
-            lMinusButton.setOnAction((e) -> {
-                int count = 0;
-                int lSelectedIndex = lListView.getSelectionModel().getSelectedIndex();
-                for (int i : lListView.getSelectionModel()
-                        .getSelectedIndices()
-                        .sorted())
-                {
-                    lTravelPathList.remove(i - count);
-                    count++;
-                }
-                lListView.setItems(FXCollections.observableArrayList(
-                        lTravelPathList));
-                lListView.getSelectionModel().select(lSelectedIndex);
-            });
-            GridPane.setValignment(lMinusButton, VPos.BOTTOM);
-            add(lMinusButton, 3, lRow);
-            lRow++;
-        }
-
+        PositionListContainer lTravelPathList = pSpaceTravelScheduler.getTravelPathList();
 
         // add current position button
         {
@@ -107,8 +39,7 @@ public class SpaceTravelPathPlanningPanel extends CustomGridPane {
                 pSpaceTravelScheduler.appendCurrentPositionToPath(lSelectedIndexInMainList);
                 lListView.setItems(FXCollections.observableArrayList(lTravelPathList));
             });
-            add(lAddCurrentPositionButton, 3, lRow);
-            lRow++;
+            add(lAddCurrentPositionButton, 3, 3);
         }
 
         // go to current position
@@ -123,35 +54,12 @@ public class SpaceTravelPathPlanningPanel extends CustomGridPane {
                     pSpaceTravelScheduler.goToPosition(i);
                 }
             });
-            add(lGotoPositionButton, 3, lRow);
-            lRow++;
+            add(lGotoPositionButton, 3, 4);
         }
 
-        BoundedVariable<Double> lPositionX = new BoundedVariable<Double>("X", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.0001);
-        BoundedVariable<Double> lPositionY = new BoundedVariable<Double>("Y", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.0001);
-        BoundedVariable<Double> lPositionZ = new BoundedVariable<Double>("Z", 0.0,  -Double.MAX_VALUE, Double.MAX_VALUE, 0.0001);
 
+        addIntegerField(pSpaceTravelScheduler.getSleepAfterMotionInMilliSeconds(), mRow);
+        mRow++;
 
-        addDoubleField(lPositionX, lRow);
-        lRow++;
-        addDoubleField(lPositionY, lRow);
-        lRow++;
-        addDoubleField(lPositionZ, lRow);
-        {
-            Button lManualAddPosition = new Button("+");
-            lManualAddPosition.setMinWidth(35);
-            lManualAddPosition.setMinHeight(35);
-            lManualAddPosition.setOnAction((e) -> {
-                int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
-                if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lTravelPathList.size();
-                lTravelPathList.add(lSelectedIndexInMainList, new SpaceTravelScheduler.Position(lPositionX.get(), lPositionY.get(), lPositionZ.get()));
-                lListView.setItems(FXCollections.observableArrayList(lTravelPathList));
-            });
-            add(lManualAddPosition, 3, lRow);
-
-        }
-        lRow++;
-
-        addIntegerField(pSpaceTravelScheduler.getSleepAfterMotionInMilliSeconds(), lRow);
     }
 }

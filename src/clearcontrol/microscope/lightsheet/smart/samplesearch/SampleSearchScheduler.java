@@ -9,9 +9,8 @@ import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelSchedul
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.stack.StackInterface;
-import org.apache.commons.math3.geometry.Space;
 
 import java.util.ArrayList;
 
@@ -55,7 +54,7 @@ public abstract class SampleSearchScheduler extends SchedulerBase {
     }
 
     protected ArrayList<Double> measureAverageSignalIntensityAtCandiatePositions() {
-        ArrayList<SpaceTravelScheduler.Position> lSampleCandidatePositionList = mSampleCandidates.getTravelPathList();
+        ArrayList<Position> lSampleCandidatePositionList = mSampleCandidates.getTravelPathList();
 
 
         ArrayList<Double> lAverageMeasurements = new ArrayList<Double>();

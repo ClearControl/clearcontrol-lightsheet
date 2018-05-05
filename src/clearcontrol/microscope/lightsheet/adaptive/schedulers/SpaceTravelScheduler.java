@@ -4,6 +4,8 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.microscope.lightsheet.state.spatial.Position;
+import clearcontrol.microscope.lightsheet.state.spatial.PositionListContainer;
 
 import java.util.ArrayList;
 
@@ -17,22 +19,8 @@ import java.util.ArrayList;
 public class SpaceTravelScheduler extends SchedulerBase {
 
 
-    public static class Position{
-        public Position(double x, double y, double z) {
-            mX = x;
-            mY = y;
-            mZ = z;
-        }
-        public String toString() {
-            return mX + "/" + mY + "/" + mZ;
-        }
-        public double mX;
-        public double mY;
-        public double mZ;
-    }
-
     private int mCurrentTravelPathPosition = 0;
-    private ArrayList<Position> mTravelPath = new ArrayList<Position>();
+    private PositionListContainer mTravelPath = new PositionListContainer(-1);
 
     BasicStageInterface mStageX = null;
     BasicStageInterface mStageY = null;
@@ -130,7 +118,7 @@ public class SpaceTravelScheduler extends SchedulerBase {
         return mSleepAfterMotionInMilliSeconds;
     }
 
-    public ArrayList<Position> getTravelPathList() {
+    public PositionListContainer getTravelPathList() {
         return mTravelPath;
     }
 

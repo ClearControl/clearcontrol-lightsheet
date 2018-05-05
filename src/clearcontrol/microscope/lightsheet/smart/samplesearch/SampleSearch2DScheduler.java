@@ -1,6 +1,8 @@
 package clearcontrol.microscope.lightsheet.smart.samplesearch;
 
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
+import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
+import clearcontrol.microscope.lightsheet.state.spatial.Position;
 
 import java.util.ArrayList;
 
@@ -20,12 +22,12 @@ public class SampleSearch2DScheduler extends SampleSearchScheduler {
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        SpaceTravelScheduler lFOV = mLightSheetMicroscope.getDevice(FOVBoundingBox.class, 0);
+        FOVBoundingBox lFOV = mLightSheetMicroscope.getDevice(FOVBoundingBox.class, 0);
 
-        ArrayList<SpaceTravelScheduler.Position> lTravelPathList = lFOV.getTravelPathList();
+        ArrayList<Position> lTravelPathList = lFOV.getTravelPathList();
 
-        SpaceTravelScheduler.Position lStartPosition = lTravelPathList.get(0);
-        SpaceTravelScheduler.Position lEndPosition = lTravelPathList.get(lTravelPathList.size() - 1);
+        Position lStartPosition = lTravelPathList.get(0);
+        Position lEndPosition = lTravelPathList.get(lTravelPathList.size() - 1);
 
         double distance = Math.sqrt(
                 Math.pow(lStartPosition.mX - lEndPosition.mX, 2) +
@@ -40,7 +42,7 @@ public class SampleSearch2DScheduler extends SampleSearchScheduler {
 
         for (int sx = 0; sx < steps; sx++) {
             for (int sy = 0; sy < steps; sy++) {
-                SpaceTravelScheduler.Position lPosition = new SpaceTravelScheduler.Position(
+                Position lPosition = new Position(
                         lStartPosition.mX + sx * stepX,
                         lStartPosition.mY + sy * stepY,
                         lStartPosition.mZ + (sx + sy)/2.0 * stepZ
@@ -51,7 +53,7 @@ public class SampleSearch2DScheduler extends SampleSearchScheduler {
 
 
         SpaceTravelScheduler lSpaceTravelScheduler = mLightSheetMicroscope.getDevice(SpaceTravelScheduler.class, 0);
-        ArrayList<SpaceTravelScheduler.Position> lDetectedSamplesPositionList = lSpaceTravelScheduler.getTravelPathList();
+        ArrayList<Position> lDetectedSamplesPositionList = lSpaceTravelScheduler.getTravelPathList();
         lDetectedSamplesPositionList.clear();
 
 
@@ -64,7 +66,7 @@ public class SampleSearch2DScheduler extends SampleSearchScheduler {
                 if ((lAverageSignalIntensities.get(sx * steps + sy) < lAverageSignalIntensities.get(sx * steps + sy + 1))  ||
                         (lAverageSignalIntensities.get(sx * steps + sy) < lAverageSignalIntensities.get(sx * steps + sy - 1))  ||
                         (lAverageSignalIntensities.get(sx * steps + sy) < lAverageSignalIntensities.get((sx + 1) * steps + sy))  ||
-                        (lAverageSignalIntensities.get(sx * steps + sy) < lAverageSignalIntensities.get((sx - 1) * steps + sy))  ||
+                        (lAverageSignalIntensities.get(sx * steps + sy) < lAverageSignalIntensities.get((sx - 1) * steps + sy))
                         ){
                     localMaximum = false;
                 }
