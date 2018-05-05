@@ -42,27 +42,47 @@ public class MirrorModeImageQualityDeterminer implements LoggingFeature {
         mPositionZ = pPositionZ;
     }
 
-    private void determineQuality()
-    {
-        DenseMatrix64F lMatrixToTest = mMatrix;
 
-        DataContainerInterface lContainer = mLightSheetMicroscope.getDataWarehouse().get(mSpatialPhaseModulatorDeviceInterface.getName() + "_flat");
+    private MirrorModeContainer getMirrorModeContainer(String key) {
+        DataContainerInterface lContainer = mLightSheetMicroscope.getDataWarehouse().get(mSpatialPhaseModulatorDeviceInterface.getName() + "_" + key);
         if (lContainer instanceof MirrorModeContainer) {
-            DenseMatrix64F lFlatMirrorMatrix = ((MirrorModeContainer) lContainer).getMirrorMode();
-            lMatrixToTest = TransformMatrices.sum(lMatrixToTest, lFlatMirrorMatrix);
+            return (MirrorModeContainer) lContainer;
         } else {
-            warning("No flat mirror matix found! Reading from disc");
+
+            warning("No '" + key + "' mirror matix found! Reading from disc");
             File lMirrorModeDirectory =
                     MachineConfiguration.get()
                             .getFolder("MirrorModes");
 
             DenseMatrix64F lFlatMirrorMatrix = mSpatialPhaseModulatorDeviceInterface.getMatrixReference().get().copy();
+
             new DenseMatrix64FReader(new File(lMirrorModeDirectory, mSpatialPhaseModulatorDeviceInterface.getName() + "_flat.json"), lFlatMirrorMatrix).read();
-            lMatrixToTest = TransformMatrices.sum(lMatrixToTest, lFlatMirrorMatrix);
 
             MirrorModeContainer lNewContainer = new MirrorModeContainer(mLightSheetMicroscope);
             lNewContainer.setMirrorMode(lFlatMirrorMatrix);
-            mLightSheetMicroscope.getDataWarehouse().put(mSpatialPhaseModulatorDeviceInterface.getName() + "_flat", lNewContainer);
+            mLightSheetMicroscope.getDataWarehouse().put(mSpatialPhaseModulatorDeviceInterface.getName() + "_" + key, lNewContainer);
+            return (MirrorModeContainer) lContainer;
+        }
+    }
+
+    private void determineQuality()
+    {
+        DenseMatrix64F lMatrixToTest = mMatrix;
+
+        DataContainerInterface lActuatorInfluenceMatrixContainer = getMirrorModeContainer("actuator_influence");
+        if (lActuatorInfluenceMatrixContainer != null) {
+            DenseMatrix64F lActuatorInfluenceMatrix = ((MirrorModeContainer) lActuatorInfluenceMatrixContainer).getMirrorMode();
+            lMatrixToTest = TransformMatrices.multiplyElementWise(lMatrixToTest, lActuatorInfluenceMatrix);
+        } else {
+            warning("No actuator influence matrix available! Mirror shape may be wrong");
+        }
+
+        DataContainerInterface lFlatMirrorModeContainer = getMirrorModeContainer("flat");
+        if (lFlatMirrorModeContainer != null) {
+            DenseMatrix64F lFlatMirrorMatrix = ((MirrorModeContainer) lFlatMirrorModeContainer).getMirrorMode();
+            lMatrixToTest = TransformMatrices.sum(lMatrixToTest, lFlatMirrorMatrix);
+        } else {
+            warning("No flat mirror matrix available! Mirror shape may be wrong");
         }
 
         mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(lMatrixToTest);

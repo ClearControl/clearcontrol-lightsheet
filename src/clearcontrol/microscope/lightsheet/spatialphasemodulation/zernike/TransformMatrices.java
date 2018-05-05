@@ -147,6 +147,25 @@ public class TransformMatrices
   }
 
   /**
+   * Allows multiplying a matrix element-wise with another matrix
+   * @param pMatrix1 matrix M
+   * @param pMatrix2 matrix N
+   * @return M.*N
+   */
+  public static DenseMatrix64F multiplyElementWise(DenseMatrix64F pMatrix1, DenseMatrix64F pMatrix2) {
+    DenseMatrix64F lResultMatrix = new DenseMatrix64F(pMatrix1.numCols, pMatrix1.numRows);
+    for (int y = 0; y < lResultMatrix.numRows; y++)
+    {
+      for (int x = 0; x < lResultMatrix.numCols; x++)
+      {
+        lResultMatrix.set(y, x, pMatrix1.get(y, x) * pMatrix2.get(y, x));
+      }
+    }
+    return lResultMatrix;
+  }
+
+
+  /**
    * Allows summing a list of matrices
    * @param pMatrixList list
    * @return sum matrix of all list elements

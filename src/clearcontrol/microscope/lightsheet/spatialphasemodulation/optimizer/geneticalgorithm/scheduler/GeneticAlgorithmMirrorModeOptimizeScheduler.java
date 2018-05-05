@@ -38,7 +38,6 @@ public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase i
     Population<ZernikeSolution> mPopulation;
     SpatialPhaseModulatorDeviceInterface mMirror;
 
-    DenseMatrix64F mFlatMirrorMatrix = null;
 
     /**
      * INstanciates a virtual device with a given name
@@ -49,12 +48,6 @@ public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase i
         mMirror = pMirror;
 
 
-        File lMirrorModeDirectory =
-                MachineConfiguration.get()
-                        .getFolder("MirrorModes");
-
-        mFlatMirrorMatrix = pMirror.getMatrixReference().get().copy();
-        new DenseMatrix64FReader(new File(lMirrorModeDirectory, pMirror.getName() + "_flat.json"), mFlatMirrorMatrix).read();
     }
 
     @Override
@@ -82,9 +75,6 @@ public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase i
             return false;
         }
 
-        MirrorModeContainer lContainer = new MirrorModeContainer(mLightSheetMicroscope);
-        lContainer.setMirrorMode(mFlatMirrorMatrix);
-        mLightSheetMicroscope.getDataWarehouse().put(mMirror.getName() + "_flat", lContainer);
 
 
         for (int e = 0; e < mNumberOfEpochsPerTimePoint.get(); e++) {
