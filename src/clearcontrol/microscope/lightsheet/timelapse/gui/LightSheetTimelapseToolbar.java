@@ -318,7 +318,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
               MicroscopeNodeType.Scripting.getIcon(),
 
               MicroscopeNodeType.Scripting.getIcon(),
-              MicroscopeNodeType.StackDisplay2D.getIcon()
+              MicroscopeNodeType.StackDisplay3D.getIcon()
       };
 
 
