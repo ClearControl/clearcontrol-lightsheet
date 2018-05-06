@@ -11,29 +11,19 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerBase
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class MeasurementInSpaceContainer extends DataContainerBase {
+public class MeasurementInSpaceContainer extends MeasurementContainer {
     Double mX = null;
     Double mY = null;
     Double mZ = null;
-    Double mMeasurement = null;
 
     public MeasurementInSpaceContainer(LightSheetMicroscope pLightSheetMicroscope, double pX, double pY, double pZ, double pMeasurement) {
-        super(pLightSheetMicroscope);
+        super(pLightSheetMicroscope, pMeasurement);
         mX = pX;
         mY = pY;
         mZ = pZ;
-        mMeasurement = pMeasurement;
     }
 
 
-    @Override
-    public boolean isDataComplete() {
-        return true;
-    }
-
-    @Override
-    public void dispose() {
-    }
 
     public Double getX() {
         return mX;
@@ -47,7 +37,8 @@ public class MeasurementInSpaceContainer extends DataContainerBase {
         return mZ;
     }
 
-    public Double getMeasurement() {
-        return mMeasurement;
+
+    public String toString() {
+        return this.getClass().getSimpleName() + " " + getX() + "/"  + getY() + "/"  + getZ() + " " + getMeasurement();
     }
 }

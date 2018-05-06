@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import clearcontrol.core.concurrent.timing.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.VariableSetListener;
@@ -24,6 +25,7 @@ import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcesso
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
+import clearcontrol.microscope.lightsheet.timelapse.containers.SchedulerDurationContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.state.AcquisitionType;
@@ -241,8 +243,14 @@ public class LightSheetTimelapse extends TimelapseBase implements
       }
 
       log( "Starting " + lNextSchedulerToRun);
-      lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
+      double duration = ElapsedTime.measure("scheduler execution", () -> {
+                lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
+      });
       log("Finished " + lNextSchedulerToRun);
+
+      // store how long the execution took
+      SchedulerDurationContainer lContainer = new SchedulerDurationContainer(mLightSheetMicroscope, lNextSchedulerToRun, duration);
+      mLightSheetMicroscope.getDataWarehouse().put("duration_" + getTimePointCounterVariable().get(), lContainer);
 
       /*
       ArrayList<SchedulerInterface>
