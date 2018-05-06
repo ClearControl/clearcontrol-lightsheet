@@ -13,18 +13,29 @@ import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterf
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
+import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
+import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
 import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor;
+import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.containers.MeasurementContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.containers.MeasurementInSpaceContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotCountContainer;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.schedulers.ChangeExposureTimeScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.timelapse.containers.SchedulerDurationContainer;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseLogScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropAllContainersOfTypeScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
@@ -87,8 +98,26 @@ public class LightSheetMicroscope extends
     addDevice(0, new DataWarehouseResetScheduler());
     addDevice(0, new DataWarehouseLogScheduler(this));
 
-    addDevice(0, new DropOldestStackInterfaceContainerScheduler(StackInterfaceContainer.class));
-    addDevice(0, new DropOldestStackInterfaceContainerScheduler(DataContainerInterface.class));
+
+    for (Class lContainerType : new Class[]{
+            StackInterfaceContainer.class,
+            FusedImageDataContainer.class,
+            InterleavedImageDataContainer.class,
+            OpticsPrefusedImageDataContainer.class,
+            SequentialImageDataContainer.class,
+            MeasurementInSpaceContainer.class,
+            MeasurementContainer.class,
+            DCTS2DContainer.class,
+            SpotCountContainer.class,
+            SchedulerDurationContainer.class,
+            DataContainerInterface.class,
+            MirrorModeContainer.class
+    }) {
+      addDevice(0, new DropOldestStackInterfaceContainerScheduler(lContainerType));
+      addDevice(0, new DropAllContainersOfTypeScheduler(lContainerType));
+    }
+
+
 
 /*    mStackProcessingPipeline.addStackProcessor(mStackFusionProcessor,
                                                "StackFusion",
