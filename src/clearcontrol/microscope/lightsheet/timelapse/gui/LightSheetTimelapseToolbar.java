@@ -209,6 +209,8 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
         lUnselectButton.setMinWidth(35);
         lUnselectButton.setMinHeight(35);
         lUnselectButton.setOnAction((e) -> {
+          lListView.setItems(FXCollections.observableArrayList(
+                  lSchedulerList));
           lListView.getSelectionModel().select(-1);
         });
         GridPane.setValignment(lUnselectButton, VPos.BOTTOM);
