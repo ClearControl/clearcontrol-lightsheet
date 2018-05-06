@@ -15,17 +15,20 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInte
  * 05 2018
  */
 public class DataWarehouseLogScheduler extends SchedulerBase {
-    private final DataWarehouse mDataWarehouse;
-    private final LightSheetTimelapse mTimelapse;
+    private DataWarehouse mDataWarehouse;
+    private LightSheetTimelapse mTimelapse;
+    private final LightSheetMicroscope mLightSheetMicroscope;
 
     public DataWarehouseLogScheduler(LightSheetMicroscope pLightSheetMicroscope) {
         super("State: Log content of the DataWarehouse");
-        mDataWarehouse = pLightSheetMicroscope.getDataWarehouse();
-        mTimelapse = pLightSheetMicroscope.getTimelapse();
+        mLightSheetMicroscope = pLightSheetMicroscope;
     }
 
     @Override
     public boolean initialize() {
+
+        mDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
+        mTimelapse = mLightSheetMicroscope.getTimelapse();
         return true;
     }
 
