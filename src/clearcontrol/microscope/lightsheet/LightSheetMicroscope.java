@@ -23,6 +23,7 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseLogScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
@@ -84,6 +85,7 @@ public class LightSheetMicroscope extends
     mDataWarehouse = new DataWarehouse(lRecycler);
 
     addDevice(0, new DataWarehouseResetScheduler());
+    addDevice(0, new DataWarehouseLogScheduler(this));
 
     addDevice(0, new DropOldestStackInterfaceContainerScheduler(StackInterfaceContainer.class));
     addDevice(0, new DropOldestStackInterfaceContainerScheduler(DataContainerInterface.class));

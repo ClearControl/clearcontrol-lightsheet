@@ -24,6 +24,7 @@ import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
+import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.lightsheet.timelapse.containers.SchedulerDurationContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
@@ -142,6 +143,23 @@ public class LightSheetTimelapse extends TimelapseBase implements
           mLogFileWriter = null;
         }
         mLogFileWriter = new BufferedWriter(new FileWriter(lLogFile));
+        mLogFileWriter.write("Timelapse\n");
+        mLogFileWriter.write("Max timepoints      " + getTimePointCounterVariable().get());
+        mLogFileWriter.write("Folder              " + getWorkingDirectory());
+
+        InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+        mLogFileWriter.write("Min Z               " + lState.getStackZLowVariable().get());
+        mLogFileWriter.write("Max Z               " + lState.getStackZHighVariable().get());
+        mLogFileWriter.write("Slice distance      " + lState.getStackZStepVariable());
+
+        mLogFileWriter.write("Exposure time (s)   " + lState.getExposureInSecondsVariable().get());
+        mLogFileWriter.write("Image width         " + lState.getImageWidthVariable().get());
+        mLogFileWriter.write("Image height        " + lState.getImageHeightVariable().get());
+        mLogFileWriter.write("Slice distance      " + lState.getStackZStepVariable());
+
+        mLogFileWriter.write("DataWarehouse items " + mLightSheetMicroscope.getDataWarehouse().keySet().size());
+        mLogFileWriter.write("Schedule items      " + mListOfActivatedSchedulers.size());
+
         mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Starting log\r\n");
       }
       catch (IOException e)
