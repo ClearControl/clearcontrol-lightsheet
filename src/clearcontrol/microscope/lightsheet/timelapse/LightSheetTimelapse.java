@@ -128,8 +128,14 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
       lLogFile.getParentFile().mkdir();
 
+
+
       try
       {
+        if (mLogFileWriter != null) {
+          mLogFileWriter.close();
+          mLogFileWriter = null;
+        }
         mLogFileWriter = new BufferedWriter(new FileWriter(lLogFile));
         mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Starting log\r\n");
       }
@@ -232,23 +238,9 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
 
       SchedulerInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(mLastExecutedSchedulerIndex);
-      if (mLogFileWriter != null) {
-        mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Starting " + lNextSchedulerToRun + "\r\n");
-        if (lLightSheetFastFusionEngine != null)
-        {
-          mLogFileWriter.write("FastFuse knows about " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys() + "\r\n");
-        }
-        mLogFileWriter.flush();
-      }
+      log( "Starting " + lNextSchedulerToRun);
       lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
-      if (mLogFileWriter != null) {
-        mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Finished " + lNextSchedulerToRun + "\r\n");
-        if (lLightSheetFastFusionEngine != null)
-        {
-          mLogFileWriter.write("FastFuse knows about " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys() + "\r\n");
-        }
-        mLogFileWriter.flush();
-      }
+      log("Finished " + lNextSchedulerToRun);
 
       /*
       ArrayList<SchedulerInterface>
@@ -269,6 +261,17 @@ public class LightSheetTimelapse extends TimelapseBase implements
       e.printStackTrace();
     }
 
+  }
+
+  public void log(String pText) {
+    if (mLogFileWriter != null) {
+      try {
+        mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + pText + "\r\n");
+        mLogFileWriter.flush();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
 
