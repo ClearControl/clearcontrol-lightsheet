@@ -74,6 +74,9 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
   int mLastExecutedSchedulerIndex = -1;
 
+  ArrayList<SchedulerInterface>
+          mInitializedSchedulerList;
+
 
   private BufferedWriter mLogFileWriter;
 
@@ -145,19 +148,8 @@ public class LightSheetTimelapse extends TimelapseBase implements
         mLogFileWriter = null;
       }
 
+      mInitializedSchedulerList = new ArrayList<SchedulerInterface>();
 
-
-      ArrayList<SchedulerInterface>
-          lInitializedSchedulerList = new ArrayList<SchedulerInterface>();
-
-      for (SchedulerInterface lSchedulerInterface : mListOfActivatedSchedulers)
-      {
-        if (!lInitializedSchedulerList.contains(lSchedulerInterface)) {
-          lSchedulerInterface.setMicroscope(getMicroscope());
-          lSchedulerInterface.initialize();
-          lInitializedSchedulerList.add(lSchedulerInterface);
-        }
-      }
 
       LightSheetFastFusionProcessor lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
       LightSheetFastFusionEngine lLightSheetFastFusionEngine = lLightSheetFastFusionProcessor.getEngine();
@@ -240,6 +232,14 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
 
       SchedulerInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(mLastExecutedSchedulerIndex);
+
+      if (!mInitializedSchedulerList.contains(lNextSchedulerToRun)) {
+        log( "Starting " + lNextSchedulerToRun);
+        lNextSchedulerToRun.setMicroscope(getMicroscope());
+        lNextSchedulerToRun.initialize();
+        mInitializedSchedulerList.add(lNextSchedulerToRun);
+      }
+
       log( "Starting " + lNextSchedulerToRun);
       lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
       log("Finished " + lNextSchedulerToRun);
