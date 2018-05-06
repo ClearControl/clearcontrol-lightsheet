@@ -143,22 +143,21 @@ public class LightSheetTimelapse extends TimelapseBase implements
           mLogFileWriter = null;
         }
         mLogFileWriter = new BufferedWriter(new FileWriter(lLogFile));
-        mLogFileWriter.write("Timelapse\n");
-        mLogFileWriter.write("Max timepoints      " + getTimePointCounterVariable().get());
-        mLogFileWriter.write("Folder              " + getWorkingDirectory());
+        mLogFileWriter.write("Max timepoints      " + getTimePointCounterVariable().get() + "\n");
+        mLogFileWriter.write("Folder              " + getWorkingDirectory() + "\n");
 
         InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-        mLogFileWriter.write("Min Z               " + lState.getStackZLowVariable().get());
-        mLogFileWriter.write("Max Z               " + lState.getStackZHighVariable().get());
-        mLogFileWriter.write("Slice distance      " + lState.getStackZStepVariable());
+        mLogFileWriter.write("Min Z               " + lState.getStackZLowVariable().get() + "\n");
+        mLogFileWriter.write("Max Z               " + lState.getStackZHighVariable().get() + "\n");
+        mLogFileWriter.write("Slice distance      " + lState.getStackZStepVariable() + "\n");
 
-        mLogFileWriter.write("Exposure time (s)   " + lState.getExposureInSecondsVariable().get());
-        mLogFileWriter.write("Image width         " + lState.getImageWidthVariable().get());
-        mLogFileWriter.write("Image height        " + lState.getImageHeightVariable().get());
-        mLogFileWriter.write("Slice distance      " + lState.getStackZStepVariable());
+        mLogFileWriter.write("Exposure time (s)   " + lState.getExposureInSecondsVariable().get() + "\n");
+        mLogFileWriter.write("Image width         " + lState.getImageWidthVariable().get() + "\n");
+        mLogFileWriter.write("Image height        " + lState.getImageHeightVariable().get() + "\n");
+        mLogFileWriter.write("Slice distance      " + lState.getStackZStepVariable() + "\n");
 
-        mLogFileWriter.write("DataWarehouse items " + mLightSheetMicroscope.getDataWarehouse().keySet().size());
-        mLogFileWriter.write("Schedule items      " + mListOfActivatedSchedulers.size());
+        mLogFileWriter.write("DataWarehouse items " + mLightSheetMicroscope.getDataWarehouse().keySet().size() + "\n");
+        mLogFileWriter.write("Schedule items      " + mListOfActivatedSchedulers.size() + "\n");
 
         mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Starting log\r\n");
       }
@@ -254,7 +253,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
       SchedulerInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(mLastExecutedSchedulerIndex);
 
       if (!mInitializedSchedulerList.contains(lNextSchedulerToRun)) {
-        log( "Starting " + lNextSchedulerToRun);
+        //log( "Initializing " + lNextSchedulerToRun);
         lNextSchedulerToRun.setMicroscope(getMicroscope());
         lNextSchedulerToRun.initialize();
         mInitializedSchedulerList.add(lNextSchedulerToRun);
