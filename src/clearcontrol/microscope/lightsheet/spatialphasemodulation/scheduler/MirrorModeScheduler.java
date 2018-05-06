@@ -4,6 +4,7 @@ import clearcontrol.core.device.VirtualDevice;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
@@ -63,9 +64,16 @@ public class MirrorModeScheduler extends SchedulerBase implements
     DenseMatrix64F lMatrix = mSpatialPhaseModulatorDeviceInterface.getMatrixReference().get();
         //new DenseMatrix64F(mSpatialPhaseModulatorDeviceInterface.getMatrixHeight(), mSpatialPhaseModulatorDeviceInterface.getMatrixWidth());
 
+    if (mMicroscope instanceof LightSheetMicroscope) {
+      ((LightSheetMicroscope) mMicroscope).getTimelapse().log("Loading " + lFile);
+    }
     info("Loading " + lFile);
     DenseMatrix64FReader lMatrixReader = new DenseMatrix64FReader(lFile, lMatrix);
+
     if (!lMatrixReader.read()) {
+      if (mMicroscope instanceof LightSheetMicroscope) {
+        ((LightSheetMicroscope) mMicroscope).getTimelapse().log("Error: matrix file could not be loaded");
+      }
       warning("Error: matrix file could not be loaded");
     }
 
