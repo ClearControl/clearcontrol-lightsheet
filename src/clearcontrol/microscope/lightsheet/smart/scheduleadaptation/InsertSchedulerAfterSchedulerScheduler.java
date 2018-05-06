@@ -11,17 +11,17 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import java.util.ArrayList;
 
 /**
- * The InsertSchedulerBeforeSchedulerScheduler inserts a given scheduler after any scheduler of a certain class.
+ * The InsertSchedulerAfterSchedulerScheduler inserts a given scheduler after any scheduler of a certain class.
  *
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class InsertSchedulerBeforeSchedulerScheduler<T extends SchedulerInterface> extends SchedulerBase {
+public class InsertSchedulerAfterSchedulerScheduler<T extends SchedulerInterface> extends SchedulerBase {
     private final LightSheetMicroscope lightSheetMicroscope;
     private final SchedulerInterface schedulerToInsert;
     private final Class<T> schedulerToInsertBefore;
 
-    public InsertSchedulerBeforeSchedulerScheduler(LightSheetMicroscope lightSheetMicroscope, SchedulerInterface schedulerToInsert, Class<T> schedulerToInsertBefore) {
+    public InsertSchedulerAfterSchedulerScheduler(LightSheetMicroscope lightSheetMicroscope, SchedulerInterface schedulerToInsert, Class<T> schedulerToInsertBefore) {
         super("Smart: Insert " + schedulerToInsert + " before any " + schedulerToInsertBefore);
         this.lightSheetMicroscope = lightSheetMicroscope;
         this.schedulerToInsert = schedulerToInsert;
