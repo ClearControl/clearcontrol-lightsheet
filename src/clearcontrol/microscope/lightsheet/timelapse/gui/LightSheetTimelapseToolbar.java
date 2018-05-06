@@ -1,20 +1,23 @@
 package clearcontrol.microscope.lightsheet.timelapse.gui;
 
 import clearcontrol.core.configuration.MachineConfiguration;
+import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
+import clearcontrol.microscope.gui.halcyon.MicroscopeNodeType;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FWriter;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleReader;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
@@ -25,7 +28,8 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStatePanel;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.timelapse.gui.TimelapseToolbar;
-import org.ejml.data.DenseMatrix64F;
+import javafx.scene.layout.StackPane;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,9 +39,9 @@ import java.util.ArrayList;
  *
  * @author royer
  */
-public class LightSheetTimelapseToolbar extends TimelapseToolbar
+public class LightSheetTimelapseToolbar extends TimelapseToolbar implements LoggingFeature
 {
-  final LightSheetTimelapse mLightSheetTimelapse;
+  LightSheetTimelapse mLightSheetTimelapse = null;
 
 
   private File mProgramTemplateDirectory =
@@ -53,6 +57,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
   public LightSheetTimelapseToolbar(LightSheetTimelapse pLightSheetTimelapse)
   {
     super(pLightSheetTimelapse);
+    mLightSheetTimelapse = pLightSheetTimelapse;
 
     this.setAlignment(Pos.TOP_LEFT);
 
@@ -67,7 +72,6 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       getColumnConstraints().add(lColumnConstraints);
     }
 
-    mLightSheetTimelapse = pLightSheetTimelapse;
 
     {
       Separator lSeparator = new Separator();
@@ -109,7 +113,6 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         lSchedulerChecklistGridPane.getColumnConstraints().add(lColumnConstraints);
       }*/
 
-      String[] lFilters = {"Acquisition:", "Adaptation:", "FilterWheel:", "Fusion:", "IO:", "Laser:", "Memory:", "Post-processing:", "State:", "Timing:", "Visualisation:"};
 
       TitledPane lTitledPane =
               new TitledPane("Schedule",
@@ -132,11 +135,11 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       lListView.setItems(FXCollections.observableArrayList(lSchedulerList));
       //lListView.setPrefWidth(Double.MAX_VALUE);
       //lListView.setMaxWidth(Double.MAX_VALUE);
-      //lListView.setMinHeight(35);
+      lListView.setMinHeight(300);
       //lListView.setMaxHeight(Double.MAX_VALUE);
       lListView.setMinWidth(450);
 
-      lSchedulerChecklistGridPane.add(lListView, 0, lRow, 1, lFilters.length);
+      lSchedulerChecklistGridPane.add(lListView, 0, lRow, 1, 6);
 
       {
         Button lMoveUpButton = new Button("^");
@@ -201,7 +204,20 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         lRow++;
       }
 
-      lRow = lFilters.length + 1;
+      {
+        Button lUnselectButton = new Button("[]");
+        lUnselectButton.setMinWidth(35);
+        lUnselectButton.setMinHeight(35);
+        lUnselectButton.setOnAction((e) -> {
+          lListView.getSelectionModel().select(-1);
+        });
+        GridPane.setValignment(lUnselectButton, VPos.BOTTOM);
+        lSchedulerChecklistGridPane.add(lUnselectButton, 1, lRow);
+        lRow++;
+      }
+
+
+      lRow = 7;
       {
         ComboBox lExistingScheduleTemplates;
         {
@@ -272,6 +288,38 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
 
 
 
+      String[] lFilters = {
+              "Acquisition:",
+              "Adaptation:",
+              "FilterWheel:",
+              "Fusion:",
+              "IO:",
+
+              "Laser:",
+              "Memory:",
+              "Post-processing:",
+              "Smart:",
+              "State:",
+
+              "Timing:",
+              "Visualisation:"};
+
+      Node[]   lIcons = {
+              MicroscopeNodeType.Acquisition.getIcon(),
+              MicroscopeNodeType.AdaptiveOptics.getIcon(),
+              MicroscopeNodeType.FilterWheel.getIcon(),
+              MicroscopeNodeType.Scripting.getIcon(),
+              MicroscopeNodeType.Scripting.getIcon(),
+
+              MicroscopeNodeType.Laser.getIcon(),
+              MicroscopeNodeType.Scripting.getIcon(),
+              MicroscopeNodeType.Scripting.getIcon(),
+              MicroscopeNodeType.Scripting.getIcon(),
+              MicroscopeNodeType.Scripting.getIcon(),
+
+              MicroscopeNodeType.Scripting.getIcon(),
+              MicroscopeNodeType.StackDisplay2D.getIcon()
+      };
 
 
       lRow = 0;
@@ -279,36 +327,86 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         Label lLabel = new Label("Add instruction");
         lSchedulerChecklistGridPane.add(lLabel, 2, lRow, 2, 1);
         lRow++;
+
+        TreeItem<String> rootItem = buildInstructionTree(pLightSheetTimelapse, lFilters, "", lIcons);
+        TreeView<String> tree = new TreeView<String> (rootItem);
+
+        Label lSearchLabel  = new Label("Search");
+        lSchedulerChecklistGridPane.add(lSearchLabel, 2, lRow);
+
+        TextField lSearchField = new TextField();
+        lSchedulerChecklistGridPane.add(lSearchField, 3, lRow);
+        lSchedulerChecklistGridPane.setOnKeyReleased((e) -> {
+          info("keyreleased");
+          tree.setRoot(buildInstructionTree(mLightSheetTimelapse, lFilters, lSearchField.getText(), lIcons));
+        });
+        lRow++;
+
+        tree.setMinHeight(300);
+        tree.setMinWidth(450);
+
+        tree.setOnMouseClicked(new EventHandler<MouseEvent>()
+        {
+          @Override
+          public void handle(MouseEvent mouseEvent)
+          {
+            if(mouseEvent.getClickCount() == 2)
+            {
+              TreeItem<String> item = tree.getSelectionModel().getSelectedItem();
+              System.out.println("Selected Text : " + item.getValue());
+              if (item.getParent() != null && item.getParent().getValue().compareTo("Instructions") != 0 ) {
+                int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
+                if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lSchedulerList.size();
+                lSchedulerList.add(lSelectedIndexInMainList, pLightSheetTimelapse.getListOfAvailableSchedulers(item.getParent().getValue(), item.getValue()).get(0));
+                lListView.setItems(FXCollections.observableArrayList(
+                        lSchedulerList));
+              }
+            }
+          }
+        });
+
+        StackPane lStackPane = new StackPane();
+        lStackPane.getChildren().add(tree);
+
+        lSchedulerChecklistGridPane.add(lStackPane, 2, lRow, 2 , 5);
+        lRow+=5;
+
       }
 
-
-      for (int i = 0; i < lFilters.length; i++)
+      // Todo: remove following two blocks
+      lRow += 2;
       {
-        ArrayList<SchedulerInterface> lAvailableSchedulersList = pLightSheetTimelapse.getListOfAvailableSchedulers(lFilters[i]);
-        if (lAvailableSchedulersList.size() > 0) {
-          ComboBox<SchedulerInterface> lAvailableSchedulers = new ComboBox<>();
-          lAvailableSchedulers.setItems(FXCollections.observableArrayList(lAvailableSchedulersList));
-          lAvailableSchedulers.getSelectionModel().select(0);
-          lAvailableSchedulers.setMaxWidth(Double.MAX_VALUE);
-          lAvailableSchedulers.setMinHeight(35);
-          lAvailableSchedulers.setMinWidth(300);
-          lSchedulerChecklistGridPane.add(lAvailableSchedulers, 3, lRow);
-
-          Button lPlusButton = new Button("+");
-          lPlusButton.setMinWidth(35);
-          lPlusButton.setMinHeight(35);
-          lPlusButton.setOnAction((e) -> {
-            int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
-            if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lSchedulerList.size();
-            int lSelectedIndexInAddList = lAvailableSchedulers.getSelectionModel().getSelectedIndex();
-            lSchedulerList.add(lSelectedIndexInMainList, lAvailableSchedulersList.get(lSelectedIndexInAddList));
-            lListView.setItems(FXCollections.observableArrayList(
-                    lSchedulerList));
-          });
-          lSchedulerChecklistGridPane.add(lPlusButton, 2, lRow);
-          lRow++;
-        }
+        Label lLabel = new Label("Add instruction (legacy UI)");
+        lSchedulerChecklistGridPane.add(lLabel, 0, lRow, 2, 1);
+        lRow++;
       }
+
+
+      ArrayList<SchedulerInterface> lAvailableSchedulersList = pLightSheetTimelapse.getListOfAvailableSchedulers();
+      if (lAvailableSchedulersList.size() > 0) {
+        ComboBox<SchedulerInterface> lAvailableSchedulers = new ComboBox<>();
+        lAvailableSchedulers.setItems(FXCollections.observableArrayList(lAvailableSchedulersList));
+        lAvailableSchedulers.getSelectionModel().select(0);
+        lAvailableSchedulers.setMaxWidth(Double.MAX_VALUE);
+        lAvailableSchedulers.setMinHeight(35);
+        lAvailableSchedulers.setMinWidth(300);
+        lSchedulerChecklistGridPane.add(lAvailableSchedulers, 0, lRow);
+
+        Button lPlusButton = new Button("+");
+        lPlusButton.setMinWidth(35);
+        lPlusButton.setMinHeight(35);
+        lPlusButton.setOnAction((e) -> {
+          int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
+          if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lSchedulerList.size();
+          int lSelectedIndexInAddList = lAvailableSchedulers.getSelectionModel().getSelectedIndex();
+          lSchedulerList.add(lSelectedIndexInMainList, lAvailableSchedulersList.get(lSelectedIndexInAddList));
+          lListView.setItems(FXCollections.observableArrayList(
+                  lSchedulerList));
+        });
+        lSchedulerChecklistGridPane.add(lPlusButton, 1, lRow);
+        lRow++;
+      }
+
     }
 
 /*
@@ -468,6 +566,29 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       }
     }
 
+  }
+
+  @NotNull
+  private TreeItem<String> buildInstructionTree(LightSheetTimelapse pLightSheetTimelapse, String[] lFilters, String pSearchFilter, Node[] lIcons) {
+    TreeItem<String> rootItem = new TreeItem<String> ("Instructions", MicroscopeNodeType.Other.getIcon());
+    rootItem.setExpanded(true);
+    for (int i = 0; i < lFilters.length; i++)
+    {
+      ArrayList<SchedulerInterface> lAvailableSchedulersList = pLightSheetTimelapse.getListOfAvailableSchedulers(lFilters[i], pSearchFilter);
+      if (lAvailableSchedulersList.size() > 0) {
+
+        TreeItem<String> item = new TreeItem<String>(lFilters[i].replace(":", ""), lIcons[i]);
+        item.setExpanded(pSearchFilter.length() > 0);
+        rootItem.getChildren().add(item);
+
+
+        for (SchedulerInterface lSchedulerInterface : lAvailableSchedulersList) {
+          TreeItem<String> schedulerItem = new TreeItem<String>(lSchedulerInterface.getName().replace(lFilters[i], ""));
+          item.getChildren().add(schedulerItem);
+        }
+      }
+    }
+    return rootItem;
   }
 
   private ObservableList<String> listExistingSchedulerTemplateFiles()

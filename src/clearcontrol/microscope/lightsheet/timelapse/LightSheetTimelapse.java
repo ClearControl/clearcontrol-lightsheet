@@ -494,7 +494,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
     for (SchedulerInterface lScheduler : mLightSheetMicroscope.getDevices(SchedulerInterface.class)) {
       boolean lNamePatternMatches = true;
       for (String part : pMustContainStrings) {
-        if (!lScheduler.toString().contains(part)) {
+        if (!lScheduler.toString().toLowerCase().contains(part.toLowerCase())) {
           lNamePatternMatches = false;
           break;
         }

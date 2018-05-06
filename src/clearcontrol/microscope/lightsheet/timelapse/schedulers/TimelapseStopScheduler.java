@@ -11,7 +11,7 @@ import clearcontrol.microscope.timelapse.TimelapseInterface;
  */
 public class TimelapseStopScheduler extends SchedulerBase {
     public TimelapseStopScheduler() {
-        super("Smart: Stop schedulers");
+        super("Smart: Stop timelapse");
     }
 
     @Override
