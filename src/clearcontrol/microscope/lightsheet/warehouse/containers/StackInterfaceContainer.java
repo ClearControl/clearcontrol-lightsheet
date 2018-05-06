@@ -107,4 +107,9 @@ public abstract class StackInterfaceContainer extends DataContainerBase implemen
     }
     clear();
   }
+
+  public String toString() {
+    return this.getClass().getSimpleName() + " [" + this.keySet() + "]";
+  }
+
 }
