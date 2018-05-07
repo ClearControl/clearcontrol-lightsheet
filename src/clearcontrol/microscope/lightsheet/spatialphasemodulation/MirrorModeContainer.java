@@ -16,8 +16,8 @@ import org.ejml.data.DenseMatrix64F;
 public class MirrorModeContainer extends DataContainerBase {
     DenseMatrix64F mMirrorMode = null;
 
-    public MirrorModeContainer(LightSheetMicroscope pLightSheetMicroscope) {
-        super(pLightSheetMicroscope);
+    public MirrorModeContainer(long pTimePoint) {
+        super(pTimePoint);
     }
 
     @Override

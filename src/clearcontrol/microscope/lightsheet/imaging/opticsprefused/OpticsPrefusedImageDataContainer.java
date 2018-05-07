@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
@@ -17,13 +18,17 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
 public class OpticsPrefusedImageDataContainer extends
                                               StackInterfaceContainer
 {
+  LightSheetMicroscope mLightSheetMicroscope;
+
   public OpticsPrefusedImageDataContainer(LightSheetMicroscope pLightSheetMicroscope) {
-    super(pLightSheetMicroscope);
+    super(pLightSheetMicroscope.getDevice(
+            LightSheetTimelapse.class, 0).getTimePointCounterVariable().get());
+    mLightSheetMicroscope = pLightSheetMicroscope;
   }
 
   @Override public boolean isDataComplete()
   {
-    for (int d = 0; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++) {
+    for (int d = 0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++) {
       if (! super.containsKey("C" + d + "opticsprefused")) {
         return false;
       }

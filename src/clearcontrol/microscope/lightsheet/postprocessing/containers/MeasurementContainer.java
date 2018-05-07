@@ -14,8 +14,8 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerBase
 public class MeasurementContainer extends DataContainerBase {
     Double mMeasurement = null;
 
-    public MeasurementContainer(LightSheetMicroscope pLightSheetMicroscope, double pMeasurement) {
-        super(pLightSheetMicroscope);
+    public MeasurementContainer(long pTimePoint, double pMeasurement) {
+        super(pTimePoint);
         mMeasurement = pMeasurement;
     }
 

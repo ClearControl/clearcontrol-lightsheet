@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
@@ -19,15 +20,20 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
 public class SequentialImageDataContainer  extends
                                            StackInterfaceContainer
 {
+  LightSheetMicroscope mLightSheetMicroscope;
+
   public SequentialImageDataContainer(LightSheetMicroscope pLightSheetMicroscope) {
-    super(pLightSheetMicroscope);
+    super(pLightSheetMicroscope.getDevice(
+            LightSheetTimelapse.class, 0).getTimePointCounterVariable().get());
+
+    mLightSheetMicroscope = pLightSheetMicroscope;
   }
 
   @Override public boolean isDataComplete()
   {
-    for (int l = 0; l < getLightSheetMicroscope().getNumberOfDetectionArms(); l++)
+    for (int l = 0; l < mLightSheetMicroscope.getNumberOfDetectionArms(); l++)
     {
-      for (int d = 0; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++)
+      for (int d = 0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
       {
         if (!super.containsKey("C" + d + "L" + l ))
         {

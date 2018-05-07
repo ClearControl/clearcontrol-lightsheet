@@ -26,8 +26,8 @@ public abstract class StackInterfaceContainer extends DataContainerBase implemen
 {
   HashMap<String, StackInterface> mData = new HashMap<>();
 
-  public StackInterfaceContainer(LightSheetMicroscope pLightSheetMicroscope) {
-    super(pLightSheetMicroscope);
+  public StackInterfaceContainer(long pTimePoint) {
+    super(pTimePoint);
   }
 
   @Override public int size()
