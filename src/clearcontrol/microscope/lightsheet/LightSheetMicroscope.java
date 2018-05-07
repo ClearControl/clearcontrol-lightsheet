@@ -87,13 +87,7 @@ public class LightSheetMicroscope extends
     addDevice(0, mStackFusionProcessor);
 
 
-    StackRecyclerManager
-        lStackRecyclerManager = getDevice(StackRecyclerManager.class, 0);
-    RecyclerInterface<StackInterface, StackRequest>
-        lRecycler = lStackRecyclerManager.getRecycler("warehouse",
-        1024,
-                                                      1024);
-    mDataWarehouse = new DataWarehouse(lRecycler);
+    mDataWarehouse = new DataWarehouse();
 
     addDevice(0, new DataWarehouseResetScheduler());
     addDevice(0, new DataWarehouseLogScheduler(this));

@@ -22,7 +22,6 @@ import java.util.Set;
 public abstract class StackInterfaceContainer extends DataContainerBase implements
                                                                         DataContainerInterface,
                                                                         Map<String, StackInterface>,
-                                                                        RecyclableContainer,
                                                                         LoggingFeature
 {
   HashMap<String, StackInterface> mData = new HashMap<>();
@@ -94,16 +93,11 @@ public abstract class StackInterfaceContainer extends DataContainerBase implemen
 
   public void dispose() {
     warning("This container should be recycled, not disposed!");
-    for (String key : keySet()) {
+    /*for (String key : keySet()) {
       get(key).free();
-    }
-    clear();
-  }
-
-  @Override public void recycle(RecyclerInterface<StackInterface, StackRequest> pRecycler)
-  {
+    }*/
     for (String key : keySet()) {
-      pRecycler.release(get(key));
+      get(key).release();
     }
     clear();
   }

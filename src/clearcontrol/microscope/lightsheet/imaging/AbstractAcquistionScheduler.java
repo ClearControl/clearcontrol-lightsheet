@@ -12,6 +12,7 @@ import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
@@ -81,7 +82,12 @@ public abstract class AbstractAcquistionScheduler extends SchedulerBase implemen
                                      StackInterface pStack,
                                      StackInterfaceContainer pContainer)
   {
-    RecyclerInterface<StackInterface, StackRequest> lRecycler = mLightSheetMicroscope.getDataWarehouse().getRecycler();
+    StackRecyclerManager
+            lStackRecyclerManager = mLightSheetMicroscope.getDevice(StackRecyclerManager.class, 0);
+    RecyclerInterface<StackInterface, StackRequest>
+            lRecycler = lStackRecyclerManager.getRecycler("warehouse",
+            1024,
+            1024);
 
     Variable<StackInterface>
         lStackCopyVariable = new Variable<StackInterface>("stackcopy", null);

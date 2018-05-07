@@ -2,10 +2,6 @@ package clearcontrol.microscope.lightsheet.warehouse;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
-import clearcontrol.microscope.lightsheet.warehouse.containers.RecyclableContainer;
-import clearcontrol.stack.StackInterface;
-import clearcontrol.stack.StackRequest;
-import coremem.recycling.RecyclerInterface;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,11 +19,6 @@ import java.util.Stack;
 public class DataWarehouse extends HashMap<String, DataContainerInterface> implements
                                                            LoggingFeature
 {
-  private RecyclerInterface<StackInterface, StackRequest> mRecycler;
-
-  public DataWarehouse (RecyclerInterface<StackInterface, StackRequest> pRecycler) {
-    mRecycler = pRecycler;
-  }
 
   @Override
   public DataContainerInterface put(String key, DataContainerInterface value) {
@@ -74,11 +65,8 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
     if (pContainer == null) {
       return;
     }
-    if (pContainer instanceof RecyclableContainer) {
-      ((RecyclableContainer) pContainer).recycle(mRecycler);
-    } else {
-      pContainer.dispose();
-    }
+
+    pContainer.dispose();
 
     for (String key : keySet())
     {
@@ -95,16 +83,9 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
   @Override public void clear()
   {
     for (DataContainerInterface lContainer : values()) {
-      if (lContainer instanceof RecyclableContainer) {
-        ((RecyclableContainer) lContainer).recycle(mRecycler);
-      } else {
-        lContainer.dispose();
-      }
+      lContainer.dispose();
     }
     super.clear();
   }
 
-  public RecyclerInterface<StackInterface, StackRequest> getRecycler() {
-    return mRecycler;
-  }
 }

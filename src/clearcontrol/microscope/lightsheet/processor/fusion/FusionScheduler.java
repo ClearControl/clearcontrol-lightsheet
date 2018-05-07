@@ -8,6 +8,7 @@ import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcesso
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
@@ -68,7 +69,13 @@ public abstract class FusionScheduler extends SchedulerBase implements
             LightSheetFastFusionProcessor.class,
             0);
 
-    final RecyclerInterface<StackInterface, StackRequest> lRecycler = mLightSheetMicroscope.getDataWarehouse().getRecycler();
+    StackRecyclerManager
+            lStackRecyclerManager = mLightSheetMicroscope.getDevice(StackRecyclerManager.class, 0);
+    RecyclerInterface<StackInterface, StackRequest>
+            lRecycler = lStackRecyclerManager.getRecycler("warehouse",
+            1024,
+            1024);
+
 
     ElapsedTime.measure("Handle container (" + pContainer + ") and fuse", () ->
     {
