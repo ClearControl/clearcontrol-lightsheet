@@ -37,11 +37,11 @@ public class CountsSpotsScheduler<T extends StackInterfaceContainer> extends Sch
     BoundedVariable<Double> mXYDownsamplingFactor = new BoundedVariable<Double>("downsample XY by ", 0.25, 0.0, Double.MAX_VALUE, 0.001);
     BoundedVariable<Double> mZDownsamplingFactor = new BoundedVariable<Double>("downsample Z by ", 1.0, 0.0, Double.MAX_VALUE, 0.001);
     Variable<Boolean> mShowIntermediateResults = new Variable<Boolean>("show intermediate results", false);
-    BoundedVariable<Double> mDoGSigmaMinued = new BoundedVariable<Double>("DoG sigma minuend", 1.5, 0.0, Double.MAX_VALUE, 0.1);
-    BoundedVariable<Double> mDoGSigmaSubtrahend = new BoundedVariable<Double>("DoG sigma subtrahend", 3.0, 0.0, Double.MAX_VALUE, 0.1);
-    BoundedVariable<Double> mBlurSigma = new BoundedVariable<Double>("Blur sigma", 3.0, 0.0, Double.MAX_VALUE, 0.1);
+    BoundedVariable<Double> mDoGSigmaMinued = new BoundedVariable<Double>("DoG sigma minuend", 3.0, 0.0, Double.MAX_VALUE, 0.1);
+    BoundedVariable<Double> mDoGSigmaSubtrahend = new BoundedVariable<Double>("DoG sigma subtrahend", 6.0, 0.0, Double.MAX_VALUE, 0.1);
+    BoundedVariable<Double> mBlurSigma = new BoundedVariable<Double>("Blur sigma", 6.0, 0.0, Double.MAX_VALUE, 0.1);
     BoundedVariable<Integer> mDoGRadius = new BoundedVariable<Integer>("DoG radius", 3, 0, Integer.MAX_VALUE);
-    BoundedVariable<Integer> mBlurRadius = new BoundedVariable<Integer>("Blur radius", 6, 0, Integer.MAX_VALUE);
+    BoundedVariable<Integer> mBlurRadius = new BoundedVariable<Integer>("Blur radius", 12, 0, Integer.MAX_VALUE);
     BoundedVariable<Integer> mOptimaDetectionRadiud = new BoundedVariable<Integer>("Optima detection radius", 6, 0, Integer.MAX_VALUE);
 
     /**
