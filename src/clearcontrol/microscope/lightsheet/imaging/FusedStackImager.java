@@ -45,8 +45,6 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
   }
 
   public StackInterface acquire() {
-    // Reset the data warehouse
-    mLightSheetMicroscope.getDataWarehouse().clear();
 
     // set the imaging state
     InterpolatedAcquisitionState lCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();

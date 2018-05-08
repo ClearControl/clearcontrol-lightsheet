@@ -38,8 +38,6 @@ public class SingleViewStackImager implements ImagerInterface,
   }
 
   public StackInterface acquire() {
-    // reset warehouse
-    mLightSheetMicroscope.getDataWarehouse().clear();
 
     InterpolatedAcquisitionState
         lCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
