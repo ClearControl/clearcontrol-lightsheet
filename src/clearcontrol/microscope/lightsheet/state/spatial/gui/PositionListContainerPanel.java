@@ -39,7 +39,7 @@ public class PositionListContainerPanel extends CustomGridPane {
             lMoveUpButton.setMinHeight(35);
             lMoveUpButton.setOnAction((e) -> {
                 int i = lListView.getSelectionModel().getSelectedIndex();
-                if (i > 1)
+                if (i > 0)
                 {
                     Position lPosition = lTravelPathList.get(i);
                     lTravelPathList.remove(i);
