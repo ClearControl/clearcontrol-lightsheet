@@ -65,6 +65,9 @@ public class SpaceTravelScheduler extends SchedulerBase {
     }
 
     public boolean goToPosition(int pTargetTravelPathPosition) {
+        if (!initializeStages()) {
+            return false;
+        }
         Position target = mTravelPath.get(pTargetTravelPathPosition);
 
         mStageX.moveBy(target.mX - mStageX.getPositionVariable().get(), true);
