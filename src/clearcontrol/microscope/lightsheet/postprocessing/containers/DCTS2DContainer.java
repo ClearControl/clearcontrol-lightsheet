@@ -13,7 +13,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerBase
  */
 public class DCTS2DContainer extends MeasurementInSpaceContainer {
 
-    public DCTS2DContainer(LightSheetMicroscope pLightSheetMicroscope, double pX, double pY, double pZ, double pDCTS2D) {
-        super(pLightSheetMicroscope, pX, pY, pZ, pDCTS2D);
+    public DCTS2DContainer(long pTimePoint, double pX, double pY, double pZ, double pDCTS2D) {
+        super(pTimePoint, pX, pY, pZ, pDCTS2D);
     }
 }

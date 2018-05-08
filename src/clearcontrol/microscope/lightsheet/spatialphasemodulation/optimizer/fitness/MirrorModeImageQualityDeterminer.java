@@ -58,7 +58,7 @@ public class MirrorModeImageQualityDeterminer implements LoggingFeature {
 
             new DenseMatrix64FReader(new File(lMirrorModeDirectory, mSpatialPhaseModulatorDeviceInterface.getName() + "_flat.json"), lFlatMirrorMatrix).read();
 
-            MirrorModeContainer lNewContainer = new MirrorModeContainer(mLightSheetMicroscope);
+            MirrorModeContainer lNewContainer = new MirrorModeContainer(mLightSheetMicroscope.getTimelapse().getTimePointCounterVariable().get());
             lNewContainer.setMirrorMode(lFlatMirrorMatrix);
             mLightSheetMicroscope.getDataWarehouse().put(mSpatialPhaseModulatorDeviceInterface.getName() + "_" + key, lNewContainer);
             return (MirrorModeContainer) lContainer;

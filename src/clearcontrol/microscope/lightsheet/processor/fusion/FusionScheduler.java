@@ -110,7 +110,7 @@ public abstract class FusionScheduler extends SchedulerBase implements
         MetaDataOrdinals.TimePoint);
     DataWarehouse lDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
     FusedImageDataContainer
-        lFusedContainer = new FusedImageDataContainer(mLightSheetMicroscope);
+        lFusedContainer = new FusedImageDataContainer(lTimePoint);
     lFusedContainer.put("fused", lFusedStack);
     lDataWarehouse.put("fused_" + lTimePoint, lFusedContainer);
   }

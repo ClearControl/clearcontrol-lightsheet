@@ -266,7 +266,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
       log("Finished " + lNextSchedulerToRun);
 
       // store how long the execution took
-      SchedulerDurationContainer lContainer = new SchedulerDurationContainer(mLightSheetMicroscope, lNextSchedulerToRun, duration);
+      SchedulerDurationContainer lContainer = new SchedulerDurationContainer(getTimePointCounterVariable().get(), lNextSchedulerToRun, duration);
       mLightSheetMicroscope.getDataWarehouse().put("duration_" + getTimePointCounterVariable().get(), lContainer);
 
       /*

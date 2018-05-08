@@ -16,8 +16,8 @@ public class MeasurementInSpaceContainer extends MeasurementContainer {
     Double mY = null;
     Double mZ = null;
 
-    public MeasurementInSpaceContainer(LightSheetMicroscope pLightSheetMicroscope, double pX, double pY, double pZ, double pMeasurement) {
-        super(pLightSheetMicroscope, pMeasurement);
+    public MeasurementInSpaceContainer(long pTimePoint, double pX, double pY, double pZ, double pMeasurement) {
+        super(pTimePoint, pMeasurement);
         mX = pX;
         mY = pY;
         mZ = pZ;

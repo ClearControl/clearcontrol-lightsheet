@@ -12,7 +12,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
  */
 public class SpotCountContainer  extends MeasurementInSpaceContainer {
 
-    public SpotCountContainer(LightSheetMicroscope pLightSheetMicroscope, double pX, double pY, double pZ, double pSpotCount) {
-        super(pLightSheetMicroscope, pX, pY, pZ, pSpotCount);
+    public SpotCountContainer(long pTimePoint, double pX, double pY, double pZ, double pSpotCount) {
+        super(pTimePoint, pX, pY, pZ, pSpotCount);
     }
 }

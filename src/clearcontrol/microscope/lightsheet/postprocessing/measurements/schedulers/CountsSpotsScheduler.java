@@ -126,7 +126,7 @@ public class CountsSpotsScheduler<T extends StackInterfaceContainer> extends Sch
             }
 
 
-            SpotCountContainer lSpotCountContainer = new SpotCountContainer(lLightSheetMicroscope, lX, lY, lZ, lSpotCount);
+            SpotCountContainer lSpotCountContainer = new SpotCountContainer(pTimePoint, lX, lY, lZ, lSpotCount);
 
             lLightSheetMicroscope.getDataWarehouse().put("SPOTCOUNT_" + pTimePoint, lSpotCountContainer);
 

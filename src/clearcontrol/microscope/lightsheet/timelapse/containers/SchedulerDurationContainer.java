@@ -16,8 +16,8 @@ import clearcontrol.microscope.lightsheet.postprocessing.containers.MeasurementI
 public class SchedulerDurationContainer extends MeasurementContainer {
     private final SchedulerInterface mSchedulerInterface;
 
-    public SchedulerDurationContainer(LightSheetMicroscope pLightSheetMicroscope, SchedulerInterface pSchedulerInterface, double pDurationInMilliseconds) {
-        super(pLightSheetMicroscope, pDurationInMilliseconds);
+    public SchedulerDurationContainer(long pTimePoint, SchedulerInterface pSchedulerInterface, double pDurationInMilliseconds) {
+        super(pTimePoint, pDurationInMilliseconds);
         mSchedulerInterface = pSchedulerInterface;
     }
 

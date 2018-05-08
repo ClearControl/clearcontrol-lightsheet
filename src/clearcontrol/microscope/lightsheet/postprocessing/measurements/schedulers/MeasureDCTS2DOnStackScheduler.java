@@ -86,7 +86,7 @@ public class MeasureDCTS2DOnStackScheduler<T extends StackInterfaceContainer> ex
                 }
             }
 
-            DCTS2DContainer lDCTS2DContainer = new DCTS2DContainer(lLightSheetMicroscope, lX, lY, lZ, lMeanDCTS2DQuality);
+            DCTS2DContainer lDCTS2DContainer = new DCTS2DContainer(pTimePoint, lX, lY, lZ, lMeanDCTS2DQuality);
 
             lLightSheetMicroscope.getDataWarehouse().put("DCTS2D_" + pTimePoint, lDCTS2DContainer);
 

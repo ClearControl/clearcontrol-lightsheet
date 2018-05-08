@@ -12,8 +12,8 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  */
 public class FusedImageDataContainer extends StackInterfaceContainer
 {
-  public FusedImageDataContainer(LightSheetMicroscope pLightSheetMicroscope) {
-    super(pLightSheetMicroscope);
+  public FusedImageDataContainer(long pTimePoint) {
+    super(pTimePoint);
   }
 
   @Override public boolean isDataComplete()
