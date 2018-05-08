@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.smart.samplesearch;
 
+import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class SampleSearch1DScheduler extends SampleSearchScheduler {
+public class SampleSearch1DScheduler extends SampleSearchScheduler implements LoggingFeature {
 
 
     public SampleSearch1DScheduler() {
@@ -28,6 +29,9 @@ public class SampleSearch1DScheduler extends SampleSearchScheduler {
 
         ArrayList<Position> lTravelPathList = lFOV.getTravelPathList();
 
+        info("FOV contains " + lTravelPathList.size() + " items");
+
+
         int steps = 0;
 
         for (int i = 0; i < lTravelPathList.size() - 1; i++) {
@@ -40,6 +44,7 @@ public class SampleSearch1DScheduler extends SampleSearchScheduler {
                             Math.pow(lStartPosition.mZ - lEndPosition.mZ, 2));
 
             steps = (int)(distance / mStepSizeInMillimetersVariable.get() + 1);
+            info("FOV can be travelled through with " + steps + " steps");
 
             double stepX = (lEndPosition.mX - lStartPosition.mX) / (steps - 1);
             double stepY = (lEndPosition.mY - lStartPosition.mY) / (steps - 1);
@@ -52,6 +57,7 @@ public class SampleSearch1DScheduler extends SampleSearchScheduler {
                         lStartPosition.mZ + s * stepZ
                 );
                 mSampleCandidates.getTravelPathList().add(lPosition);
+                info("Added candidate position " + lPosition);
             }
 
         }
