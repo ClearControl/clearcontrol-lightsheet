@@ -5,36 +5,39 @@ import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
+import de.mpicbg.rhaase.spimcat.postprocessing.fijiplugins.projection.presentation.HalfStackProjectionPlugin;
 import ij.IJ;
 import ij.ImagePlus;
+import net.imglib2.RandomAccessibleInterval;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 
 /**
- * The thumbnail generator create a thumbnail of the oldest image stack in the warehouse and saves it the current working directory
- *
- *
+ * HalfStackMaxProjectionScheduler
+ * <p>
+ * <p>
+ * <p>
  * Author: @haesleinhuepf
- * April 2018
+ * 05 2018
  */
-public class ThumbnailScheduler<T extends StackInterfaceContainer> extends SchedulerBase implements LoggingFeature {
+public class HalfStackMaxProjectionScheduler <T extends StackInterfaceContainer> extends SchedulerBase implements LoggingFeature {
 
     private final Class<T> mClass;
+    private final boolean mViewFront;
 
     /**
      * INstanciates a virtual device with a given name
      *
      */
-    public ThumbnailScheduler(Class<T> pClass) {
-        super("Post-processing: Thumbnail generator for " + pClass.getSimpleName());
+    public HalfStackMaxProjectionScheduler(Class<T> pClass, boolean pViewFront) {
+        super("Post-processing: Thumbnail (half stack max projection, " +(pViewFront?"front":"back") + ") generator for " + pClass.getSimpleName());
         mClass = pClass;
+        mViewFront = pViewFront;
     }
 
     @Override
@@ -64,19 +67,29 @@ public class ThumbnailScheduler<T extends StackInterfaceContainer> extends Sched
 
         // Process the image
         ClearCLIJ clij = ClearCLIJ.getInstance();
-        ClearCLImage lCLImage = clij.converter(lStack).getClearCLImage();
-        ClearCLImage lCLMaximumProjectionImage = clij.createCLImage(new long[]{lCLImage.getWidth(), lCLImage.getHeight()}, lCLImage.getChannelDataType());
+        ImagePlus lImagePlus = clij.converter(lStack).getImagePlus();
 
-        Kernels.maxProjection(clij, lCLImage, lCLMaximumProjectionImage);
 
-        ImagePlus lImpMaximumProjection = clij.converter(lCLMaximumProjectionImage).getImagePlus();
-        lCLImage.close();
-        lCLMaximumProjectionImage.close();
+        HalfStackProjectionPlugin halfStackProjectionPlugin = new HalfStackProjectionPlugin();
+        halfStackProjectionPlugin.setInputImage(lImagePlus);
+        if (mViewFront) {
+            halfStackProjectionPlugin.minSlice = 0;
+            halfStackProjectionPlugin.maxSlice = lImagePlus.getNSlices() / 2;
+        } else {
+            halfStackProjectionPlugin.minSlice = lImagePlus.getNSlices() / 2;
+            halfStackProjectionPlugin.maxSlice = lImagePlus.getNSlices() - 1;
+        }
+        halfStackProjectionPlugin.setSilent(true);
+        halfStackProjectionPlugin.setShowResult(false);
+        halfStackProjectionPlugin.run();
+        ImagePlus lResultImagePlus = halfStackProjectionPlugin.getOutputImage();
 
-        new File(targetFolder + "/stacks/thumbnails/").mkdirs();
+        String folderName = "thumbnails_" + (mViewFront?"front":"back");
 
-        IJ.run(lImpMaximumProjection, "Enhance Contrast", "saturated=0.35");
-        IJ.saveAsTiff(lImpMaximumProjection, targetFolder + "/stacks/thumbnails/" +  String.format("%0" + lDigits + "d", lTimePoint) + ".tif");
+        new File(targetFolder + "/stacks/" + folderName + "/").mkdirs();
+
+        IJ.run(lResultImagePlus, "Enhance Contrast", "saturated=0.35");
+        IJ.saveAsTiff(lResultImagePlus, targetFolder + "/stacks/" + folderName + "/" +  String.format("%0" + lDigits + "d", lTimePoint) + ".tif");
         return true;
     }
 }

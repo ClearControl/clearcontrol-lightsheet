@@ -43,7 +43,8 @@ import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightShee
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.MeasureDCTS2DOnStackScheduler;
-import clearcontrol.microscope.lightsheet.postprocessing.schedulers.ThumbnailScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.schedulers.HalfStackMaxProjectionScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.schedulers.MaxProjectionScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscScheduler;
@@ -431,7 +432,8 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new WriteFusedImageAsRawToDiscScheduler("interleaved"));
       addDevice(0, new WriteFusedImageAsTifToDiscScheduler("interleaved"));
       addDevice(0, new DropOldestStackInterfaceContainerScheduler(InterleavedImageDataContainer.class));
-      addDevice(0, new ThumbnailScheduler<InterleavedImageDataContainer>(InterleavedImageDataContainer.class));
+      addDevice(0, new MaxProjectionScheduler<InterleavedImageDataContainer>(InterleavedImageDataContainer.class));
+
 
       SequentialAcquisitionScheduler
           lSequentialAcquisitionScheduler = new SequentialAcquisitionScheduler();
@@ -440,7 +442,7 @@ public class SimulatedLightSheetMicroscope extends
       DropOldestStackInterfaceContainerScheduler lDropContainerScheduler = new DropOldestStackInterfaceContainerScheduler(SequentialImageDataContainer.class);
       DropOldestStackInterfaceContainerScheduler lDropFusedContainerScheduler = new DropOldestStackInterfaceContainerScheduler(FusedImageDataContainer.class);
 
-      ThumbnailScheduler<FusedImageDataContainer> lFusedThumbnailScheduler =  new ThumbnailScheduler<FusedImageDataContainer>(FusedImageDataContainer.class);
+      MaxProjectionScheduler<FusedImageDataContainer> lFusedMaxProjectionScheduler =  new MaxProjectionScheduler<FusedImageDataContainer>(FusedImageDataContainer.class);
       ViewFusedStackScheduler lViewFusedStackScheduler = new ViewFusedStackScheduler();
 
       if (lTimelapse instanceof LightSheetTimelapse)
@@ -449,7 +451,7 @@ public class SimulatedLightSheetMicroscope extends
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialFusionScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewFusedStackScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSequentialFusedImageToDiscScheduler);
-        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lFusedThumbnailScheduler);
+        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lFusedMaxProjectionScheduler);
       }
       addDevice(0, lSequentialAcquisitionScheduler);
       addDevice(0, lSequentialFusionScheduler);
@@ -457,7 +459,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
       addDevice(0, new WriteFusedImageAsTifToDiscScheduler("sequential"));
       addDevice(0, lDropContainerScheduler);
-      addDevice(0, new ThumbnailScheduler<SequentialImageDataContainer>(SequentialImageDataContainer.class));
+      addDevice(0, new MaxProjectionScheduler<SequentialImageDataContainer>(SequentialImageDataContainer.class));
 
       addDevice(0, new OpticsPrefusedAcquisitionScheduler());
       addDevice(0, new OpticsPrefusedFusionScheduler());
@@ -465,16 +467,20 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new WriteFusedImageAsRawToDiscScheduler("opticsprefused"));
       addDevice(0, new WriteFusedImageAsTifToDiscScheduler("opticsprefused"));
       addDevice(0, new DropOldestStackInterfaceContainerScheduler(OpticsPrefusedImageDataContainer.class));
-      addDevice(0, new ThumbnailScheduler<OpticsPrefusedImageDataContainer>(OpticsPrefusedImageDataContainer.class));
+      addDevice(0, new MaxProjectionScheduler<OpticsPrefusedImageDataContainer>(OpticsPrefusedImageDataContainer.class));
+
+      addDevice(0, new HalfStackMaxProjectionScheduler<FusedImageDataContainer>(FusedImageDataContainer.class,true));
+      addDevice(0, new HalfStackMaxProjectionScheduler<FusedImageDataContainer>(FusedImageDataContainer.class,false));
+
 
 
       addDevice(0, lDropFusedContainerScheduler);
       addDevice(0, lViewFusedStackScheduler);
-      addDevice(0, lFusedThumbnailScheduler);
+      addDevice(0, lFusedMaxProjectionScheduler);
     }
 
 
-    ThumbnailScheduler<StackInterfaceContainer> lStackThumbnailScheduler = new ThumbnailScheduler<StackInterfaceContainer>(StackInterfaceContainer.class);
+    MaxProjectionScheduler<StackInterfaceContainer> lStackMaxProjectionScheduler = new MaxProjectionScheduler<StackInterfaceContainer>(StackInterfaceContainer.class);
 
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
       for (int l = 0; l < getNumberOfLightSheets(); l++) {
@@ -491,7 +497,7 @@ public class SimulatedLightSheetMicroscope extends
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSingleViewAcquisitionScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewSingleLightSheetStackScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSingleLightSheetImageToDiscScheduler);
-          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lStackThumbnailScheduler);
+          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lStackMaxProjectionScheduler);
         }
 
         addDevice(0, lViewSingleLightSheetStackScheduler);
@@ -501,7 +507,10 @@ public class SimulatedLightSheetMicroscope extends
 
       }
     }
-    addDevice(0, lStackThumbnailScheduler);
+    addDevice(0, lStackMaxProjectionScheduler);
+    addDevice(0, new HalfStackMaxProjectionScheduler<StackInterfaceContainer>(StackInterfaceContainer.class,true));
+    addDevice(0, new HalfStackMaxProjectionScheduler<StackInterfaceContainer>(StackInterfaceContainer.class,false));
+
 
     addDevice(0, new CountsSpotsScheduler<FusedImageDataContainer>(FusedImageDataContainer.class));
     addDevice(0, new CountsSpotsScheduler<StackInterfaceContainer>(StackInterfaceContainer.class));
