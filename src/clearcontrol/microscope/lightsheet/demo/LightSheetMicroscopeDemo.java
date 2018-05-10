@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.RandomActuatorPositionScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import javafx.application.Application;
@@ -349,6 +350,11 @@ public class LightSheetMicroscopeDemo extends Application implements
       MirrorModeScheduler lMirrorModeScheduler =
           new MirrorModeScheduler(lSpatialPhaseModulatorDeviceBase);
       lLightSheetMicroscope.addDevice(0, lMirrorModeScheduler);
+
+      RandomActuatorPositionScheduler lActuatorPositon =
+              new RandomActuatorPositionScheduler(lSpatialPhaseModulatorDeviceBase);
+      lLightSheetMicroscope.addDevice(0, lActuatorPositon);
+
 
       // Adding calibrator:
 
