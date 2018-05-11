@@ -11,21 +11,21 @@ import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import java.util.ArrayList;
 
 /**
- * SampleSelectorScheduler
+ * SelectBestQualitySampleScheduler
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class SampleSelectorScheduler extends SchedulerBase implements LoggingFeature {
+public class SelectBestQualitySampleScheduler extends SchedulerBase implements LoggingFeature {
 
     /**
      * INstanciates a virtual device with a given name
      *
      */
-    public SampleSelectorScheduler() {
-        super("Smart: Select sample (spatial position with maximum DCTS2D)");
+    public SelectBestQualitySampleScheduler() {
+        super("Smart: Select best quality sample (spatial position with maximum DCTS2D)");
     }
 
     @Override
