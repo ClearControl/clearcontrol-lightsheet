@@ -10,6 +10,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.containers.SliceBySliceDCTS2DContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -70,6 +71,7 @@ public class MeasureDCTS2DOnStackScheduler<T extends StackInterfaceContainer> ex
 
             double lMeanDCTS2DQuality = new Mean().evaluate(lQualityPerslice);
 
+
             double lX = 0;
             double lY = 0;
             double lZ = 0;
@@ -86,13 +88,15 @@ public class MeasureDCTS2DOnStackScheduler<T extends StackInterfaceContainer> ex
                 }
             }
 
-            DCTS2DContainer lDCTS2DContainer = new DCTS2DContainer(pTimePoint, lX, lY, lZ, lMeanDCTS2DQuality);
+            //DCTS2DContainer lDCTS2DContainer = new DCTS2DContainer(pTimePoint, lX, lY, lZ, lMeanDCTS2DQuality);
+
+            SliceBySliceDCTS2DContainer lDCTS2DContainer = new SliceBySliceDCTS2DContainer(pTimePoint, lX, lY, lZ, lQualityPerslice);
 
             lLightSheetMicroscope.getDataWarehouse().put("DCTS2D_" + pTimePoint, lDCTS2DContainer);
 
 
             String headline = "t\tX\tY\tZ\tavgDCTS2D\n";
-            String resultTableLine = pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" + lMeanDCTS2DQuality + "\n" ;
+            String resultTableLine = pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" + lQualityPerslice.toString() + "\n" ;
 
             File lOutputFile = new File(targetFolder + "/dcts2d.tsv");
 
