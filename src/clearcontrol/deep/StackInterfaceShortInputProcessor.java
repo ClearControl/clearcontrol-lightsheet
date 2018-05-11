@@ -46,6 +46,8 @@ public class StackInterfaceShortInputProcessor extends
   // percentile
   private Percentile mPercentile;
   private boolean mUpdatePercentiles;
+  private double mHiLim;
+  private double mLoLim;
 
   public StackInterfaceShortInputProcessor(StackInterface pInputShortStackInterface,
                                            FloatBuffer pTensorflowInputBuffer,
@@ -150,19 +152,21 @@ public class StackInterfaceShortInputProcessor extends
     mClearCLShortToDoubleKernel.run();
     mDoubleBufferCL.writeTo(mDoubleBuffer, true);
 
-    double hi = mPercentile.evaluate(mDoubleBuffer.array(),
-                                     mPercentileHi);
-    double lo = mPercentile.evaluate(mDoubleBuffer.array(),
-                                     mPercentileLo);
+    mHiLim =
+           mPercentile.evaluate(mDoubleBuffer.array(), mPercentileHi);
+    mLoLim =
+           mPercentile.evaluate(mDoubleBuffer.array(), mPercentileLo);
 
     if (mLoggingOn)
     {
-      System.out.println("[TensorflowModelPlus]: new hi is " + hi);
-      System.out.println("[TensorflowModelPlus]: new lo is " + lo);
+      System.out.println("[TensorflowModelPlus]: new hi is "
+                         + mHiLim);
+      System.out.println("[TensorflowModelPlus]: new lo is "
+                         + mLoLim);
     }
 
-    mClearCLDoubleToFloatKernel.setArgument(5, lo);
-    mClearCLDoubleToFloatKernel.setArgument(6, hi);
+    mClearCLDoubleToFloatKernel.setArgument(5, mLoLim);
+    mClearCLDoubleToFloatKernel.setArgument(6, mHiLim);
 
   }
 
@@ -205,6 +209,28 @@ public class StackInterfaceShortInputProcessor extends
   public void setPercentileHi(int pPercentileHi)
   {
     this.mPercentileHi = pPercentileHi;
+  }
+
+  public double getHiLim()
+  {
+    return mHiLim;
+  }
+
+  public double getLoLim()
+  {
+    return mLoLim;
+  }
+
+  public void setHiLim(double pHiLim)
+  {
+    this.mHiLim = pHiLim;
+    mClearCLDoubleToFloatKernel.setArgument(6, mHiLim);
+  }
+
+  public void setLoLim(double pLoLim)
+  {
+    this.mLoLim = pLoLim;
+    mClearCLDoubleToFloatKernel.setArgument(5, mLoLim);
   }
 
   public static void main(String[] args)
