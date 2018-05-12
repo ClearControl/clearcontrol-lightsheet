@@ -67,6 +67,7 @@ import clearcontrol.microscope.lightsheet.state.schedulers.InterpolatedAcquisiti
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.schedulers.TimelapseStopScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -483,6 +484,10 @@ public class SimulatedLightSheetMicroscope extends
 
     MaxProjectionScheduler<StackInterfaceContainer> lStackMaxProjectionScheduler = new MaxProjectionScheduler<StackInterfaceContainer>(StackInterfaceContainer.class);
 
+    String[] lOpticPrefusedStackKeys = new String[getNumberOfDetectionArms()];
+    String[] lInterleavedStackKeys = new String[getNumberOfDetectionArms()];
+    String[] lSequentialStackKeys = new String[getNumberOfDetectionArms() * getNumberOfLightSheets()];
+
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
       for (int l = 0; l < getNumberOfLightSheets(); l++) {
         SingleViewAcquisitionScheduler
@@ -505,9 +510,21 @@ public class SimulatedLightSheetMicroscope extends
         addDevice(0, lWriteSingleLightSheetImageToDiscScheduler);
 
         addDevice(0, new ExposureModulatedAcquisitionScheduler(c, l));
-
+        lSequentialStackKeys[c * getNumberOfLightSheets() + l] = "C" + c + "L" + l;
+        addDevice(0, new ReadStackInterfaceContainerFromDiscScheduler(new String[]{"C" + c + "L" + l}));
       }
+      lOpticPrefusedStackKeys[c] = "C" + c + "opticsprefused";
+      lInterleavedStackKeys[c] = "C" + c + "interleaved";
     }
+
+    addDevice(0, new ReadStackInterfaceContainerFromDiscScheduler(new String[]{"default"}));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscScheduler(new String[]{"sequential"}));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscScheduler(new String[]{"interleaved"}));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscScheduler(new String[]{"opticsprefused"}));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscScheduler(lOpticPrefusedStackKeys));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscScheduler(lSequentialStackKeys));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscScheduler(lInterleavedStackKeys));
+
     addDevice(0, lStackMaxProjectionScheduler);
     addDevice(0, new HalfStackMaxProjectionScheduler<StackInterfaceContainer>(StackInterfaceContainer.class,true));
     addDevice(0, new HalfStackMaxProjectionScheduler<StackInterfaceContainer>(StackInterfaceContainer.class,false));
