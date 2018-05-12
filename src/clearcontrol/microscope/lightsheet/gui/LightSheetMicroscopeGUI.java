@@ -12,6 +12,8 @@ import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelSchedul
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderAlphaByVariationSchedulerPanel;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderZSchedulerPanel;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.SpaceTravelPathPlanningPanel;
+import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.ExposureModulatedAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.gui.ExposureModulatedAcquisitionSchedulerPanel;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.schedulers.gui.SpotDetectionSchedulerPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeScheduler;
@@ -217,6 +219,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
     addPanelMappingEntry(GeneticAlgorithmMirrorModeOptimizeScheduler.class,
                         GeneticAlgorithmMirrorModeOptimizeSchedulerPanel.class,
                         MicroscopeNodeType.AdaptiveOptics);
+
+    addPanelMappingEntry(ExposureModulatedAcquisitionScheduler.class,
+            ExposureModulatedAcquisitionSchedulerPanel.class,
+            MicroscopeNodeType.Acquisition);
 
   }
 

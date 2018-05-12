@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.imaging.exposuremodulation;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
@@ -31,8 +32,8 @@ public class ExposureModulatedAcquisitionScheduler extends
   int mCameraIndex;
   int mLightSheetIndex;
 
-  private Variable<Double> mLongExposureTimeInSecondsVariable = new Variable<Double>("long exposure", 0.05);
-  private Variable<Double> mShortExposureTimeInSecondsVariable = new Variable<Double>("short exposure", 0.002);
+  private BoundedVariable<Double> mLongExposureTimeInSecondsVariable = new BoundedVariable<Double>("long exposure", 0.1, 0.0, Double.MAX_VALUE, 0.0001);
+  private BoundedVariable<Double> mShortExposureTimeInSecondsVariable = new BoundedVariable<Double>("short exposure", 0.01, 0.0, Double.MAX_VALUE, 0.0001);
 
 
   public ExposureModulatedAcquisitionScheduler(int pCameraIndex, int pLightSheetIndex) {
@@ -156,5 +157,13 @@ public class ExposureModulatedAcquisitionScheduler extends
     lQueue.finalizeQueue();
 
     return lQueue;
+  }
+
+  public BoundedVariable<Double> getLongExposureTimeInSecondsVariable() {
+    return mLongExposureTimeInSecondsVariable;
+  }
+
+  public BoundedVariable<Double> getShortExposureTimeInSecondsVariable() {
+    return mShortExposureTimeInSecondsVariable;
   }
 }
