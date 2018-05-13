@@ -103,7 +103,7 @@ dependencies
     compile ('net.clearcontrol:fastfuse:0.6.3')      {transitive= true; changing= true}
 
     // ClearControl:
-    compile ('net.clearcontrol:clearcontrol:0.16.0')      {transitive= true; changing= true}
+    compile ('net.clearcontrol:clearcontrol:0.16.2')      {transitive= true; changing= true}
     compile 'pl.edu.icm:jlargearrays:1.3-RH'
     compile 'com.github.wendykierp:jtransforms:3.1.2-RH'
 }

@@ -21,7 +21,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.genet
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.MirrorModeSchedulerPanel;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscScheduler;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.gui.ReadRawStackInterfaceContainerFromDiscSchedulerPanel;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.gui.ReadStackInterfaceContainerFromDiscSchedulerPanel;
 import javafx.stage.Stage;
 
 import clearcontrol.anything.AnythingDevice;
@@ -227,7 +227,7 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
             MicroscopeNodeType.Acquisition);
 
     addPanelMappingEntry(ReadStackInterfaceContainerFromDiscScheduler.class,
-            ReadRawStackInterfaceContainerFromDiscSchedulerPanel.class,
+            ReadStackInterfaceContainerFromDiscSchedulerPanel.class,
             MicroscopeNodeType.Acquisition);
 
   }

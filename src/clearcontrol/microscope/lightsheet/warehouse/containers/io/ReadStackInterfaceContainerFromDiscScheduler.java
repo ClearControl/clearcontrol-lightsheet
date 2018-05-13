@@ -98,21 +98,21 @@ public class ReadStackInterfaceContainerFromDiscScheduler extends SchedulerBase 
             lContainerWarehouseKey = "sequential_raw_" + pTimePoint;
         }
 
-        /*
+
         StackRecyclerManager
                 lStackRecyclerManager = mLightSheetMicroscope.getDevice(StackRecyclerManager.class, 0);
         RecyclerInterface<StackInterface, StackRequest>
                 lRecycler = lStackRecyclerManager.getRecycler("warehouse",
                 1024,
                 1024);
-        */
 
+/*
         BasicRecycler<StackInterface, StackRequest> lRecycler =
                 new BasicRecycler(new ContiguousOffHeapPlanarStackFactory(),
                         10,
                         10,
                         true);
-
+*/
         RawFileStackSource rawFileStackSource =
                 new RawFileStackSource(lRecycler);
         rawFileStackSource.setLocation(lRootFolder, lDatasetname);

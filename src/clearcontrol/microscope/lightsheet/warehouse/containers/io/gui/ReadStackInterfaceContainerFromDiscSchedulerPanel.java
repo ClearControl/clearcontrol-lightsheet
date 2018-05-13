@@ -6,15 +6,15 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInter
 import javafx.scene.layout.GridPane;
 
 /**
- * ReadRawStackInterfaceContainerFromDiscSchedulerPanel
+ * ReadStackInterfaceContainerFromDiscSchedulerPanel
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class ReadRawStackInterfaceContainerFromDiscSchedulerPanel extends CustomGridPane {
-    public ReadRawStackInterfaceContainerFromDiscSchedulerPanel(ReadStackInterfaceContainerFromDiscScheduler pScheduler) {
+public class ReadStackInterfaceContainerFromDiscSchedulerPanel extends CustomGridPane {
+    public ReadStackInterfaceContainerFromDiscSchedulerPanel(ReadStackInterfaceContainerFromDiscScheduler pScheduler) {
         int lRow = 0;
 
         {
