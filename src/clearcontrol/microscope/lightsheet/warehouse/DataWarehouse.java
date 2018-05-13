@@ -2,8 +2,10 @@ package clearcontrol.microscope.lightsheet.warehouse;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
+import com.jgoodies.looks.plastic.theme.SkyYellow;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -50,12 +52,32 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
   }
 
   public <DCI extends DataContainerInterface> ArrayList<DCI> getContainers(Class pClass) {
+    return getContainers(pClass, true);
+  }
+
+
+  public <DCI extends DataContainerInterface> ArrayList<DCI> getContainers(Class pClass, boolean pSortedByTimePointAscending) {
     ArrayList<DCI> lContainerList = new ArrayList<DCI>();
     for (String key : keySet()) {
       DataContainerInterface lContainer = get(key);
       if (pClass.isInstance(lContainer)) {
         lContainerList.add((DCI)lContainer);
       }
+    }
+
+    if (pSortedByTimePointAscending) {
+      lContainerList.sort((a, b) -> {
+        if (a.getTimepoint() > b.getTimepoint()) {
+          return 1;
+        }
+        if (a.getTimepoint() < b.getTimepoint()) {
+          return -1;
+        }
+        return 0;
+      });
+    }
+    for (DCI container : lContainerList) {
+      System.out.println(container.getTimepoint());
     }
 
     return lContainerList;
