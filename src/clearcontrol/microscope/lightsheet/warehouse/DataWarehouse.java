@@ -76,9 +76,6 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
         return 0;
       });
     }
-    for (DCI container : lContainerList) {
-      System.out.println(container.getTimepoint());
-    }
 
     return lContainerList;
   }
