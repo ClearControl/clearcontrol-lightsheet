@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.smart.sampleselection;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
@@ -28,6 +29,8 @@ import java.util.Arrays;
  * 05 2018
  */
 public class DrosophilaSelectSampleJustBeforeInvaginationScheduler extends SchedulerBase implements LoggingFeature {
+
+    private BoundedVariable<Double> mDerivativeFactorVariable = new BoundedVariable<Double>("derivative factor", 3.0, 0.0, Double.MAX_VALUE, 0.01);
 
     /**
      * INstanciates a virtual device with a given name
@@ -151,28 +154,36 @@ public class DrosophilaSelectSampleJustBeforeInvaginationScheduler extends Sched
 
     private boolean sampleIsJustBeforeInvagination(double[] pQualityMeasurements, int maxTimePoints) {
 
-
+        double averageLastThree = 1.0 / 3.0 * (
+                Math.abs(pQualityMeasurements[maxTimePoints - 1]) +
+                        Math.abs(pQualityMeasurements[maxTimePoints - 2]) +
+                        Math.abs(pQualityMeasurements[maxTimePoints - 3]));
+        double averageThreeBefore = 1.0 / 3.0 * (
+                Math.abs(pQualityMeasurements[maxTimePoints - 4]) +
+                        Math.abs(pQualityMeasurements[maxTimePoints - 5]) +
+                        Math.abs(pQualityMeasurements[maxTimePoints - 6]));
 
 
 
         double[] qualityDerivative = derivative(pQualityMeasurements);
 
-        double averageLastThree = 1.0 / 3.0 * (
+        double averageLastThreeDerivative = 1.0 / 3.0 * (
                 Math.abs(qualityDerivative[maxTimePoints - 2]) +
                         Math.abs(qualityDerivative[maxTimePoints - 3]) +
                                 Math.abs(qualityDerivative[maxTimePoints - 4]));
-        double averageThreeBefore = 1.0 / 3.0 * (
+        double averageThreeBeforeDerivative = 1.0 / 3.0 * (
                 Math.abs(qualityDerivative[maxTimePoints - 5]) +
                         Math.abs(qualityDerivative[maxTimePoints - 6]) +
                                 Math.abs(qualityDerivative[maxTimePoints - 7]));
 
         // In case of a soon to start invagination we assume quality to be mostly stable. Furthermore, in the past,
         // quality is supposed to have changed a lot. Thus quality deltas should be very different (by a factor):
-        double factor = averageThreeBefore / averageLastThree;
-        info("quality: " + Arrays.toString(pQualityMeasurements));
-        info("derivative: " + Arrays.toString(qualityDerivative));
+        double factor = averageThreeBeforeDerivative / averageLastThreeDerivative;
+        //info("quality: " + Arrays.toString(pQualityMeasurements));
+        //info("derivative: " + Arrays.toString(qualityDerivative));
+        info("avg der " + averageThreeBeforeDerivative + " " + averageLastThreeDerivative + " avg " + averageThreeBefore + " " + averageLastThree);
         info("Factor: " + factor);
-        return factor > 5;
+        return (factor > getDerivativeFactorVariable().get()) && (averageThreeBefore < averageLastThree);
     }
 
     private int getClosestPositionIndex(ArrayList<Position> lPositionList, Position lPosition) {
@@ -194,5 +205,9 @@ public class DrosophilaSelectSampleJustBeforeInvaginationScheduler extends Sched
             }
         }
         return minimumDistanceIndex;
+    }
+
+    public BoundedVariable<Double> getDerivativeFactorVariable() {
+        return mDerivativeFactorVariable;
     }
 }
