@@ -10,6 +10,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.containers.SliceBySliceDCTS2DContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -22,18 +23,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-/**
- * The MeasureDCTS2DOnStackScheduler measures average image quality of a stack, puts the result in the data warehouse
- * together with spatial (stage) position, timepoint. Furthermore, the measurement is saved in a TSV log file.
- *
- * Author: @haesleinhuepf
- * 05 2018
- */
-public class MeasureDCTS2DOnStackScheduler<T extends StackInterfaceContainer> extends SchedulerBase implements LoggingFeature {
+
+public class MeasureSliceBySliceDCTS2DOnStackScheduler<T extends StackInterfaceContainer> extends SchedulerBase implements LoggingFeature {
     private final Class<T> mClass;
 
-    public MeasureDCTS2DOnStackScheduler(Class<T> pClass) {
-        super("Post-processing: DCTS2D measurement for " + pClass.getSimpleName());
+    public MeasureSliceBySliceDCTS2DOnStackScheduler(Class<T> pClass) {
+        super("Post-processing: Slice By Slice DCTS2D measurement for " + pClass.getSimpleName());
         mClass = pClass;
     }
 
@@ -89,13 +84,16 @@ public class MeasureDCTS2DOnStackScheduler<T extends StackInterfaceContainer> ex
 
             DCTS2DContainer lDCTS2DContainer = new DCTS2DContainer(pTimePoint, lX, lY, lZ, lMeanDCTS2DQuality);
 
+            SliceBySliceDCTS2DContainer lSliceBySliceDCTS2DContainer = new SliceBySliceDCTS2DContainer(pTimePoint, lX, lY, lZ, lQualityPerslice);
+
             lLightSheetMicroscope.getDataWarehouse().put("DCTS2D_" + pTimePoint, lDCTS2DContainer);
+            lLightSheetMicroscope.getDataWarehouse().put("SliceBySliceDCTS2D_" + pTimePoint, lSliceBySliceDCTS2DContainer);
 
 
-            String headline = "t\tX\tY\tZ\tavgDCTS2D\n";
-            String resultTableLine = pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" + lMeanDCTS2DQuality + "\n" ;
+            String headline = "t\tX\tY\tZ\tSliceBySliceDCTS2D\n";
+            String resultTableLine = pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" + lQualityPerslice.toString() + "\n" ;
 
-            File lOutputFile = new File(targetFolder + "/dcts2d.tsv");
+            File lOutputFile = new File(targetFolder + "/slicebbyslicedcts2d.tsv");
 
             try {
                 boolean existedBefore = (lOutputFile.exists());
@@ -105,6 +103,7 @@ public class MeasureDCTS2DOnStackScheduler<T extends StackInterfaceContainer> ex
                     writer.write(headline);
                 }
                 writer.write (resultTableLine);
+
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
