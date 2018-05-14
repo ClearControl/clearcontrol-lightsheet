@@ -60,6 +60,31 @@ public class TransformMatricesTests
 
   }
 
+  @Test
+  public void testMultiplyMatrix() {
+
+    DenseMatrix64F lMatrix1 = new DenseMatrix64F(new double[][]{{1, 2, 3},{4, 5, 6}});
+    DenseMatrix64F lMatrix2 = new DenseMatrix64F(new double[][]{{7, 8},{9, 10},{11,12}});
+    DenseMatrix64F lMatrix3 = new DenseMatrix64F(new double[][]{{58, 64},{139, 154}});
+
+
+    DenseMatrix64F lResultMatrix = TransformMatrices.multiplyMatrix(lMatrix1,lMatrix2);
+    assertTrue(TransformMatrices.matricesEqual(lMatrix3, lResultMatrix, 0.1));
+
+  }
+
+  @Test
+  public void testTrasposeMatrix() {
+
+    DenseMatrix64F lMatrix1 = new DenseMatrix64F(new double[][]{{5, 4, 3},{4, 0, 4},{7, 10, 3}});
+    DenseMatrix64F lMatrix3 = new DenseMatrix64F(new double[][]{{5, 4, 7},{4, 0, 10},{3, 4, 3}});
+
+
+    DenseMatrix64F lResultMatrix = TransformMatrices.transposeMatrix(lMatrix1);
+    assertTrue(TransformMatrices.matricesEqual(lMatrix3, lResultMatrix, 0.1));
+
+  }
+
 
 
 }

@@ -2,8 +2,10 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sqrt;
+import static javafx.scene.input.KeyCode.X;
 
 import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -340,6 +342,47 @@ public class TransformMatrices
     return lMin;
   }
 
+  /**
+   * Performs Matrix Multiplication
+   * @param pMatrix1 matrix M
+   * @param pMatrix2 matrix N
+   * @return M*N
+   */
+  public static DenseMatrix64F multiplyMatrix(DenseMatrix64F pMatrix1, DenseMatrix64F pMatrix2) {
+    if(pMatrix1.numCols != pMatrix2.numRows){
+      throw new IllegalArgumentException("The matrix dimensions are not compatible for multiplication");
+    }
+    DenseMatrix64F lResultMatrix = new DenseMatrix64F(pMatrix1.numRows, pMatrix2.numCols);
+    for (int y = 0; y < lResultMatrix.numRows; y++)
+    {
+      for (int x = 0; x < lResultMatrix.numCols; x++)
+      {
+        int s = 0;
+        for (int z = 0; z < pMatrix1.numCols; z++)
+        {
+          s += pMatrix1.get(y, z) * pMatrix2.get(z, x);
+        }
+        lResultMatrix.set(y, x, s);
+      }
+    }
+    return lResultMatrix;
+  }
 
+  /**
+   * Performs Matrix Transpose
+   * @param pMatrix1 matrix M
+   * @return M'
+   */
+  public static DenseMatrix64F transposeMatrix(DenseMatrix64F pMatrix1){
+    DenseMatrix64F lResultMatrix = new DenseMatrix64F(pMatrix1.numCols, pMatrix1.numRows);
+    for (int y = 0; y < lResultMatrix.numRows; y++)
+    {
+      for (int x = 0; x < lResultMatrix.numCols; x++)
+      {
+        lResultMatrix.set(y, x, pMatrix1.get(x, y));
+      }
+    }
+    return(lResultMatrix);
+  }
 
 }
