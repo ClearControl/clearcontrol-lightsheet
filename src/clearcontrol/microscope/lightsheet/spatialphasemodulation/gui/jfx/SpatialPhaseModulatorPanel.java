@@ -79,7 +79,7 @@ public class SpatialPhaseModulatorPanel extends CustomGridPane {
                     add(matrixViewPane, maximumM + m, n * 3, 2, 1);
 
                     // label + text field
-                    BoundedVariable<Double> zernikeFactorVariable = new BoundedVariable<>("Z" + ZernikePolynomials.jNoll(n, m) + " (n=" + n + ", m=" + m + ")", zernikeFactors[counter], -Double.MAX_VALUE, Double.MAX_VALUE, 0.00000000001);
+                    BoundedVariable<Double> zernikeFactorVariable = new BoundedVariable<>("Z" + ZernikePolynomials.jNoll(n, m) + " (n=" + n + ", m=" + m + ") " + ZernikePolynomials.getZernikeModeName(n, m), zernikeFactors[ZernikePolynomials.jNoll(n, m)], -Double.MAX_VALUE, Double.MAX_VALUE, 0.00000000001);
                     NumberVariableTextField<Double> variableTextField = new NumberVariableTextField<Double>(zernikeFactorVariable.getName(), zernikeFactorVariable);
                     GridPane.setHalignment(variableTextField.getLabel(), HPos.CENTER);
                     GridPane.setHalignment(variableTextField.getTextField(), HPos.CENTER);
@@ -87,9 +87,10 @@ public class SpatialPhaseModulatorPanel extends CustomGridPane {
                     add(variableTextField.getTextField(), maximumM + m, n * 3 + 2, 2, 1);
 
                     // interaction
-                    final int finalCounter = counter;
+                    final int finalM = m;
+                    final int finalN = n;
                     zernikeFactorVariable.addSetListener((oldValue, newValue)->{
-                        zernikeFactors[finalCounter] = newValue;
+                        zernikeFactors[ZernikePolynomials.jNoll(finalN, finalM) - 1] = newValue;
                         refreshUI();
                     });
 

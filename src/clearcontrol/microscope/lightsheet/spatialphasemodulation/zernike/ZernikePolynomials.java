@@ -220,6 +220,28 @@ public class ZernikePolynomials
     return jNoll(jANSI(n, m));
   }
 
+  private static String[] jANSIIndicedZernikeModeNames = {
+          "Piston",
+          "Tilt Y",
+          "Tilt X",
+          "Oblique astigmatism",
+          "Defocus",
+          "Vertical astigmatism"
+  };
+
+  public static String getZernikeModeName(int n, int m) {
+    int jANSIIndex = jANSI(n, m);
+    return getZernikeModeName(jANSIIndex);
+  }
+
+  public static String getZernikeModeName(int jANSIIndex) {
+    if (jANSIIndex >= jANSIIndicedZernikeModeNames.length) {
+      return "";
+    } else {
+      return jANSIIndicedZernikeModeNames[jANSIIndex];
+    }
+  }
+
   // source: https://oeis.org/A176988/b176988.txt
   private static int[] jNollIndices = {
         1,
