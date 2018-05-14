@@ -234,7 +234,7 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 
     addPanelMappingEntry(SpatialPhaseModulatorDeviceInterface.class,
             SpatialPhaseModulatorPanel.class,
-            MicroscopeNodeType.Acquisition);
+            MicroscopeNodeType.AdaptiveOptics);
 
   }
 
