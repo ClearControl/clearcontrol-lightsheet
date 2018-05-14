@@ -133,12 +133,8 @@ public class Mirao52EDevice extends SpatialPhaseModulatorDeviceBase
   }
 
   @Override
-  public double[] getZernikeFactors() {
-    return new double[0];
-  }
-
-  @Override
   public boolean setZernikeFactors(double[] pZernikeFactors) {
+    warning("Todo: sending Zernike mode factor to MIRAO mirror not implemented yet!");
     return false;
   }
 

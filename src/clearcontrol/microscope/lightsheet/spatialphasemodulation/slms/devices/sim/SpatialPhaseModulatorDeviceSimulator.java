@@ -60,14 +60,12 @@ public class SpatialPhaseModulatorDeviceSimulator extends
     return 1;
   }
 
-  @Override
-  public double[] getZernikeFactors() {
-    return new double[0];
-  }
 
   @Override
   public boolean setZernikeFactors(double[] pZernikeFactors) {
-    return false;
+    info("Sending factors to simulated mirror: " + pZernikeFactors);
+    setZernikeFactorsInternal(pZernikeFactors);
+    return true;
   }
 
   @Override

@@ -10,6 +10,7 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
                                                       implements
                                                       SpatialPhaseModulatorDeviceInterface
 {
+  private double[] mZernikeModeFactors = new double[66];
 
   protected Variable<Double> mMatrixWidthVariable;
   protected Variable<Double> mMatrixHeightVariable;
@@ -105,4 +106,15 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
   @Override
   public abstract long getRelaxationTimeInMilliseconds();
 
+  @Override
+  public double[] getZernikeFactors() {
+    double[] resultArray = new double[mZernikeModeFactors.length];
+    System.arraycopy(mZernikeModeFactors, 0, resultArray, 0, mZernikeModeFactors.length);
+    return resultArray;
+  }
+
+  protected boolean setZernikeFactorsInternal(double[] pZernikeFactors) {
+    System.arraycopy(pZernikeFactors, 0, mZernikeModeFactors, 0, Math.min(mZernikeModeFactors.length, pZernikeFactors.length));
+    return true;
+  }
 }
