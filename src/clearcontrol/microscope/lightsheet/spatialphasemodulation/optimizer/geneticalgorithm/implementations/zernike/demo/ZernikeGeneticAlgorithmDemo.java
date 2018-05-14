@@ -16,7 +16,7 @@ public class ZernikeGeneticAlgorithmDemo {
     public static void main(String... args) {
 
         // we need a deformable mirror simulator just to tell the deserved matrix size to the SolutionFactory
-        SpatialPhaseModulatorDeviceSimulator lDMSimulator = new SpatialPhaseModulatorDeviceSimulator("dm", 11, 11);
+        SpatialPhaseModulatorDeviceSimulator lDMSimulator = new SpatialPhaseModulatorDeviceSimulator("dm", 11, 11, 66);
 
         // We want to find this solution by running the optimization algorithm
         double[] lReferenceFactors = {1.0, -0.5, 0.25, 0.125, - 0.0625, 0};
