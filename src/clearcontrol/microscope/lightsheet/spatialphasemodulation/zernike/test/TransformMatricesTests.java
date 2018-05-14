@@ -85,6 +85,18 @@ public class TransformMatricesTests
 
   }
 
+  @Test
+  public void testconvert1DDoubleArrayToDense64RowMatrix() {
+
+    double[] lArray = {1,2,3,4} ;
+    DenseMatrix64F lMatrix3 = new DenseMatrix64F(new double[][]{{1}, {2}, {3} ,{4}});
+
+
+    DenseMatrix64F lResultMatrix = TransformMatrices.convert1DDoubleArrayToDense64RowMatrix(lArray);
+    assertTrue(TransformMatrices.matricesEqual(lMatrix3, lResultMatrix, 0.1));
+
+  }
+
 
 
 }

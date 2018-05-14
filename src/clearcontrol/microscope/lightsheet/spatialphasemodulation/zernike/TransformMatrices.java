@@ -385,4 +385,20 @@ public class TransformMatrices
     return(lResultMatrix);
   }
 
+  public static DenseMatrix64F convert1DDoubleArrayToDense64RowMatrix(double[] pArray){
+    DenseMatrix64F lResultMatrix = new DenseMatrix64F(pArray.length, 1);
+    for( int y=0; y<pArray.length;y++){
+      lResultMatrix.set(y,0,pArray[y]);
+    }
+    return(lResultMatrix);
+  }
+
+  public static DenseMatrix64F convert1DDoubleArrayToDense64ColumnMatrix(double[] pArray){
+    DenseMatrix64F lResultMatrix = new DenseMatrix64F(1,pArray.length);
+    for( int y=0; y<pArray.length;y++){
+      lResultMatrix.set(0,y,pArray[y]);
+    }
+    return(lResultMatrix);
+  }
+
 }
