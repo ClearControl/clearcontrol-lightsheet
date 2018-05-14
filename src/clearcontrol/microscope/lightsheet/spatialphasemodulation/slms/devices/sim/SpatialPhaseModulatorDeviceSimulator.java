@@ -5,10 +5,11 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import org.ejml.data.DenseMatrix64F;
 
 public class SpatialPhaseModulatorDeviceSimulator extends
-                                                  SpatialPhaseModulatorDeviceBase
+                                                  ZernikeModeFactorBasedSpatialPhaseModulatorBase
                                                   implements
                                                   LoggingFeature,
                                                   SimulationDeviceInterface
@@ -16,9 +17,10 @@ public class SpatialPhaseModulatorDeviceSimulator extends
 
   public SpatialPhaseModulatorDeviceSimulator(String pDeviceName,
                                               int pFullMatrixWidthHeight,
-                                              int pActuatorResolution)
+                                              int pActuatorResolution,
+                                              int pNumberOfZernikeFactors)
   {
-    super(pDeviceName, pFullMatrixWidthHeight, pActuatorResolution);
+    super(pDeviceName, pFullMatrixWidthHeight, pActuatorResolution, pNumberOfZernikeFactors);
     DenseMatrix64F lMatrix = null;
     if (mMatrixVariable != null)
     {

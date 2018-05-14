@@ -10,7 +10,6 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
                                                       implements
                                                       SpatialPhaseModulatorDeviceInterface
 {
-  private double[] mZernikeModeFactors = new double[66];
 
   protected Variable<Double> mMatrixWidthVariable;
   protected Variable<Double> mMatrixHeightVariable;
@@ -45,13 +44,13 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
     System.out.println("Matrix SET to " + mMatrixVariable.get());
   }
 
-  @Override
+  @Override @Deprecated
   public int getMatrixWidth()
   {
     return mMatrixWidthVariable.get().intValue();
   }
 
-  @Override
+  @Override @Deprecated
   public int getMatrixHeight()
   {
     return mMatrixHeightVariable.get().intValue();
@@ -63,13 +62,13 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
     return mActuatorResolutionVariable.get().intValue();
   }
 
-  @Override
+  @Override @Deprecated
   public Variable<Double> getMatrixWidthVariable()
   {
     return mMatrixWidthVariable;
   }
 
-  @Override
+  @Override @Deprecated
   public Variable<Double> getMatrixHeightVariable()
   {
     return mMatrixHeightVariable;
@@ -87,7 +86,7 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
     return mNumberOfActuatorsVariable;
   }
 
-  @Override
+  @Override @Deprecated
   public Variable<DenseMatrix64F> getMatrixReference()
   {
     return mMatrixVariable;
@@ -106,15 +105,4 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
   @Override
   public abstract long getRelaxationTimeInMilliseconds();
 
-  @Override
-  public double[] getZernikeFactors() {
-    double[] resultArray = new double[mZernikeModeFactors.length];
-    System.arraycopy(mZernikeModeFactors, 0, resultArray, 0, mZernikeModeFactors.length);
-    return resultArray;
-  }
-
-  protected boolean setZernikeFactorsInternal(double[] pZernikeFactors) {
-    System.arraycopy(pZernikeFactors, 0, mZernikeModeFactors, 0, Math.min(mZernikeModeFactors.length, pZernikeFactors.length));
-    return true;
-  }
 }

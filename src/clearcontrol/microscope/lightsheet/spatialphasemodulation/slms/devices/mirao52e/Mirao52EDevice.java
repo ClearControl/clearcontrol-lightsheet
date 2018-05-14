@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import mirao52e.Mirao52eDeformableMirror;
 import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
@@ -12,7 +13,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPha
 
 import org.ejml.data.DenseMatrix64F;
 
-public class Mirao52EDevice extends SpatialPhaseModulatorDeviceBase
+public class Mirao52EDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBase
                             implements LoggingFeature
 {
   private static final int cFullMatrixWidthHeight = 8;

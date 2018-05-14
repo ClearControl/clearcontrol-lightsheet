@@ -7,9 +7,10 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import org.ejml.data.DenseMatrix64F;
 
-public class AlpaoDMDevice extends SpatialPhaseModulatorDeviceBase
+public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBase
                            implements LoggingFeature
 {
   private static final int cFullMatrixWidthHeight = 11;
