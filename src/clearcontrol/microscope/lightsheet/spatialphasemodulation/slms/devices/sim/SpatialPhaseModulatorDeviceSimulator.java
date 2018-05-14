@@ -61,6 +61,16 @@ public class SpatialPhaseModulatorDeviceSimulator extends
   }
 
   @Override
+  public double[] getZernikeFactors() {
+    return new double[0];
+  }
+
+  @Override
+  public boolean setZernikeFactors(double[] pZernikeFactors) {
+    return false;
+  }
+
+  @Override
   public boolean start()
   {
     return true;

@@ -132,4 +132,14 @@ public class Mirao52EDevice extends SpatialPhaseModulatorDeviceBase
     return 5;
   }
 
+  @Override
+  public double[] getZernikeFactors() {
+    return new double[0];
+  }
+
+  @Override
+  public boolean setZernikeFactors(double[] pZernikeFactors) {
+    return false;
+  }
+
 }

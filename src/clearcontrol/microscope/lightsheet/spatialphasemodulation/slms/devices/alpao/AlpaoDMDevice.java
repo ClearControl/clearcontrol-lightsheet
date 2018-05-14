@@ -144,4 +144,14 @@ public class AlpaoDMDevice extends SpatialPhaseModulatorDeviceBase
     return 1;
   }
 
+  @Override
+  public double[] getZernikeFactors() {
+    return new double[0];
+  }
+
+  @Override
+  public boolean setZernikeFactors(double[] pZernikeFactors) {
+    return false;
+  }
+
 }
