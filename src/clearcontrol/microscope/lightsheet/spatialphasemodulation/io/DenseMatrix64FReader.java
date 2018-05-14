@@ -49,13 +49,12 @@ public class DenseMatrix64FReader
     }
 
     if (mTargetMatrix == null) {
-      mTargetMatrix = new DenseMatrix64F(data.length, data[0].length);
+      mTargetMatrix = new DenseMatrix64F(data[0].length, data.length);
     }
-
 
     for (int y = 0; y < mTargetMatrix.numRows; y++) {
       for (int x = 0; x < mTargetMatrix.numCols; x++) {
-        mTargetMatrix.set(x, y, data[x][y]);
+        mTargetMatrix.set(y, x, data[x][y]);
       }
     }
 

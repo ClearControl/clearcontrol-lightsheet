@@ -23,13 +23,13 @@ public class DenseMatrix64FWriter
   }
 
   public boolean write() {
-    Double[][] data = new Double[mSourceMatrix.numRows][mSourceMatrix.numCols];
+    Double[][] data = new Double[mSourceMatrix.numCols][mSourceMatrix.numRows];
 
     DenseMatrix64F lSourceMatrix = mSourceMatrix.copy();
 
     for (int y = 0; y < mSourceMatrix.numRows; y++) {
       for (int x = 0; x < mSourceMatrix.numCols; x++) {
-        data[x][y] = lSourceMatrix.get(x, y);
+        data[x][y] = lSourceMatrix.get(y, x);
       }
     }
 

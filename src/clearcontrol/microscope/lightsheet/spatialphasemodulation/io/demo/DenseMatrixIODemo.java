@@ -23,11 +23,12 @@ public class DenseMatrixIODemo
   {
     double[][] data = { {1, 0, 0},
                         {0, 1, 0},
-                        {0, 0, 1}
+                        {0, 0, 1},
+                        {1, 1, 1}
     };
     // generate matrix
     DenseMatrix64F lMatrix = new DenseMatrix64F(data);
-    DenseMatrix64F lMatrixReloaded = new DenseMatrix64F(3,3);
+    DenseMatrix64F lMatrixReloaded = new DenseMatrix64F(4,3);
 
     File lTempFile = File.createTempFile("temp", ".json");
 
