@@ -19,6 +19,11 @@ public class DenseMatrix64FReader
   File mSourceFile;
   DenseMatrix64F mTargetMatrix;
 
+  public DenseMatrix64FReader(File pSourceFile) {
+    mSourceFile = pSourceFile;
+    mTargetMatrix = null;
+  }
+
   public DenseMatrix64FReader(File pSourceFile, DenseMatrix64F pTargetMatrix) {
     mSourceFile = pSourceFile;
     mTargetMatrix = pTargetMatrix;
@@ -43,9 +48,9 @@ public class DenseMatrix64FReader
       return false;
     }
 
-
-
-    DenseMatrix64F lSourceMatrix = mTargetMatrix.copy();
+    if (mTargetMatrix == null) {
+      mTargetMatrix = new DenseMatrix64F(data.length, data[0].length);
+    }
 
 
     for (int y = 0; y < mTargetMatrix.numRows; y++) {
@@ -60,5 +65,12 @@ public class DenseMatrix64FReader
 
 
     return true;
+  }
+
+  public DenseMatrix64F getMatrix() {
+    if (mTargetMatrix == null) {
+      read();
+    }
+    return mTargetMatrix;
   }
 }

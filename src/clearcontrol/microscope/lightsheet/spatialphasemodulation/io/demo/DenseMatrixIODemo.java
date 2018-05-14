@@ -46,5 +46,13 @@ public class DenseMatrixIODemo
     // check if content is the same
     assertTrue(Arrays.equals(lMatrix.data, lMatrixReloaded.data));
 
+
+    DenseMatrix64FReader lReader2 = new DenseMatrix64FReader(lTempFile);
+    lReader2.read();
+    DenseMatrix64F lMatrixRevolutions = lReader2.getMatrix();
+
+    // check if content is the same
+    assertTrue(Arrays.equals(lMatrixRevolutions.data, lMatrixReloaded.data));
+    System.out.println("O: " + Arrays.toString(lMatrixRevolutions.data));
   }
 }
