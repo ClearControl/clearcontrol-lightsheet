@@ -12,6 +12,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.Transfo
 import org.ejml.data.DenseMatrix64F;
 import org.junit.Test;
 
+@Deprecated
 public class MatrixControlPanelDemo
 {
 

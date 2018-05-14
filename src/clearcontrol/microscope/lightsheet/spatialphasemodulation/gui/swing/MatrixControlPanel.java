@@ -18,6 +18,7 @@ import clearcontrol.gui.swing.JSliderDouble;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
+@Deprecated
 public class MatrixControlPanel extends JPanel
 {
 
