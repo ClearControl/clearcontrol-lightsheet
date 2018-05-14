@@ -1,5 +1,9 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike;
 
+import org.ejml.data.DenseMatrix64F;
+
+import java.util.ArrayList;
+
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
@@ -341,5 +345,39 @@ public class ZernikePolynomials
 
   public static int jNoll(int jANSI) {
     return jNollIndices[jANSI];
+  }
+
+  private final static int MATRIX_SIZE = 50;
+
+  private static DenseMatrix64F[] jNollSortedZernikeModes = null;
+  private static void initializeJNollSortedZernikeModes() {
+    if (jNollSortedZernikeModes != null) {
+      return;
+    }
+    jNollSortedZernikeModes = new DenseMatrix64F[jNollIndices.length];
+
+    int maximumM = (int) Math.sqrt(jNollIndices.length);
+
+    for (int n = 0; n <= maximumM; n++) {
+      for (int m = -n; m <= n; m += 2) {
+        DenseMatrix64F zernikeMode = new ZernikePolynomialsDenseMatrix64F(MATRIX_SIZE, MATRIX_SIZE, m, n);
+        jNollSortedZernikeModes[jNoll(n, m) - 1] = zernikeMode;
+      }
+    }
+  }
+
+
+  public static DenseMatrix64F zernikeComposition(double[] factorsSortedByJNoll) {
+    initializeJNollSortedZernikeModes();
+
+    ArrayList<DenseMatrix64F> matricesToSum = new ArrayList<>();
+
+    for (int i = 0; i < factorsSortedByJNoll.length; i++) {
+      if (factorsSortedByJNoll[i] != 0.0 || i == 0) {
+        DenseMatrix64F weightedMatrix = TransformMatrices.multiply(jNollSortedZernikeModes[i], factorsSortedByJNoll[i]);
+        matricesToSum.add(weightedMatrix);
+      }
+    }
+    return TransformMatrices.sum(matricesToSum);
   }
 }
