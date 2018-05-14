@@ -175,15 +175,6 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          FilterWheelDevicePanel.class,
                          MicroscopeNodeType.FilterWheel);
 
-    addPanelMappingEntry(AlpaoDMDevice.class,
-                         AlpaoDMPanel.class,
-                         MicroscopeNodeType.AdaptiveOptics);
-
-    addPanelMappingEntry(SpatialPhaseModulatorDeviceBase.class,
-                         DeformableMirrorPanel.class,
-                         MicroscopeNodeType.AdaptiveOptics);
-
-
     addPanelMappingEntry(MirrorModeScheduler.class,
                          MirrorModeSchedulerPanel.class,
                          MicroscopeNodeType.AdaptiveOptics);
