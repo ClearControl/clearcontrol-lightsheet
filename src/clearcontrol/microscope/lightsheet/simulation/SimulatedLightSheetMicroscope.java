@@ -359,7 +359,7 @@ public class SimulatedLightSheetMicroscope extends
 
     // Setting up deformable mirror
     {
-      SpatialPhaseModulatorDeviceSimulator lMirror = new SpatialPhaseModulatorDeviceSimulator("SimDM", 11, 1);
+      SpatialPhaseModulatorDeviceSimulator lMirror = new SpatialPhaseModulatorDeviceSimulator("SimDM", 11, 1, 66);
       addDevice(0, lMirror);
 
       GeneticAlgorithmMirrorModeOptimizeScheduler lMirrorOptimizer = new GeneticAlgorithmMirrorModeOptimizeScheduler(lMirror);

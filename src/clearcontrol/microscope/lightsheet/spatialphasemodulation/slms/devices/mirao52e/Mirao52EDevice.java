@@ -18,6 +18,7 @@ public class Mirao52EDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorB
 {
   private static final int cFullMatrixWidthHeight = 8;
   private static final int cActuatorResolution = 2 << 14;
+  private static final int cNumberOfZernikeModeFactors = 66;
 
   private Mirao52eDeformableMirror mMirao52eDeformableMirror;
   private String mHostname;
@@ -27,7 +28,8 @@ public class Mirao52EDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorB
   {
     super("MIRAO52e_" + pDeviceIndex,
           cFullMatrixWidthHeight,
-          cActuatorResolution);
+          cActuatorResolution,
+            cNumberOfZernikeModeFactors);
 
     mMirao52eDeformableMirror = new Mirao52eDeformableMirror();
 

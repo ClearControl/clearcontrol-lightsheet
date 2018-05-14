@@ -344,7 +344,7 @@ public class LightSheetMicroscopeDemo extends Application implements
       }
 
       SpatialPhaseModulatorDeviceBase
-          lSpatialPhaseModulatorDeviceBase = new SpatialPhaseModulatorDeviceSimulator("Simulated Spatial Phase Modulator Device", 11, 1);
+          lSpatialPhaseModulatorDeviceBase = new SpatialPhaseModulatorDeviceSimulator("Simulated Spatial Phase Modulator Device", 11, 1, 66);
       lLightSheetMicroscope.addDevice(0, lSpatialPhaseModulatorDeviceBase);
 
       MirrorModeScheduler lMirrorModeScheduler =

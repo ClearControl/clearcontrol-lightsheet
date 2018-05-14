@@ -15,6 +15,7 @@ public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBa
 {
   private static final int cFullMatrixWidthHeight = 11;
   private static final int cActuatorResolution = 2 << 14;
+  private static final int cNumberOfZernikeModeFactors = 66;
 
   private AlpaoDeformableMirror mAlpaoDeformableMirror;
 
@@ -31,7 +32,8 @@ public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBa
   {
     super("ALPAO_" + pAlpaoSerialName,
           cFullMatrixWidthHeight,
-          cActuatorResolution);
+          cActuatorResolution,
+            cNumberOfZernikeModeFactors);
 
     mAlpaoDeformableMirror =
                            new AlpaoDeformableMirror(pAlpaoSerialName);
