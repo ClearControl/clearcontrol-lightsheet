@@ -8,7 +8,9 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import org.ejml.data.DenseMatrix64F;
+import org.ejml.data.Matrix64F;
 
 public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBase
                            implements LoggingFeature
@@ -149,7 +151,9 @@ public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBa
 
   @Override
   public boolean setZernikeFactors(double[] pZernikeFactors) {
-    warning("Todo: sending Zernike mode factor to ALPAO mirror not implemented yet!");
+    DenseMatrix64F lActuatorPositions = getActuatorPositions(pZernikeFactors);
+    mAlpaoDeformableMirror.sendRawMirrorShapeVector(TransformMatrices.convertDense64MatrixTo1DDoubleArray(lActuatorPositions));
+    info("Sending to Mirror:" + TransformMatrices.convertDense64MatrixTo1DDoubleArray(lActuatorPositions).toString());
     return false;
   }
 

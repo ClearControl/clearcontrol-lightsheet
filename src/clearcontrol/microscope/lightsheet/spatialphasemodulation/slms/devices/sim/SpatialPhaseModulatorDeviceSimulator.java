@@ -8,6 +8,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix6
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import org.ejml.data.DenseMatrix64F;
 
 import java.io.File;
@@ -19,11 +20,7 @@ public class SpatialPhaseModulatorDeviceSimulator extends
                                                   SimulationDeviceInterface
 {
 
-  File lMirrorModeDirectory =
-          MachineConfiguration.get()
-                  .getFolder("MirrorModes");
-  DenseMatrix64F mFlatMatrix;
-  DenseMatrix64F mInfluenceMatrix;
+
 
 
   public SpatialPhaseModulatorDeviceSimulator(String pDeviceName,
@@ -53,11 +50,7 @@ public class SpatialPhaseModulatorDeviceSimulator extends
       }
 
     };
-    System.out.println("HELLOO");
-    mFlatMatrix = new DenseMatrix64FReader(new File(lMirrorModeDirectory, getName() + "_flat.json")).getMatrix();
-    System.out.println("BYE");
-    mInfluenceMatrix = new DenseMatrix64FReader(new File(lMirrorModeDirectory, getName() + "_influence.json")).getMatrix();
-    System.out.println("BYE BYE");
+
   }
 
   @Override
@@ -85,7 +78,7 @@ public class SpatialPhaseModulatorDeviceSimulator extends
     setZernikeFactorsInternal(pZernikeFactors);
 
     DenseMatrix64F lActuators = getActuatorPositions(pZernikeFactors);
-    System.out.println("ACTUATOR POSTIONS SENT TO MIRROR: "+lActuators);
+    System.out.println("ACTUATOR POSTIONS SENT TO MIRROR: "+lActuators.toString());
     return true;
   }
 
@@ -101,31 +94,6 @@ public class SpatialPhaseModulatorDeviceSimulator extends
     return true;
   }
 
-  public DenseMatrix64F getActuatorPositions(double[] pZernikeFactors){
-    DenseMatrix64F lZernikeFactorsMatrix = new DenseMatrix64F(66,1);
-    DenseMatrix64F lZernikeFactors = TransformMatrices.convert1DDoubleArrayToDense64RowMatrix(pZernikeFactors);
 
-
-    if(lZernikeFactors.numRows == lZernikeFactors.numRows){
-      lZernikeFactorsMatrix = lZernikeFactors;
-    }
-    else{
-      for( int y=0; y<lZernikeFactorsMatrix.numRows;y++){
-        if(y<lZernikeFactors.numRows){
-          lZernikeFactorsMatrix.set(y,0, lZernikeFactors.get(y,0));
-        }
-        else{
-          lZernikeFactorsMatrix.set(y,0, 0);
-        }
-      }
-    }
-
-
-    DenseMatrix64F lActuators = TransformMatrices.multiplyMatrix(mInfluenceMatrix,lZernikeFactorsMatrix);
-    System.out.println(lActuators);
-    //DenseMatrix64F lActuators = TransformMatrices.sum(TransformMatrices.multiplyMatrix(mInfluenceMatrix,lZernikeFactorsMatrix),TransformMatrices.transposeMatrix(mFlatMatrix)) ;
-
-    return lActuators;
-  }
 
 }
