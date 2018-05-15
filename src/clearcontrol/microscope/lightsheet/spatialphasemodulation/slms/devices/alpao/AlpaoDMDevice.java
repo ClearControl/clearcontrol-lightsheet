@@ -154,7 +154,13 @@ public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBa
     DenseMatrix64F lActuatorPositions = getActuatorPositions(pZernikeFactors);
     mAlpaoDeformableMirror.sendRawMirrorShapeVector(TransformMatrices.convertDense64MatrixTo1DDoubleArray(lActuatorPositions));
     info("Sending to Mirror:" + TransformMatrices.convertDense64MatrixTo1DDoubleArray(lActuatorPositions).toString());
-    return false;
+    return true;
+  }
+
+  public boolean setActuatorPositions(double[] pActuatorsPositions){
+    double[] lActuatorPositions = pActuatorsPositions;
+    mAlpaoDeformableMirror.sendRawMirrorShapeVector(lActuatorPositions);
+    return true;
   }
 
 }
