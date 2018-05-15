@@ -22,7 +22,7 @@ public class GradientBasedFocusOptimizerScheduler extends SchedulerBase {
     final static int DEFOCUS_INDEX = 3;
     private final LightSheetMicroscope mLightSheetMicroscope;
 
-    private BoundedVariable<Double> stepSize = new BoundedVariable<Double>("Defocus step size",0.001, 0.0, Double.MAX_VALUE, 0.0000000001);
+    private BoundedVariable<Double> stepSize = new BoundedVariable<Double>("Defocus step size",0.25, 0.0, Double.MAX_VALUE, 0.0000000001);
 
     private BoundedVariable<Double> mPositionZ = null;
 
