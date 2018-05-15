@@ -29,11 +29,19 @@ public class MirrorModeImageQualityDeterminer implements LoggingFeature {
     // Input
     private final LightSheetMicroscope mLightSheetMicroscope;
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
-    private final DenseMatrix64F mMatrix;
+    private DenseMatrix64F mMatrix = null;
+    private double[] mFactors = null;
     private final double mPositionZ;
 
     // Output
     private double mQuality;
+
+    public MirrorModeImageQualityDeterminer(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ, double[] pFactors) {
+        mLightSheetMicroscope = pLightSheetMicroscope;
+        mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
+        mFactors = pFactors;
+        mPositionZ = pPositionZ;
+    }
 
     public MirrorModeImageQualityDeterminer(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, double pPositionZ, DenseMatrix64F pMatrix) {
         mLightSheetMicroscope = pLightSheetMicroscope;
@@ -67,39 +75,60 @@ public class MirrorModeImageQualityDeterminer implements LoggingFeature {
 
     private void determineQuality()
     {
-        DenseMatrix64F lMatrixToTest = mMatrix;
+        if (mMatrix != null ) {
 
-        DataContainerInterface lActuatorInfluenceMatrixContainer = getMirrorModeContainer("actuator_influence");
-        if (lActuatorInfluenceMatrixContainer != null) {
-            DenseMatrix64F lActuatorInfluenceMatrix = ((MirrorModeContainer) lActuatorInfluenceMatrixContainer).getMirrorMode();
-            lMatrixToTest = TransformMatrices.multiplyElementWise(lMatrixToTest, lActuatorInfluenceMatrix);
+            warning("Quality is determined from a matrix instead of an array of Zernike Factors! This functionality will be removed in the future!");
+            DenseMatrix64F lMatrixToTest = mMatrix;
+
+            DataContainerInterface lActuatorInfluenceMatrixContainer = getMirrorModeContainer("actuator_influence");
+            if (lActuatorInfluenceMatrixContainer != null) {
+                DenseMatrix64F lActuatorInfluenceMatrix = ((MirrorModeContainer) lActuatorInfluenceMatrixContainer).getMirrorMode();
+                lMatrixToTest = TransformMatrices.multiplyElementWise(lMatrixToTest, lActuatorInfluenceMatrix);
+            } else {
+                warning("No actuator influence matrix available! Mirror shape may be wrong");
+            }
+
+            DataContainerInterface lFlatMirrorModeContainer = getMirrorModeContainer("flat");
+            if (lFlatMirrorModeContainer != null) {
+                DenseMatrix64F lFlatMirrorMatrix = ((MirrorModeContainer) lFlatMirrorModeContainer).getMirrorMode();
+                lMatrixToTest = TransformMatrices.sum(lMatrixToTest, lFlatMirrorMatrix);
+            } else {
+                warning("No flat mirror matrix available! Mirror shape may be wrong");
+            }
+
+            mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(lMatrixToTest);
+            backupState();
+
+            SingleViewPlaneImager lImager = new SingleViewPlaneImager(mLightSheetMicroscope, mPositionZ);
+            lImager.setImageWidth(1024);
+            lImager.setImageHeight(1024);
+            lImager.setExposureTimeInSeconds(0.01);
+            lImager.setDetectionArmIndex(0);
+            lImager.setLightSheetIndex(0);
+            StackInterface lStack = lImager.acquire();
+
+            DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
+            mQuality = lQualityEstimator.getQualityArray()[0];
+
+            restoreState();
         } else {
-            warning("No actuator influence matrix available! Mirror shape may be wrong");
+
+            mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(mFactors);
+            backupState();
+
+            SingleViewPlaneImager lImager = new SingleViewPlaneImager(mLightSheetMicroscope, mPositionZ);
+            lImager.setImageWidth(1024);
+            lImager.setImageHeight(1024);
+            lImager.setExposureTimeInSeconds(0.01);
+            lImager.setDetectionArmIndex(0);
+            lImager.setLightSheetIndex(0);
+            StackInterface lStack = lImager.acquire();
+
+            DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
+            mQuality = lQualityEstimator.getQualityArray()[0];
+
+            restoreState();
         }
-
-        DataContainerInterface lFlatMirrorModeContainer = getMirrorModeContainer("flat");
-        if (lFlatMirrorModeContainer != null) {
-            DenseMatrix64F lFlatMirrorMatrix = ((MirrorModeContainer) lFlatMirrorModeContainer).getMirrorMode();
-            lMatrixToTest = TransformMatrices.sum(lMatrixToTest, lFlatMirrorMatrix);
-        } else {
-            warning("No flat mirror matrix available! Mirror shape may be wrong");
-        }
-
-        mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(lMatrixToTest);
-        backupState();
-
-        SingleViewPlaneImager lImager = new SingleViewPlaneImager(mLightSheetMicroscope, mPositionZ);
-        lImager.setImageWidth(1024);
-        lImager.setImageHeight(1024);
-        lImager.setExposureTimeInSeconds(0.01);
-        lImager.setDetectionArmIndex(0);
-        lImager.setLightSheetIndex(0);
-        StackInterface lStack = lImager.acquire();
-
-        DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
-        mQuality = lQualityEstimator.getQualityArray()[0];
-
-        restoreState();
     }
 
     public double getFitness() {
