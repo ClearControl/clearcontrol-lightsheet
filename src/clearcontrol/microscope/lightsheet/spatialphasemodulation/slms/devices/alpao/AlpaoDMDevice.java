@@ -162,7 +162,7 @@ public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBa
   private double[] convertNollOrderToANSIOrder(double[] pNollOrderedZernikeFactors) {
     double[] pANSIOrderedZernikeFactors = new double[pNollOrderedZernikeFactors.length];
     for (int i = 0; i < pNollOrderedZernikeFactors.length; i++) {
-      pANSIOrderedZernikeFactors[i] = pNollOrderedZernikeFactors[ZernikePolynomials.jNoll(i)];
+      pANSIOrderedZernikeFactors[i] = pNollOrderedZernikeFactors[ZernikePolynomials.jNoll(i) - 1];
     }
     return pANSIOrderedZernikeFactors;
   }
