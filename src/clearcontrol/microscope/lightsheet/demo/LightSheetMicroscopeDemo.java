@@ -5,12 +5,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LoadMirrorModesFromFolderScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.RandomActuatorPositionScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.SequentialZernikesScheduler;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeSpatialPhaseModulatorDevice;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -352,9 +350,9 @@ public class LightSheetMicroscopeDemo extends Application implements
       lLightSheetMicroscope.addDevice(0, lSpatialPhaseModulatorDeviceBase);
 
 
-      MirrorModeScheduler lMirrorModeScheduler =
-          new MirrorModeScheduler(lSpatialPhaseModulatorDeviceBase);
-      lLightSheetMicroscope.addDevice(0, lMirrorModeScheduler);
+      LoadMirrorModesFromFolderScheduler lLoadMirrorModesFromFolderScheduler =
+          new LoadMirrorModesFromFolderScheduler(lSpatialPhaseModulatorDeviceBase);
+      lLightSheetMicroscope.addDevice(0, lLoadMirrorModesFromFolderScheduler);
 
       SequentialZernikesScheduler lSequentialZernikesScheduler =
               new SequentialZernikesScheduler(lSpatialPhaseModulatorDeviceBase,1,0.0,5.0,-5.0);
