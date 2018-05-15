@@ -9,9 +9,11 @@ import java.io.File;
 
 /**
  * ZernikeModeFactorBasedSpatialPhaseModulatorBase
- * <p>
- * <p>
- * <p>
+ *
+ * This base class for deformable mirror devices adds the feature of handing over an array of Zernike factors in Noll
+ * order to the device. The first element int the array [0] corresponds to Noll 1
+ *
+ *
  * Author: @haesleinhuepf
  * 05 2018
  */
@@ -36,6 +38,9 @@ public abstract class ZernikeModeFactorBasedSpatialPhaseModulatorBase extends Sp
     }
 
 
+    /**
+     * @return array of Zernike factors in Nolls order. The first element[0] corresponds to Noll 1
+     */
     @Override
     public double[] getZernikeFactors() {
         double[] resultArray = new double[mZernikeModeFactors.length];
@@ -43,15 +48,21 @@ public abstract class ZernikeModeFactorBasedSpatialPhaseModulatorBase extends Sp
         return resultArray;
     }
 
+    /**
+     * set Zernike factors in Nolls order. The first element[0] corresponds to Noll 1
+     * @param pZernikeFactors factors in Noll order
+     */
     protected boolean setZernikeFactorsInternal(double[] pZernikeFactors) {
         System.arraycopy(pZernikeFactors, 0, mZernikeModeFactors, 0, Math.min(mZernikeModeFactors.length, pZernikeFactors.length));
         return true;
     }
 
+    /**
+     * @return array of Zernike factors in Nolls order. The first element[0] corresponds to Noll 1
+     */
     protected DenseMatrix64F getActuatorPositions(double[] pZernikeFactors){
         DenseMatrix64F lZernikeFactorsMatrix = new DenseMatrix64F(66,1);
         DenseMatrix64F lZernikeFactors = TransformMatrices.convert1DDoubleArrayToDense64RowMatrix(pZernikeFactors);
-
 
         if(lZernikeFactors.numRows == lZernikeFactors.numRows){
             lZernikeFactorsMatrix = lZernikeFactors;
