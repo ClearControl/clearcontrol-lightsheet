@@ -8,6 +8,8 @@ import java.util.concurrent.TimeUnit;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.RandomActuatorPositionScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeSpatialPhaseModulatorDevice;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -343,9 +345,11 @@ public class LightSheetMicroscopeDemo extends Application implements
                                     lAcquisitionState);
       }
 
-      SpatialPhaseModulatorDeviceBase
+
+      ZernikeModeFactorBasedSpatialPhaseModulatorBase
           lSpatialPhaseModulatorDeviceBase = new SpatialPhaseModulatorDeviceSimulator("Simulated Spatial Phase Modulator Device", 11, 1, 66);
       lLightSheetMicroscope.addDevice(0, lSpatialPhaseModulatorDeviceBase);
+
 
       MirrorModeScheduler lMirrorModeScheduler =
           new MirrorModeScheduler(lSpatialPhaseModulatorDeviceBase);

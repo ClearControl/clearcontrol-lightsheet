@@ -27,14 +27,13 @@ public class MirrorModeScheduler extends SchedulerBase implements
       new Variable("RootFolder",
                    (Object) null);
 
-  private SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
-  private ZernikeSpatialPhaseModulatorDevice mZernikeSpatialPhaseModulatorDevice;
+//  private SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
+  private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
 
-  public MirrorModeScheduler(ZernikeSpatialPhaseModulatorDevice pZernikeSpatialPhaseModulatorDevice) {
-    super("Adaptation: Mirror mode scheduler for " + pZernikeSpatialPhaseModulatorDevice.getName());
-
+  public MirrorModeScheduler(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
+    super("Adaptation: Mirror mode scheduler for " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
     //mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
-    mZernikeSpatialPhaseModulatorDevice = pZernikeSpatialPhaseModulatorDevice;
+    mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
   }
 
 
@@ -85,7 +84,7 @@ public class MirrorModeScheduler extends SchedulerBase implements
     double[] lArray = TransformMatrices.convertDense64MatrixTo1DDoubleArray(lMatrix);
     info("Sending matrix to mirror");
 //    mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(lMatrix);
-    mZernikeSpatialPhaseModulatorDevice.setZernikeFactors(lArray);
+      mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(lArray);
 
 
     info("Sent. Scheduler done");
