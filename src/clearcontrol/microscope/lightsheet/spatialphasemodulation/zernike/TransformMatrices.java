@@ -177,7 +177,7 @@ public class TransformMatrices
       return null;
     }
     DenseMatrix64F lReferenceMatrix = pMatrixList.get(0);
-    DenseMatrix64F lSumMatrix = new DenseMatrix64F(lReferenceMatrix.numCols, lReferenceMatrix.numRows);
+    DenseMatrix64F lSumMatrix = new DenseMatrix64F(lReferenceMatrix.numRows, lReferenceMatrix.numCols);
 
     for (DenseMatrix64F lMatrix : pMatrixList) {
       for (int y = 0; y < lMatrix.numRows; y++)
@@ -350,14 +350,14 @@ public class TransformMatrices
    */
   public static DenseMatrix64F multiplyMatrix(DenseMatrix64F pMatrix1, DenseMatrix64F pMatrix2) {
     if(pMatrix1.numCols != pMatrix2.numRows){
-      throw new IllegalArgumentException("The matrix dimensions are not compatible for multiplication");
+      throw new IllegalArgumentException("The matrix dimensions are not compatible for multiplication (" + pMatrix1.numRows +"," + pMatrix1.numCols+"),(" + pMatrix2.numRows+","+pMatrix2.numCols+")");
     }
     DenseMatrix64F lResultMatrix = new DenseMatrix64F(pMatrix1.numRows, pMatrix2.numCols);
     for (int y = 0; y < lResultMatrix.numRows; y++)
     {
       for (int x = 0; x < lResultMatrix.numCols; x++)
       {
-        int s = 0;
+        double s = 0.0;
         for (int z = 0; z < pMatrix1.numCols; z++)
         {
           s += pMatrix1.get(y, z) * pMatrix2.get(z, x);
@@ -399,6 +399,19 @@ public class TransformMatrices
       lResultMatrix.set(0,y,pArray[y]);
     }
     return(lResultMatrix);
+  }
+
+  public static double[] convertDense64MatrixTo1DDoubleArray(DenseMatrix64F pMatrix){
+    double[] lResultArray = new double[pMatrix.getNumElements()];
+    int counter = 0;
+    for( int y=0; y<pMatrix.getNumRows();y++){
+      for( int x=0; x<pMatrix.getNumCols(); x++){
+        lResultArray[counter] = pMatrix.get(y,x);
+        counter ++;
+      }
+
+    }
+    return(lResultArray);
   }
 
 }
