@@ -198,9 +198,6 @@ public class SimulatedLightSheetMicroscope extends
     }
 
 
-
-
-
     // Setting up Filterwheel:
     {
       int[] lFilterWheelPositions = new int[]
