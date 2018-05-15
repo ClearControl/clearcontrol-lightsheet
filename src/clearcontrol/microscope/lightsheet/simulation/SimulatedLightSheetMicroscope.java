@@ -52,6 +52,7 @@ import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawT
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationScheduler;
+import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenScheduler;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DScheduler;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DScheduler;
@@ -596,6 +597,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new SampleSearch2DScheduler());
     addDevice(0, new SelectBestQualitySampleScheduler());
     addDevice(0, new DrosophilaSelectSampleJustBeforeInvaginationScheduler());
+    addDevice(0, new RestartTimelapseWhileNoSampleChosenScheduler(this));
 
     addDevice(0, new AppendConsecutiveHyperDriveImagingScheduler(100, 5));
     addDevice(0, new AppendConsecutiveHyperDriveImagingScheduler(100, 10));
