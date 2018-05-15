@@ -27,9 +27,12 @@ public abstract class ZernikeModeFactorBasedSpatialPhaseModulatorBase extends Sp
     public ZernikeModeFactorBasedSpatialPhaseModulatorBase(String pDeviceName, int pFullMatrixWidthHeight, int pActuatorResolution, int pNumberOfZernikeFactors) {
         super(pDeviceName, pFullMatrixWidthHeight, pActuatorResolution);
         mZernikeModeFactors = new double[pNumberOfZernikeFactors];
+
         mFlatMatrix = new DenseMatrix64FReader(new File(lMirrorModeDirectory, getName() + "_flat.json")).getMatrix();
         mInfluenceMatrix = new DenseMatrix64FReader(new File(lMirrorModeDirectory, getName() + "_influence.json")).getMatrix();
-        mInfluenceMatrix = TransformMatrices.transposeMatrix(mInfluenceMatrix);
+        if (mInfluenceMatrix != null) {
+            mInfluenceMatrix = TransformMatrices.transposeMatrix(mInfluenceMatrix);
+        }
     }
 
 
