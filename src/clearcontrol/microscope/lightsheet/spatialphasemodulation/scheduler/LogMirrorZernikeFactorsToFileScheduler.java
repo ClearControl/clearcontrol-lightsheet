@@ -5,19 +5,21 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FWriter;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
+import org.ejml.data.DenseMatrix64F;
 
 import java.io.File;
 
 /**
- * The LogMirrorModeToFileScheduler has been deprecated because actuator matrices should no longer be sent to the mirrors.
- * Use LogMirrorZernikeFactorsToFileScheduler instead
- *
+ * LogMirrorModeToFileScheduler
+ * <p>
+ * <p>
+ * <p>
  * Author: @haesleinhuepf
  * 04 2018
  */
-@Deprecated
-public class LogMirrorModeToFileScheduler extends SchedulerBase implements LoggingFeature {
+public class LogMirrorZernikeFactorsToFileScheduler extends SchedulerBase implements LoggingFeature {
 
     private final SpatialPhaseModulatorDeviceInterface mMirror;
 
@@ -25,8 +27,8 @@ public class LogMirrorModeToFileScheduler extends SchedulerBase implements Loggi
      * INstanciates a virtual device with a given name
      *
      */
-    public LogMirrorModeToFileScheduler(SpatialPhaseModulatorDeviceInterface pMirror) {
-        super("State: Log matrix of " + pMirror + "to disc (deprecated)");
+    public LogMirrorZernikeFactorsToFileScheduler(SpatialPhaseModulatorDeviceInterface pMirror) {
+        super("State: Log Zernike factors of " + pMirror + "to disc");
         mMirror = pMirror;
     }
 
@@ -44,8 +46,10 @@ public class LogMirrorModeToFileScheduler extends SchedulerBase implements Loggi
 
         File lFolder = ((LightSheetMicroscope) mMicroscope).getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory();
 
-        File lTargetFile = new File(lFolder, "mirror" + pTimePoint + ".json");
+        File lTargetFile = new File(lFolder, mMirror.getName() + "_zernike_factors_" + pTimePoint + ".json");
 
-        return new DenseMatrix64FWriter(lTargetFile, mMirror.getMatrixReference().get()).write();
+        DenseMatrix64F lZernikeFactorsVector = TransformMatrices.convert1DDoubleArrayToDense64RowMatrix(mMirror.getZernikeFactors());
+
+        return new DenseMatrix64FWriter(lTargetFile, lZernikeFactorsVector).write();
     }
 }
