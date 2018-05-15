@@ -9,6 +9,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPha
 
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.data.Matrix64F;
 
@@ -151,10 +152,19 @@ public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBa
 
   @Override
   public boolean setZernikeFactors(double[] pZernikeFactors) {
+    pZernikeFactors = convertNollOrderToANSIOrder(pZernikeFactors);
     DenseMatrix64F lActuatorPositions = getActuatorPositions(pZernikeFactors);
     mAlpaoDeformableMirror.sendRawMirrorShapeVector(TransformMatrices.convertDense64MatrixTo1DDoubleArray(lActuatorPositions));
     info("Sending to Mirror:" + TransformMatrices.convertDense64MatrixTo1DDoubleArray(lActuatorPositions).toString());
     return true;
+  }
+
+  private double[] convertNollOrderToANSIOrder(double[] pNollOrderedZernikeFactors) {
+    double[] pANSIOrderedZernikeFactors = new double[pNollOrderedZernikeFactors.length];
+    for (int i = 0; i < pNollOrderedZernikeFactors.length; i++) {
+      pANSIOrderedZernikeFactors[i] = pNollOrderedZernikeFactors[ZernikePolynomials.jNoll(i)];
+    }
+    return pANSIOrderedZernikeFactors;
   }
 
   public boolean setActuatorPositions(double[] pActuatorsPositions){
