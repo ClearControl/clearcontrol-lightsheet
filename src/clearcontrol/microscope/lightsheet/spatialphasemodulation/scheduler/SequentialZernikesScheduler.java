@@ -34,8 +34,8 @@ public class SequentialZernikesScheduler extends SchedulerBase implements
 
     @Override
     public boolean initialize() {
-        mArray = new double[66];
-        for(int i = 0; i<66;i++) {
+        mArray = mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors();
+        for(int i = 0; i < mArray.length; i++) {
             mArray[i] = mInitialValue;
         }
         mChangingMode = mStartingMode;
