@@ -19,7 +19,7 @@ public class GradientBasedFocusOptimizerScheduler extends SchedulerBase {
 
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
 
-    final static int DEFOCUS_INDEX = 4;
+    final static int DEFOCUS_INDEX = 3;
     private final LightSheetMicroscope mLightSheetMicroscope;
 
     private BoundedVariable<Double> stepSize = new BoundedVariable<Double>("Defocus step size",0.001, 0.0, Double.MAX_VALUE, 0.0000000001);
@@ -31,7 +31,7 @@ public class GradientBasedFocusOptimizerScheduler extends SchedulerBase {
      *
      */
     public GradientBasedFocusOptimizerScheduler(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
-        super("Adaptive: Gradient based focus optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName());
+        super("Adaptation: Gradient based focus optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName());
         this.mLightSheetMicroscope = pLightSheetMicroscope;
         this.mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
 
@@ -56,13 +56,13 @@ public class GradientBasedFocusOptimizerScheduler extends SchedulerBase {
         double[] zernikesDefocusDecreased = new double[zernikes.length];
         System.arraycopy(zernikes, 0, zernikesDefocusDecreased, 0, zernikes.length);
         zernikesDefocusDecreased[DEFOCUS_INDEX] -= stepSize.get();
-        ZernikeSolution zernikeSolutionDefocusDecrement = new ZernikeSolution(zernikes, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
+        ZernikeSolution zernikeSolutionDefocusDecrement = new ZernikeSolution(zernikesDefocusDecreased, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
 
         // increase one Zernike factor
         double[] zernikesDefocusIncreased = new double[zernikes.length];
         System.arraycopy(zernikes, 0, zernikesDefocusIncreased, 0, zernikes.length);
         zernikesDefocusIncreased[DEFOCUS_INDEX] += stepSize.get();
-        ZernikeSolution zernikeSolutionDefocusIncrement = new ZernikeSolution(zernikes, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
+        ZernikeSolution zernikeSolutionDefocusIncrement = new ZernikeSolution(zernikesDefocusIncreased, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
 
         // determine fitness of both solutions
         double defocusDecrementQuality = zernikeSolutionDefocusDecrement.fitness();
