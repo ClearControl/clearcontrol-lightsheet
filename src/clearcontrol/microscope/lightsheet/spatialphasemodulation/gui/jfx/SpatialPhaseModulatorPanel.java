@@ -17,6 +17,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import org.ejml.data.DenseMatrix64F;
 
+import java.util.ArrayList;
+
 /**
  * SpatialPhaseModulatorPanel
  * <p>
@@ -29,8 +31,11 @@ public class SpatialPhaseModulatorPanel extends CustomGridPane {
 
     private double[] zernikeFactors;
     private ImagePane currentZernikeCompositionViewer;
-
     private ImagePane currentZernikeCompositionNormalizedViewer;
+
+    private ArrayList<BoundedVariable<Double>> zernikeFactorVariables = new ArrayList<BoundedVariable<Double>>();
+
+    private boolean mInitializing = false;
 
     public SpatialPhaseModulatorPanel(SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
 
@@ -91,17 +96,23 @@ public class SpatialPhaseModulatorPanel extends CustomGridPane {
                     add(matrixViewPane, maximumM + m, n * 3, 2, 1);
 
                     // label + text field
-                    BoundedVariable<Double> zernikeFactorVariable = new BoundedVariable<>("Z" + ZernikePolynomials.jNoll(n, m) + " (n=" + n + ", m=" + m + ") " + ZernikePolynomials.getZernikeModeName(n, m), zernikeFactors[ZernikePolynomials.jNoll(n, m)], -Double.MAX_VALUE, Double.MAX_VALUE, 0.00000000001);
+                    int index = ZernikePolynomials.jNoll(n, m);
+                    BoundedVariable<Double> zernikeFactorVariable = new BoundedVariable<>("Z" + ZernikePolynomials.jNoll(n, m) + " (n=" + n + ", m=" + m + ") " + ZernikePolynomials.getZernikeModeName(n, m), zernikeFactors[index], -Double.MAX_VALUE, Double.MAX_VALUE, 0.00000000001);
                     NumberVariableTextField<Double> variableTextField = new NumberVariableTextField<Double>(zernikeFactorVariable.getName(), zernikeFactorVariable);
                     GridPane.setHalignment(variableTextField.getLabel(), HPos.CENTER);
                     GridPane.setHalignment(variableTextField.getTextField(), HPos.CENTER);
                     add(variableTextField.getLabel(), maximumM + m, n * 3 + 1, 2, 1);
                     add(variableTextField.getTextField(), maximumM + m, n * 3 + 2, 2, 1);
+                    zernikeFactorVariables.add(zernikeFactorVariable);
+
 
                     // interaction
                     final int finalM = m;
                     final int finalN = n;
                     zernikeFactorVariable.addSetListener((oldValue, newValue)->{
+                        if (mInitializing) {
+                            return;
+                        }
                         zernikeFactors[ZernikePolynomials.jNoll(finalN, finalM) - 1] = newValue;
                         refreshUI();
                     });
@@ -113,6 +124,13 @@ public class SpatialPhaseModulatorPanel extends CustomGridPane {
     }
 
     private void refreshUI() {
+
+        mInitializing = true;
+        for (int i = 0; i < zernikeFactorVariables.size(); i++) {
+            zernikeFactorVariables.get(i).set(zernikeFactors[ZernikePolynomials.jNoll(i) - 1]);
+        }
+        mInitializing = false;
+
         DenseMatrix64F zernikeCompositionAsMatrix = ZernikePolynomials.zernikeComposition(zernikeFactors);
 
         BlueCyanGreenYellowOrangeRedLUT lLookUpTable = new BlueCyanGreenYellowOrangeRedLUT();
