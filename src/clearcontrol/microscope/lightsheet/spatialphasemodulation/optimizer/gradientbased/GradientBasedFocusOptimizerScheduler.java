@@ -35,12 +35,13 @@ public class GradientBasedFocusOptimizerScheduler extends SchedulerBase {
         this.mLightSheetMicroscope = pLightSheetMicroscope;
         this.mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
 
-        InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-        mPositionZ = new BoundedVariable<Double>("position Z", (lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2, lState.getStackZLowVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue(), lState.getStackZLowVariable().getGranularity().doubleValue());
     }
 
     @Override
     public boolean initialize() {
+        InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+        mPositionZ = new BoundedVariable<Double>("position Z", (lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2, lState.getStackZLowVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue(), lState.getStackZLowVariable().getGranularity().doubleValue());
+
         double[] zernikes = mSpatialPhaseModulatorDeviceInterface.getZernikeFactors();
         zernikes[DEFOCUS_INDEX] = 0; // reset
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
