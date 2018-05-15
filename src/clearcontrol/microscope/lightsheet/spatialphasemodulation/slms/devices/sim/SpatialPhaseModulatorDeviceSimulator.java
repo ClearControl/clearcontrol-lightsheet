@@ -78,7 +78,11 @@ public class SpatialPhaseModulatorDeviceSimulator extends
     setZernikeFactorsInternal(pZernikeFactors);
 
     DenseMatrix64F lActuators = getActuatorPositions(pZernikeFactors);
-    System.out.println("ACTUATOR POSTIONS SENT TO MIRROR: "+lActuators.toString());
+    if (lActuators != null) {
+      System.out.println("Actuator positions sent to the mirror: " + lActuators.toString());
+    } else {
+      System.out.println("There was an error calculating the actuator position. Do flat file and influence matrix file exist?");
+    }
     return true;
   }
 

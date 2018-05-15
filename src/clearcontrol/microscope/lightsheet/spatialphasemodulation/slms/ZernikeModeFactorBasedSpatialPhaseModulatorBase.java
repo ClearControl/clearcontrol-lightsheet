@@ -67,12 +67,14 @@ public abstract class ZernikeModeFactorBasedSpatialPhaseModulatorBase extends Sp
             }
         }
 
-
-        DenseMatrix64F lActuators = TransformMatrices.multiplyMatrix(mInfluenceMatrix,lZernikeFactorsMatrix);
-        System.out.println("InfluenceMatrix" + mInfluenceMatrix.toString());
-        System.out.println("ZernikeFactors" + lZernikeFactorsMatrix.toString());
-        System.out.println("Actuators" + lActuators.toString());
-        lActuators = TransformMatrices.sum(lActuators,mFlatMatrix) ;
+        DenseMatrix64F lActuators = null;
+        if (mInfluenceMatrix != null && mFlatMatrix != null) {
+            lActuators = TransformMatrices.multiplyMatrix(mInfluenceMatrix, lZernikeFactorsMatrix);
+            System.out.println("InfluenceMatrix" + mInfluenceMatrix.toString());
+            System.out.println("ZernikeFactors" + lZernikeFactorsMatrix.toString());
+            System.out.println("Actuators" + lActuators.toString());
+            lActuators = TransformMatrices.sum(lActuators, mFlatMatrix);
+        }
 
         return lActuators;
     }
