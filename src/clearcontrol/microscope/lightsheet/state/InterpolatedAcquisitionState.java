@@ -335,10 +335,10 @@ public class InterpolatedAcquisitionState extends
 
     getInterpolationTables().set(pInterpolatedAcquisitionState.getInterpolationTables());
 
-    getStackZLowVariable().set(pInterpolatedAcquisitionState.getStackZLowVariable());
-    getStackZHighVariable().set(pInterpolatedAcquisitionState.getStackZHighVariable());
-    getStackZStepVariable().set(pInterpolatedAcquisitionState.getStackZStepVariable());
-    getNumberOfZPlanesVariable().set(pInterpolatedAcquisitionState.getNumberOfZPlanesVariable());
+    getStackZLowVariable().set(pInterpolatedAcquisitionState.getStackZLowVariable().get());
+    getStackZHighVariable().set(pInterpolatedAcquisitionState.getStackZHighVariable().get());
+    getStackZStepVariable().set(pInterpolatedAcquisitionState.getStackZStepVariable().get());
+    getNumberOfZPlanesVariable().set(pInterpolatedAcquisitionState.getNumberOfZPlanesVariable().get());
 
     for (int i = 0; i < mCameraOnOff.length; i++)
       mCameraOnOff[i] =
