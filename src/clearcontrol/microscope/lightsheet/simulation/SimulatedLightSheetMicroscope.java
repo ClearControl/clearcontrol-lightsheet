@@ -52,6 +52,7 @@ import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifT
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedFocusOptimizerScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LogMirrorZernikeFactorsToFileScheduler;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DScheduler;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DScheduler;
@@ -371,6 +372,9 @@ public class SimulatedLightSheetMicroscope extends
 
       LogMirrorModeToFileScheduler lMirrorModeSaver = new LogMirrorModeToFileScheduler(lMirror);
       addDevice(0, lMirrorModeSaver);
+
+      LogMirrorZernikeFactorsToFileScheduler lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileScheduler(lMirror);
+      addDevice(0, lMirrorModeZernikeFactorsSaver);
     }
 
   }
