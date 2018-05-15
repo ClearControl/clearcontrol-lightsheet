@@ -4,6 +4,8 @@ import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
+import clearcontrol.microscope.lightsheet.imaging.SinglePlaneImager;
+import clearcontrol.microscope.lightsheet.imaging.SingleStackImager;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
@@ -15,6 +17,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInte
 import clearcontrol.microscope.state.AcquisitionStateInterface;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.stack.StackInterface;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.ejml.data.DenseMatrix64F;
 
 import java.io.File;
@@ -100,7 +103,7 @@ public class MirrorModeImageQualityDeterminer implements LoggingFeature {
             }
 
             mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(lMatrixToTest);
-            backupState();
+            //backupState();
 
             InterpolatedAcquisitionState currentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getDevice(AcquisitionStateManager.class, 0).getCurrentState();
             double minZ = currentState.getStackZLowVariable().get().doubleValue();
@@ -118,7 +121,7 @@ public class MirrorModeImageQualityDeterminer implements LoggingFeature {
             DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
             mQuality = lQualityEstimator.getQualityArray()[0];
 
-            restoreState();
+            //restoreState();
             currentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getDevice(AcquisitionStateManager.class, 0).getCurrentState();
             currentState.getStackZLowVariable().set(minZ);
             currentState.getStackZHighVariable().set(maxZ);
@@ -127,28 +130,30 @@ public class MirrorModeImageQualityDeterminer implements LoggingFeature {
         } else {
 
             mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(mFactors);
-            backupState();
+            //backupState();
             InterpolatedAcquisitionState currentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getDevice(AcquisitionStateManager.class, 0).getCurrentState();
             double minZ = currentState.getStackZLowVariable().get().doubleValue();
-            double maxZ = currentState.getStackZHighVariable().get().doubleValue();
+            //double maxZ = currentState.getStackZHighVariable().get().doubleValue();
             double stepZ = currentState.getStackZStepVariable().get().doubleValue();
 
-            SingleViewPlaneImager lImager = new SingleViewPlaneImager(mLightSheetMicroscope, mPositionZ);
+            SingleStackImager lImager = new SingleStackImager(mLightSheetMicroscope);
+            lImager.setDetectionZ(minZ);
+            lImager.setIlluminationZ(minZ);
+            lImager.setDetectionZStepDistance(stepZ);
+            lImager.setIlluminationZStepDistance(stepZ);
             lImager.setImageWidth(currentState.getImageWidthVariable().get().intValue());
             lImager.setImageHeight(currentState.getImageHeightVariable().get().intValue());
             lImager.setExposureTimeInSeconds(currentState.getExposureInSecondsVariable().get().doubleValue());
-            lImager.setDetectionArmIndex(0);
-            lImager.setLightSheetIndex(0);
             StackInterface lStack = lImager.acquire();
 
             DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
-            mQuality = lQualityEstimator.getQualityArray()[0];
+            mQuality = new Mean().evaluate(lQualityEstimator.getQualityArray());
 
-            restoreState();
-            currentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getDevice(AcquisitionStateManager.class, 0).getCurrentState();
-            currentState.getStackZLowVariable().set(minZ);
-            currentState.getStackZHighVariable().set(maxZ);
-            currentState.getStackZStepVariable().set(stepZ);
+            //restoreState();
+            //currentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getDevice(AcquisitionStateManager.class, 0).getCurrentState();
+            //currentState.getStackZLowVariable().set(minZ);
+            //currentState.getStackZHighVariable().set(maxZ);
+            //currentState.getStackZStepVariable().set(stepZ);
         }
     }
 
