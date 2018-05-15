@@ -58,6 +58,18 @@ public class SpatialPhaseModulatorPanel extends CustomGridPane {
         });
         add(submitToMirrorButton, 0, 5);
 
+
+        Button resetToZeroButton = new Button("Reset to Zero");
+        resetToZeroButton.setOnAction((e) -> {
+            for(int i=0;i<zernikeFactors.length;i++){
+                zernikeFactors[i]=0.0;
+            }
+            refreshUI();
+            pSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikeFactors);
+        });
+        add(resetToZeroButton, 0, 6);
+
+
         int maximumM = (int)Math.sqrt(pSpatialPhaseModulatorDeviceInterface.getZernikeFactors().length);
 
         int counter = 0;
