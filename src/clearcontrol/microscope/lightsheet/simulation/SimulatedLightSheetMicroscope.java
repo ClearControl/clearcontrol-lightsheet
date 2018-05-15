@@ -43,6 +43,7 @@ import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightShee
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.MeasureDCTS2DOnStackScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.SpotShiftDeterminationScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.schedulers.HalfStackMaxProjectionScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.schedulers.MaxProjectionScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
@@ -535,6 +536,8 @@ public class SimulatedLightSheetMicroscope extends
 
     addDevice(0, new MeasureDCTS2DOnStackScheduler<FusedImageDataContainer>(FusedImageDataContainer.class));
     addDevice(0, new MeasureDCTS2DOnStackScheduler<StackInterfaceContainer>(StackInterfaceContainer.class));
+
+    addDevice(0, new SpotShiftDeterminationScheduler(this));
 
     addDevice(0, new PauseScheduler());
 
