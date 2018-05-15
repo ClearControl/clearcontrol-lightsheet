@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
@@ -13,15 +14,13 @@ public class RandomZernikesScheduler  extends SchedulerBase implements
         LoggingFeature {
 
     private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
-    private double mMaxZrnCoeff;
-    private double mMinZernCoeff;
+    private BoundedVariable<Double> mMaximumZernikeFactor = new BoundedVariable<Double>("Maximum Zernike factor", 5.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.0000001);
+    private BoundedVariable<Double> mMinimumZernikeFactor = new BoundedVariable<Double>("Minimum Zernike factor", -5.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.0000001);
+    private Random mRandom = new Random();
 
     public RandomZernikesScheduler(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
         super("Adaptation: Random Zernike modes for " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
         mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
-        mMaxZrnCoeff = 5;
-        mMinZernCoeff = -5;
-
     }
 
     @Override
@@ -31,12 +30,10 @@ public class RandomZernikesScheduler  extends SchedulerBase implements
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        Random rand = new Random();
-        DecimalFormat df = new DecimalFormat("#.##");
-        double[] lArray = new double[66];
+        double[] lArray = mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors();
 
-        for (int i = 0; i < 66; i++) {
-            double value = Double.parseDouble(df.format(mMinZernCoeff + (mMaxZrnCoeff - mMinZernCoeff) * rand.nextDouble()));
+        for (int i = 0; i < lArray.length; i++) {
+            double value = (mMinimumZernikeFactor.get() + (mMaximumZernikeFactor.get() - mMinimumZernikeFactor.get()) * mRandom.nextDouble());
             lArray[i] = value;
         }
 
