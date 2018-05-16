@@ -17,9 +17,12 @@ import clearcontrol.stack.processor.clearcl.ClearCLStackProcessorBase;
 import coremem.recycling.RecyclerInterface;
 
 /**
+ * Deprecated: This tool should be replaced by a scheduler
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) December 2017
  */
+@Deprecated
 public class LiveStatisticsProcessor extends ClearCLStackProcessorBase
                                      implements
                                      StackProcessorInterface,
