@@ -103,13 +103,14 @@ public class DrosophilaSelectSampleJustBeforeInvaginationScheduler extends Sched
             return false;
         }
 
-        Position lBestPosition = null;
+        Position lChosenPosition = null;
         for (int i = 0; i < qualityMeasurementSizes.length; i++) {
             if (sampleQualityAboveMean(lQualityGroupedBySample, i, maxTimePoints - 1)) {
                 if (sampleIsJustBeforeInvagination(lQualityGroupedBySample[i], maxTimePoints)) {
                     //lBestPosition = lPositionList.get(i);
                     info("Sample at position " + lPositionList.get(i) + " is apparently undergoing invagiation soon!");
                     lLightSheetMicroscope.getTimelapse().log("Sample at position " + lPositionList.get(i) + " is apparently undergoing invagiation soon!");
+                    lChosenPosition = lPositionList.get(i);
                 } else {
                     info("Sample at position " + lPositionList.get(i) + " is NOT undergoing invagiation soon!");
                     lLightSheetMicroscope.getTimelapse().log("Sample at position " + lPositionList.get(i) + " is NOT undergoing invagiation soon!");
@@ -120,13 +121,12 @@ public class DrosophilaSelectSampleJustBeforeInvaginationScheduler extends Sched
             }
         }
 
+        info("Chosen position was " + lChosenPosition.mX + "/"  + lChosenPosition.mY + "/"  + lChosenPosition.mZ + "");
 
-            //info("Best position was " + lMaxmimumQualityContainer.getX() + "/"  + lMaxmimumQualityContainer.getY() + "/"  + lMaxmimumQualityContainer.getZ() + " (DCTS2D = " + lMaxmimumQualityContainer.getMeasurement() + ")");
-
-        //if (lBestPosition != null) {
-        //    lPositionList.clear();
-        //    lPositionList.add(lBestPosition);
-        //}
+        if (lChosenPosition != null) {
+            lPositionList.clear();
+            lPositionList.add(lChosenPosition);
+        }
         return true;
     }
 

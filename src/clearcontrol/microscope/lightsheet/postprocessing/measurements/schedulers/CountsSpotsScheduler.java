@@ -12,6 +12,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotCountContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotsImageContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -107,6 +108,11 @@ public class CountsSpotsScheduler<T extends StackInterfaceContainer> extends Sch
             lGPUSpotDetector.setThreshold(mThreshold.get().floatValue());
             lGPUSpotDetector.exec();
             double lSpotCount = Kernels.sumPixels(clij, lSpotsImage);
+
+            StackInterface lSpotsStack = clij.converter(lSpotsImage).getOffHeapPlanarStack();
+            SpotsImageContainer lSpotsImageContainer = new SpotsImageContainer(pTimePoint);
+            lSpotsImageContainer.put("spots", lSpotsStack);
+            lLightSheetMicroscope.getDataWarehouse().put("spots_" + pTimePoint, lSpotsImageContainer);
 
 
             double lX = 0;

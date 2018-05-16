@@ -29,6 +29,7 @@ import clearcontrol.microscope.lightsheet.adaptive.schedulers.*;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
+import clearcontrol.microscope.lightsheet.component.lightsheet.schedulers.ChangeLightSheetWidthScheduler;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.MeasureTimeScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseScheduler;
@@ -43,6 +44,7 @@ import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightShee
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.MeasureDCTS2DOnStackScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.SpotShiftDeterminationScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.schedulers.HalfStackMaxProjectionScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.schedulers.MaxProjectionScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
@@ -53,6 +55,7 @@ import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDev
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LogMirrorZernikeFactorsToFileScheduler;
+import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenScheduler;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DScheduler;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DScheduler;
@@ -545,6 +548,8 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new MeasureDCTS2DOnStackScheduler<FusedImageDataContainer>(FusedImageDataContainer.class));
     addDevice(0, new MeasureDCTS2DOnStackScheduler<StackInterfaceContainer>(StackInterfaceContainer.class));
 
+    addDevice(0, new SpotShiftDeterminationScheduler(this));
+
     addDevice(0, new PauseScheduler());
 
     int[] pauseTimes = {
@@ -602,6 +607,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new SampleSearch2DScheduler());
     addDevice(0, new SelectBestQualitySampleScheduler());
     addDevice(0, new DrosophilaSelectSampleJustBeforeInvaginationScheduler());
+    addDevice(0, new RestartTimelapseWhileNoSampleChosenScheduler(this));
 
     addDevice(0, new AppendConsecutiveHyperDriveImagingScheduler(100, 5));
     addDevice(0, new AppendConsecutiveHyperDriveImagingScheduler(100, 10));
@@ -623,6 +629,11 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new AppendConsecutiveSingleViewImagingScheduler(0,0, 10, 60));
 
     addDevice(0, new TimelapseStopScheduler());
+
+    addDevice(0, new ChangeLightSheetWidthScheduler(this, 0));
+    addDevice(0, new ChangeLightSheetWidthScheduler(this, 0.15));
+    addDevice(0, new ChangeLightSheetWidthScheduler(this, 0.3));
+    addDevice(0, new ChangeLightSheetWidthScheduler(this, 0.45));
   }
 
 }

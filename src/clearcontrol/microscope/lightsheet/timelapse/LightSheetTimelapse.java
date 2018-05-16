@@ -75,7 +75,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
   private ArrayList<SchedulerInterface>
       mListOfActivatedSchedulers = new ArrayList<SchedulerInterface>();
 
-  int mLastExecutedSchedulerIndex = -1;
+  private Variable<Integer> mLastExecutedSchedulerIndexVariable = new Variable<Integer>("Last executed scheduler index", -1);
 
   ArrayList<SchedulerInterface>
           mInitializedSchedulerList;
@@ -176,7 +176,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
       {
         lLightSheetFastFusionEngine.reset(true);
       }
-      mLastExecutedSchedulerIndex = -1;
+      mLastExecutedSchedulerIndexVariable.set(-1);
     }
 
     if (getStopSignalVariable().get()) {
@@ -244,13 +244,15 @@ public class LightSheetTimelapse extends TimelapseBase implements
       }
 
       // Run the next scheduled item
-      mLastExecutedSchedulerIndex++;
-      if (mLastExecutedSchedulerIndex > mListOfActivatedSchedulers.size() - 1) {
-        mLastExecutedSchedulerIndex = 0;
+
+      mLastExecutedSchedulerIndexVariable.set(mLastExecutedSchedulerIndexVariable.get() + 1);
+      if ( mLastExecutedSchedulerIndexVariable.get() > mListOfActivatedSchedulers.size() - 1) {
+        mLastExecutedSchedulerIndexVariable.set(0);
       }
 
 
-      SchedulerInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(mLastExecutedSchedulerIndex);
+      SchedulerInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(
+              mLastExecutedSchedulerIndexVariable.get());
 
       if (!mInitializedSchedulerList.contains(lNextSchedulerToRun)) {
         //log( "Initializing " + lNextSchedulerToRun);
@@ -513,6 +515,10 @@ public class LightSheetTimelapse extends TimelapseBase implements
     });
 
     return lListOfAvailabeSchedulers;
+  }
+
+  public Variable<Integer> getLastExecutedSchedulerIndexVariable() {
+    return mLastExecutedSchedulerIndexVariable;
   }
 
 }
