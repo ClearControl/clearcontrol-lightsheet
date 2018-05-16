@@ -5,7 +5,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.postprocessing.utilities.DiscreteConsinusTransformEntropyPerSliceEstimator;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;

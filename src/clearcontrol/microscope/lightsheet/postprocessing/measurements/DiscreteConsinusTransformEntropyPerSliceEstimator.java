@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.postprocessing.utilities;
+package clearcontrol.microscope.lightsheet.postprocessing.measurements;
 
 import clearcontrol.ip.iqm.DCTS2D;
 import clearcontrol.stack.OffHeapPlanarStack;

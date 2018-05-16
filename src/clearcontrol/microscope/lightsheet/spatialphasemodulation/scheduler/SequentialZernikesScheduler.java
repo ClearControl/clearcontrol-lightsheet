@@ -22,7 +22,7 @@ public class SequentialZernikesScheduler extends SchedulerBase implements
     private static String mDirection;
 
     public SequentialZernikesScheduler(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase, double pStepper, double pInitialValue, double pMaxZernCoeff, double pMinZernCoeff) {
-        super("Adaptation: Sequential mirror modes " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
+        super("Adaptive optics: Send sequential mirror modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
         mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
         mMaxZernCoeff = pMaxZernCoeff;
         mMinZernCoeff = pMinZernCoeff;

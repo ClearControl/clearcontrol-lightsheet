@@ -28,7 +28,7 @@ public class InterpolatedAcquisitionStateLogScheduler extends SchedulerBase impl
    */
   public InterpolatedAcquisitionStateLogScheduler()
   {
-    super("State: Log current state to disc");
+    super("IO: Log current acquisition state to disc");
   }
 
   @Override public boolean initialize()

@@ -25,7 +25,7 @@ public class TimelapseLogScheduler  extends SchedulerBase {
     private final LightSheetTimelapse mTimelapse;
 
     public TimelapseLogScheduler(LightSheetMicroscope pLightSheetMicroscope) {
-        super("State: Log content of the timelapse schedule");
+        super("IO: Log content of the timelapse schedule to disc");
 
         mTimelapse = pLightSheetMicroscope.getTimelapse();
     }

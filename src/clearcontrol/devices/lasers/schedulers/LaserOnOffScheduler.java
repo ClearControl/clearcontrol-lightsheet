@@ -22,7 +22,7 @@ public class LaserOnOffScheduler extends SchedulerBase implements
    */
   public LaserOnOffScheduler(LaserDeviceInterface pLaserDevice, boolean pTurnOn)
   {
-    super("Laser: Turn " + pLaserDevice.getName() + " " + (pTurnOn?"ON":"OFF"));
+    super("Laser: Turn " + pLaserDevice.getName() + " " + " (" + pLaserDevice.getWavelengthInNanoMeter() + "nm)" + (pTurnOn?"ON":"OFF"));
     mLaserDevice = pLaserDevice;
     mTurnOn = pTurnOn;
   }
@@ -34,10 +34,10 @@ public class LaserOnOffScheduler extends SchedulerBase implements
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    mLaserDevice.setLaserPowerOn(true);
-    mLaserDevice.setLaserOn(true);
-    mLaserDevice.setLaserPowerOn(true);
-    mLaserDevice.setLaserOn(true);
+    mLaserDevice.setLaserPowerOn(mTurnOn);
+    mLaserDevice.setLaserOn(mTurnOn);
+    mLaserDevice.setLaserPowerOn(mTurnOn);
+    mLaserDevice.setLaserOn(mTurnOn);
     return true;
   }
 

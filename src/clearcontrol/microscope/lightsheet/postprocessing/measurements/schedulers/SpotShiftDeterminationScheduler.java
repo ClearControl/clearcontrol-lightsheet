@@ -38,7 +38,7 @@ public class SpotShiftDeterminationScheduler extends SchedulerBase implements Lo
 
 
     public SpotShiftDeterminationScheduler(LightSheetMicroscope pLightSheetMicroscope) {
-        super("Smart: Determine spot shift");
+        super("Post-processing: Determine spot shift");
         mLightSheetMicroscope = pLightSheetMicroscope;
     }
 

@@ -20,7 +20,7 @@ public class DataWarehouseLogScheduler extends SchedulerBase {
     private final LightSheetMicroscope mLightSheetMicroscope;
 
     public DataWarehouseLogScheduler(LightSheetMicroscope pLightSheetMicroscope) {
-        super("State: Log content of the DataWarehouse");
+        super("IO: Log content of the DataWarehouse");
         mLightSheetMicroscope = pLightSheetMicroscope;
     }
 

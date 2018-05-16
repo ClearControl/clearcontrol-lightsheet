@@ -29,7 +29,7 @@ public class GradientBasedZernikeModeOptimizerScheduler extends SchedulerBase {
 
 
     public GradientBasedZernikeModeOptimizerScheduler(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, int pZernikeFactorIndexToOptimize) {
-        super("Adaptation: Gradient based Z" + ZernikePolynomials.jNoll(pZernikeFactorIndexToOptimize) + "(" + ZernikePolynomials.getZernikeModeName(pZernikeFactorIndexToOptimize) + ")" + " optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName());
+        super("Adaptive optics: Gradient based Z" + ZernikePolynomials.jNoll(pZernikeFactorIndexToOptimize) + "(" + ZernikePolynomials.getZernikeModeName(pZernikeFactorIndexToOptimize) + ")" + " optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName());
         this.mLightSheetMicroscope = pLightSheetMicroscope;
         this.mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
         mZernikeFactorIndexToOptimize = pZernikeFactorIndexToOptimize;

@@ -33,7 +33,7 @@ public class BasicThreeAxesStageScheduler extends SchedulerBase implements
   private int mStepCount = 0;
 
   public BasicThreeAxesStageScheduler(BasicThreeAxesStageInterface pBasicThreeAxesStageInterface) {
-    super("Devices: Linear stage motion scheduler");
+    super("Smart: Move X/Y/Z stages linear in space");
     mBasicThreeAxesStageInterface = pBasicThreeAxesStageInterface;
 
     mStartXVariable = new BoundedVariable<Double>("Start X", pBasicThreeAxesStageInterface.getXPositionVariable().get(), -Double.MAX_VALUE, Double.MAX_VALUE, 0.001);

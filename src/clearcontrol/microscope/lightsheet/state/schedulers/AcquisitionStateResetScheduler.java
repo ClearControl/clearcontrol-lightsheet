@@ -24,7 +24,7 @@ public class AcquisitionStateResetScheduler extends SchedulerBase implements
    */
   public AcquisitionStateResetScheduler()
   {
-    super("State: Reset");
+    super("Adaptation: Reset acquisition state");
   }
 
   @Override public boolean initialize()

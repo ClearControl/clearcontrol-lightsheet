@@ -14,7 +14,7 @@ public class FilterWheelScheduler extends SchedulerBase implements
 
     public FilterWheelScheduler(FilterWheelDeviceInterface pFilterWheelDevice, int pPosition)
     {
-        super("FilterWheel: Set position " + pFilterWheelDevice.getName() + " to " + pFilterWheelDevice.getPositionName(pPosition));
+        super("Filter wheel: Set filter of " + pFilterWheelDevice.getName() + " to " + pFilterWheelDevice.getPositionName(pPosition));
         mFilterWheelDevice = pFilterWheelDevice;
         mPosition = pPosition;
     }

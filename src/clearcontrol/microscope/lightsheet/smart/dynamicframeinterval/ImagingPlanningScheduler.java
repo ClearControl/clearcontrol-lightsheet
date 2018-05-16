@@ -6,16 +6,13 @@ import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.AppendConsecutiveInterleavedImagingScheduler;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.AppendConsecutiveHyperDriveImagingScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.AppendConsecutiveOpticsPrefusedImagingScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotCountContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
-import clearcontrol.microscope.lightsheet.postprocessing.schedulers.gui.SpotDetectionSchedulerPanel;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
-import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 
 import java.util.ArrayList;
 

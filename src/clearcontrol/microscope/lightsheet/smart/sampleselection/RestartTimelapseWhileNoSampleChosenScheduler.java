@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.smart.sampleselection;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
+import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 
 /**

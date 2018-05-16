@@ -5,7 +5,7 @@ import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor
 
 /**
  * Deprecated: see LiveStatisticsProcessor
- * 
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) December 2017
  */

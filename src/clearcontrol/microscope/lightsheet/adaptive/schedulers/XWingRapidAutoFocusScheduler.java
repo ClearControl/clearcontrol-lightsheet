@@ -20,7 +20,7 @@ public class XWingRapidAutoFocusScheduler extends SchedulerBase {
     private LightSheetMicroscope mLightSheetMicroscope;
 
     public XWingRapidAutoFocusScheduler() {
-        super("Adaptation: XWingScope rapid autofocus Z and alpha");
+        super("Smart: XWingScope rapid autofocus Z and alpha");
     }
 
     @Override

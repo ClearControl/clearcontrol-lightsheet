@@ -31,7 +31,7 @@ public class CenterSampleInZScheduler  extends
 
 
     public CenterSampleInZScheduler() {
-        super("Adaptation: Center sample in Z");
+        super("Smart: Center sample in Z");
     }
 
     @Override

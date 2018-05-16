@@ -22,7 +22,7 @@ public class CenterSampleInXYScheduler extends
     private InterpolatedAcquisitionState mInterpolatedAcquisitionState;
 
     public CenterSampleInXYScheduler() {
-        super("Adaptation: Center sample in XY");
+        super("Smart: Center sample in XY");
     }
 
     @Override

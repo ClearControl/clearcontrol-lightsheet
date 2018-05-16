@@ -30,7 +30,7 @@ public class AcquisitionStateBackupRestoreScheduler extends
    */
   public AcquisitionStateBackupRestoreScheduler(boolean pBackup)
   {
-    super("State: " + (pBackup? ("Backup"):("Restore")));
+    super("Adaptation: " + (pBackup? ("Backup"):("Restore")) + " acquisition state");
     mBackup = pBackup;
   }
 

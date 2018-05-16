@@ -1,9 +1,7 @@
 package clearcontrol.microscope.lightsheet.state.spatial;
 
-import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
-import clearcontrol.microscope.lightsheet.state.spatial.PositionListContainer;
+import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
 
 /**
  * FOVBoundingBox

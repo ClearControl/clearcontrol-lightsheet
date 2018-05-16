@@ -24,7 +24,7 @@ public class LaserPowerScheduler extends SchedulerBase implements
    */
   public LaserPowerScheduler(LaserDeviceInterface pLaser, double pLaserPowerInPercent)
   {
-    super("Laser: Set " + pLaser.getName() + " power to " + pLaserPowerInPercent + "%");
+    super("Laser: Set " + pLaser.getName() + " (" + pLaser.getWavelengthInNanoMeter() + "nm) power to " + pLaserPowerInPercent + "%");
     mLaser = pLaser;
     mLaserPowerInPercent = pLaserPowerInPercent;
   }

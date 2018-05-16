@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.postprocessing.schedulers.gui;
+package clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;

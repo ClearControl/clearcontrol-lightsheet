@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.adaptive.schedulers;
+package clearcontrol.devices.stages.kcube.scheduler;
 
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
@@ -33,7 +33,7 @@ public class SpaceTravelScheduler extends SchedulerBase {
      *
      */
     public SpaceTravelScheduler() {
-        super("Adaptation: Move in space");
+        super("Smart: Move X/Y/Z stage along position list");
     }
 
     public SpaceTravelScheduler(String pDeviceName) {

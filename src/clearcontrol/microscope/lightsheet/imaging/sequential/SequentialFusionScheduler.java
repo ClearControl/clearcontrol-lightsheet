@@ -27,7 +27,7 @@ public class SequentialFusionScheduler extends FusionScheduler implements
    */
   public SequentialFusionScheduler()
   {
-    super("Fusion: Sequential");
+    super("Post-processing: Sequential fusion");
   }
 
 

@@ -44,7 +44,7 @@ public class GeneticAlgorithmMirrorModeOptimizeScheduler extends SchedulerBase i
      *
      */
     public GeneticAlgorithmMirrorModeOptimizeScheduler(SpatialPhaseModulatorDeviceInterface pMirror) {
-        super("Adaptation: GA Mirror optimizer for " + pMirror);
+        super("Adaptive optics: GA Mirror optimizer for " + pMirror);
         mMirror = pMirror;
 
 

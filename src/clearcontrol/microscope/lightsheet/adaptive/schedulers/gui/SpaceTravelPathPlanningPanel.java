@@ -1,18 +1,10 @@
 package clearcontrol.microscope.lightsheet.adaptive.schedulers.gui;
 
-import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
-import clearcontrol.microscope.lightsheet.state.spatial.Position;
+import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
 import clearcontrol.microscope.lightsheet.state.spatial.PositionListContainer;
 import clearcontrol.microscope.lightsheet.state.spatial.gui.PositionListContainerPanel;
 import javafx.collections.FXCollections;
-import javafx.geometry.VPos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.layout.GridPane;
-
-import java.util.ArrayList;
 
 /**
  * SpaceTravelPathPlanningPanel

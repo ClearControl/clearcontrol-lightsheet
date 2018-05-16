@@ -30,7 +30,7 @@ public class LoadMirrorModesFromFolderScheduler extends SchedulerBase implements
   private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
 
   public LoadMirrorModesFromFolderScheduler(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
-    super("Adaptation: Load Mirror modes from folder for " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
+    super("Adaptive optics: Load mirror modes sequentially from folder and send to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
 
     mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
   }

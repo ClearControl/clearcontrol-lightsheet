@@ -28,7 +28,7 @@ public class OpticsPrefusedFusionScheduler extends FusionScheduler implements
    */
   public OpticsPrefusedFusionScheduler()
   {
-    super("Fusion: Optics prefused");
+    super("Post-processing: Optics prefused fusion");
   }
 
 

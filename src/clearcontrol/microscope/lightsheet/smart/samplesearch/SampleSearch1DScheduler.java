@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.smart.samplesearch;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
+import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 

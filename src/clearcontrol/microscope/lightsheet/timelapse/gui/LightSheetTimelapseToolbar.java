@@ -293,15 +293,15 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
       String[] lFilters = {
               "Acquisition:",
               "Adaptation:",
-              "FilterWheel:",
+              "Adaptive optics:",
+              "Filter wheel:",
               "Fusion:",
-              "IO:",
 
+              "IO:",
               "Laser:",
               "Memory:",
               "Post-processing:",
               "Smart:",
-              "State:",
 
               "Timing:",
               "Visualisation:"};
@@ -309,8 +309,8 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
       Node[]   lIcons = {
               MicroscopeNodeType.Acquisition.getIcon(),
               MicroscopeNodeType.AdaptiveOptics.getIcon(),
+              MicroscopeNodeType.AdaptiveOptics.getIcon(),
               MicroscopeNodeType.FilterWheel.getIcon(),
-              MicroscopeNodeType.Scripting.getIcon(),
               MicroscopeNodeType.Scripting.getIcon(),
 
               MicroscopeNodeType.Laser.getIcon(),

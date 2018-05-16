@@ -5,7 +5,7 @@ import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.SpaceTravelScheduler;
+import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;

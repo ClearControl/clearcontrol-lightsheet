@@ -27,7 +27,7 @@ public class LogMirrorZernikeFactorsToFileScheduler extends SchedulerBase implem
      *
      */
     public LogMirrorZernikeFactorsToFileScheduler(SpatialPhaseModulatorDeviceInterface pMirror) {
-        super("State: Log Zernike factors of " + pMirror + "to disc");
+        super("IO: Log Zernike factors of " + pMirror + " to disc");
         mMirror = pMirror;
     }
 

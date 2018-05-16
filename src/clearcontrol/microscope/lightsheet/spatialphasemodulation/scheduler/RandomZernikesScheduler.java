@@ -19,7 +19,7 @@ public class RandomZernikesScheduler  extends SchedulerBase implements
     private Random mRandom = new Random();
 
     public RandomZernikesScheduler(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
-        super("Adaptation: Random Zernike modes for " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
+        super("Adaptive optics: Send random Zernike modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
         mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
     }
 

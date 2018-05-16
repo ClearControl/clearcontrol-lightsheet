@@ -21,6 +21,7 @@ import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
 import clearcontrol.devices.stages.StageType;
 import clearcontrol.devices.stages.devices.sim.StageDeviceSimulator;
 import clearcontrol.devices.stages.kcube.scheduler.BasicThreeAxesStageScheduler;
+import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
 import clearcontrol.devices.stages.kcube.sim.SimulatedBasicStageDevice;
 import clearcontrol.devices.stages.kcube.sim.SimulatedThreeAxesStageDevice;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -45,8 +46,8 @@ import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightShe
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.MeasureDCTS2DOnStackScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.SpotShiftDeterminationScheduler;
-import clearcontrol.microscope.lightsheet.postprocessing.schedulers.HalfStackMaxProjectionScheduler;
-import clearcontrol.microscope.lightsheet.postprocessing.schedulers.MaxProjectionScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.MaxProjectionScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscScheduler;
@@ -54,8 +55,11 @@ import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifT
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LoadMirrorModesFromFolderScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LogMirrorZernikeFactorsToFileScheduler;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.RandomZernikesScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.SequentialZernikesScheduler;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DScheduler;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DScheduler;
@@ -375,6 +379,14 @@ public class SimulatedLightSheetMicroscope extends
 
       LogMirrorZernikeFactorsToFileScheduler lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileScheduler(lMirror);
       addDevice(0, lMirrorModeZernikeFactorsSaver);
+
+      addDevice(0, new LoadMirrorModesFromFolderScheduler(lMirror));
+
+      SequentialZernikesScheduler lSequentialZernikesScheduler =
+              new SequentialZernikesScheduler(lMirror,1,0.0,5.0,-5.0);
+      addDevice(0, lSequentialZernikesScheduler);
+
+      addDevice(0, new RandomZernikesScheduler(lMirror));
     }
 
   }
