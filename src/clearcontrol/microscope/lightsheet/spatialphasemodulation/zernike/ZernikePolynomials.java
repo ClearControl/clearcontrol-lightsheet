@@ -233,7 +233,15 @@ public class ZernikePolynomials
           "Tilt X",
           "Oblique astigmatism",
           "Defocus",
-          "Vertical astigmatism"
+          "Vertical astigmatism",
+          "Vertical trefoil",
+          "Vertical coma",
+          "Horizontal coma",
+          "Oblique trefoil",
+          "Oblique quadrafoil",
+          "Oblique secondary astigmatism",
+          "Vertical secondary astigmatism",
+          "Vertical quadrafoil"
   };
 
   public static String getZernikeModeName(int n, int m) {
