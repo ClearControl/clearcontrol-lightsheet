@@ -51,7 +51,7 @@ import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawT
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationScheduler;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedFocusOptimizerScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LogMirrorZernikeFactorsToFileScheduler;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DScheduler;
@@ -367,8 +367,9 @@ public class SimulatedLightSheetMicroscope extends
       GeneticAlgorithmMirrorModeOptimizeScheduler lMirrorOptimizer = new GeneticAlgorithmMirrorModeOptimizeScheduler(lMirror);
       addDevice(0, lMirrorOptimizer);
 
-      GradientBasedFocusOptimizerScheduler lGradientBasedMirrorOptimizer = new GradientBasedFocusOptimizerScheduler(this, lMirror);
-      addDevice(0, lGradientBasedMirrorOptimizer);
+        addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 3));
+        addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 4));
+        addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 5));
 
       LogMirrorModeToFileScheduler lMirrorModeSaver = new LogMirrorModeToFileScheduler(lMirror);
       addDevice(0, lMirrorModeSaver);

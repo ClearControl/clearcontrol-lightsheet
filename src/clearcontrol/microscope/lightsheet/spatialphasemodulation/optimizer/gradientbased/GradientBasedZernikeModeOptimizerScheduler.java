@@ -5,36 +5,39 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
- * GradientBasedFocusOptimizerScheduler
+ * GradientBasedZernikeModeOptimizerScheduler
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class GradientBasedFocusOptimizerScheduler extends SchedulerBase {
+public class GradientBasedZernikeModeOptimizerScheduler extends SchedulerBase {
 
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
 
-    final static int DEFOCUS_INDEX = 3;
     private final LightSheetMicroscope mLightSheetMicroscope;
+    private final int mZernikeFactorIndexToOptimize;
 
     private BoundedVariable<Double> stepSize = new BoundedVariable<Double>("Defocus step size",0.25, 0.0, Double.MAX_VALUE, 0.0000000001);
 
     private BoundedVariable<Double> mPositionZ = null;
 
+
+
     /**
      * INstanciates a virtual device with a given name
      *
      */
-    public GradientBasedFocusOptimizerScheduler(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
-        super("Adaptation: Gradient based focus optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName());
+    public GradientBasedZernikeModeOptimizerScheduler(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, int pZernikeFactorIndexToOptimize) {
+        super("Adaptation: Gradient based Z" + ZernikePolynomials.jNoll(pZernikeFactorIndexToOptimize) + "(" + ZernikePolynomials.getZernikeModeName(pZernikeFactorIndexToOptimize) + ")" + " optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName());
         this.mLightSheetMicroscope = pLightSheetMicroscope;
         this.mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
-
+        mZernikeFactorIndexToOptimize = pZernikeFactorIndexToOptimize;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class GradientBasedFocusOptimizerScheduler extends SchedulerBase {
         mPositionZ = new BoundedVariable<Double>("position Z", (lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2, lState.getStackZLowVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue(), lState.getStackZLowVariable().getGranularity().doubleValue());
 
         double[] zernikes = mSpatialPhaseModulatorDeviceInterface.getZernikeFactors();
-        zernikes[DEFOCUS_INDEX] = 0; // reset
+        zernikes[mZernikeFactorIndexToOptimize] = 0; // reset
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
         return true;
     }
@@ -53,26 +56,26 @@ public class GradientBasedFocusOptimizerScheduler extends SchedulerBase {
         double[] zernikes = mSpatialPhaseModulatorDeviceInterface.getZernikeFactors();
 
         // decrease one Zernike factor
-        double[] zernikesDefocusDecreased = new double[zernikes.length];
-        System.arraycopy(zernikes, 0, zernikesDefocusDecreased, 0, zernikes.length);
-        zernikesDefocusDecreased[DEFOCUS_INDEX] -= stepSize.get();
-        ZernikeSolution zernikeSolutionDefocusDecrement = new ZernikeSolution(zernikesDefocusDecreased, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
+        double[] zernikesFactorDecreased = new double[zernikes.length];
+        System.arraycopy(zernikes, 0, zernikesFactorDecreased, 0, zernikes.length);
+        zernikesFactorDecreased[mZernikeFactorIndexToOptimize] -= stepSize.get();
+        ZernikeSolution zernikeSolutionFactorDecrement = new ZernikeSolution(zernikesFactorDecreased, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
 
         // increase one Zernike factor
-        double[] zernikesDefocusIncreased = new double[zernikes.length];
-        System.arraycopy(zernikes, 0, zernikesDefocusIncreased, 0, zernikes.length);
-        zernikesDefocusIncreased[DEFOCUS_INDEX] += stepSize.get();
-        ZernikeSolution zernikeSolutionDefocusIncrement = new ZernikeSolution(zernikesDefocusIncreased, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
+        double[] zernikesFactorIncreased = new double[zernikes.length];
+        System.arraycopy(zernikes, 0, zernikesFactorIncreased, 0, zernikes.length);
+        zernikesFactorIncreased[mZernikeFactorIndexToOptimize] += stepSize.get();
+        ZernikeSolution zernikeSolutionFactorIncrement = new ZernikeSolution(zernikesFactorIncreased, mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
 
         // determine fitness of both solutions
-        double defocusDecrementQuality = zernikeSolutionDefocusDecrement.fitness();
-        double defocusIncrementQuality = zernikeSolutionDefocusIncrement.fitness();
+        double factorDecrementQuality = zernikeSolutionFactorDecrement.fitness();
+        double factorIncrementQuality = zernikeSolutionFactorIncrement.fitness();
 
         // compare quality and set new factor to the mirror
-        if (defocusDecrementQuality > defocusIncrementQuality) {
-            mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikesDefocusDecreased);
+        if (factorDecrementQuality > factorIncrementQuality) {
+            mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikesFactorDecreased);
         } else {
-            mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikesDefocusIncreased);
+            mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikesFactorIncreased);
         }
 
         return false;
