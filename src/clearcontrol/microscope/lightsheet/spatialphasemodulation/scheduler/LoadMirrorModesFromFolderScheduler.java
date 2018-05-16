@@ -20,19 +20,18 @@ import java.io.File;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
-public class MirrorModeScheduler extends SchedulerBase implements
+public class LoadMirrorModesFromFolderScheduler extends SchedulerBase implements
                                                                             LoggingFeature
 {
   private Variable<File> mRootFolderVariable =
       new Variable("RootFolder",
                    (Object) null);
 
-//  private SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
   private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
 
-  public MirrorModeScheduler(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
-    super("Adaptation: Mirror mode scheduler for " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
-    //mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
+  public LoadMirrorModesFromFolderScheduler(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
+    super("Adaptation: Load Mirror modes from folder for " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
+
     mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
   }
 
@@ -65,27 +64,16 @@ public class MirrorModeScheduler extends SchedulerBase implements
 
     File lFile = lFolder.listFiles()[(int)lFileIndex];
 
-    //DenseMatrix64F lMatrix = mSpatialPhaseModulatorDeviceInterface.getMatrixReference().get();
-        //new DenseMatrix64F(mSpatialPhaseModulatorDeviceInterface.getMatrixHeight(), mSpatialPhaseModulatorDeviceInterface.getMatrixWidth());
-
-
     if (mMicroscope instanceof LightSheetMicroscope) {
       ((LightSheetMicroscope) mMicroscope).getTimelapse().log("Loading " + lFile);
     }
     info("Loading " + lFile);
     DenseMatrix64F lMatrix = new DenseMatrix64FReader(lFile).getMatrix();
 
-//    if (!lMatrixReader.read()) {
-//      if (mMicroscope instanceof LightSheetMicroscope) {
-//        ((LightSheetMicroscope) mMicroscope).getTimelapse().log("Error: matrix file could not be loaded");
-//      }
-//      warning("Error: matrix file could not be loaded");
-//    }
     double[] lArray = TransformMatrices.convertDense64MatrixTo1DDoubleArray(lMatrix);
     info("Sending matrix to mirror");
-//    mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(lMatrix);
-      mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(lArray);
 
+    mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(lArray);
 
     info("Sent. Scheduler done");
 
