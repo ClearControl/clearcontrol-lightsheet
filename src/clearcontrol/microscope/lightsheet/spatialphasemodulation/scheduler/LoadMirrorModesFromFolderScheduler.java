@@ -9,6 +9,9 @@ import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeSpatialPhaseModulatorDevice;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import org.ejml.data.DenseMatrix64F;
 
 import java.io.File;
@@ -17,19 +20,19 @@ import java.io.File;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
-public class MirrorModeScheduler extends SchedulerBase implements
+public class LoadMirrorModesFromFolderScheduler extends SchedulerBase implements
                                                                             LoggingFeature
 {
   private Variable<File> mRootFolderVariable =
       new Variable("RootFolder",
                    (Object) null);
 
-  private SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
+  private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
 
-  public MirrorModeScheduler(SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
-    super("Adaptation: Mirror mode scheduler for " + pSpatialPhaseModulatorDeviceInterface.getName());
+  public LoadMirrorModesFromFolderScheduler(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
+    super("Adaptation: Load Mirror modes from folder for " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
 
-    mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
+    mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
   }
 
 
@@ -61,25 +64,17 @@ public class MirrorModeScheduler extends SchedulerBase implements
 
     File lFile = lFolder.listFiles()[(int)lFileIndex];
 
-    DenseMatrix64F lMatrix = mSpatialPhaseModulatorDeviceInterface.getMatrixReference().get();
-        //new DenseMatrix64F(mSpatialPhaseModulatorDeviceInterface.getMatrixHeight(), mSpatialPhaseModulatorDeviceInterface.getMatrixWidth());
-
     if (mMicroscope instanceof LightSheetMicroscope) {
       ((LightSheetMicroscope) mMicroscope).getTimelapse().log("Loading " + lFile);
     }
     info("Loading " + lFile);
-    DenseMatrix64FReader lMatrixReader = new DenseMatrix64FReader(lFile, lMatrix);
+    DenseMatrix64F lMatrix = new DenseMatrix64FReader(lFile).getMatrix();
 
-    if (!lMatrixReader.read()) {
-      if (mMicroscope instanceof LightSheetMicroscope) {
-        ((LightSheetMicroscope) mMicroscope).getTimelapse().log("Error: matrix file could not be loaded");
-      }
-      warning("Error: matrix file could not be loaded");
-    }
-
+    double[] lArray = TransformMatrices.convertDense64MatrixTo1DDoubleArray(lMatrix);
     info("Sending matrix to mirror");
-    mSpatialPhaseModulatorDeviceInterface.getMatrixReference().set(lMatrix);
-    System.out.println("I am HERE" + lMatrix);
+
+    mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(lArray);
+
     info("Sent. Scheduler done");
 
     mTimePointCount++;

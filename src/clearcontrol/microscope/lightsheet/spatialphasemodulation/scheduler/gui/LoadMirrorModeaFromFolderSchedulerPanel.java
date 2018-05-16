@@ -1,11 +1,9 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.file.VariableFileChooser;
-import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LoadMirrorModesFromFolderScheduler;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
@@ -13,11 +11,11 @@ import javafx.scene.layout.GridPane;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
-public class MirrorModeSchedulerPanel extends
+public class LoadMirrorModeaFromFolderSchedulerPanel extends
                                                            CustomGridPane
     implements LoggingFeature
 {
-  public MirrorModeSchedulerPanel(MirrorModeScheduler pMirrorModeScheduler) {
+  public LoadMirrorModeaFromFolderSchedulerPanel(LoadMirrorModesFromFolderScheduler pLoadMirrorModesFromFolderScheduler) {
 
 
     int lRow = 0;
@@ -30,7 +28,7 @@ public class MirrorModeSchedulerPanel extends
     {
       VariableFileChooser lRootFolderChooser =
           new VariableFileChooser("Folder:",
-                                  pMirrorModeScheduler.getRootFolderVariable(),
+                                  pLoadMirrorModesFromFolderScheduler.getRootFolderVariable(),
                                   true);
       GridPane.setColumnSpan(lRootFolderChooser.getLabel(),
                              Integer.valueOf(1));

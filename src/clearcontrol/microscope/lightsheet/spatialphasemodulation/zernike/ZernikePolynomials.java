@@ -1,5 +1,9 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike;
 
+import org.ejml.data.DenseMatrix64F;
+
+import java.util.ArrayList;
+
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
@@ -207,4 +211,195 @@ public class ZernikePolynomials
     return result;
   }
 
+  public static int jANSI(int n, int m) {
+    // source: https://en.wikipedia.org/wiki/Zernike_polynomials
+    return (n * (n + 2) + m) / 2;
+  }
+
+  public static int jNoll(int n, int m) {
+    return jNoll(jANSI(n, m));
+  }
+
+  private static String[] jANSIIndicedZernikeModeNames = {
+          "Piston",
+          "Tilt Y",
+          "Tilt X",
+          "Oblique astigmatism",
+          "Defocus",
+          "Vertical astigmatism"
+  };
+
+  public static String getZernikeModeName(int n, int m) {
+    int jANSIIndex = jANSI(n, m);
+    return getZernikeModeName(jANSIIndex);
+  }
+
+  public static String getZernikeModeName(int jANSIIndex) {
+    if (jANSIIndex >= jANSIIndicedZernikeModeNames.length) {
+      return "";
+    } else {
+      return jANSIIndicedZernikeModeNames[jANSIIndex];
+    }
+  }
+
+  // source: https://oeis.org/A176988/b176988.txt
+  private static int[] jNollIndices = {
+        1,
+        3,
+        2,
+        5,
+        4,
+        6,
+        9,
+        7,
+        8,
+        10,
+        15,
+        13,
+        11,
+        12,
+        14,
+        21,
+        19,
+        17,
+        16,
+        18,
+        20,
+        27,
+        25,
+        23,
+        22,
+        24,
+        26,
+        28,
+        35,
+        33,
+        31,
+        29,
+        30,
+        32,
+        34,
+        36,
+        45,
+        43,
+        41,
+        39,
+        37,
+        38,
+        40,
+        42,
+        44,
+        55,
+        53,
+        51,
+        49,
+        47,
+        46,
+        48,
+        50,
+        52,
+        54,
+        65,
+        63,
+        61,
+        59,
+        57,
+        56,
+        58,
+        60,
+        62,
+        64,
+        66,
+        77,
+        75,
+        73,
+        71,
+        69,
+        67,
+        68,
+        70,
+        72,
+        74,
+        76,
+        78,
+        91,
+        89,
+        87,
+        85,
+        83,
+        81,
+        79,
+        80,
+        82,
+        84,
+        86,
+        88,
+        90,
+        105,
+        103,
+        101,
+        99,
+        97,
+        95,
+        93,
+        92,
+        94,
+        96,
+        98,
+        100,
+        102,
+        104,
+        119,
+        117,
+        115,
+        113,
+        111,
+        109,
+        107,
+        106,
+        108,
+        110,
+        112,
+        114,
+        116,
+        118,
+        120};
+
+  public static int jNoll(int jANSI) {
+    return jNollIndices[jANSI];
+  }
+
+  private final static int MATRIX_SIZE = 50;
+
+  private static DenseMatrix64F[] jNollSortedZernikeModes = null;
+  private static void initializeJNollSortedZernikeModes() {
+    if (jNollSortedZernikeModes != null) {
+      return;
+    }
+    jNollSortedZernikeModes = new DenseMatrix64F[jNollIndices.length];
+
+    int maximumM = (int) Math.sqrt(jNollIndices.length);
+
+    for (int n = 0; n <= maximumM; n++) {
+      for (int m = -n; m <= n; m += 2) {
+        DenseMatrix64F zernikeMode = new ZernikePolynomialsDenseMatrix64F(MATRIX_SIZE, MATRIX_SIZE, m, n);
+        jNollSortedZernikeModes[jNoll(n, m) - 1] = zernikeMode;
+      }
+    }
+  }
+
+
+  public static DenseMatrix64F zernikeComposition(double[] factorsSortedByJNoll) {
+    initializeJNollSortedZernikeModes();
+
+    ArrayList<DenseMatrix64F> matricesToSum = new ArrayList<>();
+
+    for (int i = 0; i < factorsSortedByJNoll.length; i++) {
+      if (factorsSortedByJNoll[i] != 0.0 || i == 0) {
+        DenseMatrix64F weightedMatrix = TransformMatrices.multiply(jNollSortedZernikeModes[i], factorsSortedByJNoll[i]);
+        matricesToSum.add(weightedMatrix);
+      }
+    }
+    return TransformMatrices.sum(matricesToSum);
+  }
 }

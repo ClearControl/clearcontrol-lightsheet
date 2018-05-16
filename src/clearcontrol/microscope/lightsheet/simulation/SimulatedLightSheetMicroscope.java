@@ -53,6 +53,8 @@ import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawT
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscScheduler;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LogMirrorZernikeFactorsToFileScheduler;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenScheduler;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DScheduler;
@@ -362,14 +364,21 @@ public class SimulatedLightSheetMicroscope extends
 
     // Setting up deformable mirror
     {
-      SpatialPhaseModulatorDeviceSimulator lMirror = new SpatialPhaseModulatorDeviceSimulator("SimDM", 11, 1);
+      SpatialPhaseModulatorDeviceSimulator lMirror = new SpatialPhaseModulatorDeviceSimulator("SimDM", 11, 1, 66);
       addDevice(0, lMirror);
 
       GeneticAlgorithmMirrorModeOptimizeScheduler lMirrorOptimizer = new GeneticAlgorithmMirrorModeOptimizeScheduler(lMirror);
       addDevice(0, lMirrorOptimizer);
 
+        addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 3));
+        addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 4));
+        addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 5));
+
       LogMirrorModeToFileScheduler lMirrorModeSaver = new LogMirrorModeToFileScheduler(lMirror);
       addDevice(0, lMirrorModeSaver);
+
+      LogMirrorZernikeFactorsToFileScheduler lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileScheduler(lMirror);
+      addDevice(0, lMirrorModeZernikeFactorsSaver);
     }
 
   }

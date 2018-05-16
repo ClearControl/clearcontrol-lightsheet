@@ -16,6 +16,7 @@ import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 import org.junit.Test;
 
+@Deprecated
 public class MatrixPanelDemo
 {
 

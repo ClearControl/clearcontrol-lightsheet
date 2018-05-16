@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import mirao52e.Mirao52eDeformableMirror;
 import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
@@ -12,11 +13,12 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPha
 
 import org.ejml.data.DenseMatrix64F;
 
-public class Mirao52EDevice extends SpatialPhaseModulatorDeviceBase
+public class Mirao52EDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBase
                             implements LoggingFeature
 {
   private static final int cFullMatrixWidthHeight = 8;
   private static final int cActuatorResolution = 2 << 14;
+  private static final int cNumberOfZernikeModeFactors = 66;
 
   private Mirao52eDeformableMirror mMirao52eDeformableMirror;
   private String mHostname;
@@ -26,7 +28,8 @@ public class Mirao52EDevice extends SpatialPhaseModulatorDeviceBase
   {
     super("MIRAO52e_" + pDeviceIndex,
           cFullMatrixWidthHeight,
-          cActuatorResolution);
+          cActuatorResolution,
+            cNumberOfZernikeModeFactors);
 
     mMirao52eDeformableMirror = new Mirao52eDeformableMirror();
 
@@ -130,6 +133,12 @@ public class Mirao52EDevice extends SpatialPhaseModulatorDeviceBase
   public long getRelaxationTimeInMilliseconds()
   {
     return 5;
+  }
+
+  @Override
+  public boolean setZernikeFactors(double[] pZernikeFactors) {
+    warning("Todo: sending Zernike mode factor to MIRAO mirror not implemented yet!");
+    return false;
   }
 
 }

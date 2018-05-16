@@ -2,8 +2,10 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sqrt;
+import static javafx.scene.input.KeyCode.X;
 
 import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +177,7 @@ public class TransformMatrices
       return null;
     }
     DenseMatrix64F lReferenceMatrix = pMatrixList.get(0);
-    DenseMatrix64F lSumMatrix = new DenseMatrix64F(lReferenceMatrix.numCols, lReferenceMatrix.numRows);
+    DenseMatrix64F lSumMatrix = new DenseMatrix64F(lReferenceMatrix.numRows, lReferenceMatrix.numCols);
 
     for (DenseMatrix64F lMatrix : pMatrixList) {
       for (int y = 0; y < lMatrix.numRows; y++)
@@ -340,6 +342,76 @@ public class TransformMatrices
     return lMin;
   }
 
+  /**
+   * Performs Matrix Multiplication
+   * @param pMatrix1 matrix M
+   * @param pMatrix2 matrix N
+   * @return M*N
+   */
+  public static DenseMatrix64F multiplyMatrix(DenseMatrix64F pMatrix1, DenseMatrix64F pMatrix2) {
+    if(pMatrix1.numCols != pMatrix2.numRows){
+      throw new IllegalArgumentException("The matrix dimensions are not compatible for multiplication (" + pMatrix1.numRows +"," + pMatrix1.numCols+"),(" + pMatrix2.numRows+","+pMatrix2.numCols+")");
+    }
+    DenseMatrix64F lResultMatrix = new DenseMatrix64F(pMatrix1.numRows, pMatrix2.numCols);
+    for (int y = 0; y < lResultMatrix.numRows; y++)
+    {
+      for (int x = 0; x < lResultMatrix.numCols; x++)
+      {
+        double s = 0.0;
+        for (int z = 0; z < pMatrix1.numCols; z++)
+        {
+          s += pMatrix1.get(y, z) * pMatrix2.get(z, x);
+        }
+        lResultMatrix.set(y, x, s);
+      }
+    }
+    return lResultMatrix;
+  }
 
+  /**
+   * Performs Matrix Transpose
+   * @param pMatrix1 matrix M
+   * @return M'
+   */
+  public static DenseMatrix64F transposeMatrix(DenseMatrix64F pMatrix1){
+    DenseMatrix64F lResultMatrix = new DenseMatrix64F(pMatrix1.numCols, pMatrix1.numRows);
+    for (int y = 0; y < lResultMatrix.numRows; y++)
+    {
+      for (int x = 0; x < lResultMatrix.numCols; x++)
+      {
+        lResultMatrix.set(y, x, pMatrix1.get(x, y));
+      }
+    }
+    return(lResultMatrix);
+  }
+
+  public static DenseMatrix64F convert1DDoubleArrayToDense64RowMatrix(double[] pArray){
+    DenseMatrix64F lResultMatrix = new DenseMatrix64F(pArray.length, 1);
+    for( int y=0; y<pArray.length;y++){
+      lResultMatrix.set(y,0,pArray[y]);
+    }
+    return(lResultMatrix);
+  }
+
+  public static DenseMatrix64F convert1DDoubleArrayToDense64ColumnMatrix(double[] pArray){
+    DenseMatrix64F lResultMatrix = new DenseMatrix64F(1,pArray.length);
+    for( int y=0; y<pArray.length;y++){
+      lResultMatrix.set(0,y,pArray[y]);
+    }
+    return(lResultMatrix);
+  }
+
+  public static double[] convertDense64MatrixTo1DDoubleArray(DenseMatrix64F pMatrix){
+    double[] lResultArray = new double[pMatrix.getNumElements()];
+    int counter = 0;
+    for( int y=0; y<pMatrix.getNumRows();y++){
+      for( int x=0; x<pMatrix.getNumCols(); x++){
+        lResultArray[counter] = pMatrix.get(y,x);
+        counter ++;
+      }
+
+    }
+    return(lResultArray);
+  }
 
 }

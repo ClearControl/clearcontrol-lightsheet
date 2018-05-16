@@ -19,9 +19,10 @@ public class DenseMatrix64FReader
   File mSourceFile;
   DenseMatrix64F mTargetMatrix;
 
-  private boolean flipHorizontal = true;
-  private boolean flipVertical = false;
-  private boolean flipXY = true;
+  public DenseMatrix64FReader(File pSourceFile) {
+    mSourceFile = pSourceFile;
+    mTargetMatrix = null;
+  }
 
   public DenseMatrix64FReader(File pSourceFile, DenseMatrix64F pTargetMatrix) {
     mSourceFile = pSourceFile;
@@ -47,42 +48,13 @@ public class DenseMatrix64FReader
       return false;
     }
 
-
-
-    DenseMatrix64F lSourceMatrix = mTargetMatrix.copy();
-
+    if (mTargetMatrix == null) {
+      mTargetMatrix = new DenseMatrix64F(data[0].length, data.length);
+    }
 
     for (int y = 0; y < mTargetMatrix.numRows; y++) {
       for (int x = 0; x < mTargetMatrix.numCols; x++) {
-        lSourceMatrix.set(x, y, data[x][y]);
-      }
-    }
-    DenseMatrix64F lTargetMatrix = lSourceMatrix.copy();
-
-
-    if (flipHorizontal)
-    {
-      TransformMatrices.flipSquareMatrixHorizontal(lSourceMatrix,
-                                                   lTargetMatrix);
-      lSourceMatrix = lTargetMatrix.copy();
-    }
-    if (flipVertical)
-    {
-      TransformMatrices.flipSquareMatrixVertical(lSourceMatrix,
-                                                 lTargetMatrix);
-      lSourceMatrix = lTargetMatrix.copy();
-    }
-    if (flipXY)
-    {
-      TransformMatrices.flipSquareMatrixXY(lSourceMatrix,
-                                           lTargetMatrix);
-      lSourceMatrix = lTargetMatrix.copy();
-    }
-
-
-    for (int y = 0; y < mTargetMatrix.numRows; y++) {
-      for (int x = 0; x < mTargetMatrix.numCols; x++) {
-        mTargetMatrix.set(x, y, lSourceMatrix.get(x, y));
+        mTargetMatrix.set(y, x, data[x][y]);
       }
     }
 
@@ -92,5 +64,12 @@ public class DenseMatrix64FReader
 
 
     return true;
+  }
+
+  public DenseMatrix64F getMatrix() {
+    if (mTargetMatrix == null) {
+      read();
+    }
+    return mTargetMatrix;
   }
 }

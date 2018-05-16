@@ -44,13 +44,13 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
     System.out.println("Matrix SET to " + mMatrixVariable.get());
   }
 
-  @Override
+  @Override @Deprecated
   public int getMatrixWidth()
   {
     return mMatrixWidthVariable.get().intValue();
   }
 
-  @Override
+  @Override @Deprecated
   public int getMatrixHeight()
   {
     return mMatrixHeightVariable.get().intValue();
@@ -62,13 +62,13 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
     return mActuatorResolutionVariable.get().intValue();
   }
 
-  @Override
+  @Override @Deprecated
   public Variable<Double> getMatrixWidthVariable()
   {
     return mMatrixWidthVariable;
   }
 
-  @Override
+  @Override @Deprecated
   public Variable<Double> getMatrixHeightVariable()
   {
     return mMatrixHeightVariable;
@@ -86,7 +86,7 @@ public abstract class SpatialPhaseModulatorDeviceBase extends
     return mNumberOfActuatorsVariable;
   }
 
-  @Override
+  @Override @Deprecated
   public Variable<DenseMatrix64F> getMatrixReference()
   {
     return mMatrixVariable;

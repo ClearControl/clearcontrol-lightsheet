@@ -10,6 +10,7 @@ import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
+import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
@@ -67,6 +68,7 @@ public class SequentialAcquisitionScheduler extends
       warning("" + this + " needs a lightsheet microscope!");
       return false;
     }
+    mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
 
     int lNumberOfDetectionArms = mLightSheetMicroscope.getNumberOfDetectionArms();
 
@@ -194,7 +196,7 @@ public class SequentialAcquisitionScheduler extends
     lQueue.setCenteredROI(lImageWidth, lImageHeight);
     lQueue.setExp(lExposureTimeInSeconds);
 
-
+    info("acquiring stack from " + mCurrentState);
 
     // initial position
     goToInitialPosition(mLightSheetMicroscope,

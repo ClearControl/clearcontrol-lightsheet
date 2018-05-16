@@ -19,6 +19,7 @@ import org.ejml.data.DenseMatrix64F;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
+@Deprecated
 public class DenseMatrixEditor extends GridPane implements
                                                 LoggingFeature,
                                                 MatrixUpdateReceiver

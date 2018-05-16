@@ -8,6 +8,7 @@ import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionScheduler;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
+import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
@@ -65,7 +66,7 @@ public class InterleavedAcquisitionScheduler extends
       warning("" + this + " needs a lightsheet microscope!");
       return false;
     }
-
+    mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
 
     int lImageWidth = mCurrentState.getImageWidthVariable().get().intValue();
     int lImageHeight = mCurrentState.getImageHeightVariable().get().intValue();

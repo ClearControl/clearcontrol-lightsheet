@@ -32,6 +32,7 @@ import java.util.Optional;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
+@Deprecated
 public class ZernikeModesLinearCombinationEditor extends GridPane implements
                                                                LoggingFeature
 

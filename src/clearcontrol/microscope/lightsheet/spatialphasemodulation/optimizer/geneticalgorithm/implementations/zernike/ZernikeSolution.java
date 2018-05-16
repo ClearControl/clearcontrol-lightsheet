@@ -1,14 +1,11 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
-import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.fitness.MirrorModeImageQualityDeterminer;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.SolutionInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomialsDenseMatrix64F;
-import clearcontrol.stack.StackInterface;
 import org.ejml.data.DenseMatrix64F;
 
 import java.util.ArrayList;
@@ -53,13 +50,16 @@ public class ZernikeSolution implements SolutionInterface {
             return fitness;
         }
 
-        DenseMatrix64F lMatrix = getMatrix();
-
-        fitness = new MirrorModeImageQualityDeterminer(mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, lMatrix).getFitness();
+        fitness = new MirrorModeImageQualityDeterminer(mLightSheetMicroscope, mSpatialPhaseModulatorDeviceInterface, mPositionZ, mFactors).getFitness();
         fitnessInitialized = true;
         return fitness;
     }
 
+    /**
+     * Depreacted because we want to optimize Zernike factors and no matrices anymore
+     * @return
+     */
+    @Deprecated
     public DenseMatrix64F getMatrix() {
         if (mMatrix != null) {
             return mMatrix;

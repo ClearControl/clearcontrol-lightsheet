@@ -31,6 +31,7 @@ import java.util.ArrayList;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) December 2017
  */
+@Deprecated
 public class DeformableMirrorPanel extends CustomGridPane
                                    implements LoggingFeature
 {

@@ -18,6 +18,7 @@ import clearcontrol.core.variable.VariableSetListener;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
+@Deprecated
 public class MatrixPanel extends JPanel
 {
 

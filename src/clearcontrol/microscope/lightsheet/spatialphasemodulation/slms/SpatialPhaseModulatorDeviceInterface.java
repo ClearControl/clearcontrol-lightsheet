@@ -12,21 +12,28 @@ public interface SpatialPhaseModulatorDeviceInterface extends
                                                       StartStopDeviceInterface,
                                                       NameableInterface
 {
-
+  @Deprecated
   int getMatrixWidth();
 
+  @Deprecated
   int getMatrixHeight();
 
+  @Deprecated
   int getActuatorResolution();
 
+  @Deprecated
   Variable<Double> getMatrixWidthVariable();
 
+  @Deprecated
   Variable<Double> getMatrixHeightVariable();
 
+  @Deprecated
   Variable<Double> getActuatorResolutionVariable();
 
+  @Deprecated
   Variable<Double> getNumberOfActuatorVariable();
 
+  @Deprecated
   Variable<DenseMatrix64F> getMatrixReference();
 
   void zero();
@@ -34,5 +41,8 @@ public interface SpatialPhaseModulatorDeviceInterface extends
   void setMode(int u, int v, double pValue);
 
   long getRelaxationTimeInMilliseconds();
+
+  double[] getZernikeFactors();
+  boolean setZernikeFactors(double[] pZernikeFactors);
 
 }

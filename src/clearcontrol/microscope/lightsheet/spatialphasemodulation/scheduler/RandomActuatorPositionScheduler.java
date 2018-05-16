@@ -9,7 +9,8 @@ import org.ejml.data.DenseMatrix64F;
 
 import java.text.DecimalFormat;
 import java.util.Random;
-
+@Deprecated
+// Putting Random Actuator Positions makes the miror take weird shapes which has no significant relation with optics and hence we see weird looking images
 public class RandomActuatorPositionScheduler extends SchedulerBase implements
         LoggingFeature {
 

@@ -15,11 +15,6 @@ import java.io.*;
  */
 public class DenseMatrix64FWriter
 {
-
-  private boolean flipHorizontal = true;
-  private boolean flipVertical = false;
-  private boolean flipXY = true;
-
   File mTargetFile;
   DenseMatrix64F mSourceMatrix;
   public DenseMatrix64FWriter(File pTargetFile, DenseMatrix64F pSourceMatrix) {
@@ -28,33 +23,13 @@ public class DenseMatrix64FWriter
   }
 
   public boolean write() {
-    Double[][] data = new Double[mSourceMatrix.numRows][mSourceMatrix.numCols];
+    Double[][] data = new Double[mSourceMatrix.numCols][mSourceMatrix.numRows];
 
     DenseMatrix64F lSourceMatrix = mSourceMatrix.copy();
-    DenseMatrix64F lTargetMatrix = mSourceMatrix.copy();
-
-    if (flipXY)
-    {
-      TransformMatrices.flipSquareMatrixXY(lSourceMatrix,
-                                           lTargetMatrix);
-      lSourceMatrix = lTargetMatrix.copy();
-    }
-    if (flipVertical)
-    {
-      TransformMatrices.flipSquareMatrixVertical(lSourceMatrix,
-                                                 lTargetMatrix);
-      lSourceMatrix = lTargetMatrix.copy();
-    }
-    if (flipHorizontal)
-    {
-      TransformMatrices.flipSquareMatrixHorizontal(lSourceMatrix,
-                                                   lTargetMatrix);
-      lSourceMatrix = lTargetMatrix.copy();
-    }
 
     for (int y = 0; y < mSourceMatrix.numRows; y++) {
       for (int x = 0; x < mSourceMatrix.numCols; x++) {
-        data[x][y] = lSourceMatrix.get(x, y);
+        data[x][y] = lSourceMatrix.get(y, x);
       }
     }
 

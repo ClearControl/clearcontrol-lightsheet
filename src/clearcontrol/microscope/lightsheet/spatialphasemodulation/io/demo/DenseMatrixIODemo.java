@@ -23,11 +23,12 @@ public class DenseMatrixIODemo
   {
     double[][] data = { {1, 0, 0},
                         {0, 1, 0},
-                        {0, 0, 1}
+                        {0, 0, 1},
+                        {1, 1, 1}
     };
     // generate matrix
     DenseMatrix64F lMatrix = new DenseMatrix64F(data);
-    DenseMatrix64F lMatrixReloaded = new DenseMatrix64F(3,3);
+    DenseMatrix64F lMatrixReloaded = new DenseMatrix64F(4,3);
 
     File lTempFile = File.createTempFile("temp", ".json");
 
@@ -46,5 +47,13 @@ public class DenseMatrixIODemo
     // check if content is the same
     assertTrue(Arrays.equals(lMatrix.data, lMatrixReloaded.data));
 
+
+    DenseMatrix64FReader lReader2 = new DenseMatrix64FReader(lTempFile);
+    lReader2.read();
+    DenseMatrix64F lMatrixRevolutions = lReader2.getMatrix();
+
+    // check if content is the same
+    assertTrue(Arrays.equals(lMatrixRevolutions.data, lMatrixReloaded.data));
+    System.out.println("O: " + Arrays.toString(lMatrixRevolutions.data));
   }
 }

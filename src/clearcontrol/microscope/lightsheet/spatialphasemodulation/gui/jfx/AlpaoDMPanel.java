@@ -18,6 +18,7 @@ import org.ejml.data.DenseMatrix64F;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) December 2017
  */
+@Deprecated
 public class AlpaoDMPanel extends CustomGridPane
                           implements LoggingFeature
 {

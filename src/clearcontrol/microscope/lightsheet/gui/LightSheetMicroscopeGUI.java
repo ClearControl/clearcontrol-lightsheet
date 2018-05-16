@@ -16,10 +16,12 @@ import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.ExposureMod
 import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.gui.ExposureModulatedAcquisitionSchedulerPanel;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.schedulers.gui.SpotDetectionSchedulerPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.SpatialPhaseModulatorPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.gui.GeneticAlgorithmMirrorModeOptimizeSchedulerPanel;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.MirrorModeScheduler;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.MirrorModeSchedulerPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LoadMirrorModesFromFolderScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.LoadMirrorModeaFromFolderSchedulerPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.gui.ReadStackInterfaceContainerFromDiscSchedulerPanel;
 import javafx.stage.Stage;
@@ -55,10 +57,6 @@ import clearcontrol.microscope.lightsheet.processor.gui.LightSheetFastFusionProc
 import clearcontrol.microscope.lightsheet.processor.gui.OfflineFastFusionPanel;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.signalgen.gui.LightSheetSignalGeneratorPanel;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.AlpaoDMPanel;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.DeformableMirrorPanel;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.alpao.AlpaoDMDevice;
 import clearcontrol.microscope.lightsheet.state.gui.AcquisitionStateManagerPanel;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.gui.LightSheetTimelapseToolbar;
@@ -173,17 +171,8 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          FilterWheelDevicePanel.class,
                          MicroscopeNodeType.FilterWheel);
 
-    addPanelMappingEntry(AlpaoDMDevice.class,
-                         AlpaoDMPanel.class,
-                         MicroscopeNodeType.AdaptiveOptics);
-
-    addPanelMappingEntry(SpatialPhaseModulatorDeviceBase.class,
-                         DeformableMirrorPanel.class,
-                         MicroscopeNodeType.AdaptiveOptics);
-
-
-    addPanelMappingEntry(MirrorModeScheduler.class,
-                         MirrorModeSchedulerPanel.class,
+    addPanelMappingEntry(LoadMirrorModesFromFolderScheduler.class,
+                         LoadMirrorModeaFromFolderSchedulerPanel.class,
                          MicroscopeNodeType.AdaptiveOptics);
 
     addPanelMappingEntry(AnythingDevice.class,
@@ -229,6 +218,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
     addPanelMappingEntry(ReadStackInterfaceContainerFromDiscScheduler.class,
             ReadStackInterfaceContainerFromDiscSchedulerPanel.class,
             MicroscopeNodeType.Acquisition);
+
+    addPanelMappingEntry(SpatialPhaseModulatorDeviceInterface.class,
+            SpatialPhaseModulatorPanel.class,
+            MicroscopeNodeType.AdaptiveOptics);
 
   }
 
