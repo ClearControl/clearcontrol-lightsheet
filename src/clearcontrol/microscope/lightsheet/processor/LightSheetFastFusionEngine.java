@@ -11,11 +11,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface.ChartType;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
-import clearcontrol.microscope.lightsheet.timelapse.stepper.CacheStackTask;
-import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
-import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
-import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.metadata.StackMetaData;
 import fastfuse.FastFusionEngine;
 import fastfuse.FastFusionEngineInterface;
@@ -24,7 +20,6 @@ import fastfuse.registration.AffineMatrix;
 import fastfuse.tasks.*;
 import fastfuse.tasks.DownsampleXYbyHalfTask;
 import fastfuse.tasks.DownsampleXYbyHalfTask.Type;
-//import framework.Handler;
 
 /**
  * Lightsheet fast fusion engine
