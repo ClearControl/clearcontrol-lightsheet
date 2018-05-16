@@ -3,8 +3,7 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.fitn
 import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm.DiscreteConsinusTransformEntropyPerSliceEstimator;
-import clearcontrol.microscope.lightsheet.imaging.SinglePlaneImager;
+import clearcontrol.microscope.lightsheet.postprocessing.utilities.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.imaging.SingleStackImager;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
@@ -14,7 +13,6 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.Transfo
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
-import clearcontrol.microscope.state.AcquisitionStateInterface;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.stack.StackInterface;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;

@@ -44,9 +44,6 @@ import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterf
 import clearcontrol.microscope.lightsheet.component.detection.gui.DetectionArmPanel;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.gui.LightSheetPanel;
-import clearcontrol.microscope.lightsheet.extendeddepthoffocus.EDFImagingEngine;
-import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEnginePanel;
-import clearcontrol.microscope.lightsheet.extendeddepthoffocus.gui.EDFImagingEngineToolbar;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
 import clearcontrol.microscope.lightsheet.interactive.gui.InteractiveAcquisitionToolbar;
 import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor;
@@ -147,13 +144,6 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 
     addPanelMappingEntry(LightSheetFastFusionProcessor.class,
                          LightSheetFastFusionProcessorPanel.class,
-                         MicroscopeNodeType.Acquisition);
-
-    addToolbarMappingEntry(EDFImagingEngine.class,
-                           EDFImagingEngineToolbar.class);
-
-    addPanelMappingEntry(EDFImagingEngine.class,
-                         EDFImagingEnginePanel.class,
                          MicroscopeNodeType.Acquisition);
 
     addPanelMappingEntry(LiveStatisticsProcessor.class,

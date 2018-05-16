@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.extendeddepthoffocus.iqm;
+package clearcontrol.microscope.lightsheet.postprocessing.utilities;
 
 import clearcontrol.ip.iqm.DCTS2D;
 import clearcontrol.stack.OffHeapPlanarStack;
@@ -8,7 +8,6 @@ import clearcontrol.stack.StackInterface;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) October 2017
  */
-@Deprecated
 public class DiscreteConsinusTransformEntropyPerSliceEstimator
 {
   StackInterface mStack;
