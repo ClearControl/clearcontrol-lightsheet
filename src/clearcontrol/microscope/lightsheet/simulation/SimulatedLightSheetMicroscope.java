@@ -29,6 +29,7 @@ import clearcontrol.microscope.lightsheet.adaptive.schedulers.*;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
+import clearcontrol.microscope.lightsheet.component.lightsheet.schedulers.ChangeLightSheetWidthScheduler;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.MeasureTimeScheduler;
 import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseScheduler;
@@ -619,6 +620,11 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new AppendConsecutiveSingleViewImagingScheduler(0,0, 10, 60));
 
     addDevice(0, new TimelapseStopScheduler());
+
+    addDevice(0, new ChangeLightSheetWidthScheduler(this, 0));
+    addDevice(0, new ChangeLightSheetWidthScheduler(this, 0.15));
+    addDevice(0, new ChangeLightSheetWidthScheduler(this, 0.3));
+    addDevice(0, new ChangeLightSheetWidthScheduler(this, 0.45));
   }
 
 }
