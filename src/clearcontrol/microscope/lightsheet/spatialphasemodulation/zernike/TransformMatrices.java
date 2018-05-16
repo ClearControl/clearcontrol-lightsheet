@@ -10,6 +10,14 @@ import org.ejml.ops.CommonOps;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * TransformMatrices is a class full of utilities for matrix manipulation
+ *
+ * @author royer
+ * @author haesleinhuepf
+ * @author debayansaha102
+ */
 public class TransformMatrices
 {
   public static DenseMatrix64F computeZernickeTransformMatrix(int pSquareImageWidthHeight)
@@ -191,6 +199,11 @@ public class TransformMatrices
     return lSumMatrix;
   }
 
+    /**
+     * Allows summing a list of matrices
+     * @param pMatrixArray list
+     * @return sum matrix of all array elements
+     */
   public static DenseMatrix64F sum(DenseMatrix64F... pMatrixArray)
   {
     ArrayList<DenseMatrix64F> lList = new ArrayList<DenseMatrix64F>();
@@ -201,7 +214,12 @@ public class TransformMatrices
     return sum(lList);
   }
 
-
+    /**
+     * Returns the MSE of two matrices (element wise)
+     * @param pMatrix1 Matrix M containing elements m_ij
+     * @param pMatrix2 Matrix N containing elements n_ij
+     * @return MSE = sum_ij(pow(m_ij - n_ij, 2))
+     */
   public static double meanSquaredError(DenseMatrix64F pMatrix1, DenseMatrix64F pMatrix2) {
     if (pMatrix1.numRows != pMatrix2.numRows) {
       return Double.NaN;
@@ -222,6 +240,13 @@ public class TransformMatrices
     return sum / pMatrix1.numCols / pMatrix1.numRows;
   }
 
+    /**
+     * determines if two matrices are equal up to a given tolerance
+     * @param pMatrix1 M  with elements m_ij
+     * @param pMatrix2 N with elements n_ij
+     * @param pTolerance t
+     * @return true if abs(m_ij - n_ij) <= t for all matrix elements
+     */
   public static boolean matricesEqual(DenseMatrix64F pMatrix1, DenseMatrix64F pMatrix2, double pTolerance) {
     if (pMatrix1.numRows != pMatrix2.numRows) {
       return false;

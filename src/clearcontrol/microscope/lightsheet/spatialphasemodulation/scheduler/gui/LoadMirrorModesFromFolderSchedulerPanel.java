@@ -11,11 +11,11 @@ import javafx.scene.layout.GridPane;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
-public class LoadMirrorModeaFromFolderSchedulerPanel extends
+public class LoadMirrorModesFromFolderSchedulerPanel extends
                                                            CustomGridPane
     implements LoggingFeature
 {
-  public LoadMirrorModeaFromFolderSchedulerPanel(LoadMirrorModesFromFolderScheduler pLoadMirrorModesFromFolderScheduler) {
+  public LoadMirrorModesFromFolderSchedulerPanel(LoadMirrorModesFromFolderScheduler pLoadMirrorModesFromFolderScheduler) {
 
 
     int lRow = 0;

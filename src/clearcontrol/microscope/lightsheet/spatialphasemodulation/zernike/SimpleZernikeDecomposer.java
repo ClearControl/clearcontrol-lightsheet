@@ -24,10 +24,12 @@ import java.util.ArrayList;
  * Z[1,1] 0.25
  *
  * Todo: replace this class by a more sophisticated decomposition
+ * Deprecated: There will be no more sophisticated decomposition implemented
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
+@Deprecated
 public class SimpleZernikeDecomposer
 {
   private ArrayList<ZernikePolynomialsDenseMatrix64F> mZernikePolynomialList = null;

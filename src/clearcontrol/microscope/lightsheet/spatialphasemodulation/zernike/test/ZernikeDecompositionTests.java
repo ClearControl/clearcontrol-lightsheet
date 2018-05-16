@@ -11,9 +11,12 @@ import java.util.ArrayList;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Deprecated: As the decomoser has been deprecated, the corresponding test class will be removed as well
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
+@Deprecated
 public class ZernikeDecompositionTests
 {
   @Test

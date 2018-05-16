@@ -23,10 +23,10 @@ import org.ejml.data.DenseMatrix64F;
 import java.io.File;
 
 /**
- * MirrorModeImageQualityDeterminer
- * <p>
- * <p>
- * <p>
+ * The MirrorModeImageQualityDeterminer sends a given mirror mode the a mirror device and takes an unfused image
+ * afterwards. From this image DCTS2D is calculated as metric for image quality. This may only work if the misalignment
+ * of the mirror is not too dramatic and the image has enough content.
+ *
  * Author: @haesleinhuepf
  * 04 2018
  */

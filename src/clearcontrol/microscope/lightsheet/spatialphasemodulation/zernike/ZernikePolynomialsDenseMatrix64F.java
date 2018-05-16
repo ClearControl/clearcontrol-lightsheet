@@ -3,6 +3,8 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike;
 import org.ejml.data.DenseMatrix64F;
 
 /**
+ * The ZernikePolynomialsDenseMatrix64F represents a matrix containing a given Zernike mode
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */

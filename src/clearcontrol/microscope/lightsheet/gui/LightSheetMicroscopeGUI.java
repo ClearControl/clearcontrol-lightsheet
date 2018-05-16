@@ -20,7 +20,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.Spatial
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.gui.GeneticAlgorithmMirrorModeOptimizeSchedulerPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LoadMirrorModesFromFolderScheduler;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.LoadMirrorModeaFromFolderSchedulerPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.LoadMirrorModesFromFolderSchedulerPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.gui.ReadStackInterfaceContainerFromDiscSchedulerPanel;
@@ -172,7 +172,7 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          MicroscopeNodeType.FilterWheel);
 
     addPanelMappingEntry(LoadMirrorModesFromFolderScheduler.class,
-                         LoadMirrorModeaFromFolderSchedulerPanel.class,
+                         LoadMirrorModesFromFolderSchedulerPanel.class,
                          MicroscopeNodeType.AdaptiveOptics);
 
     addPanelMappingEntry(AnythingDevice.class,

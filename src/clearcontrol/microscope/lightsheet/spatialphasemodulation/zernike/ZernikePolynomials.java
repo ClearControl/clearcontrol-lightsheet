@@ -10,6 +10,13 @@ import static java.lang.Math.cos;
 import static java.lang.Math.pow;
 import static java.lang.Math.sin;
 
+/**
+ * ZernikePolynomials is a class full of utilities for working with Zernike Modes
+ *
+ *
+ * @author royer
+ * @author haesleinhuepf
+ */
 public class ZernikePolynomials
 {
 

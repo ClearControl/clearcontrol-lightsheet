@@ -12,10 +12,9 @@ import org.ejml.data.DenseMatrix64F;
 import java.io.File;
 
 /**
- * LogMirrorModeToFileScheduler
- * <p>
- * <p>
- * <p>
+ * The LogMirrorModeToFileScheduler loads JSON files representing Zernike factors from a given folder. Whenever it is
+ * called, it sends one Zernike mode to the mirror.
+ *
  * Author: @haesleinhuepf
  * 04 2018
  */

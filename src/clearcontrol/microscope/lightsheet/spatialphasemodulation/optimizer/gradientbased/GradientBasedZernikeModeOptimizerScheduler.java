@@ -9,10 +9,10 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.Zernike
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
- * GradientBasedZernikeModeOptimizerScheduler
- * <p>
- * <p>
- * <p>
+ * The GradientBasedZernikeModeOptimizerScheduler allows optimizing the deformable mirror. It optimizes a single Zernike
+ * factor in the array taken from the mirror device. Was successfully tested on defocus (Z4). It is recommend to run
+ * it only on images where there is enough content (single beads are on enough)
+ *
  * Author: @haesleinhuepf
  * 05 2018
  */
@@ -28,11 +28,6 @@ public class GradientBasedZernikeModeOptimizerScheduler extends SchedulerBase {
     private BoundedVariable<Double> mPositionZ = null;
 
 
-
-    /**
-     * INstanciates a virtual device with a given name
-     *
-     */
     public GradientBasedZernikeModeOptimizerScheduler(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, int pZernikeFactorIndexToOptimize) {
         super("Adaptation: Gradient based Z" + ZernikePolynomials.jNoll(pZernikeFactorIndexToOptimize) + "(" + ZernikePolynomials.getZernikeModeName(pZernikeFactorIndexToOptimize) + ")" + " optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName());
         this.mLightSheetMicroscope = pLightSheetMicroscope;
