@@ -61,7 +61,6 @@ import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DSched
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DScheduler;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.SelectBestQualitySampleScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeScheduler;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LogMirrorModeToFileScheduler;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -370,12 +369,9 @@ public class SimulatedLightSheetMicroscope extends
       GeneticAlgorithmMirrorModeOptimizeScheduler lMirrorOptimizer = new GeneticAlgorithmMirrorModeOptimizeScheduler(lMirror);
       addDevice(0, lMirrorOptimizer);
 
-        addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 3));
-        addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 4));
-        addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 5));
-
-      LogMirrorModeToFileScheduler lMirrorModeSaver = new LogMirrorModeToFileScheduler(lMirror);
-      addDevice(0, lMirrorModeSaver);
+      addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 3));
+      addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 4));
+      addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 5));
 
       LogMirrorZernikeFactorsToFileScheduler lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileScheduler(lMirror);
       addDevice(0, lMirrorModeZernikeFactorsSaver);
