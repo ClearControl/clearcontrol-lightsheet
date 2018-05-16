@@ -57,7 +57,7 @@ public class AppendConsecutiveHybridImagingScheduler extends SchedulerBase imple
         int numberOfImagesFirstHalf = mNumberOfImages / 2;
         int numberOfImagesSecondHalf = mNumberOfImages - numberOfImagesFirstHalf;
 
-        int index = (int)pTimePoint + 1;
+        int index = (int)lTimelapse.getLastExecutedSchedulerIndexVariable().get() + 1;
         // while the first half, images are only taken
         for (int i = 0; i < numberOfImagesFirstHalf; i ++) {
             schedule.add(index, new MeasureTimeScheduler(timeMeasurementKey));

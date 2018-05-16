@@ -54,7 +54,7 @@ public class AppendConsecutiveSequentialImagingScheduler extends SchedulerBase i
         LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
         ArrayList<SchedulerInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
 
-        int index = (int)pTimePoint + 1;
+        int index = (int)lTimelapse.getLastExecutedSchedulerIndexVariable().get() + 1;
         for (int i = 0; i < mNumberOfImages; i ++) {
             schedule.add(index, new MeasureTimeScheduler(timeMeasurementKey));
             index++;
