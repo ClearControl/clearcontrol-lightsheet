@@ -76,6 +76,7 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.schedulers.TimelapseStopScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseLogScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -623,6 +624,7 @@ public class SimulatedLightSheetMicroscope extends
 
     addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(10, 15));
     addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(10, 30));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(30, 30));
 
     addDevice(0, new AppendConsecutiveInterleavedImagingScheduler(10, 30));
     addDevice(0, new AppendConsecutiveInterleavedImagingScheduler(10, 60));
@@ -635,6 +637,15 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new AppendConsecutiveSingleViewImagingScheduler(0,0, 10, 10));
     addDevice(0, new AppendConsecutiveSingleViewImagingScheduler(0,0, 10, 30));
     addDevice(0, new AppendConsecutiveSingleViewImagingScheduler(0,0, 10, 60));
+
+
+
+    addDevice(0, new AppendConsecutiveHybridImagingScheduler(200, 5, 60));
+    addDevice(0, new AppendConsecutiveHybridImagingScheduler(200, 10, 60));
+    addDevice(0, new AppendConsecutiveHybridImagingScheduler(200, 15, 60));
+    addDevice(0, new AppendConsecutiveHybridImagingScheduler(200, 30, 60));
+
+
 
     addDevice(0, new TimelapseStopScheduler());
 
