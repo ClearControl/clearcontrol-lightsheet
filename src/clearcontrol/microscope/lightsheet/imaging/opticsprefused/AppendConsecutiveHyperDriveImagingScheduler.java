@@ -9,6 +9,7 @@ import clearcontrol.microscope.lightsheet.component.scheduler.implementations.Pa
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
@@ -70,6 +71,10 @@ public class AppendConsecutiveHyperDriveImagingScheduler extends SchedulerBase i
             schedule.add(index, new DropOldestStackInterfaceContainerScheduler(OpticsPrefusedImageDataContainer.class));
             index++;
             schedule.add(index, new WriteFusedImageAsRawToDiscScheduler("opticsprefused"));
+            index++;
+            schedule.add(index, new HalfStackMaxProjectionScheduler<FusedImageDataContainer>(FusedImageDataContainer.class,true));
+            index++;
+            schedule.add(index, new HalfStackMaxProjectionScheduler<FusedImageDataContainer>(FusedImageDataContainer.class,false));
             index++;
             schedule.add(index, new DropOldestStackInterfaceContainerScheduler(FusedImageDataContainer.class));
             index++;

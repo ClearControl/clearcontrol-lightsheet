@@ -9,9 +9,11 @@ import clearcontrol.microscope.lightsheet.component.scheduler.implementations.Pa
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.stack.StackInterface;
@@ -67,6 +69,10 @@ public class AppendConsecutiveSingleViewImagingScheduler extends SchedulerBase i
             schedule.add(index, new SingleViewAcquisitionScheduler(mDetectionArmIndex, mLightSheetIndex));
             index++;
             schedule.add(index, new WriteSingleLightSheetImageAsRawToDiscScheduler(mDetectionArmIndex, mLightSheetIndex));
+            index++;
+            schedule.add(index, new HalfStackMaxProjectionScheduler<StackInterfaceContainer>(StackInterfaceContainer.class,true));
+            index++;
+            schedule.add(index, new HalfStackMaxProjectionScheduler<StackInterfaceContainer>(StackInterfaceContainer.class,false));
             index++;
             schedule.add(index, new DropOldestStackInterfaceContainerScheduler(StackInterface.class));
             index++;

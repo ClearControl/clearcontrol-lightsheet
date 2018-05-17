@@ -9,6 +9,7 @@ import clearcontrol.microscope.lightsheet.component.scheduler.implementations.Pa
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedFusionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
@@ -65,6 +66,10 @@ public class AppendConsecutiveInterleavedImagingScheduler extends SchedulerBase 
             schedule.add(index, new DropOldestStackInterfaceContainerScheduler(InterleavedImageDataContainer.class));
             index++;
             schedule.add(index, new WriteFusedImageAsRawToDiscScheduler("interleaved"));
+            index++;
+            schedule.add(index, new HalfStackMaxProjectionScheduler<FusedImageDataContainer>(FusedImageDataContainer.class,true));
+            index++;
+            schedule.add(index, new HalfStackMaxProjectionScheduler<FusedImageDataContainer>(FusedImageDataContainer.class,false));
             index++;
             schedule.add(index, new DropOldestStackInterfaceContainerScheduler(FusedImageDataContainer.class));
             index++;
