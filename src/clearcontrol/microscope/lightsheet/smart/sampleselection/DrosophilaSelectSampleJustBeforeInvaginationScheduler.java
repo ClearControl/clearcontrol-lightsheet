@@ -121,9 +121,10 @@ public class DrosophilaSelectSampleJustBeforeInvaginationScheduler extends Sched
             }
         }
 
-        info("Chosen position was " + lChosenPosition.mX + "/"  + lChosenPosition.mY + "/"  + lChosenPosition.mZ + "");
 
         if (lChosenPosition != null) {
+            info("Chosen position was " + lChosenPosition.mX + "/"  + lChosenPosition.mY + "/"  + lChosenPosition.mZ + "");
+
             lPositionList.clear();
             lPositionList.add(lChosenPosition);
         }
