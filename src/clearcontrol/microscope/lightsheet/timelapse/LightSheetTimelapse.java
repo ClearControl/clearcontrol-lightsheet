@@ -92,6 +92,8 @@ public class LightSheetTimelapse extends TimelapseBase implements
     super(pLightSheetMicroscope);
     mLightSheetMicroscope = pLightSheetMicroscope;
 
+    this.getMaxNumberOfTimePointsVariable().set(999999L);
+
 
     mExtendedDepthOfFieldAcquisitionVariable.addSetListener(new VariableSetListener<Boolean>()
     {
