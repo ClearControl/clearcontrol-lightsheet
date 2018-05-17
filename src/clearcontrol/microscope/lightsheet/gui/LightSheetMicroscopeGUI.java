@@ -24,6 +24,8 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.L
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.gui.ReadStackInterfaceContainerFromDiscSchedulerPanel;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.gui.DataWarehouseResetSchedulerPanel;
 import javafx.stage.Stage;
 
 import clearcontrol.anything.AnythingDevice;
@@ -212,6 +214,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
     addPanelMappingEntry(SpatialPhaseModulatorDeviceInterface.class,
             SpatialPhaseModulatorPanel.class,
             MicroscopeNodeType.AdaptiveOptics);
+
+    addPanelMappingEntry(DataWarehouseResetScheduler.class,
+            DataWarehouseResetSchedulerPanel.class,
+            MicroscopeNodeType.Scripting);
 
   }
 
