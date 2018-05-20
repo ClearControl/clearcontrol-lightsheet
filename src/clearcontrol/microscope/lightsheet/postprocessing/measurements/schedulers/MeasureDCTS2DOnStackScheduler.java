@@ -98,7 +98,7 @@ public class MeasureDCTS2DOnStackScheduler<T extends StackInterfaceContainer> ex
             String resultTableLine = pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" + lMeanDCTS2DQuality + "\n" ;
 
             int[] lSliceNumber = new IntRange(0, lQualityPerslice.length).toArray();
-            String sliceBySliceHeadline = "t\tX\tY\tZ" + (Arrays.toString(lSliceNumber).replace(", ","\t").replace("[","").replace("]",""));
+            String sliceBySliceHeadline = "t\tX\tY\tZ" + (Arrays.toString(lSliceNumber).replace(", ","\t").replace("[","").replace("]","")) + "\n";
             String sliceBySliceResultTableLine = pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" +
                     Arrays.toString(lQualityPerslice).replace(", ","\t").replace("[","").replace("]","") + "\n" ;
 
