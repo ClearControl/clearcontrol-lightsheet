@@ -7,6 +7,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -34,7 +35,6 @@ public class HalfStackMaxProjectionScheduler <T extends StackInterfaceContainer>
 
     private final Class<T> mClass;
     private final boolean mViewFront;
-    private Long mStartTimeInNanoSeconds = null;
 
     private BoundedVariable<Integer> mFontSizeVariable = new BoundedVariable<Integer>("Font size", 14, 5, Integer.MAX_VALUE);
 
@@ -50,7 +50,6 @@ public class HalfStackMaxProjectionScheduler <T extends StackInterfaceContainer>
 
     @Override
     public boolean initialize() {
-        mStartTimeInNanoSeconds = null;
         return true;
     }
 
@@ -115,10 +114,12 @@ public class HalfStackMaxProjectionScheduler <T extends StackInterfaceContainer>
             ip.setFont(font);
             ip.setColor(new Color(255, 255, 255));
 
-            if (mStartTimeInNanoSeconds == null) {
-                mStartTimeInNanoSeconds = lStack.getMetaData().getTimeStampInNanoseconds();
+            TimeStampContainer lStartTimeInNanoSecondsContainer = lLightSheetMicroscope.getDataWarehouse().getOldestContainer(TimeStampContainer.class);
+            if (lStartTimeInNanoSecondsContainer == null) {
+                lStartTimeInNanoSecondsContainer = new TimeStampContainer(pTimePoint, lStack.getMetaData().getTimeStampInNanoseconds());
+                lLightSheetMicroscope.getDataWarehouse().put("timestampe" + pTimePoint, lStartTimeInNanoSecondsContainer);
             }
-            Duration duration = Duration.ofNanos(lStack.getMetaData().getTimeStampInNanoseconds() - mStartTimeInNanoSeconds);
+            Duration duration = Duration.ofNanos(lStack.getMetaData().getTimeStampInNanoseconds() - lStartTimeInNanoSecondsContainer.getTimeStampInNanoSeconds());
             long s = duration.getSeconds();
             ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + " (i" + lStack.getMetaData().getTimeStampInNanoseconds() + " tp" + pTimePoint + ")\n" + key, 20, 30);
 
@@ -133,5 +134,9 @@ public class HalfStackMaxProjectionScheduler <T extends StackInterfaceContainer>
         }
 
         return true;
+    }
+
+    public boolean isViewFront() {
+        return mViewFront;
     }
 }
