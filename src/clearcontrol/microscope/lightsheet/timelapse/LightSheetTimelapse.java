@@ -136,7 +136,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
       lLogFile.getParentFile().mkdir();
 
-
+      mLightSheetMicroscope.getDataWarehouse().clear();
 
       try
       {
