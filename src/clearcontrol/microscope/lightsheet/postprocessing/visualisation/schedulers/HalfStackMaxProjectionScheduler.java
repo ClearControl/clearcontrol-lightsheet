@@ -120,7 +120,7 @@ public class HalfStackMaxProjectionScheduler <T extends StackInterfaceContainer>
             }
             Duration duration = Duration.ofNanos(lStack.getMetaData().getTimeStampInNanoseconds() - mStartTimeInNanoSeconds);
             long s = duration.getSeconds();
-            ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + " (i" + lStack.getMetaData().getIndex() + " tp" + pTimePoint + ")\n" + key, 20, 30);
+            ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + " (i" + lStack.getMetaData().getTimeStampInNanoseconds() + " tp" + pTimePoint + ")\n" + key, 20, 30);
 
             lResultImagePlus.updateAndDraw();
 
