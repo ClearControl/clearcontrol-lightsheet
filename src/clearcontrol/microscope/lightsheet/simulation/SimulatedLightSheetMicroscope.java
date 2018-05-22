@@ -625,6 +625,8 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(10, 15));
     addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(10, 30));
     addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(30, 30));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(90, 30));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(120, 30));
 
     addDevice(0, new AppendConsecutiveInterleavedImagingScheduler(10, 30));
     addDevice(0, new AppendConsecutiveInterleavedImagingScheduler(10, 60));
@@ -644,6 +646,11 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new AppendConsecutiveHybridImagingScheduler(200, 10, 60));
     addDevice(0, new AppendConsecutiveHybridImagingScheduler(200, 15, 60));
     addDevice(0, new AppendConsecutiveHybridImagingScheduler(200, 30, 60));
+
+    addDevice(0, new AppendConsecutiveHybridImagingScheduler(360, 5, 60));
+    addDevice(0, new AppendConsecutiveHybridImagingScheduler(360, 10, 60));
+    addDevice(0, new AppendConsecutiveHybridImagingScheduler(360, 15, 60));
+    addDevice(0, new AppendConsecutiveHybridImagingScheduler(360, 30, 60));
 
 
 
