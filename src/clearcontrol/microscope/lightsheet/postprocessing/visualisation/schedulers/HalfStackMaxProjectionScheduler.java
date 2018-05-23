@@ -117,11 +117,11 @@ public class HalfStackMaxProjectionScheduler <T extends StackInterfaceContainer>
             TimeStampContainer lStartTimeInNanoSecondsContainer = lLightSheetMicroscope.getDataWarehouse().getOldestContainer(TimeStampContainer.class);
             if (lStartTimeInNanoSecondsContainer == null) {
                 lStartTimeInNanoSecondsContainer = new TimeStampContainer(pTimePoint, lStack.getMetaData().getTimeStampInNanoseconds());
-                lLightSheetMicroscope.getDataWarehouse().put("timestampe" + pTimePoint, lStartTimeInNanoSecondsContainer);
+                lLightSheetMicroscope.getDataWarehouse().put("timestamp" + pTimePoint, lStartTimeInNanoSecondsContainer);
             }
             Duration duration = Duration.ofNanos(lStack.getMetaData().getTimeStampInNanoseconds() - lStartTimeInNanoSecondsContainer.getTimeStampInNanoSeconds());
             long s = duration.getSeconds();
-            ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + " (i" + lStack.getMetaData().getTimeStampInNanoseconds() + " tp" + pTimePoint + ")\n" + key, 20, 30);
+            ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + " (ts" + lStack.getMetaData().getTimeStampInNanoseconds() + " tp" + pTimePoint + ")\n" + key, 20, 30);
 
             lResultImagePlus.updateAndDraw();
 
