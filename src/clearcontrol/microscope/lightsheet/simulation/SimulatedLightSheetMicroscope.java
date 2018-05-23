@@ -627,6 +627,8 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(30, 30));
     addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(90, 30));
     addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(120, 30));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(30, 60));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingScheduler(30, 80));
 
     addDevice(0, new AppendConsecutiveInterleavedImagingScheduler(10, 30));
     addDevice(0, new AppendConsecutiveInterleavedImagingScheduler(10, 60));
