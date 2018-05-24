@@ -41,7 +41,12 @@ public class DMP40Device extends ZernikeModeFactorBasedSpatialPhaseModulatorBase
 
     @Override
     public boolean start() {
-        return mDMP40JDevice.open();
+        boolean result = mDMP40JDevice.open();
+
+        if (result) {
+            setZernikeFactors(new double[mDMP40JDevice.getNumberOfZernikeFactors()]);
+        }
+        return result;
     }
 
     @Override
@@ -57,5 +62,13 @@ public class DMP40Device extends ZernikeModeFactorBasedSpatialPhaseModulatorBase
         } else {
             return false;
         }
+    }
+
+    public double getMinZernikeAmplitude() {
+        return mDMP40JDevice.getMinZernikeAmplitude();
+    }
+
+    public double getMaxZernikeAmplitude() {
+        return mDMP40JDevice.getMaxZernikeAmplitude();
     }
 }
