@@ -4,27 +4,27 @@ import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
 import clearcontrol.devices.stages.kcube.gui.BasicThreeAxesStagePanel;
 import clearcontrol.devices.stages.kcube.gui.KCubePane;
 import clearcontrol.devices.stages.kcube.impl.KCubeDevice;
-import clearcontrol.devices.stages.kcube.scheduler.BasicThreeAxesStageScheduler;
+import clearcontrol.devices.stages.kcube.scheduler.BasicThreeAxesStageInstruction;
 import clearcontrol.devices.stages.kcube.scheduler.gui.BasicThreeAxesStageSchedulerPanel;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderAlphaByVariationScheduler;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderZScheduler;
-import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderAlphaByVariationInstruction;
+import clearcontrol.microscope.lightsheet.adaptive.schedulers.FocusFinderZInstruction;
+import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelInstruction;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderAlphaByVariationSchedulerPanel;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderZSchedulerPanel;
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.SpaceTravelPathPlanningPanel;
-import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.ExposureModulatedAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.ExposureModulatedAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.gui.ExposureModulatedAcquisitionSchedulerPanel;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.gui.SpotDetectionSchedulerPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.SpatialPhaseModulatorPanel;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.gui.GeneticAlgorithmMirrorModeOptimizeSchedulerPanel;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LoadMirrorModesFromFolderScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LoadMirrorModesFromFolderInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui.LoadMirrorModesFromFolderSchedulerPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.gui.ReadStackInterfaceContainerFromDiscSchedulerPanel;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.gui.DataWarehouseResetSchedulerPanel;
 import javafx.stage.Stage;
 
@@ -163,7 +163,7 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          FilterWheelDevicePanel.class,
                          MicroscopeNodeType.FilterWheel);
 
-    addPanelMappingEntry(LoadMirrorModesFromFolderScheduler.class,
+    addPanelMappingEntry(LoadMirrorModesFromFolderInstruction.class,
                          LoadMirrorModesFromFolderSchedulerPanel.class,
                          MicroscopeNodeType.AdaptiveOptics);
 
@@ -171,15 +171,15 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          AnythingPanel.class,
                          MicroscopeNodeType.FilterWheel);
 
-    addPanelMappingEntry(FocusFinderAlphaByVariationScheduler.class,
+    addPanelMappingEntry(FocusFinderAlphaByVariationInstruction.class,
                          FocusFinderAlphaByVariationSchedulerPanel.class,
                          MicroscopeNodeType.AdaptiveOptics);
 
-    addPanelMappingEntry(FocusFinderZScheduler.class,
+    addPanelMappingEntry(FocusFinderZInstruction.class,
                          FocusFinderZSchedulerPanel.class,
                          MicroscopeNodeType.AdaptiveOptics);
 
-    addPanelMappingEntry(SpaceTravelScheduler.class,
+    addPanelMappingEntry(SpaceTravelInstruction.class,
                          SpaceTravelPathPlanningPanel.class,
                          MicroscopeNodeType.Stage);
 
@@ -191,23 +191,23 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                         BasicThreeAxesStagePanel.class,
                         MicroscopeNodeType.Stage);
 
-    addPanelMappingEntry(BasicThreeAxesStageScheduler.class,
+    addPanelMappingEntry(BasicThreeAxesStageInstruction.class,
                         BasicThreeAxesStageSchedulerPanel.class,
                         MicroscopeNodeType.Stage);
 
-    addPanelMappingEntry(CountsSpotsScheduler.class,
+    addPanelMappingEntry(CountsSpotsInstruction.class,
                         SpotDetectionSchedulerPanel.class,
                         MicroscopeNodeType.Other);
 
-    addPanelMappingEntry(GeneticAlgorithmMirrorModeOptimizeScheduler.class,
+    addPanelMappingEntry(GeneticAlgorithmMirrorModeOptimizeInstruction.class,
                         GeneticAlgorithmMirrorModeOptimizeSchedulerPanel.class,
                         MicroscopeNodeType.AdaptiveOptics);
 
-    addPanelMappingEntry(ExposureModulatedAcquisitionScheduler.class,
+    addPanelMappingEntry(ExposureModulatedAcquisitionInstruction.class,
             ExposureModulatedAcquisitionSchedulerPanel.class,
             MicroscopeNodeType.Acquisition);
 
-    addPanelMappingEntry(ReadStackInterfaceContainerFromDiscScheduler.class,
+    addPanelMappingEntry(ReadStackInterfaceContainerFromDiscInstruction.class,
             ReadStackInterfaceContainerFromDiscSchedulerPanel.class,
             MicroscopeNodeType.Acquisition);
 
@@ -215,7 +215,7 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
             SpatialPhaseModulatorPanel.class,
             MicroscopeNodeType.AdaptiveOptics);
 
-    addPanelMappingEntry(DataWarehouseResetScheduler.class,
+    addPanelMappingEntry(DataWarehouseResetInstruction.class,
             DataWarehouseResetSchedulerPanel.class,
             MicroscopeNodeType.Scripting);
 

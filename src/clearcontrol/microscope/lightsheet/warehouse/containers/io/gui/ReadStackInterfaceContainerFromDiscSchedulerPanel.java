@@ -2,7 +2,7 @@ package clearcontrol.microscope.lightsheet.warehouse.containers.io.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.file.VariableFileChooser;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscInstruction;
 import javafx.scene.layout.GridPane;
 
 /**
@@ -14,7 +14,7 @@ import javafx.scene.layout.GridPane;
  * 05 2018
  */
 public class ReadStackInterfaceContainerFromDiscSchedulerPanel extends CustomGridPane {
-    public ReadStackInterfaceContainerFromDiscSchedulerPanel(ReadStackInterfaceContainerFromDiscScheduler pScheduler) {
+    public ReadStackInterfaceContainerFromDiscSchedulerPanel(ReadStackInterfaceContainerFromDiscInstruction pScheduler) {
         int lRow = 0;
 
         {

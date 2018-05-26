@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.gui;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.file.VariableFileChooser;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LoadMirrorModesFromFolderScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LoadMirrorModesFromFolderInstruction;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
@@ -15,7 +15,7 @@ public class LoadMirrorModesFromFolderSchedulerPanel extends
                                                            CustomGridPane
     implements LoggingFeature
 {
-  public LoadMirrorModesFromFolderSchedulerPanel(LoadMirrorModesFromFolderScheduler pLoadMirrorModesFromFolderScheduler) {
+  public LoadMirrorModesFromFolderSchedulerPanel(LoadMirrorModesFromFolderInstruction pLoadMirrorModesFromFolderScheduler) {
 
 
     int lRow = 0;

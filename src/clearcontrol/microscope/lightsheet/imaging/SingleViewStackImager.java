@@ -2,10 +2,9 @@ package clearcontrol.microscope.lightsheet.imaging;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.singleview.SingleViewAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
@@ -55,8 +54,8 @@ public class SingleViewStackImager implements ImagerInterface,
     lProcessor.reInitializeEngine();
     lProcessor.getEngine().reset(true);
 
-    AbstractAcquistionScheduler lAcquisitionScheduler = null;
-    for (SingleViewAcquisitionScheduler lScheduler : mLightSheetMicroscope.getDevices(SingleViewAcquisitionScheduler.class)) {
+    AbstractAcquistionInstruction lAcquisitionScheduler = null;
+    for (SingleViewAcquisitionInstruction lScheduler : mLightSheetMicroscope.getDevices(SingleViewAcquisitionInstruction.class)) {
       if (lScheduler.getCameraIndex() == mDetectionArmIndex && lScheduler.getLightSheetIndex() == mLightSheetIndex)
       {
         lAcquisitionScheduler = lScheduler;

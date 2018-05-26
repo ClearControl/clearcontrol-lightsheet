@@ -1,8 +1,7 @@
 package clearcontrol.microscope.lightsheet.warehouse.schedulers.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetInstruction;
 import javafx.scene.control.Button;
 
 /**
@@ -15,7 +14,7 @@ import javafx.scene.control.Button;
  */
 public class DataWarehouseResetSchedulerPanel extends CustomGridPane {
 
-    public DataWarehouseResetSchedulerPanel(DataWarehouseResetScheduler pScheduler) {
+    public DataWarehouseResetSchedulerPanel(DataWarehouseResetInstruction pScheduler) {
         Button lResetButton = new Button("Reset");
         lResetButton.setOnAction((e)-> {
             pScheduler.enqueue( - 1);

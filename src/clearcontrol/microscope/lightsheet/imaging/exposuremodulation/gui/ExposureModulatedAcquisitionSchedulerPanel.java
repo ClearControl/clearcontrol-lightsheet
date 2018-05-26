@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.exposuremodulation.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.ExposureModulatedAcquisitionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.ExposureModulatedAcquisitionInstruction;
 
 /**
  * ExposureModulatedAcquisitionSchedulerPanel
@@ -12,7 +12,7 @@ import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.ExposureMod
  * 05 2018
  */
 public class ExposureModulatedAcquisitionSchedulerPanel extends CustomGridPane {
-    public ExposureModulatedAcquisitionSchedulerPanel(ExposureModulatedAcquisitionScheduler pExposureModulatedAcquisitionScheduler)
+    public ExposureModulatedAcquisitionSchedulerPanel(ExposureModulatedAcquisitionInstruction pExposureModulatedAcquisitionScheduler)
     {
         addDoubleField(pExposureModulatedAcquisitionScheduler.getShortExposureTimeInSecondsVariable(), 0);
         addDoubleField(pExposureModulatedAcquisitionScheduler.getLongExposureTimeInSecondsVariable(), 1);

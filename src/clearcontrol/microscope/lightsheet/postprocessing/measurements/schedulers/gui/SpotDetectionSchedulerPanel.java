@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
@@ -13,7 +13,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * 04 2018
  */
 public class SpotDetectionSchedulerPanel extends CustomGridPane {
-    public SpotDetectionSchedulerPanel(CountsSpotsScheduler<StackInterfaceContainer> pCountsSpotsScheduler) {
+    public SpotDetectionSchedulerPanel(CountsSpotsInstruction<StackInterfaceContainer> pCountsSpotsScheduler) {
 
         addDoubleField(pCountsSpotsScheduler.getXYDownsamplingFactor(), 0);
         addDoubleField(pCountsSpotsScheduler.getZDownsamplingFactor(), 1);

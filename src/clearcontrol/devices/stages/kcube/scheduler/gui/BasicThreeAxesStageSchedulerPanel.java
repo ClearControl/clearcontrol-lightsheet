@@ -1,8 +1,7 @@
 package clearcontrol.devices.stages.kcube.scheduler.gui;
 
-import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.devices.stages.kcube.scheduler.BasicThreeAxesStageScheduler;
+import clearcontrol.devices.stages.kcube.scheduler.BasicThreeAxesStageInstruction;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
 
@@ -14,7 +13,7 @@ public class BasicThreeAxesStageSchedulerPanel extends CustomGridPane
 {
   private int mRow = 0;
 
-  public BasicThreeAxesStageSchedulerPanel(BasicThreeAxesStageScheduler pBasicThreeAxesStageScheduler) {
+  public BasicThreeAxesStageSchedulerPanel(BasicThreeAxesStageInstruction pBasicThreeAxesStageScheduler) {
 
     addVariableTextField(pBasicThreeAxesStageScheduler.getStartXVariable());
     addVariableTextField(pBasicThreeAxesStageScheduler.getStartYVariable());

@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeScheduler;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeInstruction;
 
 /**
  * GeneticAlgorithmMirrorModeOptimizeSchedulerPanel
@@ -12,7 +12,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.genet
  * 04 2018
  */
 public class GeneticAlgorithmMirrorModeOptimizeSchedulerPanel extends CustomGridPane {
-    public GeneticAlgorithmMirrorModeOptimizeSchedulerPanel(GeneticAlgorithmMirrorModeOptimizeScheduler pGAScheduler) {
+    public GeneticAlgorithmMirrorModeOptimizeSchedulerPanel(GeneticAlgorithmMirrorModeOptimizeInstruction pGAScheduler) {
         addIntegerField(pGAScheduler.getNumberOfEpochsPerTimePoint(), 0);
         addIntegerField(pGAScheduler.getNumberOfMutations(), 1);
         addIntegerField(pGAScheduler.getPopulationSize(), 2);

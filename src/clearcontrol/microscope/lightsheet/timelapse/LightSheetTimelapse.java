@@ -315,7 +315,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
   /**
    * This function will be deleted as soon as the
-   * SequentialAcquisitionScheduler proved to be functional and
+   * SequentialAcquisitionInstruction proved to be functional and
    * results in equal images
    * @param pCurrentState
    * @throws InterruptedException
@@ -395,7 +395,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
   }
 
   /**
-   * This function will be removed. see SequentialAcquisitionScheduler
+   * This function will be removed. see SequentialAcquisitionInstruction
    * @param pCurrentState
    * @param pLightSheetIndex
    * @return

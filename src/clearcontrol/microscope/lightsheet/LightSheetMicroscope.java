@@ -27,16 +27,15 @@ import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.state.schedulers.ChangeExposureTimeScheduler;
+import clearcontrol.microscope.lightsheet.state.schedulers.ChangeExposureTimeInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.containers.SchedulerDurationContainer;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseLogScheduler;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropAllContainersOfTypeScheduler;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.*;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseLogInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 
 import java.util.ArrayList;
@@ -85,8 +84,8 @@ public class LightSheetMicroscope extends
 
     mDataWarehouse = new DataWarehouse();
 
-    addDevice(0, new DataWarehouseResetScheduler());
-    addDevice(0, new DataWarehouseLogScheduler(this));
+    addDevice(0, new DataWarehouseResetInstruction());
+    addDevice(0, new DataWarehouseLogInstruction(this));
 
 
     for (Class lContainerType : new Class[]{
@@ -103,8 +102,8 @@ public class LightSheetMicroscope extends
             DataContainerInterface.class,
             MirrorModeContainer.class
     }) {
-      addDevice(0, new DropOldestStackInterfaceContainerScheduler(lContainerType));
-      addDevice(0, new DropAllContainersOfTypeScheduler(lContainerType));
+      addDevice(0, new DropOldestStackInterfaceContainerInstruction(lContainerType));
+      addDevice(0, new DropAllContainersOfTypeInstruction(lContainerType));
     }
 
 
@@ -190,13 +189,13 @@ public class LightSheetMicroscope extends
                                                                               this);
     addDevice(0, lInteractiveAcquisition);
 
-    addDevice(0, new ChangeExposureTimeScheduler(1));
-    addDevice(0, new ChangeExposureTimeScheduler(0.5));
-    addDevice(0, new ChangeExposureTimeScheduler(0.2));
-    addDevice(0, new ChangeExposureTimeScheduler(0.1));
-    addDevice(0, new ChangeExposureTimeScheduler(0.05));
-    addDevice(0, new ChangeExposureTimeScheduler(0.02));
-    addDevice(0, new ChangeExposureTimeScheduler(0.01));
+    addDevice(0, new ChangeExposureTimeInstruction(1));
+    addDevice(0, new ChangeExposureTimeInstruction(0.5));
+    addDevice(0, new ChangeExposureTimeInstruction(0.2));
+    addDevice(0, new ChangeExposureTimeInstruction(0.1));
+    addDevice(0, new ChangeExposureTimeInstruction(0.05));
+    addDevice(0, new ChangeExposureTimeInstruction(0.02));
+    addDevice(0, new ChangeExposureTimeInstruction(0.01));
 
     return lInteractiveAcquisition;
   }

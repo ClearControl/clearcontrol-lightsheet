@@ -1,0 +1,53 @@
+package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
+
+import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.stack.StackInterface;
+
+/**
+ * This FusionInstruction takes the oldest
+ * OpticsPrefusedImageDataContainer from the DataWarehouse and fuses
+ * the images. Results are saved as FusedImageContainer back to the
+ * DataWarehouse.
+ *
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
+ * April 2018
+ */
+public class OpticsPrefusedFusionInstruction extends FusionInstruction implements
+                                                                   SchedulerInterface,
+                                                                   LoggingFeature
+{
+  /**
+   * INstanciates a virtual device with a given name
+   *
+   */
+  public OpticsPrefusedFusionInstruction()
+  {
+    super("Post-processing: Optics prefused fusion");
+  }
+
+
+  @Override public boolean enqueue(long pTimePoint)
+  {
+    DataWarehouse lDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
+    final OpticsPrefusedImageDataContainer
+        lContainer = lDataWarehouse.getOldestContainer(OpticsPrefusedImageDataContainer.class);
+    String[] lInputImageKeys = new String[mLightSheetMicroscope.getNumberOfDetectionArms()];
+
+    int count = 0;
+    for (int d = 0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++) {
+      lInputImageKeys[count] = "C" + d + "opticsprefused";
+      count ++;
+    }
+
+    StackInterface lFusedStack = fuseStacks(lContainer, lInputImageKeys);
+    if (lFusedStack == null) {
+      return false;
+    }
+
+    storeFusedContainer(lFusedStack);
+    return true;
+  }
+}
