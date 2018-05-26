@@ -1,26 +1,20 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
-import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
-import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
-import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.metadata.StackMetaData;
-import coremem.recycling.RecyclerInterface;
 
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -28,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * This scheduler acquires an image stack per camera per light sheet.
+ * This instructions acquires an image stack per camera per light sheet.
  * The image stacks are stored in the DataWarehouse in
  * an SequentialImageDataContainer with keys like:
  *

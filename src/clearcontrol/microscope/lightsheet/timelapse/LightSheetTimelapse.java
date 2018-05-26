@@ -19,7 +19,7 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
@@ -75,7 +75,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
   private ArrayList<SchedulerInterface>
       mListOfActivatedSchedulers = new ArrayList<SchedulerInterface>();
 
-  private Variable<Integer> mLastExecutedSchedulerIndexVariable = new Variable<Integer>("Last executed scheduler index", -1);
+  private Variable<Integer> mLastExecutedSchedulerIndexVariable = new Variable<Integer>("Last executed instructions index", -1);
 
   ArrayList<SchedulerInterface>
           mInitializedSchedulerList;
@@ -264,7 +264,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
       }
 
       log( "Starting " + lNextSchedulerToRun);
-      double duration = ElapsedTime.measure("scheduler execution", () -> {
+      double duration = ElapsedTime.measure("instructions execution", () -> {
                 lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
       });
       log("Finished " + lNextSchedulerToRun);

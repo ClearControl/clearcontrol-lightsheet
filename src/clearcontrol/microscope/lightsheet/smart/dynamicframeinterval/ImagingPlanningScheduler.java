@@ -2,8 +2,8 @@ package clearcontrol.microscope.lightsheet.smart.dynamicframeinterval;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.AppendConsecutiveInterleavedImagingScheduler;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.AppendConsecutiveHyperDriveImagingScheduler;
@@ -66,7 +66,7 @@ public class ImagingPlanningScheduler extends SchedulerBase implements LoggingFe
 
         LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
 
-        // add myself to the scheduler so that I'll be asked again after next imaging sequence
+        // add myself to the instructions so that I'll be asked again after next imaging sequence
         ArrayList<SchedulerInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
         schedule.add((int) pTimePoint + 1, this);
 
@@ -95,7 +95,7 @@ public class ImagingPlanningScheduler extends SchedulerBase implements LoggingFe
     private void addSpotDetectionAfterEveryFutureFusion(long pTimePoint) {
         LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
 
-        // add myself to the scheduler so that I'll be asked again after next imaging sequence
+        // add myself to the instructions so that I'll be asked again after next imaging sequence
         ArrayList<SchedulerInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
         for (int i = (int)pTimePoint; i < schedule.size() - 1; i++) {
             SchedulerInterface lScheduler = schedule.get(i);

@@ -63,7 +63,7 @@ public class SingleViewStackImager implements ImagerInterface,
       }
     }
     if (lAcquisitionScheduler == null) {
-      warning("No imaging scheduler found for L" + mLightSheetIndex + "C" + mDetectionArmIndex);
+      warning("No imaging instructions found for L" + mLightSheetIndex + "C" + mDetectionArmIndex);
       return null;
     }
 

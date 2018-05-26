@@ -3,8 +3,8 @@ package clearcontrol.microscope.lightsheet.adaptive.schedulers;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

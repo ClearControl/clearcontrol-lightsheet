@@ -2,8 +2,8 @@ package clearcontrol.microscope.lightsheet.state.schedulers;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.io.InterpolatedAcquisitionStateWriter;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
@@ -11,7 +11,7 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import java.io.File;
 
 /**
- * This scheduler writes the current acquisition state to a file with
+ * This instructions writes the current acquisition state to a file with
  * the timepoint being part of the filename
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

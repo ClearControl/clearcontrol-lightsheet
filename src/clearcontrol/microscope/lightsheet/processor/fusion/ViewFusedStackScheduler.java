@@ -1,12 +1,10 @@
 package clearcontrol.microscope.lightsheet.processor.fusion;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.gui.video.StackDisplayInterface;
 import clearcontrol.gui.video.video3d.Stack3DDisplay;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
-import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 public class ViewFusedStackScheduler extends SchedulerBase implements
         LoggingFeature

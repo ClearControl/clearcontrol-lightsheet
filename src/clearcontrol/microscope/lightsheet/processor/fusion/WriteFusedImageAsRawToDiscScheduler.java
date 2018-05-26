@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.processor.fusion;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscScheduler;
 
 /**
- * This scheduler writes a fused image to disc. Depending on how the images
+ * This instructions writes a fused image to disc. Depending on how the images
  * was fused, it might be stored in different folders.
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

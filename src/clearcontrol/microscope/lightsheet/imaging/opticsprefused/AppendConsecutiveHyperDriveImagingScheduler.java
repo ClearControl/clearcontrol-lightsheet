@@ -2,13 +2,10 @@ package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
-import clearcontrol.microscope.lightsheet.component.scheduler.implementations.MeasureTimeScheduler;
-import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
-import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedFusionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.implementations.MeasureTimeScheduler;
+import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionScheduler;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscScheduler;

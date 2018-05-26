@@ -1,7 +1,6 @@
-package clearcontrol.microscope.lightsheet.component.scheduler;
+package clearcontrol.instructions;
 
 import clearcontrol.core.device.VirtualDevice;
-import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.MicroscopeInterface;
 
 /**

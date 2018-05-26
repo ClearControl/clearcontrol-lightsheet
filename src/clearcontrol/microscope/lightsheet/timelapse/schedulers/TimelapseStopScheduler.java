@@ -1,6 +1,6 @@
 package clearcontrol.microscope.lightsheet.timelapse.schedulers;
 
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 
 /**

@@ -12,7 +12,7 @@ import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
@@ -37,11 +37,7 @@ import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseLogS
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropAllContainersOfTypeScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
-import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
-import clearcontrol.stack.StackInterface;
-import clearcontrol.stack.StackRequest;
-import coremem.recycling.RecyclerInterface;
 
 import java.util.ArrayList;
 

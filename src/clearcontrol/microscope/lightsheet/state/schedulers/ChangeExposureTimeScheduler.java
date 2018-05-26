@@ -1,6 +1,6 @@
 package clearcontrol.microscope.lightsheet.state.schedulers;
 
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 
 /**
  * ChangeExposureTimeScheduler

@@ -1,10 +1,9 @@
 package clearcontrol.microscope.lightsheet.timelapse.io;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerInterface;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
 
 /**

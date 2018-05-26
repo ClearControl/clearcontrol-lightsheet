@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscScheduler;
 
 /**
- * This scheduler writes the raw data from the oldest optics prefused
+ * This instructions writes the raw data from the oldest optics prefused
  * acquisition stored in the DataWarehouse to disc.
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

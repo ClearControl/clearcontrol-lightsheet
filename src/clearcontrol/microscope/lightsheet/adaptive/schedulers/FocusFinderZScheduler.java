@@ -7,8 +7,8 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * This scheduler initializes focus (delta Z of illumination arms).
+ * This instructions initializes focus (delta Z of illumination arms).
  * It should be used if the focus is really off.
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

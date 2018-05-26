@@ -2,9 +2,8 @@ package clearcontrol.microscope.lightsheet.component.lightsheet.schedulers;
 
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.state.AcquisitionStateInterface;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 
 /**

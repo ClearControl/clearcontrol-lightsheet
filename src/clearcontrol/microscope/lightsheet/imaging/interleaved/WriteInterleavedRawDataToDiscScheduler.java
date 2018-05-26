@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.imaging.interleaved;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscScheduler;
 
 /**
- * This scheduler writes the raw data from the oldest interleaved
+ * This instructions writes the raw data from the oldest interleaved
  * acquisition stored in the DataWarehouse to disc.
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

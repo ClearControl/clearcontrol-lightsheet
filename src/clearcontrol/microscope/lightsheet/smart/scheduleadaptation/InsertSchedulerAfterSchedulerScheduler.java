@@ -1,17 +1,14 @@
 package clearcontrol.microscope.lightsheet.smart.scheduleadaptation;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
-import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionScheduler;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
-import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 
 import java.util.ArrayList;
 
 /**
- * The InsertSchedulerAfterSchedulerScheduler inserts a given scheduler after any scheduler of a certain class.
+ * The InsertSchedulerAfterSchedulerScheduler inserts a given instructions after any instructions of a certain class.
  *
  * Author: @haesleinhuepf
  * 05 2018
@@ -39,7 +36,7 @@ public class InsertSchedulerAfterSchedulerScheduler<T extends SchedulerInterface
 
         LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
 
-        // add myself to the scheduler so that I'll be asked again after next imaging sequence
+        // add myself to the instructions so that I'll be asked again after next imaging sequence
         ArrayList<SchedulerInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
         for (int i = (int)pTimePoint; i < schedule.size() - 1; i++) {
             SchedulerInterface lScheduler = schedule.get(i);

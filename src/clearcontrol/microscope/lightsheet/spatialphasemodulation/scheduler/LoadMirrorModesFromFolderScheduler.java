@@ -1,16 +1,11 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler;
 
-import clearcontrol.core.device.VirtualDevice;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
-import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeSpatialPhaseModulatorDevice;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import org.ejml.data.DenseMatrix64F;
 

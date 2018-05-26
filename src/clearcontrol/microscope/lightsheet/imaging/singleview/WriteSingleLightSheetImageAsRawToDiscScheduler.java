@@ -4,7 +4,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscScheduler;
 
 /**
- * This scheduler writes the raw data from the single view
+ * This instructions writes the raw data from the single view
  * acquisition stored in the DataWarehouse to disc.
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

@@ -5,8 +5,7 @@ import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -14,7 +13,6 @@ import clearcontrol.stack.StackInterface;
 import ij.IJ;
 import ij.ImagePlus;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 
 /**

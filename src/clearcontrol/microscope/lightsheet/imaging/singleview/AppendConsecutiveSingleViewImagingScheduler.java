@@ -2,19 +2,13 @@ package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
-import clearcontrol.microscope.lightsheet.component.scheduler.implementations.MeasureTimeScheduler;
-import clearcontrol.microscope.lightsheet.component.scheduler.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
-import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialFusionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.implementations.MeasureTimeScheduler;
+import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionScheduler;
-import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
-import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscScheduler;
 import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
 import clearcontrol.stack.StackInterface;
 

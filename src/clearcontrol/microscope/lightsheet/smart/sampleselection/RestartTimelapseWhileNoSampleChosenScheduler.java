@@ -2,7 +2,7 @@ package clearcontrol.microscope.lightsheet.smart.sampleselection;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 
 /**
  * RestartTimelapseWhileNoSampleChosenScheduler

@@ -3,12 +3,9 @@ package clearcontrol.devices.stages.kcube.scheduler;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
-
-import java.time.temporal.ValueRange;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

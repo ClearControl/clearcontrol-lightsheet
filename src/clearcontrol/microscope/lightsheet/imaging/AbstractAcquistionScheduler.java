@@ -5,8 +5,8 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -19,7 +19,6 @@ import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.sourcesink.sink.FileStackSinkInterface;
 import coremem.recycling.RecyclerInterface;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**

@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.warehouse.schedulers;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;

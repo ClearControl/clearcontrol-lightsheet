@@ -1,14 +1,14 @@
 package clearcontrol.microscope.lightsheet.state.schedulers;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.state.AcquisitionStateInterface;
 
 import java.util.ArrayList;
 
 /**
- * This scheduler allows saving a copy of the current acquisition state
+ * This instructions allows saving a copy of the current acquisition state
  * to a list or restoring the latest acquisition state if the list is
  * not empty.
  *
@@ -25,7 +25,7 @@ public class AcquisitionStateBackupRestoreScheduler extends
   /**
    * INstanciates a virtual device with a given name
    *
-   * @param pBackup: If true, the scheduler puts a new entry in
+   * @param pBackup: If true, the instructions puts a new entry in
    * the LIFO list, if false it will restore the last entry.
    */
   public AcquisitionStateBackupRestoreScheduler(boolean pBackup)

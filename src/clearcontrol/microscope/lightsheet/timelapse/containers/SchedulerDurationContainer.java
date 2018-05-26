@@ -1,9 +1,7 @@
 package clearcontrol.microscope.lightsheet.timelapse.containers;
 
-import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.MeasurementContainer;
-import clearcontrol.microscope.lightsheet.postprocessing.containers.MeasurementInSpaceContainer;
 
 /**
  * SchedulerDurationContainer

@@ -2,7 +2,7 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.grad
 
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;

@@ -1,18 +1,16 @@
 package clearcontrol.microscope.lightsheet.imaging.exposuremodulation;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
-import clojure.lang.Var;
 
 /**
- * This scheduler acquires a single image stack for a defined camera
+ * This instructions acquires a single image stack for a defined camera
  * and light sheet. It acquires every slice twice with two different
  * exposure times.
  *

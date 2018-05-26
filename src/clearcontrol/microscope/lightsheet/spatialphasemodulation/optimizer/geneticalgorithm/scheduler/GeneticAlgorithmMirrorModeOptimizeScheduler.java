@@ -1,21 +1,15 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler;
 
-import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.Population;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolutionFactory;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
-import org.ejml.data.DenseMatrix64F;
-
-import java.io.File;
 
 /**
  * GeneticAlgorithmMirrorModeOptimizeScheduler

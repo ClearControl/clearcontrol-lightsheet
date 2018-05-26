@@ -1,14 +1,12 @@
 package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
 import clearcontrol.stack.StackInterface;
-import clearcontrol.stack.StackRequest;
-import coremem.recycling.RecyclerInterface;
 
 /**
- * This scheduler acquires a single image stack for a defined camera
+ * This instructions acquires a single image stack for a defined camera
  * and light sheet.
  * The image stacks are stored in the DataWarehouse in
  * an StackInterfaceContainer with a key like:

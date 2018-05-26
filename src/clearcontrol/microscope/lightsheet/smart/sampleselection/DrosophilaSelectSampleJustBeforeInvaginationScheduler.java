@@ -4,7 +4,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
@@ -16,7 +16,7 @@ import java.util.Arrays;
 /**
  * DrosophilaSelectSampleJustBeforeInvaginationScheduler
  *
- * This scheduler analyses recent DCTS2D measurements retrieved from the DataWarehouse. It checks if the following
+ * This instructions analyses recent DCTS2D measurements retrieved from the DataWarehouse. It checks if the following
  * conditions are met:
  * * A sample has quality above average (compared to all samples)
  * * The quality at time points t-1, t-2, t-3 has a five fold smaller gradient than at time points t-4, t-5 and t-6

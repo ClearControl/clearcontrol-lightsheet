@@ -5,7 +5,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.gui.halcyon.MicroscopeNodeType;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleReader;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
 import javafx.collections.FXCollections;

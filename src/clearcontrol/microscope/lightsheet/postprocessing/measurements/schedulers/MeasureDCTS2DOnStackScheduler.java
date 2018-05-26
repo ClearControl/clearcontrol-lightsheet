@@ -4,7 +4,7 @@ import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SliceBySliceDCTS2DContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
@@ -15,7 +15,6 @@ import clearcontrol.stack.StackInterface;
 
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.math.stat.descriptive.moment.Mean;
-import org.jruby.RubyProcess;
 
 import java.io.BufferedWriter;
 import java.io.File;

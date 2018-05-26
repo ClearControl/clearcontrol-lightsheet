@@ -3,9 +3,8 @@ package clearcontrol.microscope.lightsheet.processor.fusion;
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
-import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
@@ -17,7 +16,7 @@ import coremem.recycling.RecyclerInterface;
 import java.util.Arrays;
 
 /**
- * This generalised fusion scheduler executes the actual fast fusion
+ * This generalised fusion instructions executes the actual fast fusion
  * operation. Depending on how the images were acquired, they might
  * have to be passed differently to the FastFuse engine. Details are
  * available in derived classes.

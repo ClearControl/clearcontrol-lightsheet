@@ -3,11 +3,9 @@ package clearcontrol.devices.stages.kcube.scheduler;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.microscope.lightsheet.state.spatial.PositionListContainer;
-
-import java.util.ArrayList;
 
 /**
  * The SpaceTravelScheduler allows to move the FOV between timepoints along a given travel route. It works by moving

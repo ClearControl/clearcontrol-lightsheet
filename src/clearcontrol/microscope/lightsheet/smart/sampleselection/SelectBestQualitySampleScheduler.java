@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.smart.sampleselection;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;

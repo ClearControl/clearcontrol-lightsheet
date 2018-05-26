@@ -1,11 +1,8 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
-
-import java.text.DecimalFormat;
-import java.util.Random;
 
 public class SequentialZernikesScheduler extends SchedulerBase implements
         LoggingFeature {

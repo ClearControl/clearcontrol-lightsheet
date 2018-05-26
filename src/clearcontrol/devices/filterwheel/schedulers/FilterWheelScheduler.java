@@ -1,8 +1,8 @@
 package clearcontrol.devices.filterwheel.schedulers;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.devices.optomech.filterwheels.FilterWheelDeviceInterface;
 
 public class FilterWheelScheduler extends SchedulerBase implements

@@ -1,12 +1,10 @@
 package clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers;
 
-import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
@@ -16,12 +14,10 @@ import de.mpicbg.rhaase.spimcat.postprocessing.fijiplugins.projection.presentati
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import net.imglib2.RandomAccessibleInterval;
 
 import java.awt.*;
 import java.io.File;
 import java.time.Duration;
-import java.util.Date;
 
 /**
  * HalfStackMaxProjectionScheduler

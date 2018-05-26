@@ -2,12 +2,9 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
-import org.ejml.data.DenseMatrix64F;
 
-import java.text.DecimalFormat;
 import java.util.Random;
 
 public class RandomZernikesScheduler  extends SchedulerBase implements

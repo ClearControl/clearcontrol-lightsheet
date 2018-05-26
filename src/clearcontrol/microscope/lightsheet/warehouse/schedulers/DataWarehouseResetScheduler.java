@@ -2,11 +2,11 @@ package clearcontrol.microscope.lightsheet.warehouse.schedulers;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerBase;
+import clearcontrol.instructions.SchedulerInterface;
 
 /**
- * This scheduler recycles or disposes all DataContainers in the
+ * This instructions recycles or disposes all DataContainers in the
  * DataWarehouse.
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)

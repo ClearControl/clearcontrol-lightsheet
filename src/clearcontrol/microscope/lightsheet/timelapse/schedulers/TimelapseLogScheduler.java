@@ -1,17 +1,11 @@
 package clearcontrol.microscope.lightsheet.timelapse.schedulers;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerBase;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
+import clearcontrol.instructions.SchedulerBase;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
-import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
-import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 /**
  * TimelapseLogScheduler
