@@ -27,9 +27,9 @@ import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.state.schedulers.ChangeExposureTimeInstruction;
+import clearcontrol.microscope.lightsheet.state.instructions.ChangeExposureTimeInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
-import clearcontrol.microscope.lightsheet.timelapse.containers.SchedulerDurationContainer;
+import clearcontrol.microscope.lightsheet.timelapse.containers.InstructionDurationContainer;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -98,7 +98,7 @@ public class LightSheetMicroscope extends
             MeasurementContainer.class,
             DCTS2DContainer.class,
             SpotCountContainer.class,
-            SchedulerDurationContainer.class,
+            InstructionDurationContainer.class,
             DataContainerInterface.class,
             MirrorModeContainer.class
     }) {

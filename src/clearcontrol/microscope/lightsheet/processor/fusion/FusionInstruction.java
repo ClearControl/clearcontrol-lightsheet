@@ -2,9 +2,8 @@ package clearcontrol.microscope.lightsheet.processor.fusion;
 
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -12,7 +11,6 @@ import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
-import clojure.lang.IFn;
 import coremem.recycling.RecyclerInterface;
 
 import java.util.Arrays;
@@ -26,7 +24,7 @@ import java.util.Arrays;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
-public abstract class FusionInstruction extends LightSheetMicroscopeInstruction implements
+public abstract class FusionInstruction extends LightSheetMicroscopeInstructionBase implements
                                                    LoggingFeature
 {
   private static Object mLock = new Object();

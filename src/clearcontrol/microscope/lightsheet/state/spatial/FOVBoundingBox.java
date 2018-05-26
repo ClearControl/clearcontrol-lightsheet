@@ -1,6 +1,6 @@
 package clearcontrol.microscope.lightsheet.state.spatial;
 
-import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelInstruction;
+import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 
 /**

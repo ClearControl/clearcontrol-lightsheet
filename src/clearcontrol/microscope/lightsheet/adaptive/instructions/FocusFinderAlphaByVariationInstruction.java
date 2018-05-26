@@ -7,8 +7,7 @@ import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.instructions.InstructionBase;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
@@ -27,7 +26,7 @@ import java.util.concurrent.TimeoutException;
  * April 2018
  */
 public class FocusFinderAlphaByVariationInstruction extends
-        LightSheetMicroscopeInstruction implements
+        LightSheetMicroscopeInstructionBase implements
         InstructionInterface,
                                                                 LoggingFeature
 {

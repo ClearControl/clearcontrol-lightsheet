@@ -4,11 +4,10 @@ import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelInstruction;
-import clearcontrol.instructions.InstructionBase;
+import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.stack.StackInterface;
@@ -23,7 +22,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public abstract class SampleSearchInstructionBase extends LightSheetMicroscopeInstruction {
+public abstract class SampleSearchInstructionBase extends LightSheetMicroscopeInstructionBase {
 
     protected BoundedVariable<Double> mStepSizeInMillimetersVariable = new BoundedVariable<Double>("Step size in mm", 0.25, 0.01, Double.MAX_VALUE, 0.001);
     protected SpaceTravelInstruction mSampleCandidates;

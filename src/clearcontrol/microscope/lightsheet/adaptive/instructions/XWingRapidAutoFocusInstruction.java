@@ -1,10 +1,9 @@
 package clearcontrol.microscope.lightsheet.adaptive.instructions;
 
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionInterface;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
 
@@ -17,7 +16,7 @@ import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class XWingRapidAutoFocusInstruction extends LightSheetMicroscopeInstruction {
+public class XWingRapidAutoFocusInstruction extends LightSheetMicroscopeInstructionBase {
     private LightSheetMicroscope mLightSheetMicroscope;
 
     public XWingRapidAutoFocusInstruction(LightSheetMicroscope pLightSheetMicroscope) {

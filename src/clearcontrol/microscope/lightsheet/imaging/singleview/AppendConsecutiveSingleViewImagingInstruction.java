@@ -2,11 +2,10 @@ package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class AppendConsecutiveSingleViewImagingInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
+public class AppendConsecutiveSingleViewImagingInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
     private final int mNumberOfImages;
     private final double mIntervalInSeconds;
     private final int mLightSheetIndex;

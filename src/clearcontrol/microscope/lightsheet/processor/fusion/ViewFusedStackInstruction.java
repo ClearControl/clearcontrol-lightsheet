@@ -3,11 +3,10 @@ package clearcontrol.microscope.lightsheet.processor.fusion;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.gui.video.video3d.Stack3DDisplay;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.InstructionBase;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 
-public class ViewFusedStackInstruction extends LightSheetMicroscopeInstruction implements
+public class ViewFusedStackInstruction extends LightSheetMicroscopeInstructionBase implements
         LoggingFeature
 {
 

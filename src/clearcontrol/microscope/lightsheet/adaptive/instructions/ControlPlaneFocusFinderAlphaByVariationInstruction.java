@@ -3,15 +3,14 @@ package clearcontrol.microscope.lightsheet.adaptive.instructions;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.InstructionBase;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
-public class ControlPlaneFocusFinderAlphaByVariationInstruction extends LightSheetMicroscopeInstruction implements
+public class ControlPlaneFocusFinderAlphaByVariationInstruction extends LightSheetMicroscopeInstructionBase implements
         InstructionInterface,
                                                                LoggingFeature
 {

@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
 
 import clearcontrol.devices.lasers.LaserDeviceInterface;
-import clearcontrol.devices.lasers.schedulers.LaserOnOffInstruction;
-import clearcontrol.devices.lasers.schedulers.LaserPowerInstruction;
+import clearcontrol.devices.lasers.instructions.LaserOnOffInstruction;
+import clearcontrol.devices.lasers.instructions.LaserPowerInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import javafx.application.Application;

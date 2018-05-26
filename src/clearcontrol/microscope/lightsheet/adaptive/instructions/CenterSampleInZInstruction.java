@@ -5,17 +5,16 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
 import ij.ImagePlus;
 import ij.process.ImageStatistics;
 
 public class CenterSampleInZInstruction extends
-        LightSheetMicroscopeInstruction implements
+        LightSheetMicroscopeInstructionBase implements
         InstructionInterface,
         LoggingFeature {
 

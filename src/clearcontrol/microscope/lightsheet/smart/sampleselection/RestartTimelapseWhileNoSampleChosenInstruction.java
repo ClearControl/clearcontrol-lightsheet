@@ -1,9 +1,8 @@
 package clearcontrol.microscope.lightsheet.smart.sampleselection;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelInstruction;
-import clearcontrol.instructions.InstructionBase;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 
 /**
  * RestartTimelapseWhileNoSampleChosenInstruction
@@ -13,7 +12,7 @@ import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstr
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class RestartTimelapseWhileNoSampleChosenInstruction extends LightSheetMicroscopeInstruction {
+public class RestartTimelapseWhileNoSampleChosenInstruction extends LightSheetMicroscopeInstructionBase {
 
     /**
      * INstanciates a virtual device with a given name

@@ -1,9 +1,8 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased;
 
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
@@ -17,7 +16,7 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class GradientBasedZernikeModeOptimizerInstruction extends LightSheetMicroscopeInstruction {
+public class GradientBasedZernikeModeOptimizerInstruction extends LightSheetMicroscopeInstructionBase {
 
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
 

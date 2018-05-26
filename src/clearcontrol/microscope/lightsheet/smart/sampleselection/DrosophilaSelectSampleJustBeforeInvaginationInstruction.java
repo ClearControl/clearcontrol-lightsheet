@@ -3,9 +3,8 @@ package clearcontrol.microscope.lightsheet.smart.sampleselection;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelInstruction;
-import clearcontrol.instructions.InstructionBase;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
@@ -29,7 +28,7 @@ import java.util.Arrays;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class DrosophilaSelectSampleJustBeforeInvaginationInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
+public class DrosophilaSelectSampleJustBeforeInvaginationInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
     private BoundedVariable<Double> mDerivativeFactorVariable = new BoundedVariable<Double>("derivative factor", 3.0, 0.0, Double.MAX_VALUE, 0.01);
 

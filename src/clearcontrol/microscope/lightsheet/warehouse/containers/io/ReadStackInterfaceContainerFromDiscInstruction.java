@@ -2,12 +2,11 @@ package clearcontrol.microscope.lightsheet.warehouse.containers.io;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
@@ -27,7 +26,7 @@ import java.util.Arrays;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
+public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
     String[] mDatasetNames;
 

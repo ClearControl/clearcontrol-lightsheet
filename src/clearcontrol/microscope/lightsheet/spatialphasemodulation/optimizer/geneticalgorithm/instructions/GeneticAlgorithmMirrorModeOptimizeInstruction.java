@@ -3,8 +3,7 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gene
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.InstructionBase;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.Population;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolutionFactory;
@@ -20,7 +19,7 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class GeneticAlgorithmMirrorModeOptimizeInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
+public class GeneticAlgorithmMirrorModeOptimizeInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
     private BoundedVariable<Integer> mNumberOfEpochsPerTimePoint = new BoundedVariable<Integer>("Number of epochs per time point",10, 0, Integer.MAX_VALUE);
     private BoundedVariable<Integer> mPopulationSize = new BoundedVariable<Integer>("Population size",10, 0, Integer.MAX_VALUE);

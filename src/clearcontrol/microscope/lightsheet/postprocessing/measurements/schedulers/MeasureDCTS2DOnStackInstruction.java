@@ -3,9 +3,8 @@ package clearcontrol.microscope.lightsheet.postprocessing.measurements.scheduler
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.devices.stages.BasicStageInterface;
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SliceBySliceDCTS2DContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
@@ -30,7 +29,7 @@ import java.util.Arrays;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class MeasureDCTS2DOnStackInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstruction implements LoggingFeature {
+public class MeasureDCTS2DOnStackInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
     private final Class<T> mClass;
 
     public MeasureDCTS2DOnStackInstruction(Class<T> pClass, LightSheetMicroscope pLightSheetMicroscope) {

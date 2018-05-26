@@ -1,6 +1,6 @@
 package clearcontrol.microscope.lightsheet.adaptive.instructions.gui;
 
-import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelInstruction;
+import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.microscope.lightsheet.state.spatial.PositionListContainer;
 import clearcontrol.microscope.lightsheet.state.spatial.gui.PositionListContainerPanel;
 import javafx.collections.FXCollections;

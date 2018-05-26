@@ -4,12 +4,10 @@ import clearcl.imagej.ClearCLIJ;
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.InstructionBase;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
-import clearcontrol.microscope.timelapse.TimelapseInterface;
 import clearcontrol.stack.StackInterface;
 import ij.IJ;
 import ij.ImagePlus;
@@ -26,7 +24,7 @@ import java.io.File;
  * 05 2018
  */
 public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
-        LightSheetMicroscopeInstruction implements
+        LightSheetMicroscopeInstructionBase implements
         LoggingFeature
 {
     Class mContainerClass;

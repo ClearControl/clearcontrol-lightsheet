@@ -26,7 +26,7 @@ import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
-import clearcontrol.microscope.lightsheet.timelapse.containers.SchedulerDurationContainer;
+import clearcontrol.microscope.lightsheet.timelapse.containers.InstructionDurationContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.state.AcquisitionType;
@@ -269,7 +269,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
       log("Finished " + lNextSchedulerToRun);
 
       // store how long the execution took
-      SchedulerDurationContainer lContainer = new SchedulerDurationContainer(getTimePointCounterVariable().get(), lNextSchedulerToRun, duration);
+      InstructionDurationContainer lContainer = new InstructionDurationContainer(getTimePointCounterVariable().get(), lNextSchedulerToRun, duration);
       mLightSheetMicroscope.getDataWarehouse().put("duration_" + getTimePointCounterVariable().get(), lContainer);
 
       /*

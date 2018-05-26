@@ -3,11 +3,10 @@ package clearcontrol.microscope.lightsheet.adaptive.instructions;
 import clearcl.imagej.ClearCLIJ;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.devices.stages.BasicStageInterface;
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
 import ij.ImagePlus;
@@ -15,7 +14,7 @@ import ij.measure.Measurements;
 import ij.process.ImageStatistics;
 
 public class CenterSampleInXYInstruction extends
-        LightSheetMicroscopeInstruction implements
+        LightSheetMicroscopeInstructionBase implements
         InstructionInterface,
         LoggingFeature {
 

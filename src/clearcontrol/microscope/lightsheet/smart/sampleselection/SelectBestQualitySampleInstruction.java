@@ -1,10 +1,9 @@
 package clearcontrol.microscope.lightsheet.smart.sampleselection;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelInstruction;
-import clearcontrol.instructions.InstructionBase;
+import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class SelectBestQualitySampleInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
+public class SelectBestQualitySampleInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
     /**
      * INstanciates a virtual device with a given name

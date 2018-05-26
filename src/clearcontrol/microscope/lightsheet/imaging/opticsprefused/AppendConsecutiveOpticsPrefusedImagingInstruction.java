@@ -5,7 +5,7 @@ import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscInstruction;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class AppendConsecutiveOpticsPrefusedImagingInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
+public class AppendConsecutiveOpticsPrefusedImagingInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
     private final int mNumberOfImages;
     private final double mIntervalInSeconds;
 

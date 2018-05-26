@@ -8,16 +8,14 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotCountContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotsImageContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
-import clojure.lang.IFn;
 import de.mpicbg.spimcat.spotdetection.GPUSpotDetection;
 
 import java.io.BufferedWriter;
@@ -32,7 +30,7 @@ import java.io.IOException;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstruction implements LoggingFeature {
+public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
     private final Class<T> mClass;
 
     BoundedVariable<Double> mThreshold = new BoundedVariable<Double>("threshold", 200.0, 0.0, Double.MAX_VALUE, 0.1);

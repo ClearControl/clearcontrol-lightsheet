@@ -11,7 +11,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix6
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreInstruction;
+import clearcontrol.microscope.lightsheet.state.instructions.AcquisitionStateBackupRestoreInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.stack.StackInterface;
