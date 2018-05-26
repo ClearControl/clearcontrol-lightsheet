@@ -26,7 +26,7 @@ import clearcontrol.devices.stages.kcube.sim.SimulatedBasicStageDevice;
 import clearcontrol.devices.stages.kcube.sim.SimulatedThreeAxesStageDevice;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
-import clearcontrol.microscope.lightsheet.adaptive.schedulers.*;
+import clearcontrol.microscope.lightsheet.adaptive.instructions.*;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
@@ -52,11 +52,11 @@ import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackInstruc
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
-import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DInstruction;
-import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DInstruction;
+import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DInstructionBase;
+import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DInstructionBase;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.SelectBestQualitySampleInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.scheduler.GeneticAlgorithmMirrorModeOptimizeInstruction;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.instructions.GeneticAlgorithmMirrorModeOptimizeInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LoadMirrorModesFromFolderInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler.LogMirrorZernikeFactorsToFileInstruction;
@@ -75,8 +75,8 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.schedulers.TimelapseStopInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscInstruction;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetInstruction;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseResetInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
@@ -201,8 +201,8 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new SimulatedBasicStageDevice("Y"));
       addDevice(0, new SimulatedBasicStageDevice("Z"));
 
-      addDevice(0, new CenterSampleInXYInstruction());
-      addDevice(0, new CenterSampleInZInstruction());
+      addDevice(0, new CenterSampleInXYInstruction(this));
+      addDevice(0, new CenterSampleInZInstruction(this));
     }
 
 
@@ -369,17 +369,17 @@ public class SimulatedLightSheetMicroscope extends
       SpatialPhaseModulatorDeviceSimulator lMirror = new SpatialPhaseModulatorDeviceSimulator("SimDM", 11, 1, 66);
       addDevice(0, lMirror);
 
-      GeneticAlgorithmMirrorModeOptimizeInstruction lMirrorOptimizer = new GeneticAlgorithmMirrorModeOptimizeInstruction(lMirror);
+      GeneticAlgorithmMirrorModeOptimizeInstruction lMirrorOptimizer = new GeneticAlgorithmMirrorModeOptimizeInstruction(lMirror, this);
       addDevice(0, lMirrorOptimizer);
 
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 3));
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 4));
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 5));
 
-      LogMirrorZernikeFactorsToFileInstruction lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileInstruction(lMirror);
+      LogMirrorZernikeFactorsToFileInstruction lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileInstruction(lMirror, this);
       addDevice(0, lMirrorModeZernikeFactorsSaver);
 
-      addDevice(0, new LoadMirrorModesFromFolderInstruction(lMirror));
+      addDevice(0, new LoadMirrorModesFromFolderInstruction(lMirror, this));
 
       SequentialZernikesInstruction lSequentialZernikesScheduler =
               new SequentialZernikesInstruction(lMirror,1,0.0,5.0,-5.0);
@@ -418,12 +418,12 @@ public class SimulatedLightSheetMicroscope extends
       lAcquisitionStateManager.setCurrentState(lAcquisitionState);
       addInteractiveAcquisition();
 
-      addDevice(0, new AcquisitionStateBackupRestoreInstruction(true));
-      addDevice(0, new AcquisitionStateBackupRestoreInstruction(false));
+      addDevice(0, new AcquisitionStateBackupRestoreInstruction(true, this));
+      addDevice(0, new AcquisitionStateBackupRestoreInstruction(false, this));
 
-      addDevice(0, new AcquisitionStateResetInstruction());
+      addDevice(0, new AcquisitionStateResetInstruction(this));
 
-      addDevice(0, new InterpolatedAcquisitionStateLogInstruction());
+      addDevice(0, new InterpolatedAcquisitionStateLogInstruction(this));
 
 
 
@@ -447,24 +447,24 @@ public class SimulatedLightSheetMicroscope extends
 
 
     if (getNumberOfLightSheets() > 1) {
-      addDevice(0, new InterleavedAcquisitionInstruction());
-      addDevice(0, new InterleavedFusionInstruction());
-      addDevice(0, new WriteInterleavedRawDataToDiscInstruction(getNumberOfDetectionArms()));
-      addDevice(0, new WriteFusedImageAsRawToDiscInstruction("interleaved"));
-      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("interleaved"));
-      addDevice(0, new DropOldestStackInterfaceContainerInstruction(InterleavedImageDataContainer.class));
-      addDevice(0, new MaxProjectionInstruction<InterleavedImageDataContainer>(InterleavedImageDataContainer.class));
+      addDevice(0, new InterleavedAcquisitionInstruction(this));
+      addDevice(0, new InterleavedFusionInstruction(this));
+      addDevice(0, new WriteInterleavedRawDataToDiscInstruction(this));
+      addDevice(0, new WriteFusedImageAsRawToDiscInstruction("interleaved", this));
+      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("interleaved", this));
+      addDevice(0, new DropOldestStackInterfaceContainerInstruction(InterleavedImageDataContainer.class, getDataWarehouse()));
+      addDevice(0, new MaxProjectionInstruction<InterleavedImageDataContainer>(InterleavedImageDataContainer.class, this));
 
 
       SequentialAcquisitionInstruction
-          lSequentialAcquisitionScheduler = new SequentialAcquisitionInstruction();
-      SequentialFusionInstruction lSequentialFusionScheduler = new SequentialFusionInstruction();
-      WriteFusedImageAsRawToDiscInstruction lWriteSequentialFusedImageToDiscScheduler = new WriteFusedImageAsRawToDiscInstruction("sequential");
-      DropOldestStackInterfaceContainerInstruction lDropContainerScheduler = new DropOldestStackInterfaceContainerInstruction(SequentialImageDataContainer.class);
-      DropOldestStackInterfaceContainerInstruction lDropFusedContainerScheduler = new DropOldestStackInterfaceContainerInstruction(FusedImageDataContainer.class);
+          lSequentialAcquisitionScheduler = new SequentialAcquisitionInstruction(this);
+      SequentialFusionInstruction lSequentialFusionScheduler = new SequentialFusionInstruction(this);
+      WriteFusedImageAsRawToDiscInstruction lWriteSequentialFusedImageToDiscScheduler = new WriteFusedImageAsRawToDiscInstruction("sequential", this);
+      DropOldestStackInterfaceContainerInstruction lDropContainerScheduler = new DropOldestStackInterfaceContainerInstruction(SequentialImageDataContainer.class, getDataWarehouse());
+      DropOldestStackInterfaceContainerInstruction lDropFusedContainerScheduler = new DropOldestStackInterfaceContainerInstruction(FusedImageDataContainer.class, getDataWarehouse());
 
-      MaxProjectionInstruction<FusedImageDataContainer> lFusedMaxProjectionScheduler =  new MaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class);
-      ViewFusedStackInstruction lViewFusedStackScheduler = new ViewFusedStackInstruction();
+      MaxProjectionInstruction<FusedImageDataContainer> lFusedMaxProjectionScheduler =  new MaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this);
+      ViewFusedStackInstruction lViewFusedStackScheduler = new ViewFusedStackInstruction(this);
 
       if (lTimelapse instanceof LightSheetTimelapse)
       {
@@ -476,22 +476,22 @@ public class SimulatedLightSheetMicroscope extends
       }
       addDevice(0, lSequentialAcquisitionScheduler);
       addDevice(0, lSequentialFusionScheduler);
-      addDevice(0, new WriteSequentialRawDataToDiscInstruction(getNumberOfDetectionArms(), getNumberOfLightSheets()));
+      addDevice(0, new WriteSequentialRawDataToDiscInstruction(this));
       addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
-      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("sequential"));
+      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("sequential", this));
       addDevice(0, lDropContainerScheduler);
-      addDevice(0, new MaxProjectionInstruction<SequentialImageDataContainer>(SequentialImageDataContainer.class));
+      addDevice(0, new MaxProjectionInstruction<SequentialImageDataContainer>(SequentialImageDataContainer.class, this));
 
-      addDevice(0, new OpticsPrefusedAcquisitionInstruction());
-      addDevice(0, new OpticsPrefusedFusionInstruction());
-      addDevice(0, new WriteOpticsPrefusedRawDataAsRawToDiscInstruction(getNumberOfDetectionArms()));
-      addDevice(0, new WriteFusedImageAsRawToDiscInstruction("opticsprefused"));
-      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("opticsprefused"));
-      addDevice(0, new DropOldestStackInterfaceContainerInstruction(OpticsPrefusedImageDataContainer.class));
-      addDevice(0, new MaxProjectionInstruction<OpticsPrefusedImageDataContainer>(OpticsPrefusedImageDataContainer.class));
+      addDevice(0, new OpticsPrefusedAcquisitionInstruction(this));
+      addDevice(0, new OpticsPrefusedFusionInstruction(this));
+      addDevice(0, new WriteOpticsPrefusedRawDataAsRawToDiscInstruction(this));
+      addDevice(0, new WriteFusedImageAsRawToDiscInstruction("opticsprefused", this));
+      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("opticsprefused", this));
+      addDevice(0, new DropOldestStackInterfaceContainerInstruction(OpticsPrefusedImageDataContainer.class, getDataWarehouse()));
+      addDevice(0, new MaxProjectionInstruction<OpticsPrefusedImageDataContainer>(OpticsPrefusedImageDataContainer.class, this));
 
-      addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,true));
-      addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,false));
+      addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,true, this));
+      addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,false, this));
 
 
 
@@ -501,7 +501,7 @@ public class SimulatedLightSheetMicroscope extends
     }
 
 
-    MaxProjectionInstruction<StackInterfaceContainer> lStackMaxProjectionScheduler = new MaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class);
+    MaxProjectionInstruction<StackInterfaceContainer> lStackMaxProjectionScheduler = new MaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this);
 
     String[] lOpticPrefusedStackKeys = new String[getNumberOfDetectionArms()];
     String[] lInterleavedStackKeys = new String[getNumberOfDetectionArms()];
@@ -510,11 +510,11 @@ public class SimulatedLightSheetMicroscope extends
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
       for (int l = 0; l < getNumberOfLightSheets(); l++) {
         SingleViewAcquisitionInstruction
-            lSingleViewAcquisitionScheduler = new SingleViewAcquisitionInstruction(c, l);
+            lSingleViewAcquisitionScheduler = new SingleViewAcquisitionInstruction(c, l, this);
         addDevice(0, lSingleViewAcquisitionScheduler);
 
-        ViewSingleLightSheetStackInstruction lViewSingleLightSheetStackScheduler = new ViewSingleLightSheetStackInstruction(c, l);
-        WriteSingleLightSheetImageAsRawToDiscInstruction lWriteSingleLightSheetImageToDiscScheduler = new WriteSingleLightSheetImageAsRawToDiscInstruction(c, l);
+        ViewSingleLightSheetStackInstruction lViewSingleLightSheetStackScheduler = new ViewSingleLightSheetStackInstruction(c, l, this);
+        WriteSingleLightSheetImageAsRawToDiscInstruction lWriteSingleLightSheetImageToDiscScheduler = new WriteSingleLightSheetImageAsRawToDiscInstruction(c, l, this);
 
 
         if (lTimelapse instanceof LightSheetTimelapse && ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().size() == 0)
@@ -528,32 +528,32 @@ public class SimulatedLightSheetMicroscope extends
         addDevice(0, lViewSingleLightSheetStackScheduler);
         addDevice(0, lWriteSingleLightSheetImageToDiscScheduler);
 
-        addDevice(0, new ExposureModulatedAcquisitionInstruction(c, l));
+        addDevice(0, new ExposureModulatedAcquisitionInstruction(c, l, this));
         lSequentialStackKeys[c * getNumberOfLightSheets() + l] = "C" + c + "L" + l;
-        addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"C" + c + "L" + l}));
+        addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"C" + c + "L" + l}, this));
       }
       lOpticPrefusedStackKeys[c] = "C" + c + "opticsprefused";
       lInterleavedStackKeys[c] = "C" + c + "interleaved";
     }
 
-    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"default"}));
-    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"sequential"}));
-    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"interleaved"}));
-    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"opticsprefused"}));
-    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lOpticPrefusedStackKeys));
-    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lSequentialStackKeys));
-    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lInterleavedStackKeys));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"default"}, this));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"sequential"}, this));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"interleaved"}, this));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"opticsprefused"}, this));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lOpticPrefusedStackKeys, this));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lSequentialStackKeys, this));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lInterleavedStackKeys, this));
 
     addDevice(0, lStackMaxProjectionScheduler);
-    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,true));
-    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,false));
+    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,true, this));
+    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,false, this));
 
 
-    addDevice(0, new CountsSpotsInstruction<FusedImageDataContainer>(FusedImageDataContainer.class));
-    addDevice(0, new CountsSpotsInstruction<StackInterfaceContainer>(StackInterfaceContainer.class));
+    addDevice(0, new CountsSpotsInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
+    addDevice(0, new CountsSpotsInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
 
-    addDevice(0, new MeasureDCTS2DOnStackInstruction<FusedImageDataContainer>(FusedImageDataContainer.class));
-    addDevice(0, new MeasureDCTS2DOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class));
+    addDevice(0, new MeasureDCTS2DOnStackInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
+    addDevice(0, new MeasureDCTS2DOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
 
     addDevice(0, new SpotShiftDeterminationInstruction(this));
 
@@ -595,66 +595,66 @@ public class SimulatedLightSheetMicroscope extends
           addDevice(0, new FocusFinderZInstruction(
               l,
               d,
-              cpi));
+              cpi, this));
           addDevice(0, new FocusFinderAlphaByVariationInstruction(
               l,
               d,
-              cpi));
+              cpi, this));
         }
-        addDevice(0, new ControlPlaneFocusFinderAlphaByVariationInstruction(d, cpi));
-        addDevice(0, new ControlPlaneFocusFinderZInstruction(d, cpi));
+        addDevice(0, new ControlPlaneFocusFinderAlphaByVariationInstruction(d, cpi, this));
+        addDevice(0, new ControlPlaneFocusFinderZInstruction(d, cpi, this));
       }
     }
 
-    addDevice(0, new XWingRapidAutoFocusInstruction());
-    addDevice(0, new SpaceTravelInstruction());
+    addDevice(0, new XWingRapidAutoFocusInstruction(this));
+    addDevice(0, new SpaceTravelInstruction(this));
 
     addDevice(0, new FOVBoundingBox(this));
-    addDevice(0, new SampleSearch1DInstruction());
-    addDevice(0, new SampleSearch2DInstruction());
-    addDevice(0, new SelectBestQualitySampleInstruction());
-    addDevice(0, new DrosophilaSelectSampleJustBeforeInvaginationInstruction());
+    addDevice(0, new SampleSearch1DInstructionBase(this));
+    addDevice(0, new SampleSearch2DInstructionBase(this));
+    addDevice(0, new SelectBestQualitySampleInstruction(this));
+    addDevice(0, new DrosophilaSelectSampleJustBeforeInvaginationInstruction(this));
     addDevice(0, new RestartTimelapseWhileNoSampleChosenInstruction(this));
 
-    addDevice(0, new AppendConsecutiveHyperDriveImagingInstruction(100, 5));
-    addDevice(0, new AppendConsecutiveHyperDriveImagingInstruction(100, 10));
-    addDevice(0, new AppendConsecutiveHyperDriveImagingInstruction(100, 15));
+    addDevice(0, new AppendConsecutiveHyperDriveImagingInstruction(100, 5, this));
+    addDevice(0, new AppendConsecutiveHyperDriveImagingInstruction(100, 10, this));
+    addDevice(0, new AppendConsecutiveHyperDriveImagingInstruction(100, 15, this));
 
-    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(10, 15));
-    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(10, 30));
-    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(30, 30));
-    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(90, 30));
-    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(120, 30));
-    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(30, 60));
-    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(30, 80));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(10, 15, this));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(10, 30, this));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(30, 30, this));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(90, 30, this));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(120, 30, this));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(30, 60, this));
+    addDevice(0, new AppendConsecutiveOpticsPrefusedImagingInstruction(30, 80, this));
 
-    addDevice(0, new AppendConsecutiveInterleavedImagingInstruction(10, 30));
-    addDevice(0, new AppendConsecutiveInterleavedImagingInstruction(10, 60));
-    addDevice(0, new AppendConsecutiveInterleavedImagingInstruction(10, 90));
+    addDevice(0, new AppendConsecutiveInterleavedImagingInstruction(10, 30, this));
+    addDevice(0, new AppendConsecutiveInterleavedImagingInstruction(10, 60, this));
+    addDevice(0, new AppendConsecutiveInterleavedImagingInstruction(10, 90, this));
 
-    addDevice(0, new AppendConsecutiveSequentialImagingInstruction(10, 30));
-    addDevice(0, new AppendConsecutiveSequentialImagingInstruction(10, 60));
-    addDevice(0, new AppendConsecutiveSequentialImagingInstruction(10, 90));
+    addDevice(0, new AppendConsecutiveSequentialImagingInstruction(10, 30, this));
+    addDevice(0, new AppendConsecutiveSequentialImagingInstruction(10, 60, this));
+    addDevice(0, new AppendConsecutiveSequentialImagingInstruction(10, 90, this));
 
-    addDevice(0, new AppendConsecutiveSingleViewImagingInstruction(0,0, 10, 10));
-    addDevice(0, new AppendConsecutiveSingleViewImagingInstruction(0,0, 10, 30));
-    addDevice(0, new AppendConsecutiveSingleViewImagingInstruction(0,0, 10, 60));
-
-
-
-    addDevice(0, new AppendConsecutiveHybridImagingInstruction(200, 5, 60));
-    addDevice(0, new AppendConsecutiveHybridImagingInstruction(200, 10, 60));
-    addDevice(0, new AppendConsecutiveHybridImagingInstruction(200, 15, 60));
-    addDevice(0, new AppendConsecutiveHybridImagingInstruction(200, 30, 60));
-
-    addDevice(0, new AppendConsecutiveHybridImagingInstruction(360, 5, 60));
-    addDevice(0, new AppendConsecutiveHybridImagingInstruction(360, 10, 60));
-    addDevice(0, new AppendConsecutiveHybridImagingInstruction(360, 15, 60));
-    addDevice(0, new AppendConsecutiveHybridImagingInstruction(360, 30, 60));
+    addDevice(0, new AppendConsecutiveSingleViewImagingInstruction(0,0, 10, 10, this));
+    addDevice(0, new AppendConsecutiveSingleViewImagingInstruction(0,0, 10, 30, this));
+    addDevice(0, new AppendConsecutiveSingleViewImagingInstruction(0,0, 10, 60, this));
 
 
 
-    addDevice(0, new TimelapseStopInstruction());
+    addDevice(0, new AppendConsecutiveHybridImagingInstruction(200, 5, 60, this));
+    addDevice(0, new AppendConsecutiveHybridImagingInstruction(200, 10, 60, this));
+    addDevice(0, new AppendConsecutiveHybridImagingInstruction(200, 15, 60, this));
+    addDevice(0, new AppendConsecutiveHybridImagingInstruction(200, 30, 60, this));
+
+    addDevice(0, new AppendConsecutiveHybridImagingInstruction(360, 5, 60, this));
+    addDevice(0, new AppendConsecutiveHybridImagingInstruction(360, 10, 60, this));
+    addDevice(0, new AppendConsecutiveHybridImagingInstruction(360, 15, 60, this));
+    addDevice(0, new AppendConsecutiveHybridImagingInstruction(360, 30, 60, this));
+
+
+
+    addDevice(0, new TimelapseStopInstruction(this));
 
     addDevice(0, new ChangeLightSheetWidthInstruction(this, 0));
     addDevice(0, new ChangeLightSheetWidthInstruction(this, 0.15));

@@ -4,9 +4,10 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.gui.video.video3d.Stack3DDisplay;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 
-public class ViewFusedStackInstruction extends InstructionBase implements
+public class ViewFusedStackInstruction extends LightSheetMicroscopeInstruction implements
         LoggingFeature
 {
 
@@ -14,8 +15,8 @@ public class ViewFusedStackInstruction extends InstructionBase implements
      * INstanciates a virtual device with a given name
      *
      */
-    public ViewFusedStackInstruction() {
-        super("Visualisation: View fused stack");
+    public ViewFusedStackInstruction(LightSheetMicroscope pLightSheetMicroscope) {
+        super("Visualisation: View fused stack", pLightSheetMicroscope);
     }
 
     @Override
@@ -25,16 +26,13 @@ public class ViewFusedStackInstruction extends InstructionBase implements
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        if (!(mMicroscope instanceof LightSheetMicroscope)) {
-            return false;
-        }
-        DataWarehouse lDataWarehouse = ((LightSheetMicroscope) mMicroscope).getDataWarehouse();
+        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
         FusedImageDataContainer lContainer = lDataWarehouse.getOldestContainer(FusedImageDataContainer.class);
         if (lContainer == null || !lContainer.isDataComplete()) {
             return false;
         }
 
-        Stack3DDisplay lDisplay = (Stack3DDisplay) mMicroscope.getDevice(Stack3DDisplay.class, 0);
+        Stack3DDisplay lDisplay = (Stack3DDisplay) getLightSheetMicroscope().getDevice(Stack3DDisplay.class, 0);
         if (lDisplay == null) {
             return false;
         }

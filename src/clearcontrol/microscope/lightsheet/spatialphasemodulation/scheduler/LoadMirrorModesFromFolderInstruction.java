@@ -4,6 +4,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
@@ -15,7 +16,7 @@ import java.io.File;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
-public class LoadMirrorModesFromFolderInstruction extends InstructionBase implements
+public class LoadMirrorModesFromFolderInstruction extends LightSheetMicroscopeInstruction implements
                                                                             LoggingFeature
 {
   private Variable<File> mRootFolderVariable =
@@ -24,8 +25,8 @@ public class LoadMirrorModesFromFolderInstruction extends InstructionBase implem
 
   private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
 
-  public LoadMirrorModesFromFolderInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
-    super("Adaptive optics: Load mirror modes sequentially from folder and send to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
+  public LoadMirrorModesFromFolderInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase, LightSheetMicroscope pLightSheetMicroscope) {
+    super("Adaptive optics: Load mirror modes sequentially from folder and send to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName(), pLightSheetMicroscope);
 
     mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
   }
@@ -59,9 +60,8 @@ public class LoadMirrorModesFromFolderInstruction extends InstructionBase implem
 
     File lFile = lFolder.listFiles()[(int)lFileIndex];
 
-    if (mMicroscope instanceof LightSheetMicroscope) {
-      ((LightSheetMicroscope) mMicroscope).getTimelapse().log("Loading " + lFile);
-    }
+    getLightSheetMicroscope().getTimelapse().log("Loading " + lFile);
+
     info("Loading " + lFile);
     DenseMatrix64F lMatrix = new DenseMatrix64FReader(lFile).getMatrix();
 

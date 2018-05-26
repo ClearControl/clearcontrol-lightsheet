@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.adaptive.schedulers.gui;
+package clearcontrol.microscope.lightsheet.adaptive.instructions.gui;
 
 import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelInstruction;
 import clearcontrol.microscope.lightsheet.state.spatial.PositionListContainer;
@@ -7,15 +7,15 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
 
 /**
- * SpaceTravelPathPlanningPanel
+ * SpaceTravelPathInstructionPanel
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class SpaceTravelPathPlanningPanel extends PositionListContainerPanel {
-    public SpaceTravelPathPlanningPanel(SpaceTravelInstruction pSpaceTravelScheduler) {
+public class SpaceTravelPathInstructionPanel extends PositionListContainerPanel {
+    public SpaceTravelPathInstructionPanel(SpaceTravelInstruction pSpaceTravelScheduler) {
         super(pSpaceTravelScheduler.getTravelPathList());
 
         PositionListContainer lTravelPathList = pSpaceTravelScheduler.getTravelPathList();

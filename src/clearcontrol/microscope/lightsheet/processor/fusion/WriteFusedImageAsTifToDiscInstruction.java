@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.processor.fusion;
 
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsTifToDiscInstruction;
 
 /**
@@ -18,8 +19,8 @@ public class WriteFusedImageAsTifToDiscInstruction extends
      *
      * @param pChannelName
      */
-    public WriteFusedImageAsTifToDiscInstruction(String pChannelName)
+    public WriteFusedImageAsTifToDiscInstruction(String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
     {
-        super("IO: Write " + pChannelName + " fused stack as TIF to disc", FusedImageDataContainer.class, new String[]{"fused"}, pChannelName);
+        super("IO: Write " + pChannelName + " fused stack as TIF to disc", FusedImageDataContainer.class, new String[]{"fused"}, pChannelName, pLightSheetMicroscope);
     }
 }

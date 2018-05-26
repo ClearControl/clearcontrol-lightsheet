@@ -1,7 +1,7 @@
-package clearcontrol.microscope.lightsheet.warehouse.schedulers.gui;
+package clearcontrol.microscope.lightsheet.warehouse.instructions.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseResetInstruction;
 import javafx.scene.control.Button;
 
 /**

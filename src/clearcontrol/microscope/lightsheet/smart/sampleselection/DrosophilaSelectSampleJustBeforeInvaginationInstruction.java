@@ -5,6 +5,7 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelInstruction;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
@@ -28,7 +29,7 @@ import java.util.Arrays;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class DrosophilaSelectSampleJustBeforeInvaginationInstruction extends InstructionBase implements LoggingFeature {
+public class DrosophilaSelectSampleJustBeforeInvaginationInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
 
     private BoundedVariable<Double> mDerivativeFactorVariable = new BoundedVariable<Double>("derivative factor", 3.0, 0.0, Double.MAX_VALUE, 0.01);
 
@@ -36,8 +37,8 @@ public class DrosophilaSelectSampleJustBeforeInvaginationInstruction extends Ins
      * INstanciates a virtual device with a given name
      *
      */
-    public DrosophilaSelectSampleJustBeforeInvaginationInstruction() {
-        super("Smart: Select sample just before first cell invagination (Drosophila)");
+    public DrosophilaSelectSampleJustBeforeInvaginationInstruction(LightSheetMicroscope pLightSheetMicroscope) {
+        super("Smart: Select sample just before first cell invagination (Drosophila)", pLightSheetMicroscope);
     }
 
     @Override
@@ -47,26 +48,20 @@ public class DrosophilaSelectSampleJustBeforeInvaginationInstruction extends Ins
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        if (!(mMicroscope instanceof LightSheetMicroscope)) {
-            warning("I need a LightSheetMicroscope!");
-            return false;
-        }
-
-        LightSheetMicroscope lLightSheetMicroscope = (LightSheetMicroscope)mMicroscope;
-        DataWarehouse lDataWarehouse = lLightSheetMicroscope.getDataWarehouse();
+        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
 
         ArrayList<DCTS2DContainer> lQualityInSpaceList = lDataWarehouse.getContainers(DCTS2DContainer.class, true);
 
         if (lQualityInSpaceList.size() == 0) {
-            lLightSheetMicroscope.getTimelapse().log("No measurements found. Measure DCTS2D before asking me where the best sample is.");
+            getLightSheetMicroscope().getTimelapse().log("No measurements found. Measure DCTS2D before asking me where the best sample is.");
             warning("No measurements found. Measure DCTS2D before asking me where the best sample is.");
             return false;
         }
 
-        SpaceTravelInstruction lSpaceTravelScheduler = lLightSheetMicroscope.getDevice(SpaceTravelInstruction.class, 0);
+        SpaceTravelInstruction lSpaceTravelScheduler = getLightSheetMicroscope().getDevice(SpaceTravelInstruction.class, 0);
         ArrayList<Position> lPositionList = lSpaceTravelScheduler.getTravelPathList();
         if (lPositionList.size() < 2) {
-            lLightSheetMicroscope.getTimelapse().log("There is no decision to make. Leaving.");
+            getLightSheetMicroscope().getTimelapse().log("There is no decision to make. Leaving.");
             info("There is no decision to make. Leaving.");
             return true;
         }
@@ -94,11 +89,11 @@ public class DrosophilaSelectSampleJustBeforeInvaginationInstruction extends Ins
         for (int i = 0; i < qualityMeasurementSizes.length; i++) {
             maxTimePoints = Math.min(maxTimePoints, qualityMeasurementSizes[i]);
 
-            lLightSheetMicroscope.getTimelapse().log("Q[" + i  +"]: " + Arrays.toString(qualityMeasurementSizes));
+            getLightSheetMicroscope().getTimelapse().log("Q[" + i  +"]: " + Arrays.toString(qualityMeasurementSizes));
         }
 
         if (maxTimePoints < 7) {
-            lLightSheetMicroscope.getTimelapse().log("not enough data yet");
+            getLightSheetMicroscope().getTimelapse().log("not enough data yet");
             info("not enough data yet");
             return false;
         }
@@ -109,15 +104,15 @@ public class DrosophilaSelectSampleJustBeforeInvaginationInstruction extends Ins
                 if (sampleIsJustBeforeInvagination(lQualityGroupedBySample[i], maxTimePoints)) {
                     //lBestPosition = lPositionList.get(i);
                     info("Sample at position " + lPositionList.get(i) + " is apparently undergoing invagiation soon!");
-                    lLightSheetMicroscope.getTimelapse().log("Sample at position " + lPositionList.get(i) + " is apparently undergoing invagiation soon!");
+                    getLightSheetMicroscope().getTimelapse().log("Sample at position " + lPositionList.get(i) + " is apparently undergoing invagiation soon!");
                     lChosenPosition = lPositionList.get(i);
                 } else {
                     info("Sample at position " + lPositionList.get(i) + " is NOT undergoing invagiation soon!");
-                    lLightSheetMicroscope.getTimelapse().log("Sample at position " + lPositionList.get(i) + " is NOT undergoing invagiation soon!");
+                    getLightSheetMicroscope().getTimelapse().log("Sample at position " + lPositionList.get(i) + " is NOT undergoing invagiation soon!");
                 }
             } else {
                 info("Sample at position " + lPositionList.get(i) + " has too low quality!");
-                lLightSheetMicroscope.getTimelapse().log("Sample at position " + lPositionList.get(i) + " has too low quality!");
+                getLightSheetMicroscope().getTimelapse().log("Sample at position " + lPositionList.get(i) + " has too low quality!");
             }
         }
 

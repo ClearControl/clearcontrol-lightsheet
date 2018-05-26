@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.warehouse.schedulers;
+package clearcontrol.microscope.lightsheet.warehouse.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
@@ -16,7 +16,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * 05 2018
  */
 public class DropAllContainersOfTypeInstruction extends
-        InstructionBase implements
+        DataWarehouseInstructionBase implements
         InstructionInterface,
         LoggingFeature
 {
@@ -26,9 +26,9 @@ public class DropAllContainersOfTypeInstruction extends
      * INstanciates a virtual device with a given name
      *
      */
-    public DropAllContainersOfTypeInstruction(Class pContainerClassToDrop)
+    public DropAllContainersOfTypeInstruction(Class pContainerClassToDrop, DataWarehouse pDataWarehouse)
     {
-        super("Memory: Recycle all containers of type " + pContainerClassToDrop.getSimpleName());
+        super("Memory: Recycle all containers of type " + pContainerClassToDrop.getSimpleName(), pDataWarehouse);
         mContainerClassToDrop = pContainerClassToDrop;
     }
 
@@ -39,19 +39,15 @@ public class DropAllContainersOfTypeInstruction extends
 
     @Override public boolean enqueue(long pTimePoint)
     {
-        if (mMicroscope instanceof LightSheetMicroscope) {
-            DataWarehouse lWarehouse = ((LightSheetMicroscope) mMicroscope).getDataWarehouse();
-            while (true) {
-                StackInterfaceContainer lContainer = lWarehouse.getOldestContainer(mContainerClassToDrop);
-                if (lContainer == null) {
-                    break;
-                }
-                lWarehouse.disposeContainer(lContainer);
+        DataWarehouse lWarehouse = getDataWarehouse();
+        while (true) {
+            StackInterfaceContainer lContainer = lWarehouse.getOldestContainer(mContainerClassToDrop);
+            if (lContainer == null) {
+                break;
             }
-        } else {
-            warning("I need a LightSheetMicroscope!");
+            lWarehouse.disposeContainer(lContainer);
         }
-        return false;
+        return true;
     }
 }
 

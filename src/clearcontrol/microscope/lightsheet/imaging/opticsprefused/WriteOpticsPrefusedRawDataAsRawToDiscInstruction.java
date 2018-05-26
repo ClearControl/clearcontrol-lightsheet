@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstruction;
 
 /**
@@ -12,14 +13,9 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
 public class WriteOpticsPrefusedRawDataAsRawToDiscInstruction extends
         WriteStackInterfaceContainerAsRawToDiscInstruction
 {
-  /**
-   * INstanciates a virtual device with a given name
-   *
-   * @param pNumberOfDetectionArms
-   */
-  public WriteOpticsPrefusedRawDataAsRawToDiscInstruction(int pNumberOfDetectionArms)
+  public WriteOpticsPrefusedRawDataAsRawToDiscInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("IO: Write optics prefused raw data to disc", OpticsPrefusedImageDataContainer.class, listKeys(pNumberOfDetectionArms), null);
+    super("IO: Write optics prefused raw data to disc", OpticsPrefusedImageDataContainer.class, listKeys(pLightSheetMicroscope.getNumberOfDetectionArms()), null, pLightSheetMicroscope);
   }
 
   private static String[] listKeys(int pNumberOfDetectionArms) {

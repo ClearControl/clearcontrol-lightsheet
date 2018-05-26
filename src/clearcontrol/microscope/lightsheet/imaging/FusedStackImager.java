@@ -80,11 +80,9 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
       break;
     }
 
-    lAcquisitionScheduler.setMicroscope(mLightSheetMicroscope);
     lAcquisitionScheduler.initialize();
     lAcquisitionScheduler.enqueue(0);
 
-    lFusionScheduler.setMicroscope(mLightSheetMicroscope);
     lFusionScheduler.initialize();
     lFusionScheduler.enqueue(0);
 

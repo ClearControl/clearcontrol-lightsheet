@@ -5,6 +5,7 @@ import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
 
@@ -12,34 +13,29 @@ import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * March 2018
  */
-public class AcquisitionStateResetInstruction extends InstructionBase implements
+public class AcquisitionStateResetInstruction extends LightSheetMicroscopeInstruction implements
         InstructionInterface,
                                                                LoggingFeature
 {
-  LightSheetMicroscope mLightSheetMicroscope;
-
   /**
    * INstanciates a virtual device with a given name
    *
    */
-  public AcquisitionStateResetInstruction()
+  public AcquisitionStateResetInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Adaptation: Reset acquisition state");
+    super("Adaptation: Reset acquisition state", pLightSheetMicroscope);
   }
 
   @Override public boolean initialize()
   {
-    if (mMicroscope instanceof LightSheetMicroscope){
-      mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-    }
     return true;
   }
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    InterpolatedAcquisitionState lAcquisitionState = (InterpolatedAcquisitionState)mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+    InterpolatedAcquisitionState lAcquisitionState = (InterpolatedAcquisitionState)getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < mLightSheetMicroscope.getNumberOfLightSheets(); lLightSheetIndex++) {
+    for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
       for (int cpi = 0; cpi < lAcquisitionState.getNumberOfControlPlanes(); cpi++) {
         InterpolationTables it = lAcquisitionState.getInterpolationTables();
         it.set(LightSheetDOF.IZ, cpi, lLightSheetIndex, 0);

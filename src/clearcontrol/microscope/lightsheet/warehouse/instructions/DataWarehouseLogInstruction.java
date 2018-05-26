@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.warehouse.schedulers;
+package clearcontrol.microscope.lightsheet.warehouse.instructions;
 
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -14,13 +14,13 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInte
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class DataWarehouseLogInstruction extends InstructionBase {
+public class DataWarehouseLogInstruction extends DataWarehouseInstructionBase {
     private DataWarehouse mDataWarehouse;
     private LightSheetTimelapse mTimelapse;
     private final LightSheetMicroscope mLightSheetMicroscope;
 
     public DataWarehouseLogInstruction(LightSheetMicroscope pLightSheetMicroscope) {
-        super("IO: Log content of the DataWarehouse");
+        super("IO: Log content of the DataWarehouse", pLightSheetMicroscope.getDataWarehouse());
         mLightSheetMicroscope = pLightSheetMicroscope;
     }
 

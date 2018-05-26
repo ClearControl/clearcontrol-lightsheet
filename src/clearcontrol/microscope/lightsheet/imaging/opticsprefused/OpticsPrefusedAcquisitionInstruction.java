@@ -37,19 +37,15 @@ public class OpticsPrefusedAcquisitionInstruction extends
    * INstanciates a virtual device with a given name
    *
    */
-  public OpticsPrefusedAcquisitionInstruction()
+  public OpticsPrefusedAcquisitionInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Acquisition: optics-prefused");
+    super("Acquisition: optics-prefused", pLightSheetMicroscope);
     mChannelName = "opticsprefused";
   }
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    if (!(mMicroscope instanceof LightSheetMicroscope)) {
-      warning("" + this + " needs a lightsheet microscope!");
-      return false;
-    }
-    mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+    mCurrentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
 
     int lImageWidth = mCurrentState.getImageWidthVariable().get().intValue();
     int lImageHeight = mCurrentState.getImageHeightVariable().get().intValue();
@@ -57,14 +53,10 @@ public class OpticsPrefusedAcquisitionInstruction extends
 
     int lNumberOfImagesToTake = mCurrentState.getNumberOfZPlanesVariable().get().intValue();
 
-    LightSheetMicroscope
-        lLightsheetMicroscope =
-        (LightSheetMicroscope) mMicroscope;
-
     // build a queue
     LightSheetMicroscopeQueue
         lQueue =
-        lLightsheetMicroscope.requestQueue();
+        getLightSheetMicroscope().requestQueue();
 
     // initialize queue
     lQueue.clearQueue();
@@ -73,7 +65,7 @@ public class OpticsPrefusedAcquisitionInstruction extends
     lQueue.setExp(lExposureTimeInSeconds);
 
     // initial position
-    goToInitialPosition(lLightsheetMicroscope,
+    goToInitialPosition(getLightSheetMicroscope(),
                         lQueue,
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
@@ -89,7 +81,7 @@ public class OpticsPrefusedAcquisitionInstruction extends
                                                       lImageCounter);
 
       for (int k = 0; k
-                      < lLightsheetMicroscope.getNumberOfLightSheets(); k++)
+                      < getLightSheetMicroscope().getNumberOfLightSheets(); k++)
       {
 
         lQueue.setI(k, true);
@@ -99,7 +91,7 @@ public class OpticsPrefusedAcquisitionInstruction extends
     }
 
     // back to initial position
-    goToInitialPosition(lLightsheetMicroscope,
+    goToInitialPosition(getLightSheetMicroscope(),
                         lQueue,
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
@@ -107,7 +99,7 @@ public class OpticsPrefusedAcquisitionInstruction extends
     lQueue.setTransitionTime(0.5);
     lQueue.setFinalisationTime(0.005);
 
-    for (int c = 0; c < lLightsheetMicroscope.getNumberOfDetectionArms(); c++)
+    for (int c = 0; c < getLightSheetMicroscope().getNumberOfDetectionArms(); c++)
     {
       StackMetaData
           lMetaData =
@@ -121,7 +113,7 @@ public class OpticsPrefusedAcquisitionInstruction extends
 
       lMetaData.addEntry(MetaDataChannel.Channel, "opticsprefused");
     }
-    lQueue.addVoxelDimMetaData(lLightsheetMicroscope, mCurrentState.getStackZStepVariable().get().doubleValue());
+    lQueue.addVoxelDimMetaData(getLightSheetMicroscope(), mCurrentState.getStackZStepVariable().get().doubleValue());
     lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
                             pTimePoint);
 
@@ -132,7 +124,7 @@ public class OpticsPrefusedAcquisitionInstruction extends
     try
     {
       mTimeStampBeforeImaging = System.nanoTime();
-      lPlayQueueAndWait = lLightsheetMicroscope.playQueueAndWait(lQueue,
+      lPlayQueueAndWait = getLightSheetMicroscope().playQueueAndWait(lQueue,
                                                                           100 + lQueue
                                                                               .getQueueLength(),
                                                                           TimeUnit.SECONDS);
@@ -158,14 +150,14 @@ public class OpticsPrefusedAcquisitionInstruction extends
 
     // store resulting stacks in the DataWarehouse
     OpticsPrefusedImageDataContainer
-        lContainer = new OpticsPrefusedImageDataContainer(mLightSheetMicroscope);
-    for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
+        lContainer = new OpticsPrefusedImageDataContainer(getLightSheetMicroscope());
+    for (int d = 0 ; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++)
     {
-      StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(
+      StackInterface lStack = getLightSheetMicroscope().getCameraStackVariable(
           d).get();
       putStackInContainer("C" + d + "opticsprefused", lStack, lContainer);
     }
-    mLightSheetMicroscope.getDataWarehouse().put("opticsprefused_raw_" + pTimePoint, lContainer);
+    getLightSheetMicroscope().getDataWarehouse().put("opticsprefused_raw_" + pTimePoint, lContainer);
 
     return true;
   }

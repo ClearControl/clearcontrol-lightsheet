@@ -2,30 +2,31 @@ package clearcontrol.microscope.lightsheet.smart.samplesearch;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelInstruction;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 
 import java.util.ArrayList;
 
 /**
- * SampleSearch1DInstruction
+ * SampleSearch1DInstructionBase
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class SampleSearch1DInstruction extends SampleSearchInstruction implements LoggingFeature {
+public class SampleSearch1DInstructionBase extends SampleSearchInstructionBase implements LoggingFeature {
 
 
-    public SampleSearch1DInstruction() {
-        super("Smart: Detect samples along a line in XYZ");
+    public SampleSearch1DInstructionBase(LightSheetMicroscope pLightSheetMicroscope) {
+        super("Smart: Detect samples along a line in XYZ", pLightSheetMicroscope);
     }
 
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        FOVBoundingBox lFOV = mLightSheetMicroscope.getDevice(FOVBoundingBox.class, 0);
+        FOVBoundingBox lFOV = getLightSheetMicroscope().getDevice(FOVBoundingBox.class, 0);
 
         ArrayList<Position> lTravelPathList = lFOV.getTravelPathList();
 
@@ -63,7 +64,7 @@ public class SampleSearch1DInstruction extends SampleSearchInstruction implement
         }
 
 
-        SpaceTravelInstruction lSpaceTravelScheduler = mLightSheetMicroscope.getDevice(SpaceTravelInstruction.class, 0);
+        SpaceTravelInstruction lSpaceTravelScheduler = getLightSheetMicroscope().getDevice(SpaceTravelInstruction.class, 0);
         ArrayList<Position> lDetectedSamplesPositionList = lSpaceTravelScheduler.getTravelPathList();
         lDetectedSamplesPositionList.clear();
 

@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.instructions;
 
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 
 /**
  * LightSheetMicroscopeInstruction
@@ -22,5 +23,9 @@ public abstract class LightSheetMicroscopeInstruction extends InstructionBase {
     public LightSheetMicroscopeInstruction(String pDeviceName, LightSheetMicroscope pLightSheetMicroscope) {
         super(pDeviceName);
         mLightSheetMicroscope = pLightSheetMicroscope;
+    }
+
+    public LightSheetMicroscope getLightSheetMicroscope() {
+        return mLightSheetMicroscope;
     }
 }

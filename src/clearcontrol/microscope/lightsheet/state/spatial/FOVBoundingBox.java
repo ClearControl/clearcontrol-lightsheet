@@ -15,8 +15,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 public class FOVBoundingBox extends SpaceTravelInstruction {
 
     public FOVBoundingBox(LightSheetMicroscope pLightSheetMicroscope) {
-        super("FOV");
-        setMicroscope(pLightSheetMicroscope);
+        super("FOV", pLightSheetMicroscope);
         initialize();
     }
 

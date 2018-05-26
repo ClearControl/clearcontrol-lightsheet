@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.warehouse.schedulers;
+package clearcontrol.microscope.lightsheet.warehouse.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
@@ -15,7 +15,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * April 2018
  */
 public class DropOldestStackInterfaceContainerInstruction extends
-        InstructionBase implements
+        DataWarehouseInstructionBase implements
         InstructionInterface,
                                                                       LoggingFeature
 {
@@ -25,9 +25,9 @@ public class DropOldestStackInterfaceContainerInstruction extends
    * INstanciates a virtual device with a given name
    *
    */
-  public DropOldestStackInterfaceContainerInstruction(Class pContainerClassToDrop)
+  public DropOldestStackInterfaceContainerInstruction(Class pContainerClassToDrop, DataWarehouse pDataWarehouse)
   {
-    super("Memory: Recycle container of type " + pContainerClassToDrop.getSimpleName());
+    super("Memory: Recycle container of type " + pContainerClassToDrop.getSimpleName(), pDataWarehouse);
     mContainerClassToDrop = pContainerClassToDrop;
   }
 
@@ -38,13 +38,9 @@ public class DropOldestStackInterfaceContainerInstruction extends
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    if (mMicroscope instanceof LightSheetMicroscope) {
-      DataWarehouse lWarehouse = ((LightSheetMicroscope) mMicroscope).getDataWarehouse();
-      StackInterfaceContainer lContainer = lWarehouse.getOldestContainer(mContainerClassToDrop);
-      lWarehouse.disposeContainer(lContainer);
-    } else {
-      warning("I need a LightSheetMicroscope!");
-    }
-    return false;
+    DataWarehouse lWarehouse = getDataWarehouse();
+    StackInterfaceContainer lContainer = lWarehouse.getOldestContainer(mContainerClassToDrop);
+    lWarehouse.disposeContainer(lContainer);
+    return true;
   }
 }

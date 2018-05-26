@@ -4,6 +4,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.io.InterpolatedAcquisitionStateWriter;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
@@ -17,7 +18,7 @@ import java.io.File;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
-public class InterpolatedAcquisitionStateLogInstruction extends InstructionBase implements
+public class InterpolatedAcquisitionStateLogInstruction extends LightSheetMicroscopeInstruction implements
         InstructionInterface,
                                                                LoggingFeature
 {
@@ -26,9 +27,9 @@ public class InterpolatedAcquisitionStateLogInstruction extends InstructionBase 
    * INstanciates a virtual device with a given name
    *
    */
-  public InterpolatedAcquisitionStateLogInstruction()
+  public InterpolatedAcquisitionStateLogInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("IO: Log current acquisition state to disc");
+    super("IO: Log current acquisition state to disc", pLightSheetMicroscope);
   }
 
   @Override public boolean initialize()
@@ -38,14 +39,10 @@ public class InterpolatedAcquisitionStateLogInstruction extends InstructionBase 
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    if (!(mMicroscope instanceof LightSheetMicroscope)) {
-      warning("I need a LightSheetMicroscope!");
-      return false;
-    }
     LightSheetTimelapse lTimelapse =
-        (LightSheetTimelapse) mMicroscope.getDevice(LightSheetTimelapse.class, 0);
+        (LightSheetTimelapse) getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0);
 
-    InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState)(mMicroscope.getAcquisitionStateManager().getCurrentState());
+    InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState)(getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState());
 
     File tempFile = new File(lTimelapse.getWorkingDirectory(), "state_t" + pTimePoint + ".acqstate");
     System.out.println(tempFile);

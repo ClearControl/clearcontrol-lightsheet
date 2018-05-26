@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.adaptive.schedulers;
+package clearcontrol.microscope.lightsheet.adaptive.instructions;
 
 import clearcl.imagej.ClearCLIJ;
 import clearcontrol.core.log.LoggingFeature;
@@ -8,16 +8,17 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
 import ij.ImagePlus;
 import ij.process.ImageStatistics;
 
 public class CenterSampleInZInstruction extends
-        InstructionBase implements
+        LightSheetMicroscopeInstruction implements
         InstructionInterface,
         LoggingFeature {
-    private LightSheetMicroscope mLightSheetMicroscope;
+
     private InterpolatedAcquisitionState mInterpolatedAcquisitionState;
 
     // in wich range might the sample be located?
@@ -30,21 +31,19 @@ public class CenterSampleInZInstruction extends
     BoundedVariable<Integer> mNumberOfStepsVariable = new BoundedVariable<Integer>("number of steps", 30, -Integer.MAX_VALUE, Integer.MAX_VALUE, 1);
 
 
-    public CenterSampleInZInstruction() {
-        super("Smart: Center sample in Z");
+    public CenterSampleInZInstruction(LightSheetMicroscope pLightSheetMicroscope) {
+        super("Smart: Center sample in Z", pLightSheetMicroscope);
     }
 
     @Override
     public boolean initialize() {
-        if (mMicroscope instanceof LightSheetMicroscope){
-            mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-            mInterpolatedAcquisitionState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+        mInterpolatedAcquisitionState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
 
-            double pCenterFOV = (mInterpolatedAcquisitionState.getStackZHighVariable().get().doubleValue() + mInterpolatedAcquisitionState.getStackZLowVariable().get().doubleValue()) / 2.0;
+        double pCenterFOV = (mInterpolatedAcquisitionState.getStackZHighVariable().get().doubleValue() + mInterpolatedAcquisitionState.getStackZLowVariable().get().doubleValue()) / 2.0;
 
-            mSearchRangeMinZVariable.set(pCenterFOV - mSearchRangeZVariable.get() / 2.0);
-            mSearchRangeMinZVariable.set(pCenterFOV + mSearchRangeZVariable.get() / 2.0);
-        }
+        mSearchRangeMinZVariable.set(pCenterFOV - mSearchRangeZVariable.get() / 2.0);
+        mSearchRangeMinZVariable.set(pCenterFOV + mSearchRangeZVariable.get() / 2.0);
+
         return true;
     }
 
@@ -55,7 +54,7 @@ public class CenterSampleInZInstruction extends
 
         BasicStageInterface lStageZ = null;
 
-        for (BasicStageInterface lStage : mLightSheetMicroscope.getDevices(BasicStageInterface.class)) {
+        for (BasicStageInterface lStage : getLightSheetMicroscope().getDevices(BasicStageInterface.class)) {
             if (lStage.toString().contains("Z")) {
                 lStageZ = lStage;
             }
@@ -67,7 +66,7 @@ public class CenterSampleInZInstruction extends
 
         double lZ = (mInterpolatedAcquisitionState.getStackZLowVariable().get().doubleValue() + mInterpolatedAcquisitionState.getStackZHighVariable().get().doubleValue()) / 2;
 
-        SingleViewPlaneImager imager = new SingleViewPlaneImager(mLightSheetMicroscope, (int) lZ);
+        SingleViewPlaneImager imager = new SingleViewPlaneImager(getLightSheetMicroscope(), (int) lZ);
         imager.setImageHeight(2048);
         imager.setImageWidth(2048);
         imager.setExposureTimeInSeconds(0.02);

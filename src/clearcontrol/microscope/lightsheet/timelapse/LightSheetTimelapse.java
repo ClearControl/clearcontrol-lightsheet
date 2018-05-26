@@ -258,7 +258,6 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
       if (!mInitializedSchedulerList.contains(lNextSchedulerToRun)) {
         //log( "Initializing " + lNextSchedulerToRun);
-        lNextSchedulerToRun.setMicroscope(getMicroscope());
         lNextSchedulerToRun.initialize();
         mInitializedSchedulerList.add(lNextSchedulerToRun);
       }

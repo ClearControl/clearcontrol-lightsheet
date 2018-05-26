@@ -5,6 +5,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SliceBySliceDCTS2DContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
@@ -29,11 +30,11 @@ import java.util.Arrays;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class MeasureDCTS2DOnStackInstruction<T extends StackInterfaceContainer> extends InstructionBase implements LoggingFeature {
+public class MeasureDCTS2DOnStackInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstruction implements LoggingFeature {
     private final Class<T> mClass;
 
-    public MeasureDCTS2DOnStackInstruction(Class<T> pClass) {
-        super("Post-processing: DCTS2D measurement for " + pClass.getSimpleName());
+    public MeasureDCTS2DOnStackInstruction(Class<T> pClass, LightSheetMicroscope pLightSheetMicroscope) {
+        super("Post-processing: DCTS2D measurement for " + pClass.getSimpleName(), pLightSheetMicroscope);
         mClass = pClass;
     }
 
@@ -45,22 +46,15 @@ public class MeasureDCTS2DOnStackInstruction<T extends StackInterfaceContainer> 
 
     @Override
     public boolean enqueue(long pTimePoint) {
-
-        if (!(mMicroscope instanceof LightSheetMicroscope)) {
-            warning("I need a LightSheetMicroscope!");
-            return false;
-        }
-
         // Read oldest image from the warehouse
-        final LightSheetMicroscope lLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-        DataWarehouse lDataWarehouse = lLightSheetMicroscope.getDataWarehouse();
+        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
 
         T lContainer = lDataWarehouse.getOldestContainer(mClass);
 
         String key = lContainer.keySet().iterator().next();
         StackInterface lStack = lContainer.get(key);
 
-        String targetFolder = lLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
+        String targetFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
         long lTimePoint = lContainer.getTimepoint();
         int lDigits = 6;
 
@@ -75,7 +69,7 @@ public class MeasureDCTS2DOnStackInstruction<T extends StackInterfaceContainer> 
             double lY = 0;
             double lZ = 0;
 
-            for (BasicStageInterface lStage : lLightSheetMicroscope.getDevices(BasicStageInterface.class)) {
+            for (BasicStageInterface lStage : getLightSheetMicroscope().getDevices(BasicStageInterface.class)) {
                 if (lStage.toString().contains("X")) {
                     lX = lStage.getPositionVariable().get();
                 }
@@ -90,8 +84,8 @@ public class MeasureDCTS2DOnStackInstruction<T extends StackInterfaceContainer> 
             DCTS2DContainer lDCTS2DContainer = new DCTS2DContainer(pTimePoint, lX, lY, lZ, lMeanDCTS2DQuality);
             SliceBySliceDCTS2DContainer lSliceBySliceDCTS2DContainer = new SliceBySliceDCTS2DContainer(pTimePoint, lX, lY, lZ, lQualityPerslice);
 
-            lLightSheetMicroscope.getDataWarehouse().put("DCTS2D_" + pTimePoint, lDCTS2DContainer);
-            lLightSheetMicroscope.getDataWarehouse().put("SliceBySliceDCTS2D_" + pTimePoint, lSliceBySliceDCTS2DContainer);
+            getLightSheetMicroscope().getDataWarehouse().put("DCTS2D_" + pTimePoint, lDCTS2DContainer);
+            getLightSheetMicroscope().getDataWarehouse().put("SliceBySliceDCTS2D_" + pTimePoint, lSliceBySliceDCTS2DContainer);
 
             String headline = "t\tX\tY\tZ\tavgDCTS2D\n";
             String resultTableLine = pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" + lMeanDCTS2DQuality + "\n" ;

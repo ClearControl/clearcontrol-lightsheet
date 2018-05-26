@@ -66,7 +66,6 @@ public class SingleViewStackImager implements ImagerInterface,
       return null;
     }
 
-    lAcquisitionScheduler.setMicroscope(mLightSheetMicroscope);
     lAcquisitionScheduler.initialize();
     lAcquisitionScheduler.enqueue(0);
 

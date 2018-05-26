@@ -7,6 +7,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
@@ -26,7 +27,7 @@ import java.util.Arrays;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class ReadStackInterfaceContainerFromDiscInstruction extends InstructionBase implements LoggingFeature {
+public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
 
     String[] mDatasetNames;
 
@@ -34,7 +35,6 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends InstructionB
     private Variable<File> mRootFolderVariable =
             new Variable("RootFolder",
                     (Object) null);
-    private LightSheetMicroscope mLightSheetMicroscope;
 
     private long mReadTimePoint = 0;
 
@@ -42,31 +42,19 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends InstructionB
      * INstanciates a virtual device with a given name
      *
      */
-    public ReadStackInterfaceContainerFromDiscInstruction(String[] pDatasetNames) {
-        super("IO: Read stacks from disc " + Arrays.toString(pDatasetNames));
+    public ReadStackInterfaceContainerFromDiscInstruction(String[] pDatasetNames, LightSheetMicroscope pLightSheetMicroscope) {
+        super("IO: Read stacks from disc " + Arrays.toString(pDatasetNames), pLightSheetMicroscope);
         mDatasetNames = pDatasetNames;
     }
 
     @Override
     public boolean initialize() {
-
-        if (mMicroscope instanceof LightSheetMicroscope) {
-            mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-        }
-
         mReadTimePoint = 0;
-
         return true;
     }
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        if (mLightSheetMicroscope == null) {
-            warning("I need a LightSheetMicroscope!");
-
-            return false;
-        }
-
         File lRootFolder = getRootFolderVariable().get();
 
         String lDatasetname = lRootFolder.getName();
@@ -85,19 +73,19 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends InstructionB
             lContainer = new FusedImageDataContainer(pTimePoint);
             lContainerWarehouseKey = "fused_" + pTimePoint;
         } else if (mDatasetNames[0].contains("opticsprefused")) {
-            lContainer = new OpticsPrefusedImageDataContainer(mLightSheetMicroscope);
+            lContainer = new OpticsPrefusedImageDataContainer(getLightSheetMicroscope());
             lContainerWarehouseKey = "opticsprefused_raw_" + pTimePoint;
         } else if (mDatasetNames[0].contains("interleaved")) {
-            lContainer = new InterleavedImageDataContainer(mLightSheetMicroscope);
+            lContainer = new InterleavedImageDataContainer(getLightSheetMicroscope());
             lContainerWarehouseKey = "interleaved_raw_" + pTimePoint;
         } else {
-            lContainer = new SequentialImageDataContainer(mLightSheetMicroscope);
+            lContainer = new SequentialImageDataContainer(getLightSheetMicroscope());
             lContainerWarehouseKey = "sequential_raw_" + pTimePoint;
         }
 
 
         StackRecyclerManager
-                lStackRecyclerManager = mLightSheetMicroscope.getDevice(StackRecyclerManager.class, 0);
+                lStackRecyclerManager = getLightSheetMicroscope().getDevice(StackRecyclerManager.class, 0);
         RecyclerInterface<StackInterface, StackRequest>
                 lRecycler = lStackRecyclerManager.getRecycler("warehouse",
                 1024,
@@ -133,7 +121,7 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends InstructionB
             lContainer.put(mDatasetNames[i], stack);
             mReadTimePoint ++;
         }
-        mLightSheetMicroscope.getDataWarehouse().put(lContainerWarehouseKey, lContainer);
+        getLightSheetMicroscope().getDataWarehouse().put(lContainerWarehouseKey, lContainer);
 
         return false;
     }

@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.smart.scheduleadaptation;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 
 import java.util.ArrayList;
@@ -13,13 +14,13 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class InsertSchedulerAfterInstructionInstruction<T extends InstructionInterface> extends InstructionBase {
+public class InsertSchedulerAfterInstructionInstruction<T extends InstructionInterface> extends LightSheetMicroscopeInstruction {
     private final LightSheetMicroscope lightSheetMicroscope;
     private final InstructionInterface schedulerToInsert;
     private final Class<T> schedulerToInsertBefore;
 
     public InsertSchedulerAfterInstructionInstruction(LightSheetMicroscope lightSheetMicroscope, InstructionInterface schedulerToInsert, Class<T> schedulerToInsertBefore) {
-        super("Smart: Insert " + schedulerToInsert + " before any " + schedulerToInsertBefore);
+        super("Smart: Insert " + schedulerToInsert + " before any " + schedulerToInsertBefore, lightSheetMicroscope);
         this.lightSheetMicroscope = lightSheetMicroscope;
         this.schedulerToInsert = schedulerToInsert;
         this.schedulerToInsertBefore = schedulerToInsertBefore;
@@ -34,7 +35,7 @@ public class InsertSchedulerAfterInstructionInstruction<T extends InstructionInt
     @Override
     public boolean enqueue(long pTimePoint) {
 
-        LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
+        LightSheetTimelapse lTimelapse = lightSheetMicroscope.getTimelapse();
 
         // add myself to the instructions so that I'll be asked again after next imaging sequence
         ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();

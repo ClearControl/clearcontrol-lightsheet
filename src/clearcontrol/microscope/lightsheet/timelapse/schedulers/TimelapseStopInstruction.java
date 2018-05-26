@@ -1,6 +1,8 @@
 package clearcontrol.microscope.lightsheet.timelapse.schedulers;
 
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 
 /**
@@ -9,9 +11,9 @@ import clearcontrol.microscope.timelapse.TimelapseInterface;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class TimelapseStopInstruction extends InstructionBase {
-    public TimelapseStopInstruction() {
-        super("Smart: Stop timelapse");
+public class TimelapseStopInstruction extends LightSheetMicroscopeInstruction {
+    public TimelapseStopInstruction(LightSheetMicroscope pLightSheetMicroscope) {
+        super("Smart: Stop timelapse", pLightSheetMicroscope);
     }
 
     @Override
@@ -21,7 +23,7 @@ public class TimelapseStopInstruction extends InstructionBase {
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        TimelapseInterface lTimelapse = (TimelapseInterface) mMicroscope.getDevice(TimelapseInterface.class, 0);
+        TimelapseInterface lTimelapse = (TimelapseInterface) getLightSheetMicroscope().getDevice(TimelapseInterface.class, 0);
         if (lTimelapse != null) {
             lTimelapse.stopTimelapse();
         }

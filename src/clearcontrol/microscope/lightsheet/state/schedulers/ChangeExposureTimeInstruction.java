@@ -1,6 +1,8 @@
 package clearcontrol.microscope.lightsheet.state.schedulers;
 
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 
 /**
  * ChangeExposureTimeInstruction
@@ -8,12 +10,12 @@ import clearcontrol.instructions.InstructionBase;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class ChangeExposureTimeInstruction extends InstructionBase {
+public class ChangeExposureTimeInstruction extends LightSheetMicroscopeInstruction {
     double mExposureTimeInSeconds;
 
-    public ChangeExposureTimeInstruction(double pExposureTimeInSeconds) {
+    public ChangeExposureTimeInstruction(double pExposureTimeInSeconds, LightSheetMicroscope pLightSheetMicroscope) {
 
-        super("Adaptation: Change exposure time to " + pExposureTimeInSeconds + " s");
+        super("Adaptation: Change exposure time to " + pExposureTimeInSeconds + " s", pLightSheetMicroscope);
         mExposureTimeInSeconds = pExposureTimeInSeconds;
     }
 
@@ -24,7 +26,7 @@ public class ChangeExposureTimeInstruction extends InstructionBase {
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        mMicroscope.getAcquisitionStateManager().getCurrentState().getExposureInSecondsVariable().set(mExposureTimeInSeconds);
+        getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState().getExposureInSecondsVariable().set(mExposureTimeInSeconds);
         return true;
     }
 }

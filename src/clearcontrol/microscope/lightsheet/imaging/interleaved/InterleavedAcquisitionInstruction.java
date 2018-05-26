@@ -51,19 +51,15 @@ public class InterleavedAcquisitionInstruction extends
   /**
    * INstanciates a virtual device with a given name
    */
-  public InterleavedAcquisitionInstruction()
+  public InterleavedAcquisitionInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Acquisition: Interleaved");
+    super("Acquisition: Interleaved", pLightSheetMicroscope);
     mChannelName = "interleaved";
   }
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    if (!(mMicroscope instanceof LightSheetMicroscope)) {
-      warning("" + this + " needs a lightsheet microscope!");
-      return false;
-    }
-    mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+    mCurrentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
 
     int lImageWidth = mCurrentState.getImageWidthVariable().get().intValue();
     int lImageHeight = mCurrentState.getImageHeightVariable().get().intValue();
@@ -71,14 +67,10 @@ public class InterleavedAcquisitionInstruction extends
 
     int lNumberOfImagesToTake = mCurrentState.getNumberOfZPlanesVariable().get().intValue();
 
-    LightSheetMicroscope
-        lLightsheetMicroscope =
-        (LightSheetMicroscope) mMicroscope;
-
     // build a queue
     LightSheetMicroscopeQueue
         lQueue =
-        lLightsheetMicroscope.requestQueue();
+        getLightSheetMicroscope().requestQueue();
 
     // initialize queue
     lQueue.clearQueue();
@@ -87,7 +79,7 @@ public class InterleavedAcquisitionInstruction extends
     lQueue.setExp(lExposureTimeInSeconds);
 
     // initial position
-    goToInitialPosition(lLightsheetMicroscope,
+    goToInitialPosition(getLightSheetMicroscope(),
                         lQueue,
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
@@ -100,11 +92,11 @@ public class InterleavedAcquisitionInstruction extends
     {
       // acuqire an image per light sheet + one more
       for (int l = 0; l
-                      < lLightsheetMicroscope.getNumberOfLightSheets(); l++)
+                      < getLightSheetMicroscope().getNumberOfLightSheets(); l++)
       {
         // configure light sheets accordingly
         for (int k = 0; k
-                        < lLightsheetMicroscope.getNumberOfLightSheets(); k++)
+                        < getLightSheetMicroscope().getNumberOfLightSheets(); k++)
         {
           mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
                                                         lImageCounter);
@@ -116,7 +108,7 @@ public class InterleavedAcquisitionInstruction extends
     }
 
     // back to initial position
-    goToInitialPosition(lLightsheetMicroscope,
+    goToInitialPosition(getLightSheetMicroscope(),
                         lQueue,
                         mCurrentState.getStackZLowVariable().get().doubleValue(),
                         mCurrentState.getStackZLowVariable().get().doubleValue());
@@ -124,7 +116,7 @@ public class InterleavedAcquisitionInstruction extends
     lQueue.setTransitionTime(0.5);
     lQueue.setFinalisationTime(0.005);
 
-    for (int c = 0; c < lLightsheetMicroscope.getNumberOfDetectionArms(); c++)
+    for (int c = 0; c < getLightSheetMicroscope().getNumberOfDetectionArms(); c++)
     {
       StackMetaData
           lMetaData =
@@ -138,7 +130,7 @@ public class InterleavedAcquisitionInstruction extends
 
       lMetaData.addEntry(MetaDataChannel.Channel,  "interleaved");
     }
-    lQueue.addVoxelDimMetaData(lLightsheetMicroscope, mCurrentState.getStackZStepVariable().get().doubleValue());
+    lQueue.addVoxelDimMetaData(getLightSheetMicroscope(), mCurrentState.getStackZStepVariable().get().doubleValue());
     lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
                             pTimePoint);
 
@@ -149,7 +141,7 @@ public class InterleavedAcquisitionInstruction extends
     try
     {
       mTimeStampBeforeImaging = System.nanoTime();
-      lPlayQueueAndWait = lLightsheetMicroscope.playQueueAndWait(lQueue,
+      lPlayQueueAndWait = getLightSheetMicroscope().playQueueAndWait(lQueue,
                                                       100 + lQueue
                                                           .getQueueLength(),
                                                                           TimeUnit.SECONDS);
@@ -175,15 +167,15 @@ public class InterleavedAcquisitionInstruction extends
     }
 
     // Store results in the DataWarehouse
-    InterleavedImageDataContainer lContainer = new InterleavedImageDataContainer(mLightSheetMicroscope);
-    for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
+    InterleavedImageDataContainer lContainer = new InterleavedImageDataContainer(getLightSheetMicroscope());
+    for (int d = 0 ; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++)
     {
-      StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(
+      StackInterface lStack = getLightSheetMicroscope().getCameraStackVariable(
           d).get();
 
       putStackInContainer("C" + d + "interleaved", lStack, lContainer);
     }
-    mLightSheetMicroscope.getDataWarehouse().put("interleaved_raw_" + pTimePoint, lContainer);
+    getLightSheetMicroscope().getDataWarehouse().put("interleaved_raw_" + pTimePoint, lContainer);
 
     return true;
   }

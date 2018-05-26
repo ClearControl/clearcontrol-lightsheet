@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.scheduler;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FWriter;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
@@ -18,7 +19,7 @@ import java.io.File;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class LogMirrorZernikeFactorsToFileInstruction extends InstructionBase implements LoggingFeature {
+public class LogMirrorZernikeFactorsToFileInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
 
     private final SpatialPhaseModulatorDeviceInterface mMirror;
 
@@ -26,8 +27,8 @@ public class LogMirrorZernikeFactorsToFileInstruction extends InstructionBase im
      * INstanciates a virtual device with a given name
      *
      */
-    public LogMirrorZernikeFactorsToFileInstruction(SpatialPhaseModulatorDeviceInterface pMirror) {
-        super("IO: Log Zernike factors of " + pMirror + " to disc");
+    public LogMirrorZernikeFactorsToFileInstruction(SpatialPhaseModulatorDeviceInterface pMirror, LightSheetMicroscope pLightSheetMicroscope) {
+        super("IO: Log Zernike factors of " + pMirror + " to disc", pLightSheetMicroscope);
         mMirror = pMirror;
     }
 
@@ -38,12 +39,7 @@ public class LogMirrorZernikeFactorsToFileInstruction extends InstructionBase im
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        if (!(mMicroscope instanceof LightSheetMicroscope)) {
-            warning("I need a LightSheetMicroscope!");
-            return false;
-        }
-
-        File lFolder = ((LightSheetMicroscope) mMicroscope).getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory();
+        File lFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory();
 
         File lTargetFile = new File(lFolder, mMirror.getName() + "_zernike_factors_" + pTimePoint + ".json");
 

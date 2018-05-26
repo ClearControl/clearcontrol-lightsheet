@@ -4,6 +4,7 @@ import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -11,6 +12,7 @@ import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
+import clojure.lang.IFn;
 import coremem.recycling.RecyclerInterface;
 
 import java.util.Arrays;
@@ -24,34 +26,24 @@ import java.util.Arrays;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
-public abstract class FusionInstruction extends InstructionBase implements
+public abstract class FusionInstruction extends LightSheetMicroscopeInstruction implements
                                                    LoggingFeature
 {
   private static Object mLock = new Object();
   private StackInterface mFusedStack = null;
-
-  protected LightSheetMicroscope mLightSheetMicroscope;
-
 
   /**
    * INstanciates a virtual device with a given name
    *
    * @param pDeviceName device name
    */
-  public FusionInstruction(String pDeviceName)
+  public FusionInstruction(String pDeviceName, LightSheetMicroscope pLightSheetMicroscope)
   {
-    super(pDeviceName);
+    super(pDeviceName, pLightSheetMicroscope);
   }
 
   @Override public boolean initialize()
   {
-    if (!(mMicroscope instanceof LightSheetMicroscope)) {
-      warning("I'm only compatible to LightSheetMicroscopes!");
-      return false;
-    }
-
-    mLightSheetMicroscope =
-        (LightSheetMicroscope) mMicroscope;
     return true;
   }
 
@@ -64,12 +56,12 @@ public abstract class FusionInstruction extends InstructionBase implements
 
     final LightSheetFastFusionProcessor
         lProcessor =
-        mLightSheetMicroscope.getDevice(
+        getLightSheetMicroscope().getDevice(
             LightSheetFastFusionProcessor.class,
             0);
 
     StackRecyclerManager
-            lStackRecyclerManager = mLightSheetMicroscope.getDevice(StackRecyclerManager.class, 0);
+            lStackRecyclerManager = getLightSheetMicroscope().getDevice(StackRecyclerManager.class, 0);
     RecyclerInterface<StackInterface, StackRequest>
             lRecycler = lStackRecyclerManager.getRecycler("warehouse",
             1024,
@@ -107,7 +99,7 @@ public abstract class FusionInstruction extends InstructionBase implements
   protected void storeFusedContainer(StackInterface lFusedStack) {
     long lTimePoint = lFusedStack.getMetaData().getValue(
         MetaDataOrdinals.TimePoint);
-    DataWarehouse lDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
+    DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
     FusedImageDataContainer
         lFusedContainer = new FusedImageDataContainer(lTimePoint);
     lFusedContainer.put("fused", lFusedStack);

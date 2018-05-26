@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.adaptive.schedulers;
+package clearcontrol.microscope.lightsheet.adaptive.instructions;
 
 import clearcl.imagej.ClearCLIJ;
 import clearcontrol.core.log.LoggingFeature;
@@ -7,6 +7,7 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
 import ij.ImagePlus;
@@ -14,29 +15,25 @@ import ij.measure.Measurements;
 import ij.process.ImageStatistics;
 
 public class CenterSampleInXYInstruction extends
-        InstructionBase implements
+        LightSheetMicroscopeInstruction implements
         InstructionInterface,
         LoggingFeature {
 
-    private LightSheetMicroscope mLightSheetMicroscope;
     private InterpolatedAcquisitionState mInterpolatedAcquisitionState;
 
-    public CenterSampleInXYInstruction() {
-        super("Smart: Center sample in XY");
+    public CenterSampleInXYInstruction(LightSheetMicroscope pLightSheetMicroscope) {
+        super("Smart: Center sample in XY", pLightSheetMicroscope);
     }
 
     @Override
     public boolean initialize() {
-        if (mMicroscope instanceof LightSheetMicroscope){
-            mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-            mInterpolatedAcquisitionState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-        }
+        mInterpolatedAcquisitionState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
         return true;
     }
 
     @Override
     public boolean enqueue(long l) {
-        mInterpolatedAcquisitionState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+        mInterpolatedAcquisitionState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
 
         // Take an image and show it
         //mInterpolatedAcquisitionState.getImageHeightVariable().set(2048);
@@ -50,7 +47,7 @@ public class CenterSampleInXYInstruction extends
         BasicStageInterface lStageX = null;
         BasicStageInterface lStageY = null;
 
-        for (BasicStageInterface lStage : mLightSheetMicroscope.getDevices(BasicStageInterface.class)) {
+        for (BasicStageInterface lStage : getLightSheetMicroscope().getDevices(BasicStageInterface.class)) {
             if (lStage.toString().contains("X")) {
                 lStageX = lStage;
             }
@@ -65,7 +62,7 @@ public class CenterSampleInXYInstruction extends
 
         double lZ = (mInterpolatedAcquisitionState.getStackZLowVariable().get().doubleValue() + mInterpolatedAcquisitionState.getStackZHighVariable().get().doubleValue()) / 2;
 
-        SingleViewPlaneImager imager = new SingleViewPlaneImager(mLightSheetMicroscope, (int) lZ);
+        SingleViewPlaneImager imager = new SingleViewPlaneImager(getLightSheetMicroscope(), (int) lZ);
         imager.setImageHeight(2048);
         imager.setImageWidth(2048);
         imager.setExposureTimeInSeconds(0.02);

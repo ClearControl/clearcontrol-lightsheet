@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.imaging.interleaved;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
@@ -22,21 +23,21 @@ public class InterleavedFusionInstruction extends FusionInstruction implements
    * INstanciates a virtual device with a given name
    *
    */
-  public InterleavedFusionInstruction()
+  public InterleavedFusionInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Post-processing: Interleaved fusion");
+    super("Post-processing: Interleaved fusion", pLightSheetMicroscope);
   }
 
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    DataWarehouse lDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
+    DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
     final InterleavedImageDataContainer
         lContainer = lDataWarehouse.getOldestContainer(InterleavedImageDataContainer.class);
-    String[] lInputImageKeys = new String[mLightSheetMicroscope.getNumberOfDetectionArms()];
+    String[] lInputImageKeys = new String[getLightSheetMicroscope().getNumberOfDetectionArms()];
 
     int count = 0;
-    for (int d = 0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++) {
+    for (int d = 0; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++) {
       lInputImageKeys[count] = "C" + d + "interleaved";
       count ++;
     }

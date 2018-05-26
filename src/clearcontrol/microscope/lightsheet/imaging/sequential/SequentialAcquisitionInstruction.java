@@ -45,33 +45,29 @@ public class SequentialAcquisitionInstruction extends
    * INstanciates a virtual device with a given name
    *
    */
-  public SequentialAcquisitionInstruction()
+  public SequentialAcquisitionInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Acquisition: Sequential");
+    super("Acquisition: Sequential", pLightSheetMicroscope);
     mChannelName = "sequential";
   }
 
-  public SequentialAcquisitionInstruction(String pName) {
-    super(pName);
+  public SequentialAcquisitionInstruction(String pName, LightSheetMicroscope pLightSheetMicroscope) {
+    super(pName, pLightSheetMicroscope);
   }
 
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    if (!(mMicroscope instanceof LightSheetMicroscope)) {
-      warning("" + this + " needs a lightsheet microscope!");
-      return false;
-    }
-    mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+    mCurrentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
 
-    int lNumberOfDetectionArms = mLightSheetMicroscope.getNumberOfDetectionArms();
+    int lNumberOfDetectionArms = getLightSheetMicroscope().getNumberOfDetectionArms();
 
-    int lNumberOfLightSheets = mLightSheetMicroscope.getNumberOfLightSheets();
+    int lNumberOfLightSheets = getLightSheetMicroscope().getNumberOfLightSheets();
 
     HashMap<Integer, LightSheetMicroscopeQueue> lViewToQueueMap = new HashMap<>();
 
     SequentialImageDataContainer
-        lContainer = new SequentialImageDataContainer(mLightSheetMicroscope);
+        lContainer = new SequentialImageDataContainer(getLightSheetMicroscope());
 
 
     // preparing queues:
@@ -127,7 +123,7 @@ public class SequentialAcquisitionInstruction extends
         try
         {
           mTimeStampBeforeImaging = System.nanoTime();
-          mLightSheetMicroscope.playQueueAndWait(lQueueForView,
+          getLightSheetMicroscope().playQueueAndWait(lQueueForView,
                                                  mTimelapse.getTimeOut(),
                                                  TimeUnit.SECONDS);
         }
@@ -148,11 +144,11 @@ public class SequentialAcquisitionInstruction extends
         }
 
         // store results in a DataContainer
-        for (int d = 0 ; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
+        for (int d = 0 ; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++)
         {
           if (isCameraOn(d))
           {
-            StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(
+            StackInterface lStack = getLightSheetMicroscope().getCameraStackVariable(
                 d).get();
             putStackInContainer("C" + d + "L" + l, lStack, lContainer);
           }
@@ -161,7 +157,7 @@ public class SequentialAcquisitionInstruction extends
     }
 
     // store container in the DataWarehouse
-    mLightSheetMicroscope.getDataWarehouse().put("sequential_raw_" + pTimePoint, lContainer);
+    getLightSheetMicroscope().getDataWarehouse().put("sequential_raw_" + pTimePoint, lContainer);
 
     return true;
   }
@@ -171,15 +167,15 @@ public class SequentialAcquisitionInstruction extends
                                                                   int pLightSheetIndex)
   {
     int lNumberOfDetectionArms =
-        mLightSheetMicroscope.getNumberOfDetectionArms();
+        getLightSheetMicroscope().getNumberOfDetectionArms();
 
     @SuppressWarnings("unused")
     int lNumberOfLightSheets =
-        mLightSheetMicroscope.getNumberOfLightSheets();
+        getLightSheetMicroscope().getNumberOfLightSheets();
 
     int lNumberOfImagesToTake = mCurrentState.getNumberOfZPlanesVariable().get().intValue();
 
-    LightSheetMicroscopeQueue lQueue = mLightSheetMicroscope.requestQueue();
+    LightSheetMicroscopeQueue lQueue = getLightSheetMicroscope().requestQueue();
     lQueue.clearQueue();
 
 
@@ -193,7 +189,7 @@ public class SequentialAcquisitionInstruction extends
     info("acquiring stack from " + mCurrentState);
 
     // initial position
-    goToInitialPosition(mLightSheetMicroscope,
+    goToInitialPosition(getLightSheetMicroscope(),
             lQueue,
             mCurrentState.getStackZLowVariable().get().doubleValue(),
             mCurrentState.getStackZLowVariable().get().doubleValue());
@@ -205,7 +201,7 @@ public class SequentialAcquisitionInstruction extends
       mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
               lImageCounter);
       for (int k = 0; k
-              < mLightSheetMicroscope.getNumberOfLightSheets(); k++)
+              < getLightSheetMicroscope().getNumberOfLightSheets(); k++)
       {
 
         lQueue.setI(k, pLightSheetIndex == k);
@@ -224,7 +220,7 @@ public class SequentialAcquisitionInstruction extends
 */
 
     // initial position
-    goToInitialPosition(mLightSheetMicroscope,
+    goToInitialPosition(getLightSheetMicroscope(),
             lQueue,
             mCurrentState.getStackZLowVariable().get().doubleValue(),
             mCurrentState.getStackZLowVariable().get().doubleValue());

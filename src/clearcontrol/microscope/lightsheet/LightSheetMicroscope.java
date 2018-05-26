@@ -33,9 +33,9 @@ import clearcontrol.microscope.lightsheet.timelapse.containers.SchedulerDuration
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.*;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseLogInstruction;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.*;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseLogInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 
 import java.util.ArrayList;
@@ -84,7 +84,7 @@ public class LightSheetMicroscope extends
 
     mDataWarehouse = new DataWarehouse();
 
-    addDevice(0, new DataWarehouseResetInstruction());
+    addDevice(0, new DataWarehouseResetInstruction(getDataWarehouse()));
     addDevice(0, new DataWarehouseLogInstruction(this));
 
 
@@ -102,8 +102,8 @@ public class LightSheetMicroscope extends
             DataContainerInterface.class,
             MirrorModeContainer.class
     }) {
-      addDevice(0, new DropOldestStackInterfaceContainerInstruction(lContainerType));
-      addDevice(0, new DropAllContainersOfTypeInstruction(lContainerType));
+      addDevice(0, new DropOldestStackInterfaceContainerInstruction(lContainerType, getDataWarehouse()));
+      addDevice(0, new DropAllContainersOfTypeInstruction(lContainerType, getDataWarehouse()));
     }
 
 
@@ -189,13 +189,13 @@ public class LightSheetMicroscope extends
                                                                               this);
     addDevice(0, lInteractiveAcquisition);
 
-    addDevice(0, new ChangeExposureTimeInstruction(1));
-    addDevice(0, new ChangeExposureTimeInstruction(0.5));
-    addDevice(0, new ChangeExposureTimeInstruction(0.2));
-    addDevice(0, new ChangeExposureTimeInstruction(0.1));
-    addDevice(0, new ChangeExposureTimeInstruction(0.05));
-    addDevice(0, new ChangeExposureTimeInstruction(0.02));
-    addDevice(0, new ChangeExposureTimeInstruction(0.01));
+    addDevice(0, new ChangeExposureTimeInstruction(1, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.5, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.2, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.1, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.05, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.02, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.01, this));
 
     return lInteractiveAcquisition;
   }
@@ -444,15 +444,4 @@ public class LightSheetMicroscope extends
     }
     return null;
   }
-
-  @Override
-  public boolean start() {
-    boolean result = super.start();
-    for (InstructionInterface pDevice : getDevices(InstructionInterface.class)) {
-      pDevice.setMicroscope(this);
-      pDevice.initialize();
-    }
-    return result;
-  }
-
 }

@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionInstruction;
 import clearcontrol.stack.StackInterface;
 
@@ -24,8 +25,8 @@ public class SingleViewAcquisitionInstruction extends
   int mCameraIndex;
   int mLightSheetIndex;
 
-  public SingleViewAcquisitionInstruction(int pCameraIndex, int pLightSheetIndex) {
-    super("Acquisition: Single view C" + pCameraIndex + "L" + pLightSheetIndex);
+  public SingleViewAcquisitionInstruction(int pCameraIndex, int pLightSheetIndex, LightSheetMicroscope pLightSheetMicroscope) {
+    super("Acquisition: Single view C" + pCameraIndex + "L" + pLightSheetIndex, pLightSheetMicroscope);
     mCameraIndex = pCameraIndex;
     mLightSheetIndex = pLightSheetIndex;
 

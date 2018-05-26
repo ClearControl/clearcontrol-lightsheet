@@ -1,9 +1,10 @@
-package clearcontrol.microscope.lightsheet.adaptive.schedulers;
+package clearcontrol.microscope.lightsheet.adaptive.instructions;
 
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
 
@@ -16,18 +17,15 @@ import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class XWingRapidAutoFocusInstruction extends InstructionBase {
+public class XWingRapidAutoFocusInstruction extends LightSheetMicroscopeInstruction {
     private LightSheetMicroscope mLightSheetMicroscope;
 
-    public XWingRapidAutoFocusInstruction() {
-        super("Smart: XWingScope rapid autofocus Z and alpha");
+    public XWingRapidAutoFocusInstruction(LightSheetMicroscope pLightSheetMicroscope) {
+        super("Smart: XWingScope rapid autofocus Z and alpha", pLightSheetMicroscope);
     }
 
     @Override
     public boolean initialize() {
-        if (mMicroscope instanceof LightSheetMicroscope){
-            mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-        }
         return true;
     }
 
@@ -42,10 +40,10 @@ public class XWingRapidAutoFocusInstruction extends InstructionBase {
         int lOptimizeCamera0towardsCPI = 5;
         int lOptimizeCamera1towardsCPI = 2;
 
-        ControlPlaneFocusFinderZInstruction lCamera0ZFocusScheduler = new ControlPlaneFocusFinderZInstruction(0, lOptimizeCamera0towardsCPI);
-        ControlPlaneFocusFinderZInstruction lCamera1ZFocusScheduler = new ControlPlaneFocusFinderZInstruction(1, lOptimizeCamera1towardsCPI);
-        ControlPlaneFocusFinderAlphaByVariationInstruction lCamera0AlphaScheduler = new ControlPlaneFocusFinderAlphaByVariationInstruction(0, lOptimizeCamera0towardsCPI);
-        ControlPlaneFocusFinderAlphaByVariationInstruction lCamera1AlphaScheduler = new ControlPlaneFocusFinderAlphaByVariationInstruction(1, lOptimizeCamera1towardsCPI);
+        ControlPlaneFocusFinderZInstruction lCamera0ZFocusScheduler = new ControlPlaneFocusFinderZInstruction(0, lOptimizeCamera0towardsCPI, getLightSheetMicroscope());
+        ControlPlaneFocusFinderZInstruction lCamera1ZFocusScheduler = new ControlPlaneFocusFinderZInstruction(1, lOptimizeCamera1towardsCPI, getLightSheetMicroscope());
+        ControlPlaneFocusFinderAlphaByVariationInstruction lCamera0AlphaScheduler = new ControlPlaneFocusFinderAlphaByVariationInstruction(0, lOptimizeCamera0towardsCPI, getLightSheetMicroscope());
+        ControlPlaneFocusFinderAlphaByVariationInstruction lCamera1AlphaScheduler = new ControlPlaneFocusFinderAlphaByVariationInstruction(1, lOptimizeCamera1towardsCPI, getLightSheetMicroscope());
 
         InstructionInterface[] lSchedulers = new InstructionInterface[]{
                 lCamera0AlphaScheduler,
@@ -55,7 +53,6 @@ public class XWingRapidAutoFocusInstruction extends InstructionBase {
         };
 
         for (InstructionInterface lScheduler : lSchedulers) {
-            lScheduler.setMicroscope(mMicroscope);
             lScheduler.initialize();
             lScheduler.enqueue(pTimePoint);
         }

@@ -7,6 +7,7 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
-public abstract class AbstractAcquistionInstruction extends InstructionBase implements
+public abstract class AbstractAcquistionInstruction extends LightSheetMicroscopeInstruction implements
         InstructionInterface,
                                                                         LoggingFeature
 {
@@ -44,30 +45,24 @@ public abstract class AbstractAcquistionInstruction extends InstructionBase impl
    *
    * @param pDeviceName device name
    */
-  public AbstractAcquistionInstruction(String pDeviceName)
+  public AbstractAcquistionInstruction(String pDeviceName, LightSheetMicroscope pLightSheetMicroscope)
   {
-    super(pDeviceName);
+    super(pDeviceName, pLightSheetMicroscope);
   }
 
-  protected LightSheetMicroscope mLightSheetMicroscope;
   protected InterpolatedAcquisitionState mCurrentState;
   protected LightSheetTimelapse mTimelapse;
   protected Long mTimeStampBeforeImaging = 0L;
 
   @Override public boolean initialize()
   {
-    if (!(mMicroscope instanceof LightSheetMicroscope)) {
-      warning("" + this + " needs a lightsheet microscope!");
-      return false;
-    }
 
-    mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-    mCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-    mTimelapse = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0);
+    mCurrentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
+    mTimelapse = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0);
 
     LightSheetFastFusionProcessor
         lProcessor =
-        mLightSheetMicroscope.getDevice(
+        getLightSheetMicroscope().getDevice(
             LightSheetFastFusionProcessor.class,
             0);
     if (lProcessor != null) {
@@ -82,7 +77,7 @@ public abstract class AbstractAcquistionInstruction extends InstructionBase impl
                                      StackInterfaceContainer pContainer)
   {
     StackRecyclerManager
-            lStackRecyclerManager = mLightSheetMicroscope.getDevice(StackRecyclerManager.class, 0);
+            lStackRecyclerManager = getLightSheetMicroscope().getDevice(StackRecyclerManager.class, 0);
     RecyclerInterface<StackInterface, StackRequest>
             lRecycler = lStackRecyclerManager.getRecycler("warehouse",
             1024,

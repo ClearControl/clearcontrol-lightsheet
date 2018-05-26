@@ -5,6 +5,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
@@ -27,7 +28,7 @@ import java.time.Duration;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer> extends InstructionBase implements LoggingFeature {
+public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstruction implements LoggingFeature {
 
     private final Class<T> mClass;
     private final boolean mViewFront;
@@ -38,8 +39,8 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
      * INstanciates a virtual device with a given name
      *
      */
-    public HalfStackMaxProjectionInstruction(Class<T> pClass, boolean pViewFront) {
-        super("Post-processing: Thumbnail (half stack max projection, " +(pViewFront?"front":"back") + ") generator for " + pClass.getSimpleName());
+    public HalfStackMaxProjectionInstruction(Class<T> pClass, boolean pViewFront, LightSheetMicroscope pLightSheetMicroscope) {
+        super("Post-processing: Thumbnail (half stack max projection, " +(pViewFront?"front":"back") + ") generator for " + pClass.getSimpleName(), pLightSheetMicroscope);
         mClass = pClass;
         mViewFront = pViewFront;
     }
@@ -51,21 +52,15 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        if (!(mMicroscope instanceof LightSheetMicroscope)) {
-            warning("I need a LightSheetMicroscope!");
-            return false;
-        }
-
         // Read oldest image from the warehouse
-        LightSheetMicroscope lLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-        DataWarehouse lDataWarehouse = lLightSheetMicroscope.getDataWarehouse();
+        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
 
         T lContainer = lDataWarehouse.getOldestContainer(mClass);
 
         String key = lContainer.keySet().iterator().next();
         StackInterface lStack = lContainer.get(key);
 
-        String targetFolder = lLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
+        String targetFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
         long lTimePoint = lContainer.getTimepoint();
         int lDigits = 6;
 
@@ -110,10 +105,10 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
             ip.setFont(font);
             ip.setColor(new Color(255, 255, 255));
 
-            TimeStampContainer lStartTimeInNanoSecondsContainer = lLightSheetMicroscope.getDataWarehouse().getOldestContainer(TimeStampContainer.class);
+            TimeStampContainer lStartTimeInNanoSecondsContainer = getLightSheetMicroscope().getDataWarehouse().getOldestContainer(TimeStampContainer.class);
             if (lStartTimeInNanoSecondsContainer == null) {
                 lStartTimeInNanoSecondsContainer = new TimeStampContainer(pTimePoint, lStack.getMetaData().getTimeStampInNanoseconds());
-                lLightSheetMicroscope.getDataWarehouse().put("timestamp" + pTimePoint, lStartTimeInNanoSecondsContainer);
+                getLightSheetMicroscope().getDataWarehouse().put("timestamp" + pTimePoint, lStartTimeInNanoSecondsContainer);
             }
             Duration duration = Duration.ofNanos(lStack.getMetaData().getTimeStampInNanoseconds() - lStartTimeInNanoSecondsContainer.getTimeStampInNanoSeconds());
             long s = duration.getSeconds();

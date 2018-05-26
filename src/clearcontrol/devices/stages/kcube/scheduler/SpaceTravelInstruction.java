@@ -4,6 +4,7 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.microscope.lightsheet.state.spatial.PositionListContainer;
 
@@ -14,7 +15,7 @@ import clearcontrol.microscope.lightsheet.state.spatial.PositionListContainer;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class SpaceTravelInstruction extends InstructionBase {
+public class SpaceTravelInstruction extends LightSheetMicroscopeInstruction {
 
 
     private int mCurrentTravelPathPosition = 0;
@@ -30,12 +31,12 @@ public class SpaceTravelInstruction extends InstructionBase {
      * INstanciates a virtual device with a given name
      *
      */
-    public SpaceTravelInstruction() {
-        super("Smart: Move X/Y/Z stage along position list");
+    public SpaceTravelInstruction(LightSheetMicroscope pLightSheetMicroscope) {
+        super("Smart: Move X/Y/Z stage along position list", pLightSheetMicroscope);
     }
 
-    public SpaceTravelInstruction(String pDeviceName) {
-        super(pDeviceName);
+    public SpaceTravelInstruction(String pDeviceName, LightSheetMicroscope pLightSheetMicroscope) {
+        super(pDeviceName, pLightSheetMicroscope);
     }
 
 
@@ -97,22 +98,20 @@ public class SpaceTravelInstruction extends InstructionBase {
         if (mStageX != null && mStageY != null && mStageZ != null) {
             return true;
         }
-        if (mMicroscope instanceof LightSheetMicroscope) {
-            LightSheetMicroscope lLightSheetMicroscope = (LightSheetMicroscope)mMicroscope;
-            for (BasicStageInterface lStage : lLightSheetMicroscope.getDevices(BasicStageInterface.class)) {
-                if (lStage.toString().contains("X")) {
-                    mStageX = lStage;
-                }
-                if (lStage.toString().contains("Y")) {
-                    mStageY = lStage;
-                }
-                if (lStage.toString().contains("Z")) {
-                    mStageZ = lStage;
-                }
+
+        for (BasicStageInterface lStage : getLightSheetMicroscope().getDevices(BasicStageInterface.class)) {
+            if (lStage.toString().contains("X")) {
+                mStageX = lStage;
             }
-            return mStageX != null && mStageY != null && mStageZ != null;
+            if (lStage.toString().contains("Y")) {
+                mStageY = lStage;
+            }
+            if (lStage.toString().contains("Z")) {
+                mStageZ = lStage;
+            }
         }
-        return false;
+        return mStageX != null && mStageY != null && mStageZ != null;
+
     }
 
     public BoundedVariable<Integer> getSleepAfterMotionInMilliSeconds() {

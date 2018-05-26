@@ -8,6 +8,7 @@ import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.AppendConsecutiveInterleavedImagingInstruction;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.AppendConsecutiveHyperDriveImagingInstruction;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.AppendConsecutiveOpticsPrefusedImagingInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotCountContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
@@ -24,17 +25,15 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class ImagingPlanningInstruction extends InstructionBase implements LoggingFeature {
+public class ImagingPlanningInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
 
-    LightSheetMicroscope mLightSheetMicroscope;
 
     /**
      * INstanciates a virtual device with a given name
      *
      */
     public ImagingPlanningInstruction(LightSheetMicroscope pLightSheetMicroscope) {
-        super("Smart: Imaging planner");
-        mLightSheetMicroscope = pLightSheetMicroscope;
+        super("Smart: Imaging planner", pLightSheetMicroscope);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class ImagingPlanningInstruction extends InstructionBase implements Loggi
     @Override
     public boolean enqueue(long pTimePoint) {
 
-        DataWarehouse lDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
+        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
 
         ArrayList<SpotCountContainer> lSpotcountContainers = lDataWarehouse.getContainers(SpotCountContainer.class);
         double[] lSpotCounts = new double[lSpotcountContainers.size()];
@@ -64,7 +63,7 @@ public class ImagingPlanningInstruction extends InstructionBase implements Loggi
         int lNumberOfImages = 10;
         double lFrameIntervalInSeconds = 10;
 
-        LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
+        LightSheetTimelapse lTimelapse = getLightSheetMicroscope().getTimelapse();
 
         // add myself to the instructions so that I'll be asked again after next imaging sequence
         ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
@@ -81,19 +80,18 @@ public class ImagingPlanningInstruction extends InstructionBase implements Loggi
     private boolean appendImagingSequence(long pTimePoint, int pNumberOfImages, double pFrameIntervalInSeconds) {
         InstructionInterface lScheduler = null;
         if (pFrameIntervalInSeconds < 15) {
-            lScheduler = new AppendConsecutiveHyperDriveImagingInstruction(pNumberOfImages, pFrameIntervalInSeconds);
+            lScheduler = new AppendConsecutiveHyperDriveImagingInstruction(pNumberOfImages, pFrameIntervalInSeconds, getLightSheetMicroscope());
         } else if (pFrameIntervalInSeconds < 30) {
-            lScheduler = new AppendConsecutiveOpticsPrefusedImagingInstruction(pNumberOfImages, pFrameIntervalInSeconds);
+            lScheduler = new AppendConsecutiveOpticsPrefusedImagingInstruction(pNumberOfImages, pFrameIntervalInSeconds, getLightSheetMicroscope());
         } else {
-            lScheduler = new AppendConsecutiveInterleavedImagingInstruction(pNumberOfImages, pFrameIntervalInSeconds);
+            lScheduler = new AppendConsecutiveInterleavedImagingInstruction(pNumberOfImages, pFrameIntervalInSeconds, getLightSheetMicroscope());
         }
-        lScheduler.setMicroscope(mLightSheetMicroscope);
         lScheduler.initialize();
         return lScheduler.enqueue(pTimePoint);
     }
 
     private void addSpotDetectionAfterEveryFutureFusion(long pTimePoint) {
-        LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
+        LightSheetTimelapse lTimelapse = getLightSheetMicroscope().getTimelapse();
 
         // add myself to the instructions so that I'll be asked again after next imaging sequence
         ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
@@ -101,7 +99,7 @@ public class ImagingPlanningInstruction extends InstructionBase implements Loggi
             InstructionInterface lScheduler = schedule.get(i);
             InstructionInterface lFollowingScheduler = schedule.get(i + 1);
             if ((lScheduler instanceof AbstractAcquistionInstruction) && (!(lFollowingScheduler instanceof CountsSpotsInstruction))) {
-                schedule.add(i + 1, new CountsSpotsInstruction<FusedImageDataContainer>(FusedImageDataContainer.class));
+                schedule.add(i + 1, new CountsSpotsInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, getLightSheetMicroscope()));
                 i++;
             }
         }

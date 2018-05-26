@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.imaging.sequential;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
@@ -23,21 +24,21 @@ public class SequentialFusionInstruction extends FusionInstruction implements
    * INstanciates a virtual device with a given name
    *
    */
-  public SequentialFusionInstruction()
+  public SequentialFusionInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Post-processing: Sequential fusion");
+    super("Post-processing: Sequential fusion", pLightSheetMicroscope);
   }
 
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    DataWarehouse lDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
+    DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
     final SequentialImageDataContainer lContainer = lDataWarehouse.getOldestContainer(SequentialImageDataContainer.class);
-    String[] lInputImageKeys = new String[mLightSheetMicroscope.getNumberOfDetectionArms() * mLightSheetMicroscope.getNumberOfLightSheets()];
+    String[] lInputImageKeys = new String[getLightSheetMicroscope().getNumberOfDetectionArms() * getLightSheetMicroscope().getNumberOfLightSheets()];
 
     int count = 0;
-    for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++) {
-      for (int d = 0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++) {
+    for (int l = 0; l < getLightSheetMicroscope().getNumberOfLightSheets(); l++) {
+      for (int d = 0; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++) {
         lInputImageKeys[count] = "C" + d + "L" + l;
         count ++;
       }

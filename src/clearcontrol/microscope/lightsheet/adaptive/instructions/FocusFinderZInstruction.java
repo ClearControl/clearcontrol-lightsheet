@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.adaptive.schedulers;
+package clearcontrol.microscope.lightsheet.adaptive.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.math.argmax.SmartArgMaxFinder;
@@ -9,6 +9,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
@@ -26,11 +27,10 @@ import java.util.concurrent.TimeoutException;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * March 2018
  */
-public class FocusFinderZInstruction extends InstructionBase implements
+public class FocusFinderZInstruction extends LightSheetMicroscopeInstruction implements
         InstructionInterface,
                                                          LoggingFeature
 {
-  private LightSheetMicroscope mLightSheetMicroscope;
   private int mControlPlaneIndex;
   private int mLightSheetIndex;
   private int mDetectionArmIndex;
@@ -46,8 +46,8 @@ public class FocusFinderZInstruction extends InstructionBase implements
 
   public static boolean debug = false;
 
-  public FocusFinderZInstruction(int pLightSheetIndex, int pDetectionArmIndex, int pControlPlaneIndex) {
-    super("Adaptation: Focus finder Z for C" + pDetectionArmIndex + "L" + pLightSheetIndex + "CPI" + pControlPlaneIndex);
+  public FocusFinderZInstruction(int pLightSheetIndex, int pDetectionArmIndex, int pControlPlaneIndex, LightSheetMicroscope pLightSheetMicroscope) {
+    super("Adaptation: Focus finder Z for C" + pDetectionArmIndex + "L" + pLightSheetIndex + "CPI" + pControlPlaneIndex, pLightSheetMicroscope);
     mControlPlaneIndex = pControlPlaneIndex;
     mLightSheetIndex = pLightSheetIndex;
     mDetectionArmIndex = pDetectionArmIndex;
@@ -56,9 +56,6 @@ public class FocusFinderZInstruction extends InstructionBase implements
 
   @Override public boolean initialize()
   {
-    if (mMicroscope instanceof LightSheetMicroscope){
-      mLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-    }
     mNeedsReset = true;
     return true;
   }
@@ -67,7 +64,7 @@ public class FocusFinderZInstruction extends InstructionBase implements
   {
     InterpolatedAcquisitionState
         lAcquisitionState =
-        (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager()
+        (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager()
                                                             .getCurrentState();
 
     int cpi = mControlPlaneIndex;
@@ -92,7 +89,7 @@ public class FocusFinderZInstruction extends InstructionBase implements
     lAcquisitionState.getInterpolationTables().set(LightSheetDOF.IZ, cpi, lLightSheetIndex, deltaZ);
 
 
-    LightSheetMicroscopeQueue lQueue = mLightSheetMicroscope.requestQueue();
+    LightSheetMicroscopeQueue lQueue = getLightSheetMicroscope().requestQueue();
     System.out.println("Z1: " + lCPPositionZ);
     lAcquisitionState.applyAcquisitionStateAtZ(lQueue, lCPPositionZ);
     System.out.println("Z1: " + lQueue.getIZ(lLightSheetIndex));
@@ -115,10 +112,8 @@ public class FocusFinderZInstruction extends InstructionBase implements
     double lIlluminationZStart = lCPPositionZ;
     double lDetectionZZStart = lIlluminationZStart - (lDetectionZStep * (lNumberOfImagesToTake-1) / 2);
 
-    LightSheetMicroscope lLightsheetMicroscope = mLightSheetMicroscope;
-
     // build a queue
-    LightSheetMicroscopeQueue lQueue =  mLightSheetMicroscope.requestQueue();
+    LightSheetMicroscopeQueue lQueue =  getLightSheetMicroscope().requestQueue();
 
     // initialize queue
     lQueue.clearQueue();
@@ -127,7 +122,7 @@ public class FocusFinderZInstruction extends InstructionBase implements
     lQueue.setExp(lExposureTimeInSeconds);
 
     // initial position
-    goToInitialPosition(lLightsheetMicroscope, lQueue, lIlluminationZStart, lDetectionArmIndex, lDetectionZZStart);
+    goToInitialPosition(getLightSheetMicroscope(), lQueue, lIlluminationZStart, lDetectionArmIndex, lDetectionZZStart);
     //lQueue.addCurrentStateToQueue();
 
     // Do a break of three seconds before imaging
@@ -139,11 +134,11 @@ public class FocusFinderZInstruction extends InstructionBase implements
     // build a queue
     double[] lXAxis = new double[lNumberOfImagesToTake];
     InterpolatedAcquisitionState lInterpolatedAcquisitionState =
-        (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
+        (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
 
     for (int illuminationZIndex = 0; illuminationZIndex < lNumberOfImagesToTake; illuminationZIndex++) {
       lInterpolatedAcquisitionState.applyAcquisitionStateAtZ(lQueue, lIlluminationZStart);
-      for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++) {
+      for (int l = 0; l < getLightSheetMicroscope().getNumberOfLightSheets(); l++) {
         lQueue.setI(l, l == lIlluminationArmIndex);
       }
       //#print(" i" + str(lIlluminationZStart))
@@ -173,7 +168,7 @@ public class FocusFinderZInstruction extends InstructionBase implements
       lXAxis[illuminationZIndex] = lPositionZ - lCPPositionZ;
     }
 
-    goToInitialPosition(lLightsheetMicroscope, lQueue, lIlluminationZStart, lDetectionArmIndex, lDetectionZZStart);
+    goToInitialPosition(getLightSheetMicroscope(), lQueue, lIlluminationZStart, lDetectionArmIndex, lDetectionZZStart);
 
     lQueue.finalizeQueue();
 
@@ -185,7 +180,7 @@ public class FocusFinderZInstruction extends InstructionBase implements
     // acquire!
     boolean lPlayQueueAndWait = false;
     try {
-      lPlayQueueAndWait = lLightsheetMicroscope.playQueueAndWaitForStacks(lQueue, 10000 + lQueue.getQueueLength(), TimeUnit.SECONDS);
+      lPlayQueueAndWait = getLightSheetMicroscope().playQueueAndWaitForStacks(lQueue, 10000 + lQueue.getQueueLength(), TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       e.printStackTrace();
     } catch (ExecutionException e) {
@@ -198,7 +193,7 @@ public class FocusFinderZInstruction extends InstructionBase implements
     }
 
     StackInterface
-        lStack = lLightsheetMicroscope.getCameraStackVariable(lDetectionArmIndex).get();
+        lStack = getLightSheetMicroscope().getCameraStackVariable(lDetectionArmIndex).get();
 
     // measure quality
     DiscreteConsinusTransformEntropyPerSliceEstimator

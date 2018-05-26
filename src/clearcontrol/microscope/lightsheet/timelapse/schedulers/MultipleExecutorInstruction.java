@@ -19,14 +19,13 @@ public class MultipleExecutorInstruction extends InstructionBase {
      *
      */
     public MultipleExecutorInstruction(InstructionInterface[] schedulersToExecute) {
-        super("Smart: Execute several schedulers " + schedulersToExecute);
+        super("Smart: Execute several instructions " + schedulersToExecute);
         this.schedulersToExecute = schedulersToExecute;
     }
 
     @Override
     public boolean initialize() {
         for (InstructionInterface scheduler : schedulersToExecute) {
-            scheduler.setMicroscope(mMicroscope);
             scheduler.initialize();
         }
         return true;

@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.imaging.interleaved;
 
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstruction;
 
 /**
@@ -12,14 +13,9 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
 public class WriteInterleavedRawDataToDiscInstruction extends
         WriteStackInterfaceContainerAsRawToDiscInstruction
 {
-  /**
-   * INstanciates a virtual device with a given name
-   *
-   * @param pNumberOfDetectionArms
-   */
-  public WriteInterleavedRawDataToDiscInstruction(int pNumberOfDetectionArms)
+  public WriteInterleavedRawDataToDiscInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("IO: Write interleaved raw data to disc", InterleavedImageDataContainer.class, listKeys(pNumberOfDetectionArms), null);
+    super("IO: Write interleaved raw data to disc", InterleavedImageDataContainer.class, listKeys(pLightSheetMicroscope.getNumberOfDetectionArms()), null, pLightSheetMicroscope);
   }
 
   private static String[] listKeys(int pNumberOfDetectionArms) {

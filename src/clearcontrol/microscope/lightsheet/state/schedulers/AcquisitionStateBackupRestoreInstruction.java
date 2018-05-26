@@ -3,6 +3,9 @@ package clearcontrol.microscope.lightsheet.state.schedulers;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.MicroscopeBase;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.state.AcquisitionStateInterface;
 
 import java.util.ArrayList;
@@ -16,7 +19,7 @@ import java.util.ArrayList;
  * March 2018
  */
 public class AcquisitionStateBackupRestoreInstruction extends
-        InstructionBase implements
+        LightSheetMicroscopeInstruction implements
         InstructionInterface,
                                                                   LoggingFeature
 {
@@ -28,9 +31,9 @@ public class AcquisitionStateBackupRestoreInstruction extends
    * @param pBackup: If true, the instructions puts a new entry in
    * the LIFO list, if false it will restore the last entry.
    */
-  public AcquisitionStateBackupRestoreInstruction(boolean pBackup)
+  public AcquisitionStateBackupRestoreInstruction(boolean pBackup, LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Adaptation: " + (pBackup? ("Backup"):("Restore")) + " acquisition state");
+    super("Adaptation: " + (pBackup? ("Backup"):("Restore")) + " acquisition state", pLightSheetMicroscope);
     mBackup = pBackup;
   }
 
@@ -42,7 +45,7 @@ public class AcquisitionStateBackupRestoreInstruction extends
   @Override public boolean enqueue(long pTimePoint)
   {
     if (mBackup) {
-      AcquisitionStateInterface lState = mMicroscope.getAcquisitionStateManager().getCurrentState().duplicate("backup " + System.currentTimeMillis());
+      AcquisitionStateInterface lState = getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState().duplicate("backup " + System.currentTimeMillis());
       mAcquisitionStateList.add(lState);
     } else {
       if (mAcquisitionStateList.size() > 0)
@@ -51,6 +54,7 @@ public class AcquisitionStateBackupRestoreInstruction extends
             lState =
             mAcquisitionStateList.get(mAcquisitionStateList.size() - 1);
         mAcquisitionStateList.remove(mAcquisitionStateList.size() - 1);
+        MicroscopeBase mMicroscope = getLightSheetMicroscope();
         mMicroscope.getAcquisitionStateManager().setCurrentState(lState);
       } else {
         warning("Error: Cannot restore state, list is empty.");

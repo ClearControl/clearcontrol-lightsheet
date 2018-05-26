@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.imaging.exposuremodulation;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
@@ -34,8 +35,8 @@ public class ExposureModulatedAcquisitionInstruction extends
   private BoundedVariable<Double> mShortExposureTimeInSecondsVariable = new BoundedVariable<Double>("short exposure", 0.01, 0.0, Double.MAX_VALUE, 0.0001);
 
 
-  public ExposureModulatedAcquisitionInstruction(int pCameraIndex, int pLightSheetIndex) {
-    super("Acquisition: Exposure modulated C" + pCameraIndex + "L" + pLightSheetIndex);
+  public ExposureModulatedAcquisitionInstruction(int pCameraIndex, int pLightSheetIndex, LightSheetMicroscope pLightSheetMicroscope) {
+    super("Acquisition: Exposure modulated C" + pCameraIndex + "L" + pLightSheetIndex, pLightSheetMicroscope);
     mCameraIndex = pCameraIndex;
     mLightSheetIndex = pLightSheetIndex;
 
@@ -75,15 +76,15 @@ public class ExposureModulatedAcquisitionInstruction extends
                                                                   int pLightSheetIndex)
   {
     int lNumberOfDetectionArms =
-            mLightSheetMicroscope.getNumberOfDetectionArms();
+            getLightSheetMicroscope().getNumberOfDetectionArms();
 
     @SuppressWarnings("unused")
     int lNumberOfLightSheets =
-            mLightSheetMicroscope.getNumberOfLightSheets();
+            getLightSheetMicroscope().getNumberOfLightSheets();
 
     int lNumberOfImagesToTake = mCurrentState.getNumberOfZPlanesVariable().get().intValue();
 
-    LightSheetMicroscopeQueue lQueue = mLightSheetMicroscope.requestQueue();
+    LightSheetMicroscopeQueue lQueue = getLightSheetMicroscope().requestQueue();
     lQueue.clearQueue();
 
 
@@ -97,7 +98,7 @@ public class ExposureModulatedAcquisitionInstruction extends
 
 
     // initial position
-    goToInitialPosition(mLightSheetMicroscope,
+    goToInitialPosition(getLightSheetMicroscope(),
             lQueue,
             mCurrentState.getStackZLowVariable().get().doubleValue(),
             mCurrentState.getStackZLowVariable().get().doubleValue());
@@ -109,7 +110,7 @@ public class ExposureModulatedAcquisitionInstruction extends
       mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
               lImageCounter);
       for (int k = 0; k
-              < mLightSheetMicroscope.getNumberOfLightSheets(); k++)
+              < getLightSheetMicroscope().getNumberOfLightSheets(); k++)
       {
 
         lQueue.setI(k, pLightSheetIndex == k);
@@ -131,7 +132,7 @@ public class ExposureModulatedAcquisitionInstruction extends
 */
 
     // initial position
-    goToInitialPosition(mLightSheetMicroscope,
+    goToInitialPosition(getLightSheetMicroscope(),
             lQueue,
             mCurrentState.getStackZLowVariable().get().doubleValue(),
             mCurrentState.getStackZLowVariable().get().doubleValue());

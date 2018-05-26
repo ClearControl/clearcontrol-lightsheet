@@ -6,22 +6,23 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.stack.StackInterface;
 
 import java.util.ArrayList;
 
 /**
- * AppendConsecutiveSingleViewImagingInstruction appends a list of imaging, fusion and io schedulers at the current position
+ * AppendConsecutiveSingleViewImagingInstruction appends a list of imaging, fusion and io instructions at the current position
  * in the timelapse
  *
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class AppendConsecutiveSingleViewImagingInstruction extends InstructionBase implements LoggingFeature {
+public class AppendConsecutiveSingleViewImagingInstruction extends LightSheetMicroscopeInstruction implements LoggingFeature {
     private final int mNumberOfImages;
     private final double mIntervalInSeconds;
     private final int mLightSheetIndex;
@@ -31,8 +32,8 @@ public class AppendConsecutiveSingleViewImagingInstruction extends InstructionBa
      * INstanciates a virtual device with a given name
      *
      */
-    public AppendConsecutiveSingleViewImagingInstruction(int pDetectionArmIndex, int pLightSheetIndex, int pNumberOfImages, double pIntervalInSeconds) {
-        super("Smart: Append a single view scan with " + pNumberOfImages + " images every " + pIntervalInSeconds + " s to the schedulers"  );
+    public AppendConsecutiveSingleViewImagingInstruction(int pDetectionArmIndex, int pLightSheetIndex, int pNumberOfImages, double pIntervalInSeconds, LightSheetMicroscope pLightSheetMicroscope) {
+        super("Smart: Append a single view scan with " + pNumberOfImages + " images every " + pIntervalInSeconds + " s to the instructions", pLightSheetMicroscope);
         mNumberOfImages = pNumberOfImages;
         mIntervalInSeconds = pIntervalInSeconds;
         mLightSheetIndex = pLightSheetIndex;
@@ -46,29 +47,24 @@ public class AppendConsecutiveSingleViewImagingInstruction extends InstructionBa
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        if (!(mMicroscope instanceof LightSheetMicroscope)) {
-            warning("I need a LightSheetMicroscope!");
-            return false;
-        }
-
         String timeMeasurementKey = "sequential_" + System.currentTimeMillis();
 
-        LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
+        LightSheetTimelapse lTimelapse = getLightSheetMicroscope().getTimelapse();
         ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
 
         int index = (int)lTimelapse.getLastExecutedSchedulerIndexVariable().get() + 1;
         for (int i = 0; i < mNumberOfImages; i ++) {
             schedule.add(index, new MeasureTimeInstruction(timeMeasurementKey));
             index++;
-            schedule.add(index, new SingleViewAcquisitionInstruction(mDetectionArmIndex, mLightSheetIndex));
+            schedule.add(index, new SingleViewAcquisitionInstruction(mDetectionArmIndex, mLightSheetIndex, getLightSheetMicroscope()));
             index++;
-            schedule.add(index, new WriteSingleLightSheetImageAsRawToDiscInstruction(mDetectionArmIndex, mLightSheetIndex));
+            schedule.add(index, new WriteSingleLightSheetImageAsRawToDiscInstruction(mDetectionArmIndex, mLightSheetIndex, getLightSheetMicroscope()));
             index++;
-            schedule.add(index, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,true));
+            schedule.add(index, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,true, getLightSheetMicroscope()));
             index++;
-            schedule.add(index, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,false));
+            schedule.add(index, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,false, getLightSheetMicroscope()));
             index++;
-            schedule.add(index, new DropOldestStackInterfaceContainerInstruction(StackInterface.class));
+            schedule.add(index, new DropOldestStackInterfaceContainerInstruction(StackInterface.class, getLightSheetMicroscope().getDataWarehouse()));
             index++;
             schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (long)(mIntervalInSeconds * 1000)));
             index++;

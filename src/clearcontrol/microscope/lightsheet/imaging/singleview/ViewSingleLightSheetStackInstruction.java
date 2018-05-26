@@ -4,10 +4,11 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.gui.video.video3d.Stack3DDisplay;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
-public class ViewSingleLightSheetStackInstruction extends InstructionBase implements
+public class ViewSingleLightSheetStackInstruction extends LightSheetMicroscopeInstruction implements
         LoggingFeature
 {
 
@@ -18,8 +19,8 @@ public class ViewSingleLightSheetStackInstruction extends InstructionBase implem
      * INstanciates a virtual device with a given name
      *
      */
-    public ViewSingleLightSheetStackInstruction(int pDetectionArmIndex, int pLightSheetIndex) {
-        super("Visualisation: View C" + pDetectionArmIndex + "L" + pLightSheetIndex + " stack");
+    public ViewSingleLightSheetStackInstruction(int pDetectionArmIndex, int pLightSheetIndex, LightSheetMicroscope pLightSheetMicroscope) {
+        super("Visualisation: View C" + pDetectionArmIndex + "L" + pLightSheetIndex + " stack", pLightSheetMicroscope);
         mDetectionArmIndex = pDetectionArmIndex;
         mLightSheetIndex = pLightSheetIndex;
     }
@@ -31,16 +32,13 @@ public class ViewSingleLightSheetStackInstruction extends InstructionBase implem
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        if (!(mMicroscope instanceof LightSheetMicroscope)) {
-            return false;
-        }
-        DataWarehouse lDataWarehouse = ((LightSheetMicroscope) mMicroscope).getDataWarehouse();
+        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
         StackInterfaceContainer lContainer = lDataWarehouse.getOldestContainer(StackInterfaceContainer.class);
         if (lContainer == null || !lContainer.isDataComplete()) {
             return false;
         }
 
-        Stack3DDisplay lDisplay = (Stack3DDisplay) mMicroscope.getDevice(Stack3DDisplay.class, 0);
+        Stack3DDisplay lDisplay = (Stack3DDisplay) getLightSheetMicroscope().getDevice(Stack3DDisplay.class, 0);
         if (lDisplay == null) {
             return false;
         }

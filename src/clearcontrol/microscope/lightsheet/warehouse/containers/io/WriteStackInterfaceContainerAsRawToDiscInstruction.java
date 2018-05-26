@@ -4,6 +4,7 @@ import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -19,7 +20,7 @@ import clearcontrol.stack.sourcesink.sink.FileStackSinkInterface;
  * April 2018
  */
 public class WriteStackInterfaceContainerAsRawToDiscInstruction extends
-        InstructionBase implements
+        LightSheetMicroscopeInstruction implements
                                                                        LoggingFeature
 {
   Class mContainerClass;
@@ -31,9 +32,9 @@ public class WriteStackInterfaceContainerAsRawToDiscInstruction extends
      *
      * @param pDeviceName device name
      */
-  public WriteStackInterfaceContainerAsRawToDiscInstruction(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName)
+  public WriteStackInterfaceContainerAsRawToDiscInstruction(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
   {
-    super(pDeviceName);
+    super(pDeviceName, pLightSheetMicroscope);
     mContainerClass = pContainerClass;
     mImageKeys = pImageKeys;
     if (pChannelName != null && pChannelName.length() > 0)
@@ -49,19 +50,12 @@ public class WriteStackInterfaceContainerAsRawToDiscInstruction extends
 
   @Override public boolean enqueue(long pTimePoint)
   {
-
-    if (!(mMicroscope instanceof LightSheetMicroscope)) {
-      warning("I need a LightSheetMicroscope!");
-      return false;
-    }
-
-
-    LightSheetTimelapse lTimelapse = (LightSheetTimelapse) mMicroscope.getDevice(TimelapseInterface.class, 0);
+    LightSheetTimelapse lTimelapse = (LightSheetTimelapse) getLightSheetMicroscope().getDevice(TimelapseInterface.class, 0);
     FileStackSinkInterface
         lFileStackSinkInterface =
         lTimelapse.getCurrentFileStackSinkVariable().get();
 
-    DataWarehouse lDataWarehouse = ((LightSheetMicroscope) mMicroscope).getDataWarehouse();
+    DataWarehouse lDataWarehouse = ((LightSheetMicroscope) getLightSheetMicroscope()).getDataWarehouse();
 
     StackInterfaceContainer lContainer = lDataWarehouse.getOldestContainer(mContainerClass);
     if (lContainer == null) {

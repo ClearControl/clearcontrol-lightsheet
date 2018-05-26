@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
@@ -23,21 +24,21 @@ public class OpticsPrefusedFusionInstruction extends FusionInstruction implement
    * INstanciates a virtual device with a given name
    *
    */
-  public OpticsPrefusedFusionInstruction()
+  public OpticsPrefusedFusionInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Post-processing: Optics prefused fusion");
+    super("Post-processing: Optics prefused fusion", pLightSheetMicroscope);
   }
 
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    DataWarehouse lDataWarehouse = mLightSheetMicroscope.getDataWarehouse();
+    DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
     final OpticsPrefusedImageDataContainer
         lContainer = lDataWarehouse.getOldestContainer(OpticsPrefusedImageDataContainer.class);
-    String[] lInputImageKeys = new String[mLightSheetMicroscope.getNumberOfDetectionArms()];
+    String[] lInputImageKeys = new String[getLightSheetMicroscope().getNumberOfDetectionArms()];
 
     int count = 0;
-    for (int d = 0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++) {
+    for (int d = 0; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++) {
       lInputImageKeys[count] = "C" + d + "opticsprefused";
       count ++;
     }

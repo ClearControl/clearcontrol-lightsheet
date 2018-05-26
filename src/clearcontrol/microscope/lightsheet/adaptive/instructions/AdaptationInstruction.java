@@ -1,16 +1,18 @@
-package clearcontrol.microscope.lightsheet.adaptive.schedulers;
+package clearcontrol.microscope.lightsheet.adaptive.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * March 2018
  */
-public class AdaptationInstruction extends InstructionBase implements
+public class AdaptationInstruction extends LightSheetMicroscopeInstruction implements
         InstructionInterface,
                                                         LoggingFeature
 {
@@ -20,16 +22,16 @@ public class AdaptationInstruction extends InstructionBase implements
    * INstanciates a virtual device with a given name
    *
    */
-  public AdaptationInstruction(String pName, Class pTargetAdapationModuleClass)
+  public AdaptationInstruction(String pName, Class pTargetAdapationModuleClass, LightSheetMicroscope pLightSheetMicroscope)
   {
-    super(pName);
+    super(pName, pLightSheetMicroscope);
     mTargetAdapationModuleClass = pTargetAdapationModuleClass;
   }
 
   @Override public boolean initialize()
   {
     mAdaptiveEngine =
-        (AdaptiveEngine) mMicroscope.getDevice(AdaptiveEngine.class, 0);
+        (AdaptiveEngine) getLightSheetMicroscope().getDevice(AdaptiveEngine.class, 0);
     return true;
   }
 

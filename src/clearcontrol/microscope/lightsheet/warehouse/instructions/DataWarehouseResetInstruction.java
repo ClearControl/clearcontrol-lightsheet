@@ -1,9 +1,10 @@
-package clearcontrol.microscope.lightsheet.warehouse.schedulers;
+package clearcontrol.microscope.lightsheet.warehouse.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 
 /**
  * This instructions recycles or disposes all DataContainers in the
@@ -12,7 +13,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
-public class DataWarehouseResetInstruction extends InstructionBase implements
+public class DataWarehouseResetInstruction extends DataWarehouseInstructionBase implements
         InstructionInterface,
                                                                LoggingFeature
 {
@@ -20,9 +21,9 @@ public class DataWarehouseResetInstruction extends InstructionBase implements
    * INstanciates a virtual device with a given name
    *
    */
-  public DataWarehouseResetInstruction()
+  public DataWarehouseResetInstruction(DataWarehouse pDataWarehouse)
   {
-    super("Memory: Reset memory");
+    super("Memory: Reset memory", pDataWarehouse);
   }
 
   @Override public boolean initialize()
@@ -32,11 +33,7 @@ public class DataWarehouseResetInstruction extends InstructionBase implements
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    if (mMicroscope instanceof LightSheetMicroscope) {
-      ((LightSheetMicroscope) mMicroscope).getDataWarehouse().clear();
-    } else {
-      warning("I need a LightSheetMicroscope!");
-    }
-    return false;
+    getDataWarehouse().clear();
+    return true;
   }
 }

@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
+import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstruction;
 
 /**
@@ -15,11 +16,10 @@ public class WriteSequentialRawDataToDiscInstruction extends
   /**
    * INstanciates a virtual device with a given name
    *
-   * @param pNumberOfDetectionArms
    */
-  public WriteSequentialRawDataToDiscInstruction(int pNumberOfDetectionArms, int pNumberOfLightSheets)
+  public WriteSequentialRawDataToDiscInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("IO: Write sequential raw data to disc", SequentialImageDataContainer.class, listKeys(pNumberOfDetectionArms, pNumberOfLightSheets), null);
+    super("IO: Write sequential raw data to disc", SequentialImageDataContainer.class, listKeys(pLightSheetMicroscope.getNumberOfDetectionArms(), pLightSheetMicroscope.getNumberOfLightSheets()), null, pLightSheetMicroscope);
   }
 
   private static String[] listKeys(int pNumberOfDetectionArms, int pNumberOfLightSheets) {

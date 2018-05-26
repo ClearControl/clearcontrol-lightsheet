@@ -10,12 +10,14 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotCountContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotsImageContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
+import clojure.lang.IFn;
 import de.mpicbg.spimcat.spotdetection.GPUSpotDetection;
 
 import java.io.BufferedWriter;
@@ -30,7 +32,7 @@ import java.io.IOException;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends InstructionBase implements LoggingFeature {
+public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstruction implements LoggingFeature {
     private final Class<T> mClass;
 
     BoundedVariable<Double> mThreshold = new BoundedVariable<Double>("threshold", 200.0, 0.0, Double.MAX_VALUE, 0.1);
@@ -48,8 +50,8 @@ public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends I
      * INstanciates a virtual device with a given name
      *
      */
-    public CountsSpotsInstruction(Class<T> pClass) {
-        super("Post-processing: Spot detection for " + pClass.getSimpleName());
+    public CountsSpotsInstruction(Class<T> pClass, LightSheetMicroscope pLightSheetMicroscope) {
+        super("Post-processing: Spot detection for " + pClass.getSimpleName(), pLightSheetMicroscope);
         mClass = pClass;
     }
 
@@ -60,21 +62,15 @@ public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends I
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        if (!(mMicroscope instanceof LightSheetMicroscope)) {
-            warning("I need a LightSheetMicroscope!");
-            return false;
-        }
-
         // Read oldest image from the warehouse
-        final LightSheetMicroscope lLightSheetMicroscope = (LightSheetMicroscope) mMicroscope;
-        DataWarehouse lDataWarehouse = lLightSheetMicroscope.getDataWarehouse();
+        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
 
         T lContainer = lDataWarehouse.getOldestContainer(mClass);
 
         String key = lContainer.keySet().iterator().next();
         StackInterface lStack = lContainer.get(key);
 
-        String targetFolder = lLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
+        String targetFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
         long lTimePoint = lContainer.getTimepoint();
         int lDigits = 6;
 
@@ -111,14 +107,14 @@ public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends I
             StackInterface lSpotsStack = clij.converter(lSpotsImage).getOffHeapPlanarStack();
             SpotsImageContainer lSpotsImageContainer = new SpotsImageContainer(pTimePoint);
             lSpotsImageContainer.put("spots", lSpotsStack);
-            lLightSheetMicroscope.getDataWarehouse().put("spots_" + pTimePoint, lSpotsImageContainer);
+            getLightSheetMicroscope().getDataWarehouse().put("spots_" + pTimePoint, lSpotsImageContainer);
 
 
             double lX = 0;
             double lY = 0;
             double lZ = 0;
 
-            for (BasicStageInterface lStage : lLightSheetMicroscope.getDevices(BasicStageInterface.class)) {
+            for (BasicStageInterface lStage : getLightSheetMicroscope().getDevices(BasicStageInterface.class)) {
                 if (lStage.toString().contains("X")) {
                     lX = lStage.getPositionVariable().get();
                 }
@@ -133,7 +129,7 @@ public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends I
 
             SpotCountContainer lSpotCountContainer = new SpotCountContainer(pTimePoint, lX, lY, lZ, lSpotCount);
 
-            lLightSheetMicroscope.getDataWarehouse().put("SPOTCOUNT_" + pTimePoint, lSpotCountContainer);
+            getLightSheetMicroscope().getDataWarehouse().put("SPOTCOUNT_" + pTimePoint, lSpotCountContainer);
 
             String headline = "t\tX\tY\tZ\tspotcount\n";
             String resultTableLine = pTimePoint + "\t" + lX + "\t" + lY + "\t" + lZ + "\t" + lSpotCount + "\n" ;

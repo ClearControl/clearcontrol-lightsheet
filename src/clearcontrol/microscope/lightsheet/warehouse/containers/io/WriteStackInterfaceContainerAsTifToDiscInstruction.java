@@ -5,6 +5,7 @@ import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -25,7 +26,7 @@ import java.io.File;
  * 05 2018
  */
 public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
-        InstructionBase implements
+        LightSheetMicroscopeInstruction implements
         LoggingFeature
 {
     Class mContainerClass;
@@ -37,9 +38,9 @@ public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
      *
      * @param pDeviceName device name
      */
-    public WriteStackInterfaceContainerAsTifToDiscInstruction(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName)
+    public WriteStackInterfaceContainerAsTifToDiscInstruction(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
     {
-        super(pDeviceName);
+        super(pDeviceName, pLightSheetMicroscope);
         mContainerClass = pContainerClass;
         mImageKeys = pImageKeys;
         if (pChannelName != null && pChannelName.length() > 0)
@@ -55,17 +56,10 @@ public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
 
     @Override public boolean enqueue(long pTimePoint)
     {
-
-        if (!(mMicroscope instanceof LightSheetMicroscope)) {
-            warning("I need a LightSheetMicroscope!");
-            return false;
-        }
-
-
-        LightSheetTimelapse lTimelapse = (LightSheetTimelapse) mMicroscope.getDevice(TimelapseInterface.class, 0);
+        LightSheetTimelapse lTimelapse = getLightSheetMicroscope().getTimelapse();
         File lWorkingDirectory = lTimelapse.getWorkingDirectory();
 
-        DataWarehouse lDataWarehouse = ((LightSheetMicroscope) mMicroscope).getDataWarehouse();
+        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
 
         StackInterfaceContainer lContainer = lDataWarehouse.getOldestContainer(mContainerClass);
         if (lContainer == null) {
