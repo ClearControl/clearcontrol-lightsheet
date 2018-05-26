@@ -10,8 +10,6 @@ import clearcontrol.microscope.MicroscopeInterface;
 public abstract class InstructionBase extends VirtualDevice implements
         InstructionInterface
 {
-  protected MicroscopeInterface mMicroscope = null;
-
   /**
    * INstanciates a virtual device with a given name
    *
@@ -20,9 +18,5 @@ public abstract class InstructionBase extends VirtualDevice implements
   public InstructionBase(String pDeviceName)
   {
     super(pDeviceName);
-  }
-
-  public void setMicroscope(MicroscopeInterface pMicroscope) {
-    mMicroscope = pMicroscope;
   }
 }

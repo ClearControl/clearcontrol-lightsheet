@@ -4,14 +4,24 @@ import clearcontrol.core.device.name.NameableInterface;
 import clearcontrol.microscope.MicroscopeInterface;
 
 /**
+ * All instructions to run the microscope must implement this interface.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
 public interface InstructionInterface extends NameableInterface
 {
+  /**
+   * The initialize method is called within a timelapse once. Before this particular instruction is
+   * called the first time.
+   * @return success
+   */
   boolean initialize();
 
+  /**
+   * The enqueue method is called at the timepoint when the instruction is next item in the list of the timelapse
+   * @param pTimePoint
+   * @return success
+   */
   boolean enqueue(long pTimePoint);
-
-  public void setMicroscope(MicroscopeInterface pMicroscope);
 }
