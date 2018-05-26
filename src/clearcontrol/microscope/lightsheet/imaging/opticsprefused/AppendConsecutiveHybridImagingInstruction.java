@@ -2,9 +2,9 @@ package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
@@ -53,7 +53,7 @@ public class AppendConsecutiveHybridImagingInstruction extends InstructionBase i
         String timeMeasurementKey = "HyperDrive_" + System.currentTimeMillis();
 
                 LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
-        ArrayList<SchedulerInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
+        ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
 
         int numberOfImagesFirstHalf = mNumberOfImages / 2;
         int numberOfImagesSecondHalf = mNumberOfImages - numberOfImagesFirstHalf;

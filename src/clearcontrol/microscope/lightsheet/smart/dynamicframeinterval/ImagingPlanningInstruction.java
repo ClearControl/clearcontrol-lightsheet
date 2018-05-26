@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.smart.dynamicframeinterval;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.AppendConsecutiveInterleavedImagingInstruction;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.AppendConsecutiveHyperDriveImagingInstruction;
@@ -67,7 +67,7 @@ public class ImagingPlanningInstruction extends InstructionBase implements Loggi
         LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
 
         // add myself to the instructions so that I'll be asked again after next imaging sequence
-        ArrayList<SchedulerInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
+        ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
         schedule.add((int) pTimePoint + 1, this);
 
         // add another imaging sequence
@@ -79,7 +79,7 @@ public class ImagingPlanningInstruction extends InstructionBase implements Loggi
     }
 
     private boolean appendImagingSequence(long pTimePoint, int pNumberOfImages, double pFrameIntervalInSeconds) {
-        SchedulerInterface lScheduler = null;
+        InstructionInterface lScheduler = null;
         if (pFrameIntervalInSeconds < 15) {
             lScheduler = new AppendConsecutiveHyperDriveImagingInstruction(pNumberOfImages, pFrameIntervalInSeconds);
         } else if (pFrameIntervalInSeconds < 30) {
@@ -96,10 +96,10 @@ public class ImagingPlanningInstruction extends InstructionBase implements Loggi
         LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
 
         // add myself to the instructions so that I'll be asked again after next imaging sequence
-        ArrayList<SchedulerInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
+        ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
         for (int i = (int)pTimePoint; i < schedule.size() - 1; i++) {
-            SchedulerInterface lScheduler = schedule.get(i);
-            SchedulerInterface lFollowingScheduler = schedule.get(i + 1);
+            InstructionInterface lScheduler = schedule.get(i);
+            InstructionInterface lFollowingScheduler = schedule.get(i + 1);
             if ((lScheduler instanceof AbstractAcquistionInstruction) && (!(lFollowingScheduler instanceof CountsSpotsInstruction))) {
                 schedule.add(i + 1, new CountsSpotsInstruction<FusedImageDataContainer>(FusedImageDataContainer.class));
                 i++;

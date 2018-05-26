@@ -5,14 +5,14 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * February 2018
  */
 public class BasicThreeAxesStageInstruction extends InstructionBase implements
-                                                                SchedulerInterface,
+        InstructionInterface,
                                                                 LoggingFeature
 {
 

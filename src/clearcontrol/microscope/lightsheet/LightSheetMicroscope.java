@@ -6,13 +6,13 @@ import clearcontrol.core.device.switches.SwitchingDeviceInterface;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.devices.cameras.StackCameraDeviceInterface;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.MicroscopeBase;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
@@ -415,8 +415,8 @@ public class LightSheetMicroscope extends
     return mDataWarehouse;
   }
 
-  public SchedulerInterface getSchedulerDevice(String... pMustContainStrings) {
-    return getDevice(SchedulerInterface.class, 0, pMustContainStrings);
+  public InstructionInterface getSchedulerDevice(String... pMustContainStrings) {
+    return getDevice(InstructionInterface.class, 0, pMustContainStrings);
   }
 
   public <O extends Object> O getDevice(Class<O> pClass, int pDeviceIndex, String ... pMustContainStrings)
@@ -448,7 +448,7 @@ public class LightSheetMicroscope extends
   @Override
   public boolean start() {
     boolean result = super.start();
-    for (SchedulerInterface pDevice : getDevices(SchedulerInterface.class)) {
+    for (InstructionInterface pDevice : getDevices(InstructionInterface.class)) {
       pDevice.setMicroscope(this);
       pDevice.initialize();
     }

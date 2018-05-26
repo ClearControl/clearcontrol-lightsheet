@@ -1,7 +1,7 @@
 package clearcontrol.instructions.implementations;
 
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 
 import java.util.HashMap;
 
@@ -10,7 +10,7 @@ import java.util.HashMap;
  * April 2018
  */
 public class MeasureTimeInstruction extends InstructionBase implements
-                                                        SchedulerInterface
+        InstructionInterface
 {
   static HashMap<String, Long> sMeasuredTime = new HashMap<String, Long>();
   private final String mTimeMeasurementKey;

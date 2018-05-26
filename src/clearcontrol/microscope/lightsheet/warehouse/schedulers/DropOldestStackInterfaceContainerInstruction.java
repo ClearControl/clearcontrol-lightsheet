@@ -1,9 +1,9 @@
 package clearcontrol.microscope.lightsheet.warehouse.schedulers;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
@@ -16,7 +16,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  */
 public class DropOldestStackInterfaceContainerInstruction extends
         InstructionBase implements
-                                                                      SchedulerInterface,
+        InstructionInterface,
                                                                       LoggingFeature
 {
   Class mContainerClassToDrop;

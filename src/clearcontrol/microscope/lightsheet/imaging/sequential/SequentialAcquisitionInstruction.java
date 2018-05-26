@@ -1,9 +1,9 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionInstruction;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class SequentialAcquisitionInstruction extends
         AbstractAcquistionInstruction implements
-                                                                  SchedulerInterface,
+        InstructionInterface,
                                                                   LoggingFeature
 {
 

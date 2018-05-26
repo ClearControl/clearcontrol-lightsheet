@@ -2,7 +2,7 @@ package clearcontrol.microscope.lightsheet.state.schedulers;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.state.AcquisitionStateInterface;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public class AcquisitionStateBackupRestoreInstruction extends
         InstructionBase implements
-                                                                  SchedulerInterface,
+        InstructionInterface,
                                                                   LoggingFeature
 {
   boolean mBackup;

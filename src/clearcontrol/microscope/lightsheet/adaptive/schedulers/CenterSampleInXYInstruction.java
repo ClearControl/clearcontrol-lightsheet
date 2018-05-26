@@ -4,8 +4,8 @@ import clearcl.imagej.ClearCLIJ;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
@@ -15,7 +15,7 @@ import ij.process.ImageStatistics;
 
 public class CenterSampleInXYInstruction extends
         InstructionBase implements
-        SchedulerInterface,
+        InstructionInterface,
         LoggingFeature {
 
     private LightSheetMicroscope mLightSheetMicroscope;

@@ -2,7 +2,7 @@ package clearcontrol.instructions.implementations;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
@@ -10,7 +10,7 @@ import clearcontrol.instructions.SchedulerInterface;
  */
 public class PauseUntilTimeAfterMeasuredTimeInstruction extends
         InstructionBase implements
-                                                                   SchedulerInterface,
+        InstructionInterface,
                                                                    LoggingFeature
 {
   private final String mMeasuredTimeKey;

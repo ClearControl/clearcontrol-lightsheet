@@ -2,8 +2,8 @@ package clearcontrol.microscope.lightsheet.imaging.exposuremodulation;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.stack.StackInterface;
@@ -24,7 +24,7 @@ import clearcontrol.stack.metadata.MetaDataOrdinals;
  */
 public class ExposureModulatedAcquisitionInstruction extends
         SequentialAcquisitionInstruction implements
-                                                                                SchedulerInterface,
+        InstructionInterface,
                                                                                 LoggingFeature
 {
   int mCameraIndex;

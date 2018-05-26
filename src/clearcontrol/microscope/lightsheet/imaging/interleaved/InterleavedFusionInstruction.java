@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.interleaved;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
@@ -15,7 +15,7 @@ import clearcontrol.stack.StackInterface;
  * April 2018
  */
 public class InterleavedFusionInstruction extends FusionInstruction implements
-                                                                SchedulerInterface,
+        InstructionInterface,
                                                                 LoggingFeature
 {
   /**

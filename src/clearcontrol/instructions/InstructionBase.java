@@ -8,7 +8,7 @@ import clearcontrol.microscope.MicroscopeInterface;
  * January 2018
  */
 public abstract class InstructionBase extends VirtualDevice implements
-                                                          SchedulerInterface
+        InstructionInterface
 {
   protected MicroscopeInterface mMicroscope = null;
 

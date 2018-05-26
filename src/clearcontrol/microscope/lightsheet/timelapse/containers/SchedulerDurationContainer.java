@@ -1,6 +1,6 @@
 package clearcontrol.microscope.lightsheet.timelapse.containers;
 
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.MeasurementContainer;
 
 /**
@@ -12,15 +12,15 @@ import clearcontrol.microscope.lightsheet.postprocessing.containers.MeasurementC
  * 05 2018
  */
 public class SchedulerDurationContainer extends MeasurementContainer {
-    private final SchedulerInterface mSchedulerInterface;
+    private final InstructionInterface mInstructionInterface;
 
-    public SchedulerDurationContainer(long pTimePoint, SchedulerInterface pSchedulerInterface, double pDurationInMilliseconds) {
+    public SchedulerDurationContainer(long pTimePoint, InstructionInterface pInstructionInterface, double pDurationInMilliseconds) {
         super(pTimePoint, pDurationInMilliseconds);
-        mSchedulerInterface = pSchedulerInterface;
+        mInstructionInterface = pInstructionInterface;
     }
 
-    public SchedulerInterface getSchedulerInterface() {
-        return mSchedulerInterface;
+    public InstructionInterface getSchedulerInterface() {
+        return mInstructionInterface;
     }
 
     public double getDurationInMilliSeconds() {
@@ -28,6 +28,6 @@ public class SchedulerDurationContainer extends MeasurementContainer {
     }
 
     public String toString() {
-        return this.getClass().getSimpleName() + "[" + mSchedulerInterface + "] " + getDurationInMilliSeconds() + " ms";
+        return this.getClass().getSimpleName() + "[" + mInstructionInterface + "] " + getDurationInMilliSeconds() + " ms";
     }
 }

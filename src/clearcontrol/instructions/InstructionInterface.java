@@ -7,7 +7,7 @@ import clearcontrol.microscope.MicroscopeInterface;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * January 2018
  */
-public interface SchedulerInterface extends NameableInterface
+public interface InstructionInterface extends NameableInterface
 {
   boolean initialize();
 

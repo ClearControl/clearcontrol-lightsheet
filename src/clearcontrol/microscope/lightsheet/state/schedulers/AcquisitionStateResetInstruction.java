@@ -4,7 +4,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
 
@@ -13,7 +13,7 @@ import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
  * March 2018
  */
 public class AcquisitionStateResetInstruction extends InstructionBase implements
-                                                               SchedulerInterface,
+        InstructionInterface,
                                                                LoggingFeature
 {
   LightSheetMicroscope mLightSheetMicroscope;

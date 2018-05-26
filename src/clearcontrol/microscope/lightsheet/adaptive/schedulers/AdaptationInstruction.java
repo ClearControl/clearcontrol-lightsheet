@@ -4,14 +4,14 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.adaptive.modules.AdaptationModuleInterface;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * March 2018
  */
 public class AdaptationInstruction extends InstructionBase implements
-                                                        SchedulerInterface,
+        InstructionInterface,
                                                         LoggingFeature
 {
   AdaptiveEngine mAdaptiveEngine;

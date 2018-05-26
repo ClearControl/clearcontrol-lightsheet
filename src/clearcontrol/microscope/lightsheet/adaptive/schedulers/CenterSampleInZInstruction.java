@@ -6,7 +6,7 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
@@ -15,7 +15,7 @@ import ij.process.ImageStatistics;
 
 public class CenterSampleInZInstruction extends
         InstructionBase implements
-        SchedulerInterface,
+        InstructionInterface,
         LoggingFeature {
     private LightSheetMicroscope mLightSheetMicroscope;
     private InterpolatedAcquisitionState mInterpolatedAcquisitionState;

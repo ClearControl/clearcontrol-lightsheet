@@ -3,11 +3,11 @@ package clearcontrol.microscope.lightsheet.adaptive.schedulers;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.math.argmax.SmartArgMaxFinder;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class FocusFinderAlphaByVariationInstruction extends
         InstructionBase implements
-                                                                SchedulerInterface,
+        InstructionInterface,
                                                                 LoggingFeature
 {
   private LightSheetMicroscope mLightSheetMicroscope;

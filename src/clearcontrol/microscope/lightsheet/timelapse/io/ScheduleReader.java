@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.timelapse.io;
 
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.SchedulerInterface;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,11 +12,11 @@ import java.util.ArrayList;
  */
 public class ScheduleReader
 {
-  private final ArrayList<SchedulerInterface> mSchedulerList;
+  private final ArrayList<InstructionInterface> mSchedulerList;
   private final LightSheetMicroscope mLightSheetMicroscope;
   private final File mSourceFile;
 
-  public ScheduleReader(ArrayList<SchedulerInterface> pSchedulerList, LightSheetMicroscope pLightSheetMicroscope, File pSourceFile) {
+  public ScheduleReader(ArrayList<InstructionInterface> pSchedulerList, LightSheetMicroscope pLightSheetMicroscope, File pSourceFile) {
     mSchedulerList = pSchedulerList;
     mLightSheetMicroscope = pLightSheetMicroscope;
     mSourceFile = pSourceFile;

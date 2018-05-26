@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionInstruction;
 import clearcontrol.stack.StackInterface;
 
@@ -18,7 +18,7 @@ import clearcontrol.stack.StackInterface;
  */
 public class SingleViewAcquisitionInstruction extends
         SequentialAcquisitionInstruction implements
-                                                                                SchedulerInterface,
+        InstructionInterface,
                                                                                 LoggingFeature
 {
   int mCameraIndex;

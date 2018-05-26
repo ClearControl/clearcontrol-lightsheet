@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.adaptive.schedulers;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
 
@@ -47,14 +47,14 @@ public class XWingRapidAutoFocusInstruction extends InstructionBase {
         ControlPlaneFocusFinderAlphaByVariationInstruction lCamera0AlphaScheduler = new ControlPlaneFocusFinderAlphaByVariationInstruction(0, lOptimizeCamera0towardsCPI);
         ControlPlaneFocusFinderAlphaByVariationInstruction lCamera1AlphaScheduler = new ControlPlaneFocusFinderAlphaByVariationInstruction(1, lOptimizeCamera1towardsCPI);
 
-        SchedulerInterface[] lSchedulers = new SchedulerInterface[]{
+        InstructionInterface[] lSchedulers = new InstructionInterface[]{
                 lCamera0AlphaScheduler,
                 lCamera1AlphaScheduler,
                 lCamera0ZFocusScheduler,
                 lCamera1ZFocusScheduler
         };
 
-        for (SchedulerInterface lScheduler : lSchedulers) {
+        for (InstructionInterface lScheduler : lSchedulers) {
             lScheduler.setMicroscope(mMicroscope);
             lScheduler.initialize();
             lScheduler.enqueue(pTimePoint);

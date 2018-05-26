@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.timelapse.schedulers;
 
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 
 /**
  * MultipleExecutorInstruction
@@ -12,20 +12,20 @@ import clearcontrol.instructions.SchedulerInterface;
  * 05 2018
  */
 public class MultipleExecutorInstruction extends InstructionBase {
-    private final SchedulerInterface[] schedulersToExecute;
+    private final InstructionInterface[] schedulersToExecute;
 
     /**
      * INstanciates a virtual device with a given name
      *
      */
-    public MultipleExecutorInstruction(SchedulerInterface[] schedulersToExecute) {
+    public MultipleExecutorInstruction(InstructionInterface[] schedulersToExecute) {
         super("Smart: Execute several schedulers " + schedulersToExecute);
         this.schedulersToExecute = schedulersToExecute;
     }
 
     @Override
     public boolean initialize() {
-        for (SchedulerInterface scheduler : schedulersToExecute) {
+        for (InstructionInterface scheduler : schedulersToExecute) {
             scheduler.setMicroscope(mMicroscope);
             scheduler.initialize();
         }
@@ -34,7 +34,7 @@ public class MultipleExecutorInstruction extends InstructionBase {
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        for (SchedulerInterface scheduler : schedulersToExecute) {
+        for (InstructionInterface scheduler : schedulersToExecute) {
             scheduler.enqueue(pTimePoint);
         }
         return false;

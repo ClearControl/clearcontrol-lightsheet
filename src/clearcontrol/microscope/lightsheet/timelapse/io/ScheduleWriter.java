@@ -1,6 +1,6 @@
 package clearcontrol.microscope.lightsheet.timelapse.io;
 
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,10 +12,10 @@ import java.util.ArrayList;
 public class ScheduleWriter
 {
 
-  private final ArrayList<SchedulerInterface> mScheduledList;
+  private final ArrayList<InstructionInterface> mScheduledList;
   private final File mTargetFile;
 
-  public ScheduleWriter(ArrayList<SchedulerInterface> pScheduledList, File pTargetFile) {
+  public ScheduleWriter(ArrayList<InstructionInterface> pScheduledList, File pTargetFile) {
     mScheduledList = pScheduledList;
     mTargetFile = pTargetFile;
   }
@@ -25,7 +25,7 @@ public class ScheduleWriter
     try
     {
       BufferedWriter lOutputStream = new BufferedWriter(new FileWriter(mTargetFile));
-      for (SchedulerInterface lScheduler : mScheduledList) {
+      for (InstructionInterface lScheduler : mScheduledList) {
         lOutputStream.write(lScheduler.toString() + "\n");
       }
       lOutputStream.close();

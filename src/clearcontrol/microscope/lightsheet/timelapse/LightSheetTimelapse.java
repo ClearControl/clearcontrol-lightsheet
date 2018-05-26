@@ -17,9 +17,9 @@ import clearcontrol.core.concurrent.timing.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.VariableSetListener;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
@@ -72,12 +72,12 @@ public class LightSheetTimelapse extends TimelapseBase implements
       new Variable<Boolean>("LegacyTimelapseAcquisition",
                             false);
 
-  private ArrayList<SchedulerInterface>
-      mListOfActivatedSchedulers = new ArrayList<SchedulerInterface>();
+  private ArrayList<InstructionInterface>
+      mListOfActivatedSchedulers = new ArrayList<InstructionInterface>();
 
   private Variable<Integer> mLastExecutedSchedulerIndexVariable = new Variable<Integer>("Last executed instructions index", -1);
 
-  ArrayList<SchedulerInterface>
+  ArrayList<InstructionInterface>
           mInitializedSchedulerList;
 
 
@@ -169,7 +169,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
         mLogFileWriter = null;
       }
 
-      mInitializedSchedulerList = new ArrayList<SchedulerInterface>();
+      mInitializedSchedulerList = new ArrayList<InstructionInterface>();
 
 
       LightSheetFastFusionProcessor lLightSheetFastFusionProcessor = mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
@@ -253,7 +253,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
       }
 
 
-      SchedulerInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(
+      InstructionInterface lNextSchedulerToRun = mListOfActivatedSchedulers.get(
               mLastExecutedSchedulerIndexVariable.get());
 
       if (!mInitializedSchedulerList.contains(lNextSchedulerToRun)) {
@@ -274,9 +274,9 @@ public class LightSheetTimelapse extends TimelapseBase implements
       mLightSheetMicroscope.getDataWarehouse().put("duration_" + getTimePointCounterVariable().get(), lContainer);
 
       /*
-      ArrayList<SchedulerInterface>
-          lSchedulerInterfaceList = getMicroscope().getDevices(SchedulerInterface.class);
-      for (SchedulerInterface lSchedulerInterface : lSchedulerInterfaceList)
+      ArrayList<InstructionInterface>
+          lSchedulerInterfaceList = getMicroscope().getDevices(InstructionInterface.class);
+      for (InstructionInterface lSchedulerInterface : lSchedulerInterfaceList)
       {
         if (lSchedulerInterface.getActiveVariable().get()) {
           lSchedulerInterface.setMicroscope(getMicroscope());
@@ -486,15 +486,15 @@ public class LightSheetTimelapse extends TimelapseBase implements
     return cTimeOut;
   }
 
-  public ArrayList<SchedulerInterface> getListOfActivatedSchedulers()
+  public ArrayList<InstructionInterface> getListOfActivatedSchedulers()
   {
     return mListOfActivatedSchedulers;
   }
 
-  public ArrayList<SchedulerInterface> getListOfAvailableSchedulers(String... pMustContainStrings)
+  public ArrayList<InstructionInterface> getListOfAvailableSchedulers(String... pMustContainStrings)
   {
-    ArrayList<SchedulerInterface> lListOfAvailabeSchedulers = new ArrayList<>();
-    for (SchedulerInterface lScheduler : mLightSheetMicroscope.getDevices(SchedulerInterface.class)) {
+    ArrayList<InstructionInterface> lListOfAvailabeSchedulers = new ArrayList<>();
+    for (InstructionInterface lScheduler : mLightSheetMicroscope.getDevices(InstructionInterface.class)) {
       boolean lNamePatternMatches = true;
       for (String part : pMustContainStrings) {
         if (!lScheduler.toString().toLowerCase().contains(part.toLowerCase())) {
@@ -507,10 +507,10 @@ public class LightSheetTimelapse extends TimelapseBase implements
       }
     }
 
-    lListOfAvailabeSchedulers.sort(new Comparator<SchedulerInterface>()
+    lListOfAvailabeSchedulers.sort(new Comparator<InstructionInterface>()
     {
-      @Override public int compare(SchedulerInterface o1,
-                                   SchedulerInterface o2)
+      @Override public int compare(InstructionInterface o1,
+                                   InstructionInterface o2)
       {
         return o1.getName().compareTo(o2.getName());
       }

@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.state.schedulers;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.io.InterpolatedAcquisitionStateWriter;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
@@ -18,7 +18,7 @@ import java.io.File;
  * April 2018
  */
 public class InterpolatedAcquisitionStateLogInstruction extends InstructionBase implements
-                                                               SchedulerInterface,
+        InstructionInterface,
                                                                LoggingFeature
 {
 

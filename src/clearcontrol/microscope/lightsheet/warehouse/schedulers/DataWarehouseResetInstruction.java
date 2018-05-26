@@ -2,8 +2,8 @@ package clearcontrol.microscope.lightsheet.warehouse.schedulers;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.SchedulerInterface;
 
 /**
  * This instructions recycles or disposes all DataContainers in the
@@ -13,7 +13,7 @@ import clearcontrol.instructions.SchedulerInterface;
  * April 2018
  */
 public class DataWarehouseResetInstruction extends InstructionBase implements
-                                                               SchedulerInterface,
+        InstructionInterface,
                                                                LoggingFeature
 {
   /**

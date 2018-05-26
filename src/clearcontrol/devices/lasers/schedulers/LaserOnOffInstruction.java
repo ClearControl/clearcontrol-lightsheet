@@ -3,14 +3,14 @@ package clearcontrol.devices.lasers.schedulers;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
 public class LaserOnOffInstruction extends InstructionBase implements
-                                                       SchedulerInterface,
+        InstructionInterface,
                                                        LoggingFeature
 {
   LaserDeviceInterface mLaserDevice;

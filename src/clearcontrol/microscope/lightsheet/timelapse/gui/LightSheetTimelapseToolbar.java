@@ -4,8 +4,8 @@ import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.gui.halcyon.MicroscopeNodeType;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleReader;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
 import javafx.collections.FXCollections;
@@ -130,8 +130,8 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
       }
 
 
-      ArrayList<SchedulerInterface> lSchedulerList = pLightSheetTimelapse.getListOfActivatedSchedulers();
-      ListView<SchedulerInterface> lListView = new ListView<SchedulerInterface>();
+      ArrayList<InstructionInterface> lSchedulerList = pLightSheetTimelapse.getListOfActivatedSchedulers();
+      ListView<InstructionInterface> lListView = new ListView<InstructionInterface>();
       lListView.setItems(FXCollections.observableArrayList(lSchedulerList));
       //lListView.setPrefWidth(Double.MAX_VALUE);
       //lListView.setMaxWidth(Double.MAX_VALUE);
@@ -149,9 +149,9 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
           int i = lListView.getSelectionModel().getSelectedIndex();
           if (i > 0)
           {
-            SchedulerInterface lSchedulerInterface = lSchedulerList.get(i);
+            InstructionInterface lInstructionInterface = lSchedulerList.get(i);
             lSchedulerList.remove(i);
-            lSchedulerList.add(i - 1, lSchedulerInterface);
+            lSchedulerList.add(i - 1, lInstructionInterface);
             lListView.setItems(FXCollections.observableArrayList(
                 lSchedulerList));
           }
@@ -169,9 +169,9 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
           int i = lListView.getSelectionModel().getSelectedIndex();
           if (i >= 0 && i < lSchedulerList.size() - 1)
           {
-            SchedulerInterface lSchedulerInterface = lSchedulerList.get(i);
+            InstructionInterface lInstructionInterface = lSchedulerList.get(i);
             lSchedulerList.remove(i);
-            lSchedulerList.add(i + 1, lSchedulerInterface);
+            lSchedulerList.add(i + 1, lInstructionInterface);
             lListView.setItems(FXCollections.observableArrayList(
                 lSchedulerList));
           }
@@ -384,9 +384,9 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
       }
 
 
-      ArrayList<SchedulerInterface> lAvailableSchedulersList = pLightSheetTimelapse.getListOfAvailableSchedulers();
+      ArrayList<InstructionInterface> lAvailableSchedulersList = pLightSheetTimelapse.getListOfAvailableSchedulers();
       if (lAvailableSchedulersList.size() > 0) {
-        ComboBox<SchedulerInterface> lAvailableSchedulers = new ComboBox<>();
+        ComboBox<InstructionInterface> lAvailableSchedulers = new ComboBox<>();
         lAvailableSchedulers.setItems(FXCollections.observableArrayList(lAvailableSchedulersList));
         lAvailableSchedulers.getSelectionModel().select(0);
         lAvailableSchedulers.setMaxWidth(Double.MAX_VALUE);
@@ -426,11 +426,11 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
 
 
 
-      ArrayList<SchedulerInterface>
-          lSchedulerInterfaceList = pLightSheetTimelapse.getMicroscope().getDevices(SchedulerInterface.class);
+      ArrayList<InstructionInterface>
+          lSchedulerInterfaceList = pLightSheetTimelapse.getMicroscope().getDevices(InstructionInterface.class);
 
       int lRow = 0;
-      for (SchedulerInterface lSchedulerInterface : lSchedulerInterfaceList) {
+      for (InstructionInterface lSchedulerInterface : lSchedulerInterfaceList) {
         VariableCheckBox lSchedulerActiveCheckBox =
             new VariableCheckBox("", lSchedulerInterface.getActiveVariable());
 
@@ -576,7 +576,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
     rootItem.setExpanded(true);
     for (int i = 0; i < lFilters.length; i++)
     {
-      ArrayList<SchedulerInterface> lAvailableSchedulersList = pLightSheetTimelapse.getListOfAvailableSchedulers(lFilters[i], pSearchFilter);
+      ArrayList<InstructionInterface> lAvailableSchedulersList = pLightSheetTimelapse.getListOfAvailableSchedulers(lFilters[i], pSearchFilter);
       if (lAvailableSchedulersList.size() > 0) {
 
         TreeItem<String> item = new TreeItem<String>(lFilters[i].replace(":", ""), lIcons[i]);
@@ -584,8 +584,8 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
         rootItem.getChildren().add(item);
 
 
-        for (SchedulerInterface lSchedulerInterface : lAvailableSchedulersList) {
-          TreeItem<String> schedulerItem = new TreeItem<String>(lSchedulerInterface.getName().replace(lFilters[i], ""));
+        for (InstructionInterface lInstructionInterface : lAvailableSchedulersList) {
+          TreeItem<String> schedulerItem = new TreeItem<String>(lInstructionInterface.getName().replace(lFilters[i], ""));
           item.getChildren().add(schedulerItem);
         }
       }

@@ -4,9 +4,9 @@ import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * February 2018
  */
 public abstract class AbstractAcquistionInstruction extends InstructionBase implements
-                                                                        SchedulerInterface,
+        InstructionInterface,
                                                                         LoggingFeature
 {
 

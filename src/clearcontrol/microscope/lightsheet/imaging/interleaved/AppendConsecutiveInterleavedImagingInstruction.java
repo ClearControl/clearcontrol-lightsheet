@@ -1,10 +1,10 @@
 package clearcontrol.microscope.lightsheet.imaging.interleaved;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
@@ -50,7 +50,7 @@ public class AppendConsecutiveInterleavedImagingInstruction extends InstructionB
         String timeMeasurementKey = "interleaved_" + System.currentTimeMillis();
 
         LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
-        ArrayList<SchedulerInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
+        ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
 
         int index = (int)lTimelapse.getLastExecutedSchedulerIndexVariable().get() + 1;
         for (int i = 0; i < mNumberOfImages; i ++) {

@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.imaging.singleview;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionInstruction;
@@ -54,7 +54,7 @@ public class AppendConsecutiveSingleViewImagingInstruction extends InstructionBa
         String timeMeasurementKey = "sequential_" + System.currentTimeMillis();
 
         LightSheetTimelapse lTimelapse = ((LightSheetMicroscope) mMicroscope).getTimelapse();
-        ArrayList<SchedulerInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
+        ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
 
         int index = (int)lTimelapse.getLastExecutedSchedulerIndexVariable().get() + 1;
         for (int i = 0; i < mNumberOfImages; i ++) {

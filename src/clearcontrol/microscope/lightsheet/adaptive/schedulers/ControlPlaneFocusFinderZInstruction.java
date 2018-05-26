@@ -3,8 +3,8 @@ package clearcontrol.microscope.lightsheet.adaptive.schedulers;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
@@ -12,7 +12,7 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
  * April 2018
  */
 public class ControlPlaneFocusFinderZInstruction extends InstructionBase implements
-                                                               SchedulerInterface,
+        InstructionInterface,
                                                                LoggingFeature
 {
   private final int mControlPlaneIndex;

@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.imaging.interleaved;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.instructions.SchedulerInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionInstruction;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class InterleavedAcquisitionInstruction extends
         AbstractAcquistionInstruction implements
-                                                                   SchedulerInterface,
+        InstructionInterface,
                                                                    LoggingFeature
 {
 
