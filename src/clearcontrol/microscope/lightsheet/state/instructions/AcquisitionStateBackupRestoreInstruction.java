@@ -6,6 +6,7 @@ import clearcontrol.microscope.MicroscopeBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.state.AcquisitionStateInterface;
+import clearcontrol.microscope.state.AcquisitionStateManager;
 
 import java.util.ArrayList;
 
@@ -65,5 +66,10 @@ public class AcquisitionStateBackupRestoreInstruction extends
   public boolean isBackup()
   {
     return mBackup;
+  }
+
+  @Override
+  public AcquisitionStateBackupRestoreInstruction copy() {
+    return new AcquisitionStateBackupRestoreInstruction(mBackup, getLightSheetMicroscope());
   }
 }

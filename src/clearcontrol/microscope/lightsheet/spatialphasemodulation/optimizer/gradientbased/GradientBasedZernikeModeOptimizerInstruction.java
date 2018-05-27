@@ -73,4 +73,9 @@ public class GradientBasedZernikeModeOptimizerInstruction extends LightSheetMicr
 
         return false;
     }
+
+    @Override
+    public GradientBasedZernikeModeOptimizerInstruction copy() {
+        return new GradientBasedZernikeModeOptimizerInstruction(getLightSheetMicroscope(), mSpatialPhaseModulatorDeviceInterface, mZernikeFactorIndexToOptimize);
+    }
 }

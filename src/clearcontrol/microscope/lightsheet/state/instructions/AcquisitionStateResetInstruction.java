@@ -48,4 +48,9 @@ public class AcquisitionStateResetInstruction extends LightSheetMicroscopeInstru
 
     return true;
   }
+
+  @Override
+  public AcquisitionStateResetInstruction copy() {
+    return new AcquisitionStateResetInstruction(getLightSheetMicroscope());
+  }
 }

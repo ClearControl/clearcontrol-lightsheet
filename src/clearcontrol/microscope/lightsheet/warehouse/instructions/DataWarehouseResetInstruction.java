@@ -36,4 +36,9 @@ public class DataWarehouseResetInstruction extends DataWarehouseInstructionBase 
     getDataWarehouse().clear();
     return true;
   }
+
+  @Override
+  public DataWarehouseResetInstruction copy() {
+    return new DataWarehouseResetInstruction(getDataWarehouse());
+  }
 }

@@ -29,4 +29,9 @@ public class FilterWheelInstruction extends InstructionBase implements
         mFilterWheelDevice.setPosition(mPosition);
         return true;
     }
+
+    @Override
+    public FilterWheelInstruction copy() {
+        return new FilterWheelInstruction(mFilterWheelDevice, mPosition);
+    }
 }

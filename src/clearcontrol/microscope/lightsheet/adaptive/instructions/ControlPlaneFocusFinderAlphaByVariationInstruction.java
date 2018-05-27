@@ -48,4 +48,9 @@ public class ControlPlaneFocusFinderAlphaByVariationInstruction extends LightShe
 
     return true;
    }
+
+   @Override
+   public ControlPlaneFocusFinderAlphaByVariationInstruction copy() {
+     return new ControlPlaneFocusFinderAlphaByVariationInstruction(mDetectionArmIndex, mControlPlaneIndex, getLightSheetMicroscope());
+   }
 }

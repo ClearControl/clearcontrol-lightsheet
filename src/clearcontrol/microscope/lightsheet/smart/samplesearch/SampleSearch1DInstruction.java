@@ -88,9 +88,11 @@ public class SampleSearch1DInstruction extends SampleSearchInstructionBase imple
             }
 
         }
-
-
-
         return true;
+    }
+
+    @Override
+    public SampleSearch1DInstruction copy() {
+        return new SampleSearch1DInstruction(getLightSheetMicroscope());
     }
 }

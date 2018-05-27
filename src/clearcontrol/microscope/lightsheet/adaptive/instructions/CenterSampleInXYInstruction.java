@@ -117,4 +117,9 @@ public class CenterSampleInXYInstruction extends
 
         return false;
     }
+
+    @Override
+    public CenterSampleInXYInstruction copy() {
+        return new CenterSampleInXYInstruction(getLightSheetMicroscope());
+    }
 }

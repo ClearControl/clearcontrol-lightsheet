@@ -46,5 +46,10 @@ public class ViewSingleLightSheetStackInstruction extends LightSheetMicroscopeIn
 
         return true;
     }
+
+    @Override
+    public ViewSingleLightSheetStackInstruction copy() {
+        return new ViewSingleLightSheetStackInstruction(mDetectionArmIndex, mLightSheetIndex, getLightSheetMicroscope());
+    }
 }
 

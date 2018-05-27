@@ -190,4 +190,20 @@ public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends L
     public Variable<Boolean> getShowIntermediateResults() {
         return mShowIntermediateResults;
     }
+
+    @Override
+    public CountsSpotsInstruction copy() {
+        CountsSpotsInstruction copied = new CountsSpotsInstruction(mClass, getLightSheetMicroscope());
+        copied.mBlurRadius.set(mBlurRadius.get());
+        copied.mBlurSigma.set(mBlurSigma.get());
+        copied.mDoGRadius.set(mDoGRadius.get());
+        copied.mDoGSigmaMinued.set(mDoGSigmaMinued.get());
+        copied.mDoGSigmaSubtrahend.set(mDoGSigmaSubtrahend.get());
+        copied.mOptimaDetectionRadiud.set(mOptimaDetectionRadiud.get());
+        copied.mThreshold.set(mThreshold.get());
+        copied.mShowIntermediateResults.set(mShowIntermediateResults.get());
+        copied.mXYDownsamplingFactor.set(mXYDownsamplingFactor.get());
+        copied.mZDownsamplingFactor.set(mZDownsamplingFactor.get());
+        return copied;
+    }
 }

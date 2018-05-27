@@ -51,4 +51,9 @@ public class OpticsPrefusedFusionInstruction extends FusionInstruction implement
     storeFusedContainer(lFusedStack);
     return true;
   }
+
+  @Override
+  public OpticsPrefusedFusionInstruction copy() {
+    return new OpticsPrefusedFusionInstruction(getLightSheetMicroscope());
+  }
 }

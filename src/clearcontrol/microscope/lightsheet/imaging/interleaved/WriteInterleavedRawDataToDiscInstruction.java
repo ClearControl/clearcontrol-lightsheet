@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.interleaved;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstructionBase;
 
 /**
  * This instructions writes the raw data from the oldest interleaved
@@ -11,7 +11,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * April 2018
  */
 public class WriteInterleavedRawDataToDiscInstruction extends
-        WriteStackInterfaceContainerAsRawToDiscInstruction
+        WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
   public WriteInterleavedRawDataToDiscInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
@@ -24,5 +24,10 @@ public class WriteInterleavedRawDataToDiscInstruction extends
       result[d] = "C" + d + "interleaved";
     }
     return result;
+  }
+
+  @Override
+  public WriteInterleavedRawDataToDiscInstruction copy() {
+    return new WriteInterleavedRawDataToDiscInstruction(getLightSheetMicroscope());
   }
 }

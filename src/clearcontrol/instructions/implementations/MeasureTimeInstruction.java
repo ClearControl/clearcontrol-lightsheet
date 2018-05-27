@@ -38,4 +38,9 @@ public class MeasureTimeInstruction extends InstructionBase implements
     sMeasuredTime.put(mTimeMeasurementKey, System.currentTimeMillis());
     return false;
   }
+
+  @Override
+  public MeasureTimeInstruction copy() {
+    return new MeasureTimeInstruction(mTimeMeasurementKey);
+  }
 }

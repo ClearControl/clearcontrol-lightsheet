@@ -60,4 +60,9 @@ public class SelectBestQualitySampleInstruction extends LightSheetMicroscopeInst
 
         return true;
     }
+
+    @Override
+    public SelectBestQualitySampleInstruction copy() {
+        return new SelectBestQualitySampleInstruction(getLightSheetMicroscope());
+    }
 }

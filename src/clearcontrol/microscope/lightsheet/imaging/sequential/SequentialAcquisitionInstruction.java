@@ -15,6 +15,7 @@ import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.metadata.StackMetaData;
+import org.yecht.Data;
 
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -250,5 +251,8 @@ public class SequentialAcquisitionInstruction extends
     return mCurrentState.getLightSheetOnOffVariable(pLightIndex).get();
   }
 
-
+  @Override
+  public SequentialAcquisitionInstruction copy() {
+    return new SequentialAcquisitionInstruction(getLightSheetMicroscope());
+  }
 }

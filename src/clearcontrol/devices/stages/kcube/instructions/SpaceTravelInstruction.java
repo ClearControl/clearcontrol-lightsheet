@@ -121,4 +121,8 @@ public class SpaceTravelInstruction extends LightSheetMicroscopeInstructionBase 
         return mTravelPath;
     }
 
+    @Override
+    public SpaceTravelInstruction copy() {
+        return new SpaceTravelInstruction(getLightSheetMicroscope());
+    }
 }

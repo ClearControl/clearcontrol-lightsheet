@@ -47,4 +47,9 @@ public class AdaptationInstruction extends LightSheetMicroscopeInstructionBase i
 
     return true;
   }
+
+  @Override
+  public AdaptationInstruction copy() {
+    return new AdaptationInstruction(getName(), mTargetAdapationModuleClass, getLightSheetMicroscope());
+  }
 }

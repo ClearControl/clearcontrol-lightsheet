@@ -71,4 +71,9 @@ public class XWingRapidAutoFocusInstruction extends LightSheetMicroscopeInstruct
 
         return true;
     }
+
+    @Override
+    public XWingRapidAutoFocusInstruction copy() {
+        return new XWingRapidAutoFocusInstruction(getLightSheetMicroscope());
+    }
 }

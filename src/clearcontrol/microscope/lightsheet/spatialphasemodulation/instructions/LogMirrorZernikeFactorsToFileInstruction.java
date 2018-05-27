@@ -46,4 +46,9 @@ public class LogMirrorZernikeFactorsToFileInstruction extends LightSheetMicrosco
 
         return new DenseMatrix64FWriter(lTargetFile, lZernikeFactorsVector).write();
     }
+
+    @Override
+    public LogMirrorZernikeFactorsToFileInstruction copy() {
+        return new LogMirrorZernikeFactorsToFileInstruction(mMirror, getLightSheetMicroscope());
+    }
 }

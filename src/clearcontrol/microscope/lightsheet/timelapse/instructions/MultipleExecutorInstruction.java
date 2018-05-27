@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.timelapse.instructions;
 
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
+import net.imglib2.type.operators.Mul;
 
 /**
  * MultipleExecutorInstruction
@@ -37,5 +38,10 @@ public class MultipleExecutorInstruction extends InstructionBase {
             scheduler.enqueue(pTimePoint);
         }
         return false;
+    }
+
+    @Override
+    public MultipleExecutorInstruction copy() {
+        return new MultipleExecutorInstruction(schedulersToExecute);
     }
 }

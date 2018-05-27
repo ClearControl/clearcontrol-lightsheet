@@ -28,4 +28,9 @@ public class TimelapseStopInstruction extends LightSheetMicroscopeInstructionBas
         }
         return true;
     }
+
+    @Override
+    public TimelapseStopInstruction copy() {
+        return new TimelapseStopInstruction(getLightSheetMicroscope());
+    }
 }

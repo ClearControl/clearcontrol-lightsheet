@@ -129,7 +129,10 @@ public class MeasureDCTS2DOnStackInstruction<T extends StackInterfaceContainer> 
 
         //IJ.saveAs(lImpMaximumProjection, "JPEG", targetFolder + "/stacks/thumbnails/" +  String.format("%0" + lDigits + "d", lTimePoint) + ".jpg");
         return true;
+    }
 
-
+    @Override
+    public MeasureDCTS2DOnStackInstruction copy() {
+        return new MeasureDCTS2DOnStackInstruction(mClass, getLightSheetMicroscope());
     }
 }

@@ -299,4 +299,15 @@ public class FocusFinderZInstruction extends LightSheetMicroscopeInstructionBase
   {
     return mResetAllTheTime;
   }
+
+  @Override
+  public FocusFinderZInstruction copy() {
+    FocusFinderZInstruction copied = new FocusFinderZInstruction(mLightSheetIndex, mDetectionArmIndex, mControlPlaneIndex, getLightSheetMicroscope());
+    copied.mDeltaZVariable.set(mDeltaZVariable.get());
+    copied.mExposureTimeInSecondsVariable.set(mExposureTimeInSecondsVariable.get());
+    copied.mImageHeightVariable.set(mImageHeightVariable.get());
+    copied.mImageWidthVariable.set(mImageWidthVariable.get());
+    copied.mNumberOfImagesToTakeVariable.set(mNumberOfImagesToTakeVariable.get());
+    return copied;
+  }
 }

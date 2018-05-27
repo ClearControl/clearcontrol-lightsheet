@@ -43,4 +43,9 @@ public class DropOldestStackInterfaceContainerInstruction extends
     lWarehouse.disposeContainer(lContainer);
     return true;
   }
+
+  @Override
+  public DropOldestStackInterfaceContainerInstruction copy() {
+    return new DropOldestStackInterfaceContainerInstruction(mContainerClassToDrop, getDataWarehouse());
+  }
 }

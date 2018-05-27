@@ -1,8 +1,9 @@
 package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.imaging.sequential.WriteSequentialRawDataToDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstructionBase;
 
 /**
  * This instructions writes the raw data from the single view
@@ -12,8 +13,11 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * April 2018
  */
 public class WriteSingleLightSheetImageAsRawToDiscInstruction extends
-        WriteStackInterfaceContainerAsRawToDiscInstruction
+        WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
+  private int mDetectionArmIndex;
+  private int mLightSheetIndex;
+
   /**
    * INstanciates a virtual device with a given name
    *
@@ -21,6 +25,13 @@ public class WriteSingleLightSheetImageAsRawToDiscInstruction extends
   public WriteSingleLightSheetImageAsRawToDiscInstruction(int pDetectionArmIndex, int pLightSheetIndex, LightSheetMicroscope pLightSheetMicroscope)
   {
     super("IO: Write C" + pDetectionArmIndex + "L" + pLightSheetIndex + " raw data to disc", StackInterfaceContainer.class, new String[] {"C" + pDetectionArmIndex + "L" + pLightSheetIndex}, null, pLightSheetMicroscope);
+    mDetectionArmIndex = pDetectionArmIndex;
+    mLightSheetIndex = pLightSheetIndex;
+  }
+
+  @Override
+  public WriteSingleLightSheetImageAsRawToDiscInstruction copy() {
+    return new WriteSingleLightSheetImageAsRawToDiscInstruction(mDetectionArmIndex, mLightSheetIndex, getLightSheetMicroscope());
   }
 }
 

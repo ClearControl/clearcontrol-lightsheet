@@ -41,5 +41,9 @@ public class LaserOnOffInstruction extends InstructionBase implements
     return true;
   }
 
+  @Override
+  public LaserOnOffInstruction copy() {
+    return new LaserOnOffInstruction(mLaserDevice, mTurnOn);
+  }
 
 }

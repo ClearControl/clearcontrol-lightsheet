@@ -45,12 +45,12 @@ import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightShee
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.MeasureDCTS2DOnStackInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.SpotShiftDeterminationInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.MaxProjectionInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.HalfStackMaxProjectionInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.MaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscInstruction;
-import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscInstruction;
+import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscInstructionBase;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DInstruction;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DInstruction;
@@ -451,7 +451,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new InterleavedFusionInstruction(this));
       addDevice(0, new WriteInterleavedRawDataToDiscInstruction(this));
       addDevice(0, new WriteFusedImageAsRawToDiscInstruction("interleaved", this));
-      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("interleaved", this));
+      addDevice(0, new WriteFusedImageAsTifToDiscInstructionBase("interleaved", this));
       addDevice(0, new DropOldestStackInterfaceContainerInstruction(InterleavedImageDataContainer.class, getDataWarehouse()));
       addDevice(0, new MaxProjectionInstruction<InterleavedImageDataContainer>(InterleavedImageDataContainer.class, this));
 
@@ -478,7 +478,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, lSequentialFusionScheduler);
       addDevice(0, new WriteSequentialRawDataToDiscInstruction(this));
       addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
-      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("sequential", this));
+      addDevice(0, new WriteFusedImageAsTifToDiscInstructionBase("sequential", this));
       addDevice(0, lDropContainerScheduler);
       addDevice(0, new MaxProjectionInstruction<SequentialImageDataContainer>(SequentialImageDataContainer.class, this));
 
@@ -486,7 +486,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new OpticsPrefusedFusionInstruction(this));
       addDevice(0, new WriteOpticsPrefusedRawDataAsRawToDiscInstruction(this));
       addDevice(0, new WriteFusedImageAsRawToDiscInstruction("opticsprefused", this));
-      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("opticsprefused", this));
+      addDevice(0, new WriteFusedImageAsTifToDiscInstructionBase("opticsprefused", this));
       addDevice(0, new DropOldestStackInterfaceContainerInstruction(OpticsPrefusedImageDataContainer.class, getDataWarehouse()));
       addDevice(0, new MaxProjectionInstruction<OpticsPrefusedImageDataContainer>(OpticsPrefusedImageDataContainer.class, this));
 

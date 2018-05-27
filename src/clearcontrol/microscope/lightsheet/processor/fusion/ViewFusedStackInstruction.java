@@ -40,4 +40,9 @@ public class ViewFusedStackInstruction extends LightSheetMicroscopeInstructionBa
 
         return true;
     }
+
+    @Override
+    public ViewFusedStackInstruction copy() {
+        return new ViewFusedStackInstruction(getLightSheetMicroscope());
+    }
 }

@@ -9,6 +9,7 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SorensonDiceIndexContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotsImageContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
@@ -29,16 +30,14 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class SpotShiftDeterminationInstruction extends InstructionBase implements LoggingFeature {
+public class SpotShiftDeterminationInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
-    private final LightSheetMicroscope mLightSheetMicroscope;
 
     private BoundedVariable<Integer> mNumberOfDilations = new BoundedVariable<Integer>("Number of dilations", 8, 2, Integer.MAX_VALUE, 2);
 
 
     public SpotShiftDeterminationInstruction(LightSheetMicroscope pLightSheetMicroscope) {
-        super("Post-processing: Determine spot shift");
-        mLightSheetMicroscope = pLightSheetMicroscope;
+        super("Post-processing: Determine spot shift", pLightSheetMicroscope);
     }
 
     @Override
@@ -48,13 +47,13 @@ public class SpotShiftDeterminationInstruction extends InstructionBase implement
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        DataWarehouse dataWarehouse = mLightSheetMicroscope.getDataWarehouse();
+        DataWarehouse dataWarehouse = getLightSheetMicroscope().getDataWarehouse();
 
         ArrayList<SpotsImageContainer> spotsImageContainers = dataWarehouse.getContainers(SpotsImageContainer.class);
 
         if (spotsImageContainers.size() < 2) {
 
-            mLightSheetMicroscope.getTimelapse().log("Not enough spots images found!");
+            getLightSheetMicroscope().getTimelapse().log("Not enough spots images found!");
             warning("Not enough spots images found!");
             return false;
         }
@@ -65,12 +64,12 @@ public class SpotShiftDeterminationInstruction extends InstructionBase implement
 
         if (lStackA == null || lStackB == null) {
 
-            mLightSheetMicroscope.getTimelapse().log("At least one spots image was empty!");
+            getLightSheetMicroscope().getTimelapse().log("At least one spots image was empty!");
             warning("At least one spots image was empty!");
             return false;
         }
 
-        String targetFolder = mLightSheetMicroscope.getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
+        String targetFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
 
         ElapsedTime.measure("Sorenson-Dice determination", () -> {
 
@@ -101,13 +100,13 @@ public class SpotShiftDeterminationInstruction extends InstructionBase implement
             double pixelCountA = Kernels.sumPixels(clij, lCLImageA);
             double pixelCountB = Kernels.sumPixels(clij, lCLImageB);
 
-            mLightSheetMicroscope.getTimelapse().log("pixel count overlap " + pixelCountOverlap);
-            mLightSheetMicroscope.getTimelapse().log("pixel count a " + pixelCountA);
-            mLightSheetMicroscope.getTimelapse().log("pixel count b " + pixelCountB);
+            getLightSheetMicroscope().getTimelapse().log("pixel count overlap " + pixelCountOverlap);
+            getLightSheetMicroscope().getTimelapse().log("pixel count a " + pixelCountA);
+            getLightSheetMicroscope().getTimelapse().log("pixel count b " + pixelCountB);
 
 
             double diceIndex = 2.0 * pixelCountOverlap / (pixelCountA + pixelCountB);
-            mLightSheetMicroscope.getTimelapse().log("pixel count dice index " + diceIndex);
+            getLightSheetMicroscope().getTimelapse().log("pixel count dice index " + diceIndex);
 
             SorensonDiceIndexContainer lSorensonDiceIndexcontainer = new SorensonDiceIndexContainer(pTimePoint, diceIndex);
             dataWarehouse.put("dice_" + pTimePoint, lSorensonDiceIndexcontainer);
@@ -116,7 +115,7 @@ public class SpotShiftDeterminationInstruction extends InstructionBase implement
             double lY = 0;
             double lZ = 0;
 
-            for (BasicStageInterface lStage : mLightSheetMicroscope.getDevices(BasicStageInterface.class)) {
+            for (BasicStageInterface lStage : getLightSheetMicroscope().getDevices(BasicStageInterface.class)) {
                 if (lStage.toString().contains("X")) {
                     lX = lStage.getPositionVariable().get();
                 }
@@ -153,5 +152,10 @@ public class SpotShiftDeterminationInstruction extends InstructionBase implement
         });
 
         return true;
+    }
+
+    @Override
+    public SpotShiftDeterminationInstruction copy() {
+        return new SpotShiftDeterminationInstruction(getLightSheetMicroscope());
     }
 }

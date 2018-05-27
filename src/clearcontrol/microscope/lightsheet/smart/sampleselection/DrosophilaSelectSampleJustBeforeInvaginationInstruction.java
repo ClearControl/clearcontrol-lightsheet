@@ -205,4 +205,11 @@ public class DrosophilaSelectSampleJustBeforeInvaginationInstruction extends Lig
     public BoundedVariable<Double> getDerivativeFactorVariable() {
         return mDerivativeFactorVariable;
     }
+
+    @Override
+    public DrosophilaSelectSampleJustBeforeInvaginationInstruction copy() {
+        DrosophilaSelectSampleJustBeforeInvaginationInstruction copied = new DrosophilaSelectSampleJustBeforeInvaginationInstruction(getLightSheetMicroscope());
+        copied.mDerivativeFactorVariable.set(mDerivativeFactorVariable.get());
+        return copied;
+    }
 }

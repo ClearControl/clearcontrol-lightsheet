@@ -6,6 +6,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
+import scala.xml.dtd.impl.Base;
 
 /**
  * This FusionInstruction takes the oldest
@@ -51,5 +52,10 @@ public class SequentialFusionInstruction extends FusionInstruction implements
 
     storeFusedContainer(lFusedStack);
     return true;
+  }
+
+  @Override
+  public SequentialFusionInstruction copy(){
+    return new SequentialFusionInstruction(getLightSheetMicroscope());
   }
 }

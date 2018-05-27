@@ -130,4 +130,9 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMi
     {
         return mRootFolderVariable;
     }
+
+    @Override
+    public ReadStackInterfaceContainerFromDiscInstruction copy() {
+        return new ReadStackInterfaceContainerFromDiscInstruction(mDatasetNames, getLightSheetMicroscope());
+    }
 }

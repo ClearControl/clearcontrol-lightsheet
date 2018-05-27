@@ -49,5 +49,10 @@ public class DropAllContainersOfTypeInstruction extends
         }
         return true;
     }
+
+    @Override
+    public DropAllContainersOfTypeInstruction copy() {
+        return new DropAllContainersOfTypeInstruction(mContainerClassToDrop, getDataWarehouse());
+    }
 }
 

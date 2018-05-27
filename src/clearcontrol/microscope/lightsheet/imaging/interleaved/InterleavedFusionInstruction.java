@@ -50,5 +50,10 @@ public class InterleavedFusionInstruction extends FusionInstruction implements
     storeFusedContainer(lFusedStack);
     return true;
   }
+
+  @Override
+  public InterleavedFusionInstruction copy() {
+    return new InterleavedFusionInstruction(getLightSheetMicroscope());
+  }
 }
 

@@ -78,4 +78,9 @@ public class LoadMirrorModesFromFolderInstruction extends LightSheetMicroscopeIn
     }
     return true;
   }
+
+  @Override
+  public LoadMirrorModesFromFolderInstruction copy() {
+    return new LoadMirrorModesFromFolderInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase, getLightSheetMicroscope());
+  }
 }

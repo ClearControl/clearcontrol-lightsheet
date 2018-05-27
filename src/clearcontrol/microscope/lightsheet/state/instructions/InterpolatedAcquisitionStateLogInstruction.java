@@ -50,4 +50,9 @@ public class InterpolatedAcquisitionStateLogInstruction extends LightSheetMicros
 
     return true;
   }
+
+  @Override
+  public InterpolatedAcquisitionStateLogInstruction copy() {
+    return new InterpolatedAcquisitionStateLogInstruction(getLightSheetMicroscope());
+  }
 }

@@ -56,4 +56,9 @@ public class ControlPlaneFocusFinderZInstruction extends LightSheetMicroscopeIns
     mNeedsReset = false;
     return true;
   }
+
+  @Override
+  public ControlPlaneFocusFinderZInstruction copy() {
+    return new ControlPlaneFocusFinderZInstruction(mDetectionArmIndex, mControlPlaneIndex, getLightSheetMicroscope());
+  }
 }

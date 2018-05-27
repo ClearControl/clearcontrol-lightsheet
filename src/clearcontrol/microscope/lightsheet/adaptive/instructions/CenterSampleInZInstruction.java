@@ -127,4 +127,15 @@ public class CenterSampleInZInstruction extends
     public BoundedVariable<Integer> getNumberOfStepsVariable() {
         return mNumberOfStepsVariable;
     }
+
+    @Override
+    public CenterSampleInZInstruction copy() {
+        CenterSampleInZInstruction copied = new CenterSampleInZInstruction(getLightSheetMicroscope());
+        copied.mNumberOfStepsVariable.set(mNumberOfStepsVariable.get());
+        copied.mSearchRangeMaxZVariable.set(mSearchRangeMaxZVariable.get());
+        copied.mSearchRangeMinZVariable.set(mSearchRangeMinZVariable.get());
+        copied.mSearchRangeZVariable.set(mSearchRangeZVariable.get());
+        return copied;
+    }
+
 }

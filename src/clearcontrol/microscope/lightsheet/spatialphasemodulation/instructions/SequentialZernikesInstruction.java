@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
+import org.yecht.Data;
 
 public class SequentialZernikesInstruction extends InstructionBase implements
         LoggingFeature {
@@ -72,5 +73,10 @@ public class SequentialZernikesInstruction extends InstructionBase implements
         mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(mArray);
         return true;
 
+    }
+
+    @Override
+    public SequentialZernikesInstruction copy() {
+        return new SequentialZernikesInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase, mStepper, mInitialValue, mMaxZernCoeff, mMinZernCoeff);
     }
 }

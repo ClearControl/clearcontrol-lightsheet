@@ -12,6 +12,7 @@ import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteCo
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
 import ij.gui.Plot;
+import org.renjin.stats.internals.distributions.F;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
@@ -274,5 +275,16 @@ public class FocusFinderAlphaByVariationInstruction extends
   public BoundedVariable<Double> getAlphaStepVariable()
   {
     return mAlphaStepVariable;
+  }
+
+  @Override
+  public FocusFinderAlphaByVariationInstruction copy() {
+    FocusFinderAlphaByVariationInstruction copied = new FocusFinderAlphaByVariationInstruction(mLightSheetIndex, mDetectionArmIndex, mControlPlaneIndex, getLightSheetMicroscope());
+    copied.mAlphaStepVariable.set(mAlphaStepVariable.get());
+    copied.mExposureTimeInSecondsVariable.set(mExposureTimeInSecondsVariable.get());
+    copied.mImageHeightVariable.set(mImageHeightVariable.get());
+    copied.mImageWidthVariable.set(mImageWidthVariable.get());
+    copied.mNumberOfImagesToTakeVariable.set(mNumberOfImagesToTakeVariable.get());
+    return copied;
   }
 }

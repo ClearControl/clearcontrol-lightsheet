@@ -161,4 +161,9 @@ public class OpticsPrefusedAcquisitionInstruction extends
 
     return true;
   }
+
+  @Override
+  public OpticsPrefusedAcquisitionInstruction copy() {
+    return new OpticsPrefusedAcquisitionInstruction(getLightSheetMicroscope());
+  }
 }

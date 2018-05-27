@@ -6,7 +6,7 @@ import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
-import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.HalfStackMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
@@ -69,5 +69,10 @@ public class AppendConsecutiveSingleViewImagingInstruction extends LightSheetMic
             index++;
         }
         return true;
+    }
+
+    @Override
+    public AppendConsecutiveSingleViewImagingInstruction copy(){
+        return new AppendConsecutiveSingleViewImagingInstruction(mDetectionArmIndex, mLightSheetIndex, mNumberOfImages, mIntervalInSeconds, getLightSheetMicroscope());
     }
 }

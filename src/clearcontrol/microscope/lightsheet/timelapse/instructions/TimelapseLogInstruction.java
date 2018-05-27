@@ -2,8 +2,11 @@ package clearcontrol.microscope.lightsheet.timelapse.instructions;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
+import clearcontrol.microscope.timelapse.TimelapseInterface;
 
 import java.io.File;
 
@@ -33,5 +36,10 @@ public class TimelapseLogInstruction extends InstructionBase {
     public boolean enqueue(long pTimePoint) {
         new ScheduleWriter(mTimelapse.getListOfActivatedSchedulers(), new File(mTimelapse.getWorkingDirectory(), "program" + mTimelapse.getTimePointCounterVariable().get() + ".txt")).write();
         return true;
+    }
+
+    @Override
+    public TimelapseLogInstruction copy() {
+        return new TimelapseLogInstruction((LightSheetMicroscope) mTimelapse.getMicroscope());
     }
 }

@@ -44,4 +44,9 @@ public class PauseInstruction extends InstructionBase implements
     }
     return true;
   }
+
+  @Override
+  public PauseInstruction copy() {
+    return new PauseInstruction(mPauseTimeInMilliseconds);
+  }
 }

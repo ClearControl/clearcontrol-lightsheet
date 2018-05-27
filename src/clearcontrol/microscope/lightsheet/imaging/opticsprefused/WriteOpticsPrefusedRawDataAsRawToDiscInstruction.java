@@ -1,7 +1,8 @@
 package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstructionBase;
 
 /**
  * This instructions writes the raw data from the oldest optics prefused
@@ -11,7 +12,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * April 2018
  */
 public class WriteOpticsPrefusedRawDataAsRawToDiscInstruction extends
-        WriteStackInterfaceContainerAsRawToDiscInstruction
+        WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
   public WriteOpticsPrefusedRawDataAsRawToDiscInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
@@ -24,5 +25,10 @@ public class WriteOpticsPrefusedRawDataAsRawToDiscInstruction extends
       result[d] = "C" + d + "opticsprefused";
     }
     return result;
+  }
+
+  @Override
+  public WriteOpticsPrefusedRawDataAsRawToDiscInstruction copy() {
+    return new WriteOpticsPrefusedRawDataAsRawToDiscInstruction(getLightSheetMicroscope());
   }
 }

@@ -39,4 +39,9 @@ public class LaserPowerInstruction extends InstructionBase implements
     mLaser.setTargetPowerInPercent(mLaserPowerInPercent);
     return true;
   }
+
+  @Override
+  public LaserPowerInstruction copy() {
+    return new LaserPowerInstruction(mLaser, mLaserPowerInPercent);
+  }
 }

@@ -60,4 +60,9 @@ public class SingleViewAcquisitionInstruction extends
   {
     return mLastAcquiredStack;
   }
+
+  @Override
+  public SingleViewAcquisitionInstruction copy() {
+    return new SingleViewAcquisitionInstruction(mCameraIndex, mLightSheetIndex, getLightSheetMicroscope());
+  }
 }

@@ -6,7 +6,7 @@ import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTime
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
-import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.HalfStackMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
@@ -69,5 +69,10 @@ public class AppendConsecutiveInterleavedImagingInstruction extends LightSheetMi
             index++;
         }
         return true;
+    }
+
+    @Override
+    public AppendConsecutiveInterleavedImagingInstruction copy() {
+        return new AppendConsecutiveInterleavedImagingInstruction(mNumberOfImages, mIntervalInSeconds, getLightSheetMicroscope());
     }
 }

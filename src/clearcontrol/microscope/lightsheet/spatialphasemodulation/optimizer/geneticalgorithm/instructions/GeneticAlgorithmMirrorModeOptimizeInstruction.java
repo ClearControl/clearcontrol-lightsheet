@@ -85,4 +85,15 @@ public class GeneticAlgorithmMirrorModeOptimizeInstruction extends LightSheetMic
     public BoundedVariable<Integer> getPopulationSize() {
         return mPopulationSize;
     }
+
+    @Override
+    public GeneticAlgorithmMirrorModeOptimizeInstruction copy() {
+        GeneticAlgorithmMirrorModeOptimizeInstruction copied = new GeneticAlgorithmMirrorModeOptimizeInstruction(mMirror, getLightSheetMicroscope());
+        copied.mNumberOfEpochsPerTimePoint.set(mNumberOfEpochsPerTimePoint.get());
+        copied.mNumberOfMutations.set(mNumberOfMutations.get());
+        copied.mPopulationSize.set(mPopulationSize.get());
+        copied.mZernikeRangeFactor.set(mZernikeRangeFactor.get());
+        copied.mPositionZ.set(mPositionZ.get());
+        return copied;
+    }
 }

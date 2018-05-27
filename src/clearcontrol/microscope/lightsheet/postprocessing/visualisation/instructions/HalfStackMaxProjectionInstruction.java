@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers;
+package clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions;
 
 import clearcl.imagej.ClearCLIJ;
 import clearcontrol.core.log.LoggingFeature;
@@ -14,6 +14,7 @@ import de.mpicbg.rhaase.spimcat.postprocessing.fijiplugins.projection.presentati
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import jnr.posix.HANDLE;
 
 import java.awt.*;
 import java.io.File;
@@ -128,5 +129,10 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
 
     public boolean isViewFront() {
         return mViewFront;
+    }
+
+    @Override
+    public HalfStackMaxProjectionInstruction copy() {
+        return new HalfStackMaxProjectionInstruction(mClass, mViewFront, getLightSheetMicroscope());
     }
 }

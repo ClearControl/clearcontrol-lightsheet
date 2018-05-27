@@ -42,4 +42,9 @@ public class DataWarehouseLogInstruction extends DataWarehouseInstructionBase {
         }
         return false;
     }
+
+    @Override
+    public DataWarehouseLogInstruction copy() {
+        return new DataWarehouseLogInstruction(mLightSheetMicroscope);
+    }
 }

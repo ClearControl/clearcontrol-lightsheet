@@ -4,6 +4,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
+import net.imglib2.RandomAccessibleInterval;
 
 import java.util.Random;
 
@@ -36,5 +37,10 @@ public class RandomZernikesInstruction extends InstructionBase implements
 
         mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(lArray);
         return true;
+    }
+
+    @Override
+    public RandomZernikesInstruction copy() {
+        return new RandomZernikesInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase);
     }
 }

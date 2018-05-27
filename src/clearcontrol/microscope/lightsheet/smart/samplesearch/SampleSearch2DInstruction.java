@@ -4,6 +4,7 @@ import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
+import javassist.tools.rmi.Sample;
 
 import java.util.ArrayList;
 
@@ -79,5 +80,10 @@ public class SampleSearch2DInstruction extends SampleSearchInstructionBase {
 
 
         return true;
+    }
+
+    @Override
+    public SampleSearch2DInstruction copy() {
+        return new SampleSearch2DInstruction(getLightSheetMicroscope());
     }
 }

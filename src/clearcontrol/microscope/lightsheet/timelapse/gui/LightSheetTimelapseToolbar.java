@@ -359,7 +359,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
               if (item.getParent() != null && item.getParent().getValue().compareTo("Instructions") != 0 ) {
                 int lSelectedIndexInMainList = lListView.getSelectionModel().getSelectedIndex();
                 if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList = lSchedulerList.size();
-                lSchedulerList.add(lSelectedIndexInMainList, pLightSheetTimelapse.getListOfAvailableSchedulers(item.getParent().getValue(), item.getValue()).get(0));
+                lSchedulerList.add(lSelectedIndexInMainList, pLightSheetTimelapse.getListOfAvailableSchedulers(item.getParent().getValue(), item.getValue()).get(0).copy());
                 lListView.setItems(FXCollections.observableArrayList(
                         lSchedulerList));
               }

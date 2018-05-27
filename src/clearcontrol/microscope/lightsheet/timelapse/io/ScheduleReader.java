@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.timelapse.io;
 
+import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 
@@ -24,7 +25,6 @@ public class ScheduleReader
 
   public boolean read()
   {
-
     StringBuilder sb = new StringBuilder();
     BufferedReader br = null;
     try
@@ -63,9 +63,30 @@ public class ScheduleReader
     }
 
 
-    String[] lSchedulerNames = sb.toString().split("\n");
-    for (String lSchedulerName : lSchedulerNames) {
-      mSchedulerList.add(mLightSheetMicroscope.getSchedulerDevice(lSchedulerName.replace("\r", "")));
+    String[] lInstructionNames = sb.toString().split("\n");
+    for (String lInstructionName : lInstructionNames) {
+      InstructionInterface lInstruction = mLightSheetMicroscope.getSchedulerDevice(lInstructionName.replace("\r", ""));
+      if (lInstruction != null) {
+        mSchedulerList.add(lInstruction);
+      } else {
+        mSchedulerList.add(new InstructionBase("UNKNOWN INSTRUCTION: " + lInstructionName) {
+
+          @Override
+          public boolean initialize() {
+            return false;
+          }
+
+          @Override
+          public boolean enqueue(long pTimePoint) {
+            return false;
+          }
+
+          @Override
+          public InstructionInterface copy() {
+            return null;
+          }
+        });
+      }
     }
 
     return true;

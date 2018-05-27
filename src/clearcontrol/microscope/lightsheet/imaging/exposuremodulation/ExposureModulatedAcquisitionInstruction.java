@@ -165,4 +165,13 @@ public class ExposureModulatedAcquisitionInstruction extends
   public BoundedVariable<Double> getShortExposureTimeInSecondsVariable() {
     return mShortExposureTimeInSecondsVariable;
   }
+
+  @Override
+  public ExposureModulatedAcquisitionInstruction copy() {
+    ExposureModulatedAcquisitionInstruction copied = new ExposureModulatedAcquisitionInstruction(mCameraIndex, mLightSheetIndex, getLightSheetMicroscope());
+    copied.mLongExposureTimeInSecondsVariable.set(mLongExposureTimeInSecondsVariable.get());
+    copied.mShortExposureTimeInSecondsVariable.set(mLongExposureTimeInSecondsVariable.get());
+    return copied;
+  }
+
 }

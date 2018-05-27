@@ -6,7 +6,7 @@ import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTime
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
-import clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers.HalfStackMaxProjectionInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.HalfStackMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
@@ -72,5 +72,10 @@ public class AppendConsecutiveHyperDriveImagingInstruction extends LightSheetMic
             index++;
         }
         return true;
+    }
+
+    @Override
+    public AppendConsecutiveHyperDriveImagingInstruction copy() {
+        return new AppendConsecutiveHyperDriveImagingInstruction(mNumberOfImages, mIntervalInSeconds, getLightSheetMicroscope());
     }
 }

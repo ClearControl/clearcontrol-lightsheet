@@ -130,4 +130,19 @@ public class BasicThreeAxesStageInstruction extends InstructionBase implements
   public Variable<Boolean> getRestartAfterFinishVariable() {
     return mRestartAfterFinishVariable;
   }
+
+  @Override
+  public BasicThreeAxesStageInstruction copy() {
+    BasicThreeAxesStageInstruction copied = new BasicThreeAxesStageInstruction(mBasicThreeAxesStageInterface);
+    copied.mStartXVariable.set(mStartXVariable.get());
+    copied.mStartYVariable.set(mStartYVariable.get());
+    copied.mStartZVariable.set(mStartZVariable.get());
+    copied.mStopXVariable.set(mStopXVariable.get());
+    copied.mStopYVariable.set(mStopYVariable.get());
+    copied.mStopZVariable.set(mStopZVariable.get());
+    copied.mRestartAfterFinishVariable.set(mRestartAfterFinishVariable.get());
+    copied.mNumberOfStepsVariable.set(mNumberOfStepsVariable.get());
+    return copied;
+  }
+
 }

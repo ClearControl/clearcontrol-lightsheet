@@ -51,4 +51,9 @@ public class PauseUntilTimeAfterMeasuredTimeInstruction extends
       }
     return true;
   }
+
+  @Override
+  public PauseUntilTimeAfterMeasuredTimeInstruction copy() {
+    return new PauseUntilTimeAfterMeasuredTimeInstruction(mMeasuredTimeKey, mPauseTimeInMilliseconds);
+  }
 }

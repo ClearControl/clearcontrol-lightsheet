@@ -102,6 +102,11 @@ public class ImagingPlanningInstruction extends LightSheetMicroscopeInstructionB
                 i++;
             }
         }
-
     }
+
+    @Override
+    public ImagingPlanningInstruction copy() {
+        return new ImagingPlanningInstruction(getLightSheetMicroscope());
+    }
+
 }

@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.postprocessing.visualisation.schedulers;
+package clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions;
 
 import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
@@ -70,5 +70,10 @@ public class MaxProjectionInstruction<T extends StackInterfaceContainer> extends
         IJ.run(lImpMaximumProjection, "Enhance Contrast", "saturated=0.35");
         IJ.saveAsTiff(lImpMaximumProjection, targetFolder + "/stacks/thumbnails_max/" +  String.format("%0" + lDigits + "d", lTimePoint) + ".tif");
         return true;
+    }
+
+    @Override
+    public MaxProjectionInstruction copy() {
+        return new MaxProjectionInstruction(mClass, getLightSheetMicroscope());
     }
 }

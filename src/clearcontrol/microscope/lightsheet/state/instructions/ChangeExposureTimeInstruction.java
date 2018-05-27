@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.state.instructions;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.component.lightsheet.schedulers.ChangeLightSheetWidthInstruction;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 
 /**
@@ -27,5 +28,10 @@ public class ChangeExposureTimeInstruction extends LightSheetMicroscopeInstructi
     public boolean enqueue(long pTimePoint) {
         getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState().getExposureInSecondsVariable().set(mExposureTimeInSeconds);
         return true;
+    }
+
+    @Override
+    public ChangeExposureTimeInstruction copy() {
+        return new ChangeExposureTimeInstruction(mExposureTimeInSeconds ,getLightSheetMicroscope());
     }
 }

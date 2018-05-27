@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstructionBase;
 
 /**
  * This instructions writes the raw data from the sequential
@@ -11,7 +11,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * April 2018
  */
 public class WriteSequentialRawDataToDiscInstruction extends
-        WriteStackInterfaceContainerAsRawToDiscInstruction
+        WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
   /**
    * INstanciates a virtual device with a given name
@@ -34,5 +34,10 @@ public class WriteSequentialRawDataToDiscInstruction extends
       }
     }
     return result;
+  }
+
+  @Override
+  public WriteSequentialRawDataToDiscInstruction copy() {
+    return new WriteSequentialRawDataToDiscInstruction(getLightSheetMicroscope());
   }
 }

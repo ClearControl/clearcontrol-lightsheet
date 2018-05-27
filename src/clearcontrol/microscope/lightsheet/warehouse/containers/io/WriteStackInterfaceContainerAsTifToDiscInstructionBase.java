@@ -16,27 +16,27 @@ import ij.measure.Calibration;
 import java.io.File;
 
 /**
- * WriteStackInterfaceContainerAsTifToDiscInstruction
+ * WriteStackInterfaceContainerAsTifToDiscInstructionBase
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
+public abstract class WriteStackInterfaceContainerAsTifToDiscInstructionBase extends
         LightSheetMicroscopeInstructionBase implements
         LoggingFeature
 {
-    Class mContainerClass;
-    String[] mImageKeys = null;
-    String mChannelName = null;
+    protected Class mContainerClass;
+    protected String[] mImageKeys = null;
+    protected String mChannelName = null;
 
     /**
      * INstanciates a virtual device with a given name
      *
      * @param pDeviceName device name
      */
-    public WriteStackInterfaceContainerAsTifToDiscInstruction(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
+    public WriteStackInterfaceContainerAsTifToDiscInstructionBase(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
     {
         super(pDeviceName, pLightSheetMicroscope);
         mContainerClass = pContainerClass;

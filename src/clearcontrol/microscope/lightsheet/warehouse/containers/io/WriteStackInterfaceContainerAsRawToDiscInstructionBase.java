@@ -18,20 +18,20 @@ import clearcontrol.stack.sourcesink.sink.FileStackSinkInterface;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */
-public class WriteStackInterfaceContainerAsRawToDiscInstruction extends
+public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase extends
         LightSheetMicroscopeInstructionBase implements
                                                                        LoggingFeature
 {
-  Class mContainerClass;
-  String[] mImageKeys = null;
-  String mChannelName = null;
+  protected Class mContainerClass;
+  protected String[] mImageKeys = null;
+  protected String mChannelName = null;
 
     /**
      * INstanciates a virtual device with a given name
      *
      * @param pDeviceName device name
      */
-  public WriteStackInterfaceContainerAsRawToDiscInstruction(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
+  public WriteStackInterfaceContainerAsRawToDiscInstructionBase(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
   {
     super(pDeviceName, pLightSheetMicroscope);
     mContainerClass = pContainerClass;

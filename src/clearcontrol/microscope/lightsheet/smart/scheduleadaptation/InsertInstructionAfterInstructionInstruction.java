@@ -15,14 +15,14 @@ import java.util.ArrayList;
  */
 public class InsertInstructionAfterInstructionInstruction<T extends InstructionInterface> extends LightSheetMicroscopeInstructionBase {
     private final LightSheetMicroscope lightSheetMicroscope;
-    private final InstructionInterface schedulerToInsert;
-    private final Class<T> schedulerToInsertBefore;
+    private final InstructionInterface instructionToInsert;
+    private final Class<T> instructionToInsertBefore;
 
-    public InsertInstructionAfterInstructionInstruction(LightSheetMicroscope lightSheetMicroscope, InstructionInterface schedulerToInsert, Class<T> schedulerToInsertBefore) {
-        super("Smart: Insert " + schedulerToInsert + " before any " + schedulerToInsertBefore, lightSheetMicroscope);
+    public InsertInstructionAfterInstructionInstruction(LightSheetMicroscope lightSheetMicroscope, InstructionInterface instructionToInsert, Class<T> instructionToInsertBefore) {
+        super("Smart: Insert " + instructionToInsert + " before any " + instructionToInsertBefore, lightSheetMicroscope);
         this.lightSheetMicroscope = lightSheetMicroscope;
-        this.schedulerToInsert = schedulerToInsert;
-        this.schedulerToInsertBefore = schedulerToInsertBefore;
+        this.instructionToInsert = instructionToInsert;
+        this.instructionToInsertBefore = instructionToInsertBefore;
     }
 
 
@@ -39,15 +39,19 @@ public class InsertInstructionAfterInstructionInstruction<T extends InstructionI
         // add myself to the instructions so that I'll be asked again after next imaging sequence
         ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
         for (int i = (int)pTimePoint; i < schedule.size() - 1; i++) {
-            InstructionInterface lScheduler = schedule.get(i);
-            InstructionInterface lFollowingScheduler = schedule.get(i + 1);
-            if ((schedulerToInsertBefore.isInstance(lScheduler) && (lFollowingScheduler != schedulerToInsert))) {
-                schedule.add(i + 1, schedulerToInsert);
+            InstructionInterface lInstruction = schedule.get(i);
+            InstructionInterface lFollowingInstruction = schedule.get(i + 1);
+            if ((instructionToInsertBefore.isInstance(lInstruction) && (lFollowingInstruction != instructionToInsert))) {
+                schedule.add(i + 1, instructionToInsert.copy());
                 i++;
             }
         }
 
-
         return true;
+    }
+
+    @Override
+    public InsertInstructionAfterInstructionInstruction copy() {
+        return new InsertInstructionAfterInstructionInstruction(getLightSheetMicroscope(), instructionToInsert, instructionToInsertBefore);
     }
 }

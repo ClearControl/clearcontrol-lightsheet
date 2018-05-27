@@ -180,4 +180,8 @@ public class InterleavedAcquisitionInstruction extends
     return true;
   }
 
+  @Override
+  public InterleavedAcquisitionInstruction copy() {
+    return new InterleavedAcquisitionInstruction(getLightSheetMicroscope());
+  }
 }

@@ -35,4 +35,9 @@ public class RestartTimelapseWhileNoSampleChosenInstruction extends LightSheetMi
         }
         return true;
     }
+
+    @Override
+    public RestartTimelapseWhileNoSampleChosenInstruction copy() {
+        return new RestartTimelapseWhileNoSampleChosenInstruction(getLightSheetMicroscope());
+    }
 }
