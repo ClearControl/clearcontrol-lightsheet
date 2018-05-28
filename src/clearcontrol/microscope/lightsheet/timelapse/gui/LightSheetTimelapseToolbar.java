@@ -32,6 +32,7 @@ import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 /**
@@ -43,6 +44,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
 {
   LightSheetTimelapse mLightSheetTimelapse = null;
 
+  ScrollPane mPropertiesScrollPane;
 
   private File mProgramTemplateDirectory =
       MachineConfiguration.get()
@@ -58,6 +60,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
   {
     super(pLightSheetTimelapse);
     mLightSheetTimelapse = pLightSheetTimelapse;
+
 
     this.setAlignment(Pos.TOP_LEFT);
 
@@ -138,6 +141,57 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
       lListView.setMinHeight(300);
       //lListView.setMaxHeight(Double.MAX_VALUE);
       lListView.setMinWidth(450);
+
+
+      lListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                                    @Override
+                                    public void handle(MouseEvent mouseEvent) {
+                                      /**
+                                       * Dirty hack: Use Java reflections to discover a matching panel
+                                       * TODO: find a better way of doing this, without reflections
+                                       */
+                                      if (mouseEvent.getClickCount() > 0) {
+                                        System.out.println("DblClicked: " + lSchedulerList.get(lListView.getSelectionModel().getSelectedIndex()));
+                                        InstructionInterface lInstruction = lSchedulerList.get(lListView.getSelectionModel().getSelectedIndex());
+                                        try
+                                        {
+                                          Class<?> lInstructionClass =
+                                                  lInstruction.getClass();
+                                          String lInstructionClassName =
+                                                  lInstructionClass.getSimpleName();
+                                          String lInstructionPanelClassName =
+                                                  lInstructionClass.getPackage()
+                                                          .getName()
+                                                          + ".gui."
+                                                          + lInstructionClassName
+                                                          + "Panel";
+                                          info("Searching for class %s as panel for calibration module %s \n",
+                                                  lInstructionPanelClassName,
+                                                  lInstructionClassName);
+                                          Class<?> lClass =
+                                                  Class.forName(lInstructionPanelClassName);
+                                          Constructor<?> lConstructor =
+                                                  lClass.getConstructor(lInstruction.getClass());
+                                          Node lPanel =
+                                                  (Node) lConstructor.newInstance(lInstruction);
+
+                                          mPropertiesScrollPane.setContent(lPanel);
+                                        }
+                                        catch (ClassNotFoundException e)
+                                        {
+                                          warning("Cannot find panel for module %s \n",
+                                                  lInstruction.getClass().getSimpleName());
+                                          // e.printStackTrace();
+                                          mPropertiesScrollPane.setContent(null);
+                                        }
+                                        catch (Throwable e)
+                                        {
+                                          e.printStackTrace();
+                                        }
+
+                                      }
+                                    }
+                                  });
 
       lSchedulerChecklistGridPane.add(lListView, 0, lRow, 1, 6);
 
@@ -325,6 +379,20 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
 
 
       lRow = 0;
+      // properties panel
+      {
+        Label lLabel = new Label("Properties");
+        lSchedulerChecklistGridPane.add(lLabel, 2, lRow, 2, 1);
+        lRow++;
+
+        mPropertiesScrollPane = new ScrollPane();
+        mPropertiesScrollPane.setMinHeight(200);
+        lSchedulerChecklistGridPane.add(mPropertiesScrollPane, 2, lRow, 2, 1);
+        lRow++;
+      }
+
+
+      lRow = 3;
       {
         Label lLabel = new Label("Add instruction");
         lSchedulerChecklistGridPane.add(lLabel, 2, lRow, 2, 1);

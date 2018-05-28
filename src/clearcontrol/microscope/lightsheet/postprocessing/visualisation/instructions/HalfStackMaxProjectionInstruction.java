@@ -31,7 +31,8 @@ import java.time.Duration;
 public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
     private final Class<T> mClass;
-    private final boolean mViewFront;
+    private boolean mViewFront;
+    private String mMustContainString = "";
 
     private BoundedVariable<Integer> mFontSizeVariable = new BoundedVariable<Integer>("Font size", 14, 5, Integer.MAX_VALUE);
 
@@ -133,6 +134,8 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
 
     @Override
     public HalfStackMaxProjectionInstruction copy() {
-        return new HalfStackMaxProjectionInstruction(mClass, mViewFront, getLightSheetMicroscope());
+        HalfStackMaxProjectionInstruction copied = new HalfStackMaxProjectionInstruction(mClass, mViewFront, getLightSheetMicroscope());
+        copied.mMustContainString = mMustContainString;
+        return copied;
     }
 }
