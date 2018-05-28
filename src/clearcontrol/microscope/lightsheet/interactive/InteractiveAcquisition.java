@@ -503,7 +503,8 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
           // info("play queue success");
           mAcquisitionCounterVariable.increment();
         }
-
+        System.out.println(mAcquisitionCounterVariable.toString());
+        System.out.println(computeImageQuality());
         // info("... done waiting!");
       }
 
@@ -594,6 +595,36 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
 
   }
 
+  /**
+   * Live mean DCTS statistics
+   */
+  public double[] computeImageQuality(){
+    DCTS2D lDCTS2D = new DCTS2D();
+
+
+//    final StackInterface lStackInterface =
+//            mLightSheetMicroscope.getCameraStackVariable(d)
+//                    .get();
+
+
+    StackInterface lStacks = mLightSheetMicroscope.getCameraStackVariable(0).get(); //fix this
+
+
+    double[] lMetricArray =
+            lDCTS2D.computeImageQualityMetric((OffHeapPlanarStack) lStacks);
+    System.out.println(Arrays.toString(lMetricArray));
+//    String lChartName = String.format("CPI=%d|LS=%d|D=%d",
+//            pControlPlaneIndex,
+//            pLightSheetIndex,
+//            pDetectionArmIndex);
+//    getAdaptiveEngine().configureChart(getName(),
+//            lChartName,
+//            "ΔZ",
+//            "focus metric",
+//            VisualConsoleInterface.ChartType.Line);
+
+    return lMetricArray;
+  }
   /**
    * Returns the exposure variable
    * 
