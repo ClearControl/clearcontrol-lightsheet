@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers;
+package clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions;
 
 import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
@@ -8,7 +8,6 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SorensonDiceIndexContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotsImageContainer;

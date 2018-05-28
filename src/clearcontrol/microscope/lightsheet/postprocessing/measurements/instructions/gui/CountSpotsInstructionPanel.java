@@ -1,19 +1,19 @@
-package clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.gui;
+package clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.CountsSpotsInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
- * SpotDetectionInstructionPanel
+ * CountSpotsInstructionPanel
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class SpotDetectionInstructionPanel extends CustomGridPane {
-    public SpotDetectionInstructionPanel(CountsSpotsInstruction<StackInterfaceContainer> pCountsSpotsInstruction) {
+public class CountSpotsInstructionPanel extends CustomGridPane {
+    public CountSpotsInstructionPanel(CountsSpotsInstruction<StackInterfaceContainer> pCountsSpotsInstruction) {
 
         addDoubleField(pCountsSpotsInstruction.getXYDownsamplingFactor(), 0);
         addDoubleField(pCountsSpotsInstruction.getZDownsamplingFactor(), 1);

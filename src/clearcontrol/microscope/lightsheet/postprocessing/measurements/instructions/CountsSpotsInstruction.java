@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers;
+package clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions;
 
 import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;

@@ -168,7 +168,7 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                         MicroscopeNodeType.Stage);
 
 //    addPanelMappingEntry(CountsSpotsInstruction.class,
-//                        SpotDetectionInstructionPanel.class,
+//                        CountSpotsInstructionPanel.class,
 //                        MicroscopeNodeType.Other);
 //
 //    addPanelMappingEntry(GeneticAlgorithmMirrorModeOptimizeInstruction.class,
