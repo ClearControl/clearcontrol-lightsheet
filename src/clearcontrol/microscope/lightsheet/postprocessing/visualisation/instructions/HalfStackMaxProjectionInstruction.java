@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.postprocessing.visualisation.instruct
 
 import clearcl.imagej.ClearCLIJ;
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
@@ -14,7 +15,6 @@ import de.mpicbg.rhaase.spimcat.postprocessing.fijiplugins.projection.presentati
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import jnr.posix.HANDLE;
 
 import java.awt.*;
 import java.io.File;
@@ -31,8 +31,8 @@ import java.time.Duration;
 public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
     private final Class<T> mClass;
-    private boolean mViewFront;
-    private String mMustContainString = "";
+    private Variable<Boolean> mViewFrontVariable = new Variable<Boolean>("Front view", true);
+    private Variable<String> mMustContainStringVariable = new Variable<String>("", "");
 
     private BoundedVariable<Integer> mFontSizeVariable = new BoundedVariable<Integer>("Font size", 14, 5, Integer.MAX_VALUE);
 
@@ -43,7 +43,7 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
     public HalfStackMaxProjectionInstruction(Class<T> pClass, boolean pViewFront, LightSheetMicroscope pLightSheetMicroscope) {
         super("Post-processing: Thumbnail (half stack max projection, " +(pViewFront?"front":"back") + ") generator for " + pClass.getSimpleName(), pLightSheetMicroscope);
         mClass = pClass;
-        mViewFront = pViewFront;
+        mViewFrontVariable.set(pViewFront);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
 
         HalfStackProjectionPlugin halfStackProjectionPlugin = new HalfStackProjectionPlugin();
         halfStackProjectionPlugin.setInputImage(lImagePlus);
-        if (mViewFront) {
+        if (mViewFrontVariable.get()) {
             halfStackProjectionPlugin.minSlice = 0;
             halfStackProjectionPlugin.maxSlice = lImagePlus.getNSlices() / 2;
         } else {
@@ -90,7 +90,7 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
         halfStackProjectionPlugin.run();
         ImagePlus lResultImagePlus = halfStackProjectionPlugin.getOutputImage();
 
-        String folderName = "thumbnails_" + (mViewFront?"front":"back");
+        String folderName = "thumbnails_" + (mViewFrontVariable.get()?"front":"back");
 
         new File(targetFolder + "/stacks/" + folderName + "/").mkdirs();
 
@@ -129,13 +129,25 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
     }
 
     public boolean isViewFront() {
-        return mViewFront;
+        return mViewFrontVariable.get();
+    }
+
+    public BoundedVariable<Integer> getFontSizeVariable() {
+        return mFontSizeVariable;
+    }
+
+    public Variable<String> getMustContainStringVariable() {
+        return mMustContainStringVariable;
+    }
+
+    public Variable<Boolean> getViewFront() {
+        return mViewFrontVariable;
     }
 
     @Override
     public HalfStackMaxProjectionInstruction copy() {
-        HalfStackMaxProjectionInstruction copied = new HalfStackMaxProjectionInstruction(mClass, mViewFront, getLightSheetMicroscope());
-        copied.mMustContainString = mMustContainString;
+        HalfStackMaxProjectionInstruction copied = new HalfStackMaxProjectionInstruction(mClass, mViewFrontVariable.get(), getLightSheetMicroscope());
+        copied.mMustContainStringVariable.set(mMustContainStringVariable.get());
         return copied;
     }
 }

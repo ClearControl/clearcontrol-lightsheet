@@ -25,7 +25,8 @@ public class GeneticAlgorithmMirrorModeOptimizeInstruction extends LightSheetMic
     private BoundedVariable<Integer> mPopulationSize = new BoundedVariable<Integer>("Population size",10, 0, Integer.MAX_VALUE);
     private BoundedVariable<Integer> mNumberOfMutations = new BoundedVariable<Integer>("NumberOfMutations",1, 0, Integer.MAX_VALUE);
 
-    private BoundedVariable<Double> mPositionZ = null;
+    private BoundedVariable<Double> mPositionZ = new BoundedVariable<Double>("position Z", 0.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.0001);
+
     private BoundedVariable<Double> mZernikeRangeFactor = new BoundedVariable<Double>("Zernike range factor", 0.1, 0.0, Double.MAX_VALUE, 0.0000001);
 
     Population<ZernikeSolution> mPopulation;
@@ -43,9 +44,10 @@ public class GeneticAlgorithmMirrorModeOptimizeInstruction extends LightSheetMic
     @Override
     public boolean initialize() {
         InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
-        if (mPositionZ == null) {
-            mPositionZ = new BoundedVariable<Double>("position Z", (lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2, lState.getStackZLowVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue(), lState.getStackZLowVariable().getGranularity().doubleValue());
+        if (mPositionZ.get() < lState.getStackZLowVariable().getMin().doubleValue() || mPositionZ.get() > lState.getStackZLowVariable().getMax().doubleValue()) {
+            mPositionZ.set((lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2);
         }
+        mPositionZ.setMinMax(lState.getStackZHighVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue());
         ZernikeSolutionFactory lFactory = new ZernikeSolutionFactory(getLightSheetMicroscope(), mMirror, mPositionZ.get(), 6, mZernikeRangeFactor.get());
         mPopulation = new Population<ZernikeSolution>(lFactory, mPopulationSize.get(), mNumberOfMutations.get());
 

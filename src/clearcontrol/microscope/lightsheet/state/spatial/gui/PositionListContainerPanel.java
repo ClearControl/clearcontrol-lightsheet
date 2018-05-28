@@ -29,7 +29,7 @@ public class PositionListContainerPanel extends CustomGridPane {
         ArrayList<Position> lTravelPathList = pPositionListContainer;
         lListView = new ListView<Position>();
         lListView.setItems(FXCollections.observableArrayList(lTravelPathList));
-        lListView.setMinWidth(450);
+        lListView.setMinWidth(250);
 
         add(lListView, 0, 0, 3, 5);
 
