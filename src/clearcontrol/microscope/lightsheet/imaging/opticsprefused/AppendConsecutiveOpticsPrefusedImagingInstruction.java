@@ -65,7 +65,7 @@ public class AppendConsecutiveOpticsPrefusedImagingInstruction extends LightShee
             index++;
             schedule.add(index, new DropOldestStackInterfaceContainerInstruction(FusedImageDataContainer.class, getLightSheetMicroscope().getDataWarehouse()));
             index++;
-            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (long)(mIntervalInSeconds * 1000)));
+            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mIntervalInSeconds * 1000)));
             index++;
         }
         return true;

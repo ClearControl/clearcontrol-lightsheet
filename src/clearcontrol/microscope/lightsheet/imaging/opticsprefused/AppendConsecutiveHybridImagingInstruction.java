@@ -60,7 +60,7 @@ public class AppendConsecutiveHybridImagingInstruction extends LightSheetMicrosc
             index++;
             schedule.add(index, new OpticsPrefusedAcquisitionInstruction(getLightSheetMicroscope()));
             index++;
-            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (long)(mFirstHalfIntervalInSeconds * 1000)));
+            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mFirstHalfIntervalInSeconds * 1000)));
             index++;
         }
         // while the second half, one image is taken and two are fused/saved
@@ -98,7 +98,7 @@ public class AppendConsecutiveHybridImagingInstruction extends LightSheetMicrosc
                 index++;
             }
 
-            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (long)(mSecondHalfIntervalInSeconds * 1000)));
+            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mSecondHalfIntervalInSeconds * 1000)));
             index++;
 
         }

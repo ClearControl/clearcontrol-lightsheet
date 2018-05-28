@@ -54,7 +54,7 @@ public class AppendConsecutiveHyperDriveImagingInstruction extends LightSheetMic
             index++;
             schedule.add(index, new OpticsPrefusedAcquisitionInstruction(getLightSheetMicroscope()));
             index++;
-            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (long)(mIntervalInSeconds * 1000)));
+            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mIntervalInSeconds * 1000)));
             index++;
         }
         for (int i = 0; i < mNumberOfImages; i ++) {
