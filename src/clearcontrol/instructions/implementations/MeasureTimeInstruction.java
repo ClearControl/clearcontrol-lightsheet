@@ -1,5 +1,6 @@
 package clearcontrol.instructions.implementations;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 
@@ -13,7 +14,7 @@ public class MeasureTimeInstruction extends InstructionBase implements
         InstructionInterface
 {
   static HashMap<String, Long> sMeasuredTime = new HashMap<String, Long>();
-  private final String mTimeMeasurementKey;
+  private final Variable<String> mMeasuredTimeKeyVariable = new Variable<String>("Time measurement key", "_");
 
   /**
    *
@@ -22,7 +23,7 @@ public class MeasureTimeInstruction extends InstructionBase implements
   public MeasureTimeInstruction(String pTimeMeasurementKey)
   {
     super("Timing: Measure time t_" + pTimeMeasurementKey);
-    mTimeMeasurementKey = pTimeMeasurementKey;
+    mMeasuredTimeKeyVariable.set(pTimeMeasurementKey);
   }
 
   @Override public boolean initialize()
@@ -32,15 +33,20 @@ public class MeasureTimeInstruction extends InstructionBase implements
 
   @Override public boolean enqueue(long pTimePoint)
   {
-    if (sMeasuredTime.containsKey(mTimeMeasurementKey)) {
-      sMeasuredTime.remove(mTimeMeasurementKey);
+    if (sMeasuredTime.containsKey(mMeasuredTimeKeyVariable.get())) {
+      sMeasuredTime.remove(mMeasuredTimeKeyVariable.get());
     }
-    sMeasuredTime.put(mTimeMeasurementKey, System.currentTimeMillis());
+    sMeasuredTime.put(mMeasuredTimeKeyVariable.get(), System.currentTimeMillis());
     return false;
   }
 
   @Override
   public MeasureTimeInstruction copy() {
-    return new MeasureTimeInstruction(mTimeMeasurementKey);
+    return new MeasureTimeInstruction(mMeasuredTimeKeyVariable.get());
+  }
+
+
+  public Variable<String> getMeasuredTimeKeyVariable() {
+    return mMeasuredTimeKeyVariable;
   }
 }
