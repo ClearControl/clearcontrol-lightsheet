@@ -31,7 +31,7 @@ public class SingleViewAcquisitionInstruction extends
     mLightSheetIndex = pLightSheetIndex;
 
     mImageKeyToSave = "C" + pCameraIndex + "L" + pLightSheetIndex;
-    mChannelName = mImageKeyToSave;
+    mChannelName.set(mImageKeyToSave);
   }
 
 

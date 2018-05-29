@@ -49,7 +49,7 @@ public class SequentialAcquisitionInstruction extends
   public SequentialAcquisitionInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
     super("Acquisition: Sequential", pLightSheetMicroscope);
-    mChannelName = "sequential";
+    mChannelName.set("sequential");
   }
 
   public SequentialAcquisitionInstruction(String pName, LightSheetMicroscope pLightSheetMicroscope) {

@@ -40,7 +40,7 @@ public class OpticsPrefusedAcquisitionInstruction extends
   public OpticsPrefusedAcquisitionInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
     super("Acquisition: optics-prefused", pLightSheetMicroscope);
-    mChannelName = "opticsprefused";
+    mChannelName.set("opticsprefused");
   }
 
   @Override public boolean enqueue(long pTimePoint)

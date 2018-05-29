@@ -41,7 +41,7 @@ public class ExposureModulatedAcquisitionInstruction extends
     mLightSheetIndex = pLightSheetIndex;
 
     mImageKeyToSave = "C" + pCameraIndex + "L" + pLightSheetIndex + "exposuremodulated";
-    mChannelName = mImageKeyToSave;
+    mChannelName.set(mImageKeyToSave);
   }
 
 

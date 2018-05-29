@@ -34,7 +34,7 @@ public abstract class AbstractAcquistionInstruction extends LightSheetMicroscope
 {
 
   protected String mImageKeyToSave = "fused";
-  protected String mChannelName = "default";
+  protected Variable<String> mChannelName = new Variable<String>("Dataset name for saving", "default");
 
   protected StackInterface mLastFusedStack;
   protected StackInterface mLastAcquiredStack;
@@ -165,5 +165,9 @@ public abstract class AbstractAcquistionInstruction extends LightSheetMicroscope
 
   protected boolean isFused() {
     return true;
+  }
+
+  public Variable<String> getChannelName() {
+    return mChannelName;
   }
 }
