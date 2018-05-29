@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -23,9 +24,9 @@ import java.util.ArrayList;
  */
 public class AppendConsecutiveHybridImagingInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
-    private final int mNumberOfImages;
-    private final double mFirstHalfIntervalInSeconds;
-    private final double mSecondHalfIntervalInSeconds;
+    private final BoundedVariable<Integer> mNumberOfImages = new BoundedVariable<Integer>("Number of images", 100);
+    private final BoundedVariable<Double> mFirstHalfIntervalInSeconds = new BoundedVariable<Double>("First half frame delay in s", 15.0);
+    private final BoundedVariable<Double> mSecondHalfIntervalInSeconds = new BoundedVariable<Double>("Second half frame delay in s", 60.0);
 
     /**
      * INstanciates a virtual device with a given name
@@ -33,9 +34,9 @@ public class AppendConsecutiveHybridImagingInstruction extends LightSheetMicrosc
      */
     public AppendConsecutiveHybridImagingInstruction(int pNumberOfImages, double pFirstHalfIntervalInSeconds, double pSecondHalfIntervalInSeconds, LightSheetMicroscope pLightSheetMicroscope) {
         super("Smart: Append a Hybrid (Hyperdrive, opticsprefused) scan with " + pNumberOfImages + " images every (" + pFirstHalfIntervalInSeconds + ", " + pSecondHalfIntervalInSeconds + ") s to the instructions", pLightSheetMicroscope);
-        mNumberOfImages = pNumberOfImages;
-        mFirstHalfIntervalInSeconds = pFirstHalfIntervalInSeconds;
-        mSecondHalfIntervalInSeconds = pSecondHalfIntervalInSeconds;
+        mNumberOfImages.set(pNumberOfImages);
+        mFirstHalfIntervalInSeconds.set(pFirstHalfIntervalInSeconds);
+        mSecondHalfIntervalInSeconds.set(pSecondHalfIntervalInSeconds);
     }
 
     @Override
@@ -50,8 +51,8 @@ public class AppendConsecutiveHybridImagingInstruction extends LightSheetMicrosc
                 LightSheetTimelapse lTimelapse = getLightSheetMicroscope().getTimelapse();
         ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
 
-        int numberOfImagesFirstHalf = mNumberOfImages / 2;
-        int numberOfImagesSecondHalf = mNumberOfImages - numberOfImagesFirstHalf;
+        int numberOfImagesFirstHalf = mNumberOfImages.get() / 2;
+        int numberOfImagesSecondHalf = mNumberOfImages.get() - numberOfImagesFirstHalf;
 
         int index = (int)lTimelapse.getLastExecutedSchedulerIndexVariable().get() + 1;
         // while the first half, images are only taken
@@ -60,7 +61,7 @@ public class AppendConsecutiveHybridImagingInstruction extends LightSheetMicrosc
             index++;
             schedule.add(index, new OpticsPrefusedAcquisitionInstruction(getLightSheetMicroscope()));
             index++;
-            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mFirstHalfIntervalInSeconds * 1000)));
+            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mFirstHalfIntervalInSeconds.get() * 1000)));
             index++;
         }
         // while the second half, one image is taken and two are fused/saved
@@ -98,7 +99,7 @@ public class AppendConsecutiveHybridImagingInstruction extends LightSheetMicrosc
                 index++;
             }
 
-            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mSecondHalfIntervalInSeconds * 1000)));
+            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mSecondHalfIntervalInSeconds.get() * 1000)));
             index++;
 
         }
@@ -107,6 +108,18 @@ public class AppendConsecutiveHybridImagingInstruction extends LightSheetMicrosc
 
     @Override
     public AppendConsecutiveHybridImagingInstruction copy() {
-        return new AppendConsecutiveHybridImagingInstruction(mNumberOfImages, mFirstHalfIntervalInSeconds, mSecondHalfIntervalInSeconds, getLightSheetMicroscope());
+        return new AppendConsecutiveHybridImagingInstruction(mNumberOfImages.get(), mFirstHalfIntervalInSeconds.get(), mSecondHalfIntervalInSeconds.get(), getLightSheetMicroscope());
+    }
+
+    public BoundedVariable<Double> getFirstHalfIntervalInSeconds() {
+        return mFirstHalfIntervalInSeconds;
+    }
+
+    public BoundedVariable<Double> getSecondHalfIntervalInSeconds() {
+        return mSecondHalfIntervalInSeconds;
+    }
+
+    public BoundedVariable<Integer> getNumberOfImages() {
+        return mNumberOfImages;
     }
 }

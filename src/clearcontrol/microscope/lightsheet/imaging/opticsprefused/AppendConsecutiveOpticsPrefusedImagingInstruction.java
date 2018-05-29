@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
@@ -22,8 +23,9 @@ import java.util.ArrayList;
  * 05 2018
  */
 public class AppendConsecutiveOpticsPrefusedImagingInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
-    private final int mNumberOfImages;
-    private final double mIntervalInSeconds;
+
+    private final BoundedVariable<Integer> mNumberOfImages = new BoundedVariable<Integer>("Number of images", 100);
+    private final BoundedVariable<Double> mIntervalInSeconds = new BoundedVariable<Double>("Frame delay in s", 15.0);
 
     /**
      * INstanciates a virtual device with a given name
@@ -31,8 +33,8 @@ public class AppendConsecutiveOpticsPrefusedImagingInstruction extends LightShee
      */
     public AppendConsecutiveOpticsPrefusedImagingInstruction(int pNumberOfImages, double pIntervalInSeconds, LightSheetMicroscope pLightSheetMicroscope) {
         super("Smart: Append an optics-prefused scan with " + pNumberOfImages + " images every " + pIntervalInSeconds + " s to the instructions", pLightSheetMicroscope);
-        mNumberOfImages = pNumberOfImages;
-        mIntervalInSeconds = pIntervalInSeconds;
+        mNumberOfImages.set(pNumberOfImages);
+        mIntervalInSeconds.set(pIntervalInSeconds);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class AppendConsecutiveOpticsPrefusedImagingInstruction extends LightShee
         ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
 
         int index = (int)lTimelapse.getLastExecutedSchedulerIndexVariable().get() + 1;
-        for (int i = 0; i < mNumberOfImages; i ++) {
+        for (int i = 0; i < mNumberOfImages.get(); i ++) {
             schedule.add(index, new MeasureTimeInstruction(timeMeasurementKey));
             index++;
             schedule.add(index, new OpticsPrefusedAcquisitionInstruction(getLightSheetMicroscope()));
@@ -65,7 +67,7 @@ public class AppendConsecutiveOpticsPrefusedImagingInstruction extends LightShee
             index++;
             schedule.add(index, new DropOldestStackInterfaceContainerInstruction(FusedImageDataContainer.class, getLightSheetMicroscope().getDataWarehouse()));
             index++;
-            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mIntervalInSeconds * 1000)));
+            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mIntervalInSeconds.get() * 1000)));
             index++;
         }
         return true;
@@ -73,6 +75,15 @@ public class AppendConsecutiveOpticsPrefusedImagingInstruction extends LightShee
 
     @Override
     public AppendConsecutiveOpticsPrefusedImagingInstruction copy() {
-        return new AppendConsecutiveOpticsPrefusedImagingInstruction(mNumberOfImages, mIntervalInSeconds, getLightSheetMicroscope());
+        return new AppendConsecutiveOpticsPrefusedImagingInstruction(mNumberOfImages.get(), mIntervalInSeconds.get(), getLightSheetMicroscope());
+    }
+
+
+    public BoundedVariable<Double> getIntervalInSeconds() {
+        return mIntervalInSeconds;
+    }
+
+    public BoundedVariable<Integer> getNumberOfImages() {
+        return mNumberOfImages;
     }
 }

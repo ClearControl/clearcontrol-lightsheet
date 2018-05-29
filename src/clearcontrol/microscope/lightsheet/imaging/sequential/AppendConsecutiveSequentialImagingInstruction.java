@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -22,8 +23,9 @@ import java.util.ArrayList;
  * 05 2018
  */
 public class AppendConsecutiveSequentialImagingInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
-    private final int mNumberOfImages;
-    private final double mIntervalInSeconds;
+
+    private final BoundedVariable<Integer> mNumberOfImages = new BoundedVariable<Integer>("Number of images", 100);
+    private final BoundedVariable<Double> mIntervalInSeconds = new BoundedVariable<Double>("Frame delay in s", 15.0);
 
     /**
      * INstanciates a virtual device with a given name
@@ -31,8 +33,8 @@ public class AppendConsecutiveSequentialImagingInstruction extends LightSheetMic
      */
     public AppendConsecutiveSequentialImagingInstruction(int pNumberOfImages, double pIntervalInSeconds, LightSheetMicroscope pLightSheetMicroscope) {
         super("Smart: Append a sequential scan with " + pNumberOfImages + " images every " + pIntervalInSeconds + " s to the instructions", pLightSheetMicroscope);
-        mNumberOfImages = pNumberOfImages;
-        mIntervalInSeconds = pIntervalInSeconds;
+        mNumberOfImages.set(pNumberOfImages);
+        mIntervalInSeconds.set(pIntervalInSeconds);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class AppendConsecutiveSequentialImagingInstruction extends LightSheetMic
         ArrayList<InstructionInterface> schedule = lTimelapse.getListOfActivatedSchedulers();
 
         int index = (int)lTimelapse.getLastExecutedSchedulerIndexVariable().get() + 1;
-        for (int i = 0; i < mNumberOfImages; i ++) {
+        for (int i = 0; i < mNumberOfImages.get(); i ++) {
             schedule.add(index, new MeasureTimeInstruction(timeMeasurementKey));
             index++;
             schedule.add(index, new SequentialAcquisitionInstruction(getLightSheetMicroscope()));
@@ -65,7 +67,7 @@ public class AppendConsecutiveSequentialImagingInstruction extends LightSheetMic
             index++;
             schedule.add(index, new DropOldestStackInterfaceContainerInstruction(FusedImageDataContainer.class, getLightSheetMicroscope().getDataWarehouse()));
             index++;
-            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mIntervalInSeconds * 1000)));
+            schedule.add(index, new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKey, (int)(mIntervalInSeconds.get() * 1000)));
             index++;
         }
         return true;
@@ -73,6 +75,15 @@ public class AppendConsecutiveSequentialImagingInstruction extends LightSheetMic
 
     @Override
     public AppendConsecutiveSequentialImagingInstruction copy() {
-        return new AppendConsecutiveSequentialImagingInstruction(mNumberOfImages, mIntervalInSeconds, getLightSheetMicroscope());
+        return new AppendConsecutiveSequentialImagingInstruction(mNumberOfImages.get(), mIntervalInSeconds.get(), getLightSheetMicroscope());
+    }
+
+
+    public BoundedVariable<Double> getIntervalInSeconds() {
+        return mIntervalInSeconds;
+    }
+
+    public BoundedVariable<Integer> getNumberOfImages() {
+        return mNumberOfImages;
     }
 }
