@@ -20,9 +20,11 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.MeasureDCTS2DOnStackScheduler;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataViewFlags;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionStateInterface;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -30,6 +32,7 @@ import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
+import org.apache.commons.math.stat.descriptive.moment.Mean;
 
 /**
  * Interactive acquisition for lightseet microscope
@@ -37,7 +40,7 @@ import clearcontrol.stack.metadata.StackMetaData;
  * @author royer
  */
 public class InteractiveAcquisition extends PeriodicLoopTaskDevice
-                                    implements LoggingFeature
+                                    implements LoggingFeature, VisualConsoleInterface
 {
 
   private static final int cRecyclerMinimumNumberOfAvailableStacks =
@@ -508,9 +511,8 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
         {
           // info("play queue success");
           mAcquisitionCounterVariable.increment();
+          computeImageQuality();
         }
-        System.out.println(mAcquisitionCounterVariable.toString());
-        System.out.println(computeImageQuality());
         // info("... done waiting!");
       }
 
@@ -553,6 +555,13 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
 
     info("Starting 2D Acquisition...");
     setCurrentAcquisitionMode(InteractiveAcquisitionModes.Acquisition2D);
+
+    configureChart("DCTS2D",
+            "DCTS2D",
+            "Timepoint",
+            "DCTS2D",
+            ChartType.Line);
+
     mAcquisitionCounterVariable.set(0L);
     mUpdate = true;
     startTask();
@@ -584,6 +593,13 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
 
     info("Starting 3D Acquisition...");
     setCurrentAcquisitionMode(InteractiveAcquisitionModes.Acquisition3D);
+
+    configureChart("DCTS2D",
+            "DCTS2D",
+            "Timepoint",
+            "avgDCTS2D",
+            ChartType.Line);
+
     mAcquisitionCounterVariable.set(0L);
     mUpdate = true;
 
@@ -604,32 +620,22 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
   /**
    * Live mean DCTS statistics
    */
-  public double[] computeImageQuality(){
+  public void computeImageQuality(){
     DCTS2D lDCTS2D = new DCTS2D();
 
-
-//    final StackInterface lStackInterface =
-//            mLightSheetMicroscope.getCameraStackVariable(d)
-//                    .get();
-
-
-    StackInterface lStacks = mLightSheetMicroscope.getCameraStackVariable(0).get(); //fix this
-
+    StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(0).get(); //fix this
 
     double[] lMetricArray =
-            lDCTS2D.computeImageQualityMetric((OffHeapPlanarStack) lStacks);
+            lDCTS2D.computeImageQualityMetric((OffHeapPlanarStack) lStack);
     System.out.println(Arrays.toString(lMetricArray));
-//    String lChartName = String.format("CPI=%d|LS=%d|D=%d",
-//            pControlPlaneIndex,
-//            pLightSheetIndex,
-//            pDetectionArmIndex);
-//    getAdaptiveEngine().configureChart(getName(),
-//            lChartName,
-//            "ΔZ",
-//            "focus metric",
-//            VisualConsoleInterface.ChartType.Line);
 
-    return lMetricArray;
+    double lAverageDCTS2D = new Mean().evaluate(lMetricArray);
+    addPoint("DCTS2D",
+              "DCTS2D",
+              false,
+              mAcquisitionCounterVariable.get(),
+            lAverageDCTS2D);
+
   }
   /**
    * Returns the exposure variable
