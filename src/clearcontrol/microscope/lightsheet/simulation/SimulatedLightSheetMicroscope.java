@@ -45,6 +45,7 @@ import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightShee
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.CountsSpotsInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.MeasureDCTS2DOnStackInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.SpotShiftDeterminationInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.CenterMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.HalfStackMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.MaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
@@ -492,7 +493,7 @@ public class SimulatedLightSheetMicroscope extends
 
       addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,true, this));
       addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,false, this));
-
+      addDevice(0, new CenterMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
 
 
       addDevice(0, lDropFusedContainerScheduler);
@@ -547,6 +548,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, lStackMaxProjectionScheduler);
     addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,true, this));
     addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,false, this));
+    addDevice(0, new CenterMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
 
 
     addDevice(0, new CountsSpotsInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
