@@ -445,6 +445,103 @@ public class InteractiveAcquisitionToolbar extends CustomGridPane
       lRow++;
     }
 
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 4);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+
+    {
+      NumberVariableTextField<Double> lCropXBoxTextField =
+              new NumberVariableTextField<Double>("CropX (pixels)",
+                      pInteractiveAcquisition.getStartCropX(),
+                      0.0,
+                      2048.0,
+                      0.001);
+      lCropXBoxTextField.getTextField()
+              .textProperty()
+              .addListener((c, o, n) -> {
+                if (o != null && !o.equals(n)) {
+                  System.out.println("Setting Crop X to "+n);
+                  pInteractiveAcquisition.mChangedValueForCropBox = true;
+                  pInteractiveAcquisition.setStartCropX( Double.parseDouble(n));
+                }
+              });
+
+      lCropXBoxTextField.setAlignment(Pos.BASELINE_CENTER);
+      add(lCropXBoxTextField.getLabel(), 0, lRow);
+      add(lCropXBoxTextField.getTextField(), 2, lRow);
+      lRow++;
+    }
+    {
+      NumberVariableTextField<Double> lCropYBoxTextField =
+              new NumberVariableTextField<Double>("CropY (pixels)",
+                      pInteractiveAcquisition.getStartCropY(),
+                      0.0,
+                      2048.0,
+                      0.001);
+      lCropYBoxTextField.getTextField()
+              .textProperty()
+              .addListener((c, o, n) -> {
+                if (o != null && !o.equals(n)) {
+                  System.out.println("Setting Crop Y to "+n);
+                  pInteractiveAcquisition.mChangedValueForCropBox = true;
+                  pInteractiveAcquisition.setStartCropY(Double.parseDouble(n));
+                }
+              });
+
+      lCropYBoxTextField.setAlignment(Pos.BASELINE_CENTER);
+      add(lCropYBoxTextField.getLabel(), 0, lRow);
+      add(lCropYBoxTextField.getTextField(), 2, lRow);
+      lRow++;
+    }
+    {
+      NumberVariableTextField<Double> lSizeXBoxTextField =
+            new NumberVariableTextField<Double>("SizeX (pixels)",
+                    pInteractiveAcquisition.getSizeCropX(),
+                    1.0,
+                    2048.0,
+                    0.001);
+      lSizeXBoxTextField.getTextField()
+            .textProperty()
+            .addListener((c, o, n) -> {
+              if (o != null && !o.equals(n)) {
+                System.out.println("Setting SizeX to "+n);
+                pInteractiveAcquisition.mChangedValueForCropBox = true;
+                pInteractiveAcquisition.setSizeCropX(Double.parseDouble(n));
+              }
+            });
+
+      lSizeXBoxTextField.setAlignment(Pos.BASELINE_CENTER);
+      add(lSizeXBoxTextField.getLabel(), 0, lRow);
+      add(lSizeXBoxTextField.getTextField(), 2, lRow);
+      lRow++;
+    }
+    {
+      NumberVariableTextField<Double> lSizeYBoxTextField =
+              new NumberVariableTextField<Double>("SizeY (pixels)",
+                      pInteractiveAcquisition.getSizeCropY(),
+                      1.0,
+                      2048.0,
+                      0.001);
+      lSizeYBoxTextField.getTextField()
+              .textProperty()
+              .addListener((c, o, n) -> {
+                if (o != null && !o.equals(n)) {
+                  System.out.println("Setting SizeY to " + n);
+                  pInteractiveAcquisition.mChangedValueForCropBox = true;
+                  pInteractiveAcquisition.setSizeCropY(Double.parseDouble(n));
+                }
+              });
+
+      lSizeYBoxTextField.setAlignment(Pos.BASELINE_CENTER);
+      add(lSizeYBoxTextField.getLabel(), 0, lRow);
+      add(lSizeYBoxTextField.getTextField(), 2, lRow);
+      lRow++;
+    }
+
   }
 
 }
