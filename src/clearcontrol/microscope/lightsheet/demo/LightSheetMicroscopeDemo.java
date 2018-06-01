@@ -355,8 +355,8 @@ public class LightSheetMicroscopeDemo extends Application implements
           new LoadMirrorModesFromFolderInstruction(lSpatialPhaseModulatorDeviceBase, lLightSheetMicroscope);
       lLightSheetMicroscope.addDevice(0, lLoadMirrorModesFromFolderScheduler);
 
-      SequentialZernikesScheduler lSequentialZernikesScheduler =
-              new SequentialZernikesScheduler(lSpatialPhaseModulatorDeviceBase,1,0.0,5.0,-5.0,3,3);
+      SequentialZernikesInstruction lSequentialZernikesScheduler =
+              new SequentialZernikesInstruction(lSpatialPhaseModulatorDeviceBase,1,0.0,5.0,-5.0);
       lLightSheetMicroscope.addDevice(0, lSequentialZernikesScheduler);
 
       // Adding calibrator:

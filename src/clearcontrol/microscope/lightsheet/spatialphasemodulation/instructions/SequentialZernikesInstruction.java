@@ -19,15 +19,15 @@ public class SequentialZernikesInstruction extends InstructionBase implements
     public int mEndingMode;
     private static String mDirection;
 
-    public SequentialZernikesScheduler(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase, double pStepper, double pInitialValue, double pMaxZernCoeff, double pMinZernCoeff, int pStartingMode,int pEndingMode) {
+    public SequentialZernikesInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase, double pStepper, double pInitialValue, double pMaxZernCoeff, double pMinZernCoeff) {
         super("Adaptive optics: Send sequential mirror modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
         mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
         mMaxZernCoeff = pMaxZernCoeff;
         mMinZernCoeff = pMinZernCoeff;
         mStepper = pStepper;
         mInitialValue = pInitialValue;
-        mStartingMode = pStartingMode;
-        mEndingMode = pEndingMode;
+        mStartingMode = 3;
+        mEndingMode = 3;
     }
 
     @Override
