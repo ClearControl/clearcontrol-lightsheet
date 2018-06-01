@@ -1,6 +1,5 @@
 package clearcontrol.microscope.lightsheet.interactive;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -23,11 +22,9 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.MeasureDCTS2DOnStackScheduler;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataViewFlags;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionStateInterface;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -74,13 +71,12 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
   private ChangeListener<AcquisitionStateInterface<LightSheetMicroscopeInterface, LightSheetMicroscopeQueue>> mAcquisitionStateChangeListener;
   private LightSheetMicroscopeQueue mQueue;
 
-  private BoundedVariable<Double> mStartCropX = new BoundedVariable<Double>("CropX Starting", 10.0, 0.0, 2047.0,0.001);
-  private BoundedVariable<Double> mStartCropY = new BoundedVariable<Double>("CropX Starting", 10.0, 0.0, 2047.0,0.001);
-  private BoundedVariable<Double> mSizeCropX = new BoundedVariable<Double>("CropX Size", 10.0, 1.0, 2048.0,0.001);
-  private BoundedVariable<Double> mSizeCropY = new BoundedVariable<Double>("CropY Size", 10.0, 1.0, 2048.0,0.001);
+  private BoundedVariable<Double> mCropXVariable = new BoundedVariable<Double>("CropX Starting", 10.0, 0.0, 2047.0,0.001);
+  private BoundedVariable<Double> mCropYVariable = new BoundedVariable<Double>("CropX Starting", 10.0, 0.0, 2047.0,0.001);
+  private BoundedVariable<Double> mCropWidthVariable = new BoundedVariable<Double>("CropX Size", 10.0, 1.0, 2048.0,0.001);
+  private BoundedVariable<Double> mCropHeightVariable = new BoundedVariable<Double>("CropY Size", 10.0, 1.0, 2048.0,0.001);
   public boolean mChangedValueForCropBox = false;
-  private static ClearCLImage dst;
-  private static ClearCLImage src;
+
   /**
    * Instantiates an interactive acquisition for lightsheet microscope
    * 
@@ -651,80 +647,84 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
   }
 
   public StackInterface cropToROI(StackInterface lStack){
-    double lValX = mStartCropX.get();
-    double lValY = mStartCropY.get();
-    double lValSizeX = mSizeCropX.get();
-    double lValSizeY = mSizeCropY.get();
+    double lValX = mCropXVariable.get();
+    double lValY = mCropYVariable.get();
+    double lValSizeX = mCropWidthVariable.get();
+    double lValSizeY = mCropHeightVariable.get();
 //    double lValX = 0;
 //    double lValY = 0;
 //    double lValSizeX = 512;
 //    double lValSizeY = 512;
-    if (mChangedValueForCropBox ==  true){
-      dst.close();
-    }
+
+    ClearCLImage dst;
+    ClearCLImage src;
+
 
     ClearCLIJ lCLIJ = ClearCLIJ.getInstance();
     src = lCLIJ.converter(lStack).getClearCLImage();
     dst = lCLIJ.createCLImage(new long[] {(long) lValSizeX, (long) lValSizeY},
                     src.getChannelDataType());
-
     Kernels.crop(lCLIJ, src, dst, (int)lValX, (int)lValY);
-    if (mChangedValueForCropBox ==  true) {
-      lCLIJ.show(dst, "Processing Quality On");
-      System.out.println("Cropped: On X "+ lValX + " to " + (lValX+lValSizeX));
-      System.out.println("Cropped: On Y "+ lValY + " to " + (lValY+lValSizeY));
-
-      mChangedValueForCropBox = false;
-    }
-    return lCLIJ.converter(dst).getOffHeapPlanarStack();
+    lCLIJ.show(dst, "Processing Quality On");
+//    if (mChangedValueForCropBox ==  true) {
+//      lCLIJ.show(dst, "Processing Quality On");
+//      System.out.println("Cropped: On X "+ lValX + " to " + (lValX+lValSizeX));
+//      System.out.println("Cropped: On Y "+ lValY + " to " + (lValY+lValSizeY));
+//
+//      mChangedValueForCropBox = false;
+//    }
+    StackInterface croppedImage = lCLIJ.converter(dst).getOffHeapPlanarStack();
+    dst.close();
+    src.close();
+    lCLIJ.close();
+    return croppedImage;
 
   }
   public void setStartCropX(double pStartCropX){
     if (pStartCropX > 0.0 && pStartCropX < mLightSheetMicroscope.getCameraHeight(0)){
-    mStartCropX.set(pStartCropX);
+    mCropXVariable.set(pStartCropX);
     }
-    if ((mStartCropX.get() + mSizeCropX.get()) > mLightSheetMicroscope.getCameraHeight(0)){
-      mSizeCropX.set(mLightSheetMicroscope.getCameraHeight(0) - mStartCropX.get());
+    if ((mCropXVariable.get() + mCropWidthVariable.get()) > mLightSheetMicroscope.getCameraHeight(0)){
+      mCropWidthVariable.set(mLightSheetMicroscope.getCameraHeight(0) - mCropXVariable.get());
 
     }
     return;
   }
   public void setStartCropY(double pStartCropY){
-//    System.out.println("IIIIIIIIII CAAAMMMEEE HEREEE");
     if (pStartCropY > 0.0 && pStartCropY < mLightSheetMicroscope.getCameraWidth(0)) {
-      mStartCropY.set(pStartCropY);
+      mCropYVariable.set(pStartCropY);
     }
-    if ((mStartCropY.get() + mSizeCropY.get()) > mLightSheetMicroscope.getCameraWidth(0)){
-      mSizeCropY.set(mLightSheetMicroscope.getCameraWidth(0) - mStartCropY.get());
+    if ((mCropYVariable.get() + mCropHeightVariable.get()) > mLightSheetMicroscope.getCameraWidth(0)){
+      mCropHeightVariable.set(mLightSheetMicroscope.getCameraWidth(0) - mCropYVariable.get());
     }
   }
 
   public void setSizeCropY(double pSizeCropY){
     if(pSizeCropY <= 0)
       return;
-    if ((mStartCropY.get() + pSizeCropY) > mLightSheetMicroscope.getCameraWidth(0)){
-      mSizeCropY.set(mLightSheetMicroscope.getCameraWidth(0) - mStartCropY.get());
+    if ((mCropYVariable.get() + pSizeCropY) > mLightSheetMicroscope.getCameraWidth(0)){
+      mCropHeightVariable.set(mLightSheetMicroscope.getCameraWidth(0) - mCropYVariable.get());
     }
     else{
-      mSizeCropY.set(pSizeCropY);
+      mCropHeightVariable.set(pSizeCropY);
     }
   }
   public void setSizeCropX(double pSizeCropX){
     if(pSizeCropX <= 0)
       return;
-    if ((mStartCropX.get() + pSizeCropX) > mLightSheetMicroscope.getCameraHeight(0)){
-      mSizeCropX.set(mLightSheetMicroscope.getCameraHeight(0) - mStartCropX.get());
+    if ((mCropXVariable.get() + pSizeCropX) > mLightSheetMicroscope.getCameraHeight(0)){
+      mCropWidthVariable.set(mLightSheetMicroscope.getCameraHeight(0) - mCropXVariable.get());
     }
     else{
-      mSizeCropX.set(pSizeCropX);
+      mCropWidthVariable.set(pSizeCropX);
     }
   }
 
 
-  public BoundedVariable<Double> getStartCropX(){return mStartCropX;}
-  public BoundedVariable<Double> getStartCropY(){return mStartCropY;}
-  public BoundedVariable<Double> getSizeCropX(){return mSizeCropX;}
-  public BoundedVariable<Double> getSizeCropY(){return mSizeCropY;}
+  public BoundedVariable<Double> getStartCropX(){return mCropXVariable;}
+  public BoundedVariable<Double> getStartCropY(){return mCropYVariable;}
+  public BoundedVariable<Double> getSizeCropX(){return mCropWidthVariable;}
+  public BoundedVariable<Double> getSizeCropY(){return mCropHeightVariable;}
   /**
    * Returns the exposure variable
    * 
