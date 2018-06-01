@@ -27,10 +27,12 @@ public class GradientBasedZernikeModeOptimizerInstruction extends LightSheetMicr
     private BoundedVariable<Double> mPositionZ = null;
 
 
-    public GradientBasedZernikeModeOptimizerInstruction(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, int pZernikeFactorIndexToOptimize) {
-        super("Adaptive optics: Gradient based Z" + ZernikePolynomials.jNoll(pZernikeFactorIndexToOptimize) + "(" + ZernikePolynomials.getZernikeModeName(pZernikeFactorIndexToOptimize) + ")" + " optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName(), pLightSheetMicroscope);
+    public GradientBasedZernikeModeOptimizerScheduler(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface, int pZernikeFactorIndexToOptimize, double pStepSize) {
+        super("Adaptive optics: Gradient based Z" + ZernikePolynomials.jNoll(pZernikeFactorIndexToOptimize) + "(" + ZernikePolynomials.getZernikeModeName(pZernikeFactorIndexToOptimize) + ")" + " optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName());
+        this.mLightSheetMicroscope = pLightSheetMicroscope;
         this.mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
         mZernikeFactorIndexToOptimize = pZernikeFactorIndexToOptimize;
+        stepSize.set(pStepSize);
     }
 
     @Override

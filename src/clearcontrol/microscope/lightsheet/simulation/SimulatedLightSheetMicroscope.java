@@ -373,17 +373,19 @@ public class SimulatedLightSheetMicroscope extends
       GeneticAlgorithmMirrorModeOptimizeInstruction lMirrorOptimizer = new GeneticAlgorithmMirrorModeOptimizeInstruction(lMirror, this);
       addDevice(0, lMirrorOptimizer);
 
-      addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 3));
-      addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 4));
-      addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 5));
+      addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 3, 0.25));
+      addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 4,0.25));
+      addDevice(0, new GradientBasedZernikeModeOptimizerScheduler(this, lMirror, 5,0.25));
 
       LogMirrorZernikeFactorsToFileInstruction lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileInstruction(lMirror, this);
       addDevice(0, lMirrorModeZernikeFactorsSaver);
 
       addDevice(0, new LoadMirrorModesFromFolderInstruction(lMirror, this));
 
-      SequentialZernikesInstruction lSequentialZernikesScheduler =
-              new SequentialZernikesInstruction(lMirror,1,0.0,5.0,-5.0);
+      addDevice(0, new LoadMirrorModesFromFolderScheduler(lMirror));
+
+      SequentialZernikesScheduler lSequentialZernikesScheduler =
+              new SequentialZernikesScheduler(lMirror,1,0.0,5.0,-5.0,3,3);
       addDevice(0, lSequentialZernikesScheduler);
 
       addDevice(0, new RandomZernikesInstruction(lMirror));
