@@ -453,6 +453,8 @@ public class InteractiveAcquisitionToolbar extends CustomGridPane
       lRow++;
     }
 
+    addCheckbox(pInteractiveAcquisition.getDoCropVariable(), lRow);
+    lRow++;
     addDoubleField(pInteractiveAcquisition.getCropXVariable(), lRow);
     lRow++;
     addDoubleField(pInteractiveAcquisition.getCropYVariable(), lRow);

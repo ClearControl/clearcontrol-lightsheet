@@ -75,6 +75,7 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
   private BoundedVariable<Double> mCropYVariable = new BoundedVariable<Double>("Crop Y", 10.0, 0.0, 2047.0,0.001);
   private BoundedVariable<Double> mCropWidthVariable = new BoundedVariable<Double>("Crop width", 10.0, 1.0, 2048.0,0.001);
   private BoundedVariable<Double> mCropHeightVariable = new BoundedVariable<Double>("Crop height", 10.0, 1.0, 2048.0,0.001);
+  private Variable<Boolean> mDoCropVariable = new Variable<Boolean>("Crop a region for quality estimation", false);
 
   /**
    * Instantiates an interactive acquisition for lightsheet microscope
@@ -629,11 +630,12 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
     DCTS2D lDCTS2D = new DCTS2D();
 
     StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(0).get(); //fix this
-    StackInterface
-            lProcessedStack = cropToROI(lStack);
+    if (mDoCropVariable.get()) {
+      lStack = cropToROI(lStack);
+    }
 
     double[] lMetricArray =
-            lDCTS2D.computeImageQualityMetric((OffHeapPlanarStack) lProcessedStack);
+            lDCTS2D.computeImageQualityMetric((OffHeapPlanarStack) lStack);
     System.out.println(Arrays.toString(lMetricArray));
 
     double lAverageDCTS2D = new Mean().evaluate(lMetricArray);
@@ -720,10 +722,26 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
   }
 
 
-  public BoundedVariable<Double> getCropXVariable(){return mCropXVariable;}
-  public BoundedVariable<Double> getCropYVariable(){return mCropYVariable;}
-  public BoundedVariable<Double> getCropWidthVariable(){return mCropWidthVariable;}
-  public BoundedVariable<Double> getCropHeightVariable(){return mCropHeightVariable;}
+  public BoundedVariable<Double> getCropXVariable(){
+    return mCropXVariable;
+  }
+
+  public BoundedVariable<Double> getCropYVariable(){
+    return mCropYVariable;
+  }
+
+  public BoundedVariable<Double> getCropWidthVariable(){
+    return mCropWidthVariable;
+  }
+
+  public BoundedVariable<Double> getCropHeightVariable(){
+    return mCropHeightVariable;
+  }
+
+  public Variable<Boolean> getDoCropVariable() {
+    return mDoCropVariable;
+  }
+
   /**
    * Returns the exposure variable
    * 
