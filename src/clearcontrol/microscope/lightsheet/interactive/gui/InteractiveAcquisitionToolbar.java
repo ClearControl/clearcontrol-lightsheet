@@ -445,6 +445,24 @@ public class InteractiveAcquisitionToolbar extends CustomGridPane
       lRow++;
     }
 
+    {
+      Separator lSeparator = new Separator();
+      lSeparator.setOrientation(Orientation.HORIZONTAL);
+      GridPane.setColumnSpan(lSeparator, 4);
+      add(lSeparator, 0, lRow);
+      lRow++;
+    }
+
+    addCheckbox(pInteractiveAcquisition.getDoCropVariable(), lRow);
+    lRow++;
+    addDoubleField(pInteractiveAcquisition.getCropXVariable(), lRow);
+    lRow++;
+    addDoubleField(pInteractiveAcquisition.getCropYVariable(), lRow);
+    lRow++;
+    addDoubleField(pInteractiveAcquisition.getCropWidthVariable(), lRow);
+    lRow++;
+    addDoubleField(pInteractiveAcquisition.getCropHeightVariable(), lRow);
+    lRow++;
   }
 
 }

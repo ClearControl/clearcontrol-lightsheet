@@ -1,7 +1,11 @@
 package clearcontrol.microscope.lightsheet.interactive;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import clearcl.ClearCLImage;
+import clearcl.imagej.ClearCLIJ;
+import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.device.VirtualDevice;
 import clearcontrol.core.device.change.ChangeListener;
 import clearcontrol.core.device.task.PeriodicLoopTaskDevice;
@@ -10,6 +14,8 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.cameras.StackCameraDeviceInterface;
+import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
+import clearcontrol.ip.iqm.DCTS2D;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
@@ -23,7 +29,10 @@ import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionStateInterface;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.state.AcquisitionType;
+import clearcontrol.stack.OffHeapPlanarStack;
+import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
+import org.apache.commons.math.stat.descriptive.moment.Mean;
 
 /**
  * Interactive acquisition for lightseet microscope
@@ -31,7 +40,7 @@ import clearcontrol.stack.metadata.StackMetaData;
  * @author royer
  */
 public class InteractiveAcquisition extends PeriodicLoopTaskDevice
-                                    implements LoggingFeature
+                                    implements LoggingFeature, VisualConsoleInterface
 {
 
   private static final int cRecyclerMinimumNumberOfAvailableStacks =
@@ -61,6 +70,12 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
   private ChangeListener<VirtualDevice> mMicroscopeChangeListener;
   private ChangeListener<AcquisitionStateInterface<LightSheetMicroscopeInterface, LightSheetMicroscopeQueue>> mAcquisitionStateChangeListener;
   private LightSheetMicroscopeQueue mQueue;
+
+  private BoundedVariable<Double> mCropXVariable = new BoundedVariable<Double>("Crop X", 10.0, 0.0, 2047.0,0.001);
+  private BoundedVariable<Double> mCropYVariable = new BoundedVariable<Double>("Crop Y", 10.0, 0.0, 2047.0,0.001);
+  private BoundedVariable<Double> mCropWidthVariable = new BoundedVariable<Double>("Crop width", 10.0, 1.0, 2048.0,0.001);
+  private BoundedVariable<Double> mCropHeightVariable = new BoundedVariable<Double>("Crop height", 10.0, 1.0, 2048.0,0.001);
+  private Variable<Boolean> mDoCropVariable = new Variable<Boolean>("Crop a region for quality estimation", false);
 
   /**
    * Instantiates an interactive acquisition for lightsheet microscope
@@ -502,8 +517,8 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
         {
           // info("play queue success");
           mAcquisitionCounterVariable.increment();
+          computeImageQuality();
         }
-
         // info("... done waiting!");
       }
 
@@ -546,6 +561,13 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
 
     info("Starting 2D Acquisition...");
     setCurrentAcquisitionMode(InteractiveAcquisitionModes.Acquisition2D);
+
+    configureChart("DCTS2D",
+            "DCTS2D",
+            "Timepoint",
+            "DCTS2D",
+            ChartType.Line);
+
     mAcquisitionCounterVariable.set(0L);
     mUpdate = true;
     startTask();
@@ -577,6 +599,13 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
 
     info("Starting 3D Acquisition...");
     setCurrentAcquisitionMode(InteractiveAcquisitionModes.Acquisition3D);
+
+    configureChart("DCTS2D",
+            "DCTS2D",
+            "Timepoint",
+            "avgDCTS2D",
+            ChartType.Line);
+
     mAcquisitionCounterVariable.set(0L);
     mUpdate = true;
 
@@ -592,6 +621,85 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
     setCurrentAcquisitionMode(InteractiveAcquisitionModes.None);
     stopTask();
 
+  }
+
+  /**
+   * Live mean DCTS statistics
+   */
+  public void computeImageQuality(){
+    DCTS2D lDCTS2D = new DCTS2D();
+
+    StackInterface lStack = mLightSheetMicroscope.getCameraStackVariable(0).get(); //fix this
+    if (mDoCropVariable.get()) {
+      lStack = cropToROI(lStack);
+    }
+
+    double[] lMetricArray =
+            lDCTS2D.computeImageQualityMetric((OffHeapPlanarStack) lStack);
+    System.out.println(Arrays.toString(lMetricArray));
+
+    double lAverageDCTS2D = new Mean().evaluate(lMetricArray);
+    addPoint("DCTS2D",
+              "DCTS2D",
+              false,
+              mAcquisitionCounterVariable.get(),
+            lAverageDCTS2D);
+
+  }
+
+  public StackInterface cropToROI(StackInterface lStack){
+    double lValX = mCropXVariable.get();
+    double lValY = mCropYVariable.get();
+    double lValSizeX = mCropWidthVariable.get();
+    double lValSizeY = mCropHeightVariable.get();
+
+    ClearCLImage dst;
+    ClearCLImage src;
+
+
+    ClearCLIJ lCLIJ = ClearCLIJ.getInstance();
+    src = lCLIJ.converter(lStack).getClearCLImage();
+    dst = lCLIJ.createCLImage(new long[] {(long) lValSizeX, (long) lValSizeY},
+                    src.getChannelDataType());
+    Kernels.crop(lCLIJ, src, dst, (int)lValX, (int)lValY);
+    lCLIJ.show(dst, "Processing Quality On");
+
+    StackInterface croppedImage = lCLIJ.converter(dst).getOffHeapPlanarStack();
+    dst.close();
+    src.close();
+    lCLIJ.close();
+    return croppedImage;
+
+  }
+  public void setStartCropX(double pStartCropX){
+    if (pStartCropX > 0.0 && pStartCropX < mLightSheetMicroscope.getCameraHeight(0)){
+    mCropXVariable.set(pStartCropX);
+    }
+    if ((mCropXVariable.get() + mCropWidthVariable.get()) > mLightSheetMicroscope.getCameraHeight(0)){
+      mCropWidthVariable.set(mLightSheetMicroscope.getCameraHeight(0) - mCropXVariable.get());
+
+    }
+    return;
+  }
+
+  public BoundedVariable<Double> getCropXVariable(){
+    return mCropXVariable;
+  }
+
+  public BoundedVariable<Double> getCropYVariable(){
+    return mCropYVariable;
+  }
+
+  public BoundedVariable<Double> getCropWidthVariable(){
+    return mCropWidthVariable;
+  }
+
+  public BoundedVariable<Double> getCropHeightVariable(){
+    return mCropHeightVariable;
+  }
+
+  public Variable<Boolean> getDoCropVariable() {
+    return mDoCropVariable;
   }
 
   /**

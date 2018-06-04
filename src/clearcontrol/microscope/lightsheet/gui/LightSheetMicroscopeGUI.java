@@ -14,6 +14,7 @@ import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.FocusFinderZSc
 import clearcontrol.microscope.lightsheet.adaptive.schedulers.gui.SpaceTravelPathPlanningPanel;
 import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.ExposureModulatedAcquisitionScheduler;
 import clearcontrol.microscope.lightsheet.imaging.exposuremodulation.gui.ExposureModulatedAcquisitionSchedulerPanel;
+import clearcontrol.microscope.lightsheet.interactive.gui.InteractiveAcquisitionStatisticsPanel;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.CountsSpotsScheduler;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.schedulers.gui.SpotDetectionSchedulerPanel;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.SpatialPhaseModulatorPanel;
@@ -125,6 +126,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 
     addToolbarMappingEntry(InteractiveAcquisition.class,
                            InteractiveAcquisitionToolbar.class);
+
+    addPanelMappingEntry(InteractiveAcquisition.class,
+            InteractiveAcquisitionStatisticsPanel.class,
+            MicroscopeNodeType.Acquisition);
 
     addToolbarMappingEntry(CalibrationEngine.class,
                            CalibrationEngineToolbar.class);
