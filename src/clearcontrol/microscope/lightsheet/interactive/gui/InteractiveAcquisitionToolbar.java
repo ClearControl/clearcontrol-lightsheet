@@ -453,13 +453,13 @@ public class InteractiveAcquisitionToolbar extends CustomGridPane
       lRow++;
     }
 
-    addDoubleField(pInteractiveAcquisition.getStartCropX(), lRow);
+    addDoubleField(pInteractiveAcquisition.getCropXVariable(), lRow);
     lRow++;
-    addDoubleField(pInteractiveAcquisition.getStartCropY(), lRow);
+    addDoubleField(pInteractiveAcquisition.getCropYVariable(), lRow);
     lRow++;
-    addDoubleField(pInteractiveAcquisition.getSizeCropX(), lRow);
+    addDoubleField(pInteractiveAcquisition.getCropWidthVariable(), lRow);
     lRow++;
-    addDoubleField(pInteractiveAcquisition.getSizeCropY(), lRow);
+    addDoubleField(pInteractiveAcquisition.getCropHeightVariable(), lRow);
     lRow++;
   }
 

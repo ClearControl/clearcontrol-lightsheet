@@ -720,10 +720,10 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
   }
 
 
-  public BoundedVariable<Double> getStartCropX(){return mCropXVariable;}
-  public BoundedVariable<Double> getStartCropY(){return mCropYVariable;}
-  public BoundedVariable<Double> getSizeCropX(){return mCropWidthVariable;}
-  public BoundedVariable<Double> getSizeCropY(){return mCropHeightVariable;}
+  public BoundedVariable<Double> getCropXVariable(){return mCropXVariable;}
+  public BoundedVariable<Double> getCropYVariable(){return mCropYVariable;}
+  public BoundedVariable<Double> getCropWidthVariable(){return mCropWidthVariable;}
+  public BoundedVariable<Double> getCropHeightVariable(){return mCropHeightVariable;}
   /**
    * Returns the exposure variable
    * 
