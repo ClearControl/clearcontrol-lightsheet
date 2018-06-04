@@ -652,10 +652,6 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
     double lValY = mCropYVariable.get();
     double lValSizeX = mCropWidthVariable.get();
     double lValSizeY = mCropHeightVariable.get();
-//    double lValX = 0;
-//    double lValY = 0;
-//    double lValSizeX = 512;
-//    double lValSizeY = 512;
 
     ClearCLImage dst;
     ClearCLImage src;
@@ -667,13 +663,7 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
                     src.getChannelDataType());
     Kernels.crop(lCLIJ, src, dst, (int)lValX, (int)lValY);
     lCLIJ.show(dst, "Processing Quality On");
-//    if (mChangedValueForCropBox ==  true) {
-//      lCLIJ.show(dst, "Processing Quality On");
-//      System.out.println("Cropped: On X "+ lValX + " to " + (lValX+lValSizeX));
-//      System.out.println("Cropped: On Y "+ lValY + " to " + (lValY+lValSizeY));
-//
-//      mChangedValueForCropBox = false;
-//    }
+
     StackInterface croppedImage = lCLIJ.converter(dst).getOffHeapPlanarStack();
     dst.close();
     src.close();
@@ -691,36 +681,6 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
     }
     return;
   }
-  public void setStartCropY(double pStartCropY){
-    if (pStartCropY > 0.0 && pStartCropY < mLightSheetMicroscope.getCameraWidth(0)) {
-      mCropYVariable.set(pStartCropY);
-    }
-    if ((mCropYVariable.get() + mCropHeightVariable.get()) > mLightSheetMicroscope.getCameraWidth(0)){
-      mCropHeightVariable.set(mLightSheetMicroscope.getCameraWidth(0) - mCropYVariable.get());
-    }
-  }
-
-  public void setSizeCropY(double pSizeCropY){
-    if(pSizeCropY <= 0)
-      return;
-    if ((mCropYVariable.get() + pSizeCropY) > mLightSheetMicroscope.getCameraWidth(0)){
-      mCropHeightVariable.set(mLightSheetMicroscope.getCameraWidth(0) - mCropYVariable.get());
-    }
-    else{
-      mCropHeightVariable.set(pSizeCropY);
-    }
-  }
-  public void setSizeCropX(double pSizeCropX){
-    if(pSizeCropX <= 0)
-      return;
-    if ((mCropXVariable.get() + pSizeCropX) > mLightSheetMicroscope.getCameraHeight(0)){
-      mCropWidthVariable.set(mLightSheetMicroscope.getCameraHeight(0) - mCropXVariable.get());
-    }
-    else{
-      mCropWidthVariable.set(pSizeCropX);
-    }
-  }
-
 
   public BoundedVariable<Double> getCropXVariable(){
     return mCropXVariable;
