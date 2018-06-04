@@ -71,11 +71,10 @@ public class InteractiveAcquisition extends PeriodicLoopTaskDevice
   private ChangeListener<AcquisitionStateInterface<LightSheetMicroscopeInterface, LightSheetMicroscopeQueue>> mAcquisitionStateChangeListener;
   private LightSheetMicroscopeQueue mQueue;
 
-  private BoundedVariable<Double> mCropXVariable = new BoundedVariable<Double>("CropX Starting", 10.0, 0.0, 2047.0,0.001);
-  private BoundedVariable<Double> mCropYVariable = new BoundedVariable<Double>("CropX Starting", 10.0, 0.0, 2047.0,0.001);
-  private BoundedVariable<Double> mCropWidthVariable = new BoundedVariable<Double>("CropX Size", 10.0, 1.0, 2048.0,0.001);
-  private BoundedVariable<Double> mCropHeightVariable = new BoundedVariable<Double>("CropY Size", 10.0, 1.0, 2048.0,0.001);
-  public boolean mChangedValueForCropBox = false;
+  private BoundedVariable<Double> mCropXVariable = new BoundedVariable<Double>("Crop X", 10.0, 0.0, 2047.0,0.001);
+  private BoundedVariable<Double> mCropYVariable = new BoundedVariable<Double>("Crop Y", 10.0, 0.0, 2047.0,0.001);
+  private BoundedVariable<Double> mCropWidthVariable = new BoundedVariable<Double>("Crop width", 10.0, 1.0, 2048.0,0.001);
+  private BoundedVariable<Double> mCropHeightVariable = new BoundedVariable<Double>("Crop height", 10.0, 1.0, 2048.0,0.001);
 
   /**
    * Instantiates an interactive acquisition for lightsheet microscope
