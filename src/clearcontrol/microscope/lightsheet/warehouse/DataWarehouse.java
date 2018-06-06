@@ -51,6 +51,27 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
     return lOldestContainer;
   }
 
+  public <DCI extends DataContainerInterface> DCI getNewestContainer(Class pClass) {
+    long lMaximumTimePoint = -Long.MAX_VALUE;
+    DCI lNewestContainer = null;
+    for (String key : keySet()) {
+      DataContainerInterface lContainer = get(key);
+      if (pClass.isInstance(lContainer) && lContainer.getTimepoint() > lMaximumTimePoint) {
+        lMaximumTimePoint = lContainer.getTimepoint();
+        lNewestContainer = (DCI)lContainer;
+      }
+    }
+
+    if (lNewestContainer != null)
+    {
+      info("Newest container is from timepoint " + lNewestContainer.getTimepoint());
+    } else {
+      warning("Warning, no container to return!");
+    }
+    return lNewestContainer;
+  }
+
+
   public <DCI extends DataContainerInterface> ArrayList<DCI> getContainers(Class pClass) {
     return getContainers(pClass, true);
   }
