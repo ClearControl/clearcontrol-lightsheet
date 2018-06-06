@@ -43,4 +43,12 @@ public class RandomZernikesInstruction extends InstructionBase implements
     public RandomZernikesInstruction copy() {
         return new RandomZernikesInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase);
     }
+
+    public BoundedVariable<Double> getMaximumZernikeFactor() {
+        return mMaximumZernikeFactor;
+    }
+
+    public BoundedVariable<Double> getMinimumZernikeFactor() {
+        return mMinimumZernikeFactor;
+    }
 }
