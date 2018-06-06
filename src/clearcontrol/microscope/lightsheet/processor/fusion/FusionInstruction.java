@@ -60,7 +60,7 @@ public abstract class FusionInstruction extends LightSheetMicroscopeInstructionB
             0);
 
 
-    resetEngine(lProcessor.getEngine());
+    resetEngine();
 
     StackRecyclerManager
             lStackRecyclerManager = getLightSheetMicroscope().getDevice(StackRecyclerManager.class, 0);
@@ -98,12 +98,18 @@ public abstract class FusionInstruction extends LightSheetMicroscopeInstructionB
     return mFusedStack;
   }
 
-  protected void resetEngine(LightSheetFastFusionEngine pEngine) {
-    resetEngine(pEngine, getLightSheetMicroscope().getNumberOfLightSheets(), getLightSheetMicroscope().getNumberOfDetectionArms());
+  protected void resetEngine() {
+    resetEngine(getLightSheetMicroscope().getNumberOfLightSheets(), getLightSheetMicroscope().getNumberOfDetectionArms());
   }
 
-  protected void resetEngine(LightSheetFastFusionEngine pEngine, int pNumberOfLightSheets, int pNumberOfDetectionArms) {
-    pEngine.setup(pNumberOfLightSheets, pNumberOfDetectionArms);
+  protected void resetEngine( int pNumberOfLightSheets, int pNumberOfDetectionArms) {
+    final LightSheetFastFusionProcessor
+            lProcessor =
+            getLightSheetMicroscope().getDevice(
+                    LightSheetFastFusionProcessor.class,
+                    0);
+
+    lProcessor.getEngine().setup(pNumberOfLightSheets, pNumberOfDetectionArms);
   }
 
   protected void storeFusedContainer(StackInterface lFusedStack) {

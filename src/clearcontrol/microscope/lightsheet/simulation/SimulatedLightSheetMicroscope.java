@@ -76,6 +76,7 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.instructions.TimelapseStopInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteSpecificStackToSpecificRawFolderInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseResetInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -495,12 +496,12 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,false, this));
       addDevice(0, new CenterMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
 
-
       addDevice(0, lDropFusedContainerScheduler);
       addDevice(0, lViewFusedStackScheduler);
       addDevice(0, lFusedMaxProjectionScheduler);
     }
 
+    addDevice(0, new WriteSpecificStackToSpecificRawFolderInstruction("fused", "default", this));
 
     MaxProjectionInstruction<StackInterfaceContainer> lStackMaxProjectionScheduler = new MaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this);
 
@@ -535,6 +536,8 @@ public class SimulatedLightSheetMicroscope extends
       }
       lOpticPrefusedStackKeys[c] = "C" + c + "opticsprefused";
       lInterleavedStackKeys[c] = "C" + c + "interleaved";
+
+      addDevice(0, new SingleCameraFusionInstruction(this, c));
     }
 
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"default"}, this));
