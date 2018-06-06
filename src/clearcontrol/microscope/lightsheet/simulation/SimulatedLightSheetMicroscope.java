@@ -24,6 +24,7 @@ import clearcontrol.devices.stages.kcube.instructions.BasicThreeAxesStageInstruc
 import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.devices.stages.kcube.sim.SimulatedBasicStageDevice;
 import clearcontrol.devices.stages.kcube.sim.SimulatedThreeAxesStageDevice;
+import clearcontrol.gui.video.video2d.Stack2DDisplay;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.adaptive.instructions.*;
@@ -46,11 +47,8 @@ import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructio
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.MeasureDCTS2DOnStackInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.SpotShiftDeterminationInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.processing.CropInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.CenterMaxProjectionInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.HalfStackMaxProjectionInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.MaxProjectionInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.*;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
-import clearcontrol.microscope.lightsheet.processor.fusion.ViewFusedStackInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscInstructionBase;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
@@ -398,8 +396,7 @@ public class SimulatedLightSheetMicroscope extends
    * Timelapse
    */
   @SuppressWarnings("unchecked")
-  public void addStandardDevices(int pNumberOfControlPlanes)
-  {
+  public void addStandardDevices(int pNumberOfControlPlanes) {
 
     // Adding calibrator:
     {
@@ -411,12 +408,12 @@ public class SimulatedLightSheetMicroscope extends
     {
       AcquisitionStateManager<LightSheetAcquisitionStateInterface<?>> lAcquisitionStateManager;
       lAcquisitionStateManager =
-                               (AcquisitionStateManager<LightSheetAcquisitionStateInterface<?>>) addAcquisitionStateManager();
+              (AcquisitionStateManager<LightSheetAcquisitionStateInterface<?>>) addAcquisitionStateManager();
       InterpolatedAcquisitionState lAcquisitionState =
-                                                     new InterpolatedAcquisitionState("default",
-                                                                                      this);
+              new InterpolatedAcquisitionState("default",
+                      this);
       lAcquisitionState.setupControlPlanes(pNumberOfControlPlanes,
-                                           ControlPlaneLayout.Circular);
+              ControlPlaneLayout.Circular);
       lAcquisitionState.copyCurrentMicroscopeSettings();
       lAcquisitionStateManager.setCurrentState(lAcquisitionState);
       addInteractiveAcquisition();
@@ -427,7 +424,6 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new AcquisitionStateResetInstruction(this));
 
       addDevice(0, new InterpolatedAcquisitionStateLogInstruction(this));
-
 
 
       // Adding adaptive engine device:
@@ -448,6 +444,16 @@ public class SimulatedLightSheetMicroscope extends
       ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(getDevice(DataWarehouseResetInstruction.class, 0));
     }
 
+    for (int i = 0; i < 3; i++)
+    {
+      final Stack2DDisplay lStack2DDisplay =
+              new Stack2DDisplay("Video 2D " + i,
+                      1024,
+                      1024,
+                      false);
+      lStack2DDisplay.setVisible(false);
+      addDevice(i, lStack2DDisplay);
+    }
 
     if (getNumberOfLightSheets() > 1) {
       addDevice(0, new InterleavedAcquisitionInstruction(this));
@@ -564,7 +570,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new SpotShiftDeterminationInstruction(this));
 
     addDevice(0, new CropInstruction(getDataWarehouse(),0,0,256,256));
-
+    addDevice( 0, new ViewStack2DInstruction("C0L0", 0, this));
     addDevice(0, new PauseInstruction());
 
     int[] pauseTimes = {

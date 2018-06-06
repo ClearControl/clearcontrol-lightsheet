@@ -6,6 +6,7 @@ import clearcontrol.devices.stages.kcube.gui.KCubePane;
 import clearcontrol.devices.stages.kcube.impl.KCubeDevice;
 import clearcontrol.devices.stages.kcube.instructions.BasicThreeAxesStageInstruction;
 import clearcontrol.devices.stages.kcube.instructions.gui.BasicThreeAxesStageInstructionPanel;
+import clearcontrol.gui.video.video2d.Stack2DDisplay;
 import javafx.stage.Stage;
 
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
@@ -34,6 +35,8 @@ import clearcontrol.microscope.lightsheet.timelapse.gui.LightSheetTimelapseToolb
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.gui.TimelapsePanel;
 import clearcontrol.microscope.timelapse.timer.TimelapseTimerInterface;
+
+import java.util.ArrayList;
 
 /**
  * Lightsheet microscope Ggraphical User Interface (GUI)
@@ -191,6 +194,12 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 //            DataWarehouseResetInstructionPanel.class,
 //            MicroscopeNodeType.Scripting);
 
+    ArrayList<Stack2DDisplay> lDisplayDeviceList = get2DDisplayDeviceList();
+    for (Stack2DDisplay lDisplay : pLightSheetMicroscope.getDevices(Stack2DDisplay.class)) {
+      if (!lDisplayDeviceList.contains(lDisplay)) {
+        lDisplayDeviceList.add(lDisplay);
+      }
+    }
   }
 
   @Override
