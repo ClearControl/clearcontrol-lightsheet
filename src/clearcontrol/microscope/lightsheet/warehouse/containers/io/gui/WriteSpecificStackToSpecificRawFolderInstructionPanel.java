@@ -14,6 +14,6 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteSpecificS
 public class WriteSpecificStackToSpecificRawFolderInstructionPanel extends CustomGridPane {
     public WriteSpecificStackToSpecificRawFolderInstructionPanel(WriteSpecificStackToSpecificRawFolderInstruction pInstruction) {
         addStringField(pInstruction.getSourceStackKeyVariable(), 0 );
-        addStringField(pInstruction.getTargetRawFolderNameVariable(), 0 );
+        addStringField(pInstruction.getTargetRawFolderNameVariable(), 1 );
     }
 }

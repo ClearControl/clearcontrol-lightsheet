@@ -45,6 +45,7 @@ import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightShee
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.CountsSpotsInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.MeasureDCTS2DOnStackInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.SpotShiftDeterminationInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.processing.CropInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.CenterMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.HalfStackMaxProjectionInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.MaxProjectionInstruction;
@@ -561,6 +562,8 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new MeasureDCTS2DOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
 
     addDevice(0, new SpotShiftDeterminationInstruction(this));
+
+    addDevice(0, new CropInstruction(getDataWarehouse(),0,0,256,256));
 
     addDevice(0, new PauseInstruction());
 
