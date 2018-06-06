@@ -4,6 +4,7 @@ import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
+import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -58,6 +59,9 @@ public abstract class FusionInstruction extends LightSheetMicroscopeInstructionB
             LightSheetFastFusionProcessor.class,
             0);
 
+
+    resetEngine(lProcessor.getEngine());
+
     StackRecyclerManager
             lStackRecyclerManager = getLightSheetMicroscope().getDevice(StackRecyclerManager.class, 0);
     RecyclerInterface<StackInterface, StackRequest>
@@ -92,6 +96,14 @@ public abstract class FusionInstruction extends LightSheetMicroscopeInstructionB
     });
 
     return mFusedStack;
+  }
+
+  protected void resetEngine(LightSheetFastFusionEngine pEngine) {
+    resetEngine(pEngine, getLightSheetMicroscope().getNumberOfLightSheets(), getLightSheetMicroscope().getNumberOfDetectionArms());
+  }
+
+  protected void resetEngine(LightSheetFastFusionEngine pEngine, int pNumberOfLightSheets, int pNumberOfDetectionArms) {
+    pEngine.setup(pNumberOfLightSheets, pNumberOfDetectionArms);
   }
 
   protected void storeFusedContainer(StackInterface lFusedStack) {
