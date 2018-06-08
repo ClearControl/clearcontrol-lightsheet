@@ -215,6 +215,7 @@ public class SequentialAcquisitionScheduler extends
       {
 
         lQueue.setI(k, pLightSheetIndex == k);
+        lQueue.setIH(k,mLightSheetMicroscope.getLightSheet(k).getHeightVariable().get().doubleValue());
       }
 
       lQueue.addCurrentStateToQueue();
