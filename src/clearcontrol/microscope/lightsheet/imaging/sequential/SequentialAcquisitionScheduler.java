@@ -260,5 +260,4 @@ public class SequentialAcquisitionScheduler extends
     return mCurrentState.getLightSheetOnOffVariable(pLightIndex).get();
   }
 
-
 }
