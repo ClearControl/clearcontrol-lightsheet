@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
 
 import clearcontrol.devices.lasers.LaserDeviceInterface;
-import clearcontrol.devices.lasers.schedulers.LaserOnOffScheduler;
-import clearcontrol.devices.lasers.schedulers.LaserPowerScheduler;
+import clearcontrol.devices.lasers.instructions.LaserOnOffInstruction;
+import clearcontrol.devices.lasers.instructions.LaserPowerInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import javafx.application.Application;
@@ -108,8 +108,8 @@ public class SimulatedLightSheetMicroscopeDemo extends Application
       LightSheetTimelapse lLightSheetTimelapse = lMicroscope.getDevice(LightSheetTimelapse.class, 0);
       LaserDeviceInterface lLaser = lMicroscope.getDevice(
           LaserDeviceInterface.class, 0);
-      lLightSheetTimelapse.getListOfActivatedSchedulers().add(0, new LaserOnOffScheduler(lLaser, true));
-      lLightSheetTimelapse.getListOfActivatedSchedulers().add(0, new LaserPowerScheduler(lLaser, 10));
+      lLightSheetTimelapse.getListOfActivatedSchedulers().add(0, new LaserOnOffInstruction(lLaser, true));
+      lLightSheetTimelapse.getListOfActivatedSchedulers().add(0, new LaserPowerInstruction(lLaser, 10));
 
       InterpolatedAcquisitionState lState =
           (InterpolatedAcquisitionState) lMicroscope.getAcquisitionStateManager().getCurrentState();

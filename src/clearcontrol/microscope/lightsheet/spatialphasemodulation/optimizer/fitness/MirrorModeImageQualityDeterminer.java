@@ -11,7 +11,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix6
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.state.schedulers.AcquisitionStateBackupRestoreScheduler;
+import clearcontrol.microscope.lightsheet.state.instructions.AcquisitionStateBackupRestoreInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.stack.StackInterface;
@@ -161,7 +161,7 @@ public class MirrorModeImageQualityDeterminer implements LoggingFeature {
     }
 
     private void backupState() {
-        for (AcquisitionStateBackupRestoreScheduler lScheduler : mLightSheetMicroscope.getDevices(AcquisitionStateBackupRestoreScheduler.class)) {
+        for (AcquisitionStateBackupRestoreInstruction lScheduler : mLightSheetMicroscope.getDevices(AcquisitionStateBackupRestoreInstruction.class)) {
             if (lScheduler.isBackup()) {
                 lScheduler.enqueue(-1);
             }
@@ -169,7 +169,7 @@ public class MirrorModeImageQualityDeterminer implements LoggingFeature {
     }
 
     private void restoreState() {
-        for (AcquisitionStateBackupRestoreScheduler lScheduler : mLightSheetMicroscope.getDevices(AcquisitionStateBackupRestoreScheduler.class)) {
+        for (AcquisitionStateBackupRestoreInstruction lScheduler : mLightSheetMicroscope.getDevices(AcquisitionStateBackupRestoreInstruction.class)) {
             if (!lScheduler.isBackup()) {
                 lScheduler.enqueue(-1);
             }

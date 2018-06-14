@@ -6,13 +6,13 @@ import clearcontrol.core.device.switches.SwitchingDeviceInterface;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.devices.cameras.StackCameraDeviceInterface;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.MicroscopeBase;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetInterface;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
@@ -27,21 +27,16 @@ import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.state.schedulers.ChangeExposureTimeScheduler;
+import clearcontrol.microscope.lightsheet.state.instructions.ChangeExposureTimeInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
-import clearcontrol.microscope.lightsheet.timelapse.containers.SchedulerDurationContainer;
+import clearcontrol.microscope.lightsheet.timelapse.containers.InstructionDurationContainer;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseLogScheduler;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DataWarehouseResetScheduler;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropAllContainersOfTypeScheduler;
-import clearcontrol.microscope.lightsheet.warehouse.schedulers.DropOldestStackInterfaceContainerScheduler;
-import clearcontrol.microscope.stacks.StackRecyclerManager;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.*;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseLogInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
-import clearcontrol.stack.StackInterface;
-import clearcontrol.stack.StackRequest;
-import coremem.recycling.RecyclerInterface;
 
 import java.util.ArrayList;
 
@@ -89,8 +84,8 @@ public class LightSheetMicroscope extends
 
     mDataWarehouse = new DataWarehouse();
 
-    addDevice(0, new DataWarehouseResetScheduler());
-    addDevice(0, new DataWarehouseLogScheduler(this));
+    addDevice(0, new DataWarehouseResetInstruction(getDataWarehouse()));
+    addDevice(0, new DataWarehouseLogInstruction(this));
 
 
     for (Class lContainerType : new Class[]{
@@ -103,12 +98,12 @@ public class LightSheetMicroscope extends
             MeasurementContainer.class,
             DCTS2DContainer.class,
             SpotCountContainer.class,
-            SchedulerDurationContainer.class,
+            InstructionDurationContainer.class,
             DataContainerInterface.class,
             MirrorModeContainer.class
     }) {
-      addDevice(0, new DropOldestStackInterfaceContainerScheduler(lContainerType));
-      addDevice(0, new DropAllContainersOfTypeScheduler(lContainerType));
+      addDevice(0, new DropOldestStackInterfaceContainerInstruction(lContainerType, getDataWarehouse()));
+      addDevice(0, new DropAllContainersOfTypeInstruction(lContainerType, getDataWarehouse()));
     }
 
 
@@ -194,13 +189,13 @@ public class LightSheetMicroscope extends
                                                                               this);
     addDevice(0, lInteractiveAcquisition);
 
-    addDevice(0, new ChangeExposureTimeScheduler(1));
-    addDevice(0, new ChangeExposureTimeScheduler(0.5));
-    addDevice(0, new ChangeExposureTimeScheduler(0.2));
-    addDevice(0, new ChangeExposureTimeScheduler(0.1));
-    addDevice(0, new ChangeExposureTimeScheduler(0.05));
-    addDevice(0, new ChangeExposureTimeScheduler(0.02));
-    addDevice(0, new ChangeExposureTimeScheduler(0.01));
+    addDevice(0, new ChangeExposureTimeInstruction(1, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.5, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.2, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.1, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.05, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.02, this));
+    addDevice(0, new ChangeExposureTimeInstruction(0.01, this));
 
     return lInteractiveAcquisition;
   }
@@ -420,8 +415,8 @@ public class LightSheetMicroscope extends
     return mDataWarehouse;
   }
 
-  public SchedulerInterface getSchedulerDevice(String... pMustContainStrings) {
-    return getDevice(SchedulerInterface.class, 0, pMustContainStrings);
+  public InstructionInterface getSchedulerDevice(String... pMustContainStrings) {
+    return getDevice(InstructionInterface.class, 0, pMustContainStrings);
   }
 
   public <O extends Object> O getDevice(Class<O> pClass, int pDeviceIndex, String ... pMustContainStrings)
@@ -449,15 +444,4 @@ public class LightSheetMicroscope extends
     }
     return null;
   }
-
-  @Override
-  public boolean start() {
-    boolean result = super.start();
-    for (SchedulerInterface pDevice : getDevices(SchedulerInterface.class)) {
-      pDevice.setMicroscope(this);
-      pDevice.initialize();
-    }
-    return result;
-  }
-
 }

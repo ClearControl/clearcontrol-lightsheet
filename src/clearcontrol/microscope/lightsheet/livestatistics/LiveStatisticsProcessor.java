@@ -17,7 +17,7 @@ import clearcontrol.stack.processor.clearcl.ClearCLStackProcessorBase;
 import coremem.recycling.RecyclerInterface;
 
 /**
- * Deprecated: This tool should be replaced by a scheduler
+ * Deprecated: This tool should be replaced by a instructions
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) December 2017

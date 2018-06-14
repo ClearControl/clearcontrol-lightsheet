@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.state.spatial;
 
+import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
 
 /**
  * FOVBoundingBox
@@ -12,11 +12,10 @@ import clearcontrol.devices.stages.kcube.scheduler.SpaceTravelScheduler;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class FOVBoundingBox extends SpaceTravelScheduler {
+public class FOVBoundingBox extends SpaceTravelInstruction {
 
     public FOVBoundingBox(LightSheetMicroscope pLightSheetMicroscope) {
-        super("FOV");
-        setMicroscope(pLightSheetMicroscope);
+        super("FOV", pLightSheetMicroscope);
         initialize();
     }
 

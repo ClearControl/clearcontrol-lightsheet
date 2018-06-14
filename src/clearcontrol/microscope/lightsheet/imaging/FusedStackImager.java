@@ -2,17 +2,16 @@ package clearcontrol.microscope.lightsheet.imaging;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedFusionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionScheduler;
-import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialFusionScheduler;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionInstruction;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionInstruction;
+import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedAcquisitionInstruction;
+import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedFusionInstruction;
+import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisitionInstruction;
+import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialFusionInstruction;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
-import clearcontrol.microscope.lightsheet.processor.fusion.FusionScheduler;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
 
@@ -63,29 +62,27 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
     lProcessor.getEngine().reset(true);
 
 
-    AbstractAcquistionScheduler lAcquisitionScheduler;
-    FusionScheduler lFusionScheduler;
+    AbstractAcquistionInstruction lAcquisitionScheduler;
+    FusionInstruction lFusionScheduler;
     switch (mAcquisitionType) {
     case TimelapseSequential:
-      lAcquisitionScheduler = mLightSheetMicroscope.getDevice(SequentialAcquisitionScheduler.class, 0);
-      lFusionScheduler = mLightSheetMicroscope.getDevice(SequentialFusionScheduler.class, 0);
+      lAcquisitionScheduler = mLightSheetMicroscope.getDevice(SequentialAcquisitionInstruction.class, 0);
+      lFusionScheduler = mLightSheetMicroscope.getDevice(SequentialFusionInstruction.class, 0);
       break;
     case TimeLapseOpticallyCameraFused:
-      lAcquisitionScheduler = mLightSheetMicroscope.getDevice(OpticsPrefusedAcquisitionScheduler.class, 0);
-      lFusionScheduler = mLightSheetMicroscope.getDevice(OpticsPrefusedFusionScheduler.class, 0);
+      lAcquisitionScheduler = mLightSheetMicroscope.getDevice(OpticsPrefusedAcquisitionInstruction.class, 0);
+      lFusionScheduler = mLightSheetMicroscope.getDevice(OpticsPrefusedFusionInstruction.class, 0);
       break;
     case TimeLapseInterleaved:
     default:
-      lAcquisitionScheduler = mLightSheetMicroscope.getDevice(InterleavedAcquisitionScheduler.class, 0);
-      lFusionScheduler = mLightSheetMicroscope.getDevice(InterleavedFusionScheduler.class, 0);
+      lAcquisitionScheduler = mLightSheetMicroscope.getDevice(InterleavedAcquisitionInstruction.class, 0);
+      lFusionScheduler = mLightSheetMicroscope.getDevice(InterleavedFusionInstruction.class, 0);
       break;
     }
 
-    lAcquisitionScheduler.setMicroscope(mLightSheetMicroscope);
     lAcquisitionScheduler.initialize();
     lAcquisitionScheduler.enqueue(0);
 
-    lFusionScheduler.setMicroscope(mLightSheetMicroscope);
     lFusionScheduler.initialize();
     lFusionScheduler.enqueue(0);
 

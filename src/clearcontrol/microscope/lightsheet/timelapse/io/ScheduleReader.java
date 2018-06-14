@@ -1,10 +1,10 @@
 package clearcontrol.microscope.lightsheet.timelapse.io;
 
+import clearcontrol.instructions.InstructionBase;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.component.scheduler.SchedulerInterface;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
 
 /**
@@ -13,11 +13,11 @@ import java.util.ArrayList;
  */
 public class ScheduleReader
 {
-  private final ArrayList<SchedulerInterface> mSchedulerList;
+  private final ArrayList<InstructionInterface> mSchedulerList;
   private final LightSheetMicroscope mLightSheetMicroscope;
   private final File mSourceFile;
 
-  public ScheduleReader(ArrayList<SchedulerInterface> pSchedulerList, LightSheetMicroscope pLightSheetMicroscope, File pSourceFile) {
+  public ScheduleReader(ArrayList<InstructionInterface> pSchedulerList, LightSheetMicroscope pLightSheetMicroscope, File pSourceFile) {
     mSchedulerList = pSchedulerList;
     mLightSheetMicroscope = pLightSheetMicroscope;
     mSourceFile = pSourceFile;
@@ -25,7 +25,6 @@ public class ScheduleReader
 
   public boolean read()
   {
-
     StringBuilder sb = new StringBuilder();
     BufferedReader br = null;
     try
@@ -64,9 +63,30 @@ public class ScheduleReader
     }
 
 
-    String[] lSchedulerNames = sb.toString().split("\n");
-    for (String lSchedulerName : lSchedulerNames) {
-      mSchedulerList.add(mLightSheetMicroscope.getSchedulerDevice(lSchedulerName.replace("\r", "")));
+    String[] lInstructionNames = sb.toString().split("\n");
+    for (String lInstructionName : lInstructionNames) {
+      InstructionInterface lInstruction = mLightSheetMicroscope.getSchedulerDevice(lInstructionName.replace("\r", ""));
+      if (lInstruction != null) {
+        mSchedulerList.add(lInstruction);
+      } else {
+        mSchedulerList.add(new InstructionBase("UNKNOWN INSTRUCTION: " + lInstructionName) {
+
+          @Override
+          public boolean initialize() {
+            return false;
+          }
+
+          @Override
+          public boolean enqueue(long pTimePoint) {
+            return false;
+          }
+
+          @Override
+          public InstructionInterface copy() {
+            return null;
+          }
+        });
+      }
     }
 
     return true;
