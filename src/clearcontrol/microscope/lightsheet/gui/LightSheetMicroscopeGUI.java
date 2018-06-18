@@ -7,6 +7,8 @@ import clearcontrol.devices.stages.kcube.impl.KCubeDevice;
 import clearcontrol.devices.stages.kcube.instructions.BasicThreeAxesStageInstruction;
 import clearcontrol.devices.stages.kcube.instructions.gui.BasicThreeAxesStageInstructionPanel;
 import clearcontrol.gui.video.video2d.Stack2DDisplay;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.gui.jfx.SpatialPhaseModulatorPanel;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import javafx.stage.Stage;
 
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
@@ -185,10 +187,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
 //    addPanelMappingEntry(ReadStackInterfaceContainerFromDiscInstruction.class,
 //            ReadStackInterfaceContainerFromDiscInstructionPanel.class,
 //            MicroscopeNodeType.Acquisition);
-//
-//    addPanelMappingEntry(SpatialPhaseModulatorDeviceInterface.class,
-//            SpatialPhaseModulatorPanel.class,
-//            MicroscopeNodeType.AdaptiveOptics);
+
+    addPanelMappingEntry(SpatialPhaseModulatorDeviceInterface.class,
+            SpatialPhaseModulatorPanel.class,
+            MicroscopeNodeType.AdaptiveOptics);
 //
 //    addPanelMappingEntry(DataWarehouseResetInstruction.class,
 //            DataWarehouseResetInstructionPanel.class,
