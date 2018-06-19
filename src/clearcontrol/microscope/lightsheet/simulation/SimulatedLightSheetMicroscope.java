@@ -56,6 +56,7 @@ import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DInstr
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.SelectBestQualitySampleInstruction;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.instructions.GeneticAlgorithmMirrorModeOptimizeInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.LoadMirrorModesFromFolderInstruction;
@@ -376,6 +377,8 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 3));
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 4));
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 5));
+
+      addDevice(0, new DefocusDiversityInstruction(this, 5));
 
       LogMirrorZernikeFactorsToFileInstruction lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileInstruction(lMirror, this);
       addDevice(0, lMirrorModeZernikeFactorsSaver);
