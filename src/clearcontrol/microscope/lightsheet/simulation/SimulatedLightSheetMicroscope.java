@@ -471,7 +471,7 @@ public class SimulatedLightSheetMicroscope extends
       SequentialAcquisitionInstruction
           lSequentialAcquisitionScheduler = new SequentialAcquisitionInstruction(this);
       BeamAcquisitionInstruction
-              lBeamAcquisitionScheduler = new BeamAcquisitionInstruction(this);
+              lBeamAcquisitionScheduler = new BeamAcquisitionInstruction(this,0);
       SequentialFusionInstruction lSequentialFusionScheduler = new SequentialFusionInstruction(this);
       WriteFusedImageAsRawToDiscInstruction lWriteSequentialFusedImageToDiscScheduler = new WriteFusedImageAsRawToDiscInstruction("sequential", this);
       DropOldestStackInterfaceContainerInstruction lDropContainerScheduler = new DropOldestStackInterfaceContainerInstruction(SequentialImageDataContainer.class, getDataWarehouse());
