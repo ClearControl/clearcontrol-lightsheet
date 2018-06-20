@@ -470,6 +470,8 @@ public class SimulatedLightSheetMicroscope extends
 
       SequentialAcquisitionInstruction
           lSequentialAcquisitionScheduler = new SequentialAcquisitionInstruction(this);
+      BeamAcquisitionInstruction
+              lBeamAcquisitionScheduler = new BeamAcquisitionInstruction(this);
       SequentialFusionInstruction lSequentialFusionScheduler = new SequentialFusionInstruction(this);
       WriteFusedImageAsRawToDiscInstruction lWriteSequentialFusedImageToDiscScheduler = new WriteFusedImageAsRawToDiscInstruction("sequential", this);
       DropOldestStackInterfaceContainerInstruction lDropContainerScheduler = new DropOldestStackInterfaceContainerInstruction(SequentialImageDataContainer.class, getDataWarehouse());
@@ -481,12 +483,14 @@ public class SimulatedLightSheetMicroscope extends
       if (lTimelapse instanceof LightSheetTimelapse)
       {
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
+        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lBeamAcquisitionScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialFusionScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewFusedStackScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSequentialFusedImageToDiscScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lFusedMaxProjectionScheduler);
       }
       addDevice(0, lSequentialAcquisitionScheduler);
+      addDevice(0, lBeamAcquisitionScheduler);
       addDevice(0, lSequentialFusionScheduler);
       addDevice(0, new WriteSequentialRawDataToDiscInstruction(this));
       addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
