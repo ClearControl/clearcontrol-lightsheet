@@ -1,10 +1,15 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity;
 
+import clearcl.util.ElapsedTime;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.gui.jfx.custom.visualconsole.VisualConsoleInterface;
 import clearcontrol.gui.video.video2d.Stack2DDisplay;
+import clearcontrol.ip.iqm.DCTS2D;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.calibrator.gui.ImageJOverlayViewer;
+import clearcontrol.microscope.lightsheet.calibrator.utils.ImageAnalysisUtils;
+import clearcontrol.microscope.lightsheet.component.detection.DetectionArmInterface;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.SingleStackImager;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
@@ -16,20 +21,29 @@ import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
+import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.state.AcquisitionType;
+import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.imglib2.StackToImgConverter;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.metadata.StackMetaData;
+import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
+import gnu.trove.list.array.TDoubleArrayList;
 import ij.IJ;
 import ij.ImagePlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
 
@@ -52,21 +66,22 @@ public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        image();
+        imager();
         return false;
     }
 
+    @Deprecated //use imager
     public boolean image(){
 
         LightSheetMicroscopeQueue lQueue = mLightSheetMicroscope.requestQueue();
         lQueue.clearQueue();
-        int pImageWidth = 2048;
-        int pImageHeight = 2048;
+        int pImageWidth = mLightSheetMicroscope.getCameraWidth(0);
+        int pImageHeight = mLightSheetMicroscope.getCameraHeight(0);
 
         lQueue.setFullROI();
         lQueue.setCenteredROI(pImageWidth, pImageHeight);
 
-        lQueue.setExp(0.5);
+        lQueue.setExp(mLightSheetMicroscope.getExposure(0));
 
         // reset everything
         for (int i = 0; i < mLightSheetMicroscope.getNumberOfLightSheets(); i++)
@@ -76,7 +91,7 @@ public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
 
         lQueue.setI(0, true);
         lQueue.setIZ(0, 50.0);
-
+        //lQueue.setIH(0,0);
         lQueue.setDZ(0, 50 - mStepSize.get());
 
 
@@ -139,9 +154,48 @@ public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
         return true;
     }
 
+    public boolean imager(){
+
+        InterpolatedAcquisitionState currentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getDevice(AcquisitionStateManager.class, 0).getCurrentState();
+        double minZ = currentState.getStackZLowVariable().get().doubleValue();
+        double maxZ = currentState.getStackZHighVariable().get().doubleValue();
+
+        //double maxZ = currentState.getStackZHighVariable().get().doubleValue();
+        double stepZ = mStepSize.get().doubleValue();
+        int lNumberOfImages = (int)((maxZ - minZ)/stepZ);
+        double illZ = ((maxZ - minZ)/2) + minZ;
+
+
+        SingleStackImager lImager = new SingleStackImager(mLightSheetMicroscope);
+        lImager.getLightSheetMicroscope().getLightSheet(0).getZVariable().doNotSyncWith(lImager.getLightSheetMicroscope().getDetectionArm(0).getZVariable());
+        lImager.setIlluminationZ(illZ);
+        lImager.setDetectionZ(illZ - ((lNumberOfImages/2)*stepZ));
+        lImager.setDetectionZStepDistance(stepZ);
+        lImager.setIlluminationZStepDistance(0);
+        lImager.setImageWidth(currentState.getImageWidthVariable().get().intValue());
+        lImager.setImageHeight(currentState.getImageHeightVariable().get().intValue());
+        lImager.setExposureTimeInSeconds(currentState.getExposureInSecondsVariable().get().doubleValue());
+        lImager.setNumberOfRequestedImages((lNumberOfImages+1));
+        mResultImage = lImager.acquire();
+
+        if (mResultImage == null) {
+            System.out.println("Null Image in Stack");
+            return false;
+        }
+        SequentialImageDataContainer lContainer = new SequentialImageDataContainer(mLightSheetMicroscope);
+
+
+        putStackInContainer("C" + 0 + "L" + 0, mResultImage, lContainer);
+        getLightSheetMicroscope().getDataWarehouse().put("sequential_raw_" + mLightSheetMicroscope.getTimelapse().getTimePointCounterVariable().get(), lContainer);
+
+        return true;
+    }
+
+    public BoundedVariable<Double> getStepSize(){ return mStepSize;}
+
     @Override
     public clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction copy() {
-        return new clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction(getLightSheetMicroscope(), 5.0);
+        return new clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction(getLightSheetMicroscope(), mStepSize.get());
     }
 
 }

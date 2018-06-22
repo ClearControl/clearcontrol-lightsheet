@@ -378,7 +378,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 4));
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 5));
 
-      addDevice(0, new DefocusDiversityInstruction(this, 5));
+      addDevice(0, new DefocusDiversityInstruction(this, 10.0));
 
       LogMirrorZernikeFactorsToFileInstruction lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileInstruction(lMirror, this);
       addDevice(0, lMirrorModeZernikeFactorsSaver);
