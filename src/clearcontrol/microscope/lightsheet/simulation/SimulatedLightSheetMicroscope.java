@@ -466,6 +466,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new WriteFusedImageAsTifToDiscInstructionBase("interleaved", this));
       addDevice(0, new DropOldestStackInterfaceContainerInstruction(InterleavedImageDataContainer.class, getDataWarehouse()));
       addDevice(0, new MaxProjectionInstruction<InterleavedImageDataContainer>(InterleavedImageDataContainer.class, this));
+      addDevice(0, new WriteSingleLightSheetImageAsTifToDiscInstruction(0, 0, this));
 
 
       SequentialAcquisitionInstruction
