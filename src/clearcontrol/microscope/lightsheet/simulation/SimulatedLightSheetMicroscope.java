@@ -378,8 +378,6 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 4));
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 5));
 
-      addDevice(0, new DefocusDiversityInstruction(this, 10.0));
-
       LogMirrorZernikeFactorsToFileInstruction lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileInstruction(lMirror, this);
       addDevice(0, lMirrorModeZernikeFactorsSaver);
 
@@ -549,6 +547,7 @@ public class SimulatedLightSheetMicroscope extends
         addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"C" + c + "L" + l}, this));
 
         addDevice(0, new WriteSingleLightSheetImageAsTifToDiscInstruction(c, l, this));
+        addDevice(0, new DefocusDiversityInstruction(this, 10.0, l, c));
 
       }
       lOpticPrefusedStackKeys[c] = "C" + c + "opticsprefused";

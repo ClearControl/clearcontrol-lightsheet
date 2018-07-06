@@ -48,15 +48,19 @@ import static java.lang.Math.min;
 public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
 
     private BoundedVariable<Double> mStepSize = new BoundedVariable<Double>("Defocus step size",5.0, 0.0, Double.MAX_VALUE, 0.0000000001);
+    private BoundedVariable<Integer> mLightsheetIndex;
+    private BoundedVariable<Integer> mDetectionArmIndex;
 
     private LightSheetMicroscope mLightSheetMicroscope;
     private StackInterface mResultImage;
 
 
-    public DefocusDiversityInstruction(LightSheetMicroscope pLightSheetMicroscope, double pStepSize) {
+    public DefocusDiversityInstruction(LightSheetMicroscope pLightSheetMicroscope, double pStepSize, int pLightSheetIndex, int pDetectionArmIndex) {
         super("Adaptive optics: Defocus Diversity", pLightSheetMicroscope);
         mStepSize.set(pStepSize);
         mLightSheetMicroscope = pLightSheetMicroscope;
+        mLightsheetIndex = new BoundedVariable<Integer>("Light sheet index", pLightSheetIndex, 0, pLightSheetMicroscope.getNumberOfLightSheets());
+        mDetectionArmIndex = new BoundedVariable<Integer>("Detection arm index", pDetectionArmIndex, 0, pLightSheetMicroscope.getNumberOfDetectionArms());
     }
 
     @Override
@@ -167,7 +171,10 @@ public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
 
 
         SingleStackImager lImager = new SingleStackImager(mLightSheetMicroscope);
+
         lImager.getLightSheetMicroscope().getLightSheet(0).getZVariable().doNotSyncWith(lImager.getLightSheetMicroscope().getDetectionArm(0).getZVariable());
+        lImager.setDetectionArmIndex(mDetectionArmIndex.get());
+        lImager.setLightSheetIndex(mLightsheetIndex.get());
         lImager.setIlluminationZ(illZ);
         lImager.setDetectionZ(illZ - ((lNumberOfImages/2)*stepZ));
         lImager.setDetectionZStepDistance(stepZ);
@@ -185,7 +192,7 @@ public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
         SequentialImageDataContainer lContainer = new SequentialImageDataContainer(mLightSheetMicroscope);
 
 
-        putStackInContainer("C" + 0 + "L" + 0, mResultImage, lContainer);
+        putStackInContainer("C" + mDetectionArmIndex.get() + "L" + mLightsheetIndex.get(), mResultImage, lContainer);
         getLightSheetMicroscope().getDataWarehouse().put("sequential_raw_" + mLightSheetMicroscope.getTimelapse().getTimePointCounterVariable().get(), lContainer);
 
         return true;
@@ -194,8 +201,8 @@ public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
     public BoundedVariable<Double> getStepSize(){ return mStepSize;}
 
     @Override
-    public clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction copy() {
-        return new clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction(getLightSheetMicroscope(), mStepSize.get());
+    public DefocusDiversityInstruction copy() {
+        return new DefocusDiversityInstruction(getLightSheetMicroscope(), mStepSize.get(), mLightsheetIndex.get(), mDetectionArmIndex.get());
     }
 
 }
