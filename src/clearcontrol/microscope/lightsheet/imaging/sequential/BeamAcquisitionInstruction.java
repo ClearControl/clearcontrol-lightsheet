@@ -40,6 +40,13 @@ public class BeamAcquisitionInstruction  extends
         mLightSheetHeight = pLightSheetHeight;
     }
 
+    /**
+     * Deprecated: use constructor with two parameters
+     * @param pName
+     * @param pLightSheetMicroscope
+     * @param pLightSheetHeight
+     */
+    @Deprecated
     public BeamAcquisitionInstruction(String pName, LightSheetMicroscope pLightSheetMicroscope, double pLightSheetHeight) {
         super(pName, pLightSheetMicroscope);
         mLightSheetHeight = pLightSheetHeight;
