@@ -28,21 +28,21 @@ public class BeamAcquisitionInstruction  extends
         LoggingFeature
 {
 
-    private double mLightSheetHieght;
+    private double mLightSheetHeight;
     /**
      * INstanciates a virtual device with a given name
      *
      */
-    public BeamAcquisitionInstruction(LightSheetMicroscope pLightSheetMicroscope, double pLightSheetHieght)
+    public BeamAcquisitionInstruction(LightSheetMicroscope pLightSheetMicroscope, double pLightSheetHeight)
     {
         super("Acquisition: beam", pLightSheetMicroscope);
         mChannelName.set("beam");
-        mLightSheetHieght = pLightSheetHieght;
+        mLightSheetHeight = pLightSheetHeight;
     }
 
-    public BeamAcquisitionInstruction(String pName, LightSheetMicroscope pLightSheetMicroscope, double pLightSheetHieght) {
+    public BeamAcquisitionInstruction(String pName, LightSheetMicroscope pLightSheetMicroscope, double pLightSheetHeight) {
         super(pName, pLightSheetMicroscope);
-        mLightSheetHieght = pLightSheetHieght;
+        mLightSheetHeight = pLightSheetHeight;
     }
 
 
@@ -194,7 +194,7 @@ public class BeamAcquisitionInstruction  extends
             {
 
                 lQueue.setI(k, pLightSheetIndex == k);
-                lQueue.setIH(k,mLightSheetHieght);
+                lQueue.setIH(k, mLightSheetHeight);
             }
 
             lQueue.addCurrentStateToQueue();
@@ -242,6 +242,6 @@ public class BeamAcquisitionInstruction  extends
 
     @Override
     public BeamAcquisitionInstruction copy() {
-        return new BeamAcquisitionInstruction(getLightSheetMicroscope(), mLightSheetHieght);
+        return new BeamAcquisitionInstruction(getLightSheetMicroscope(), mLightSheetHeight);
     }
 }
