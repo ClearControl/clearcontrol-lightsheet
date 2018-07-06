@@ -56,7 +56,7 @@ public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
 
 
     public DefocusDiversityInstruction(LightSheetMicroscope pLightSheetMicroscope, double pStepSize, int pLightSheetIndex, int pDetectionArmIndex) {
-        super("Adaptive optics: Defocus Diversity", pLightSheetMicroscope);
+        super("Adaptive optics: Defocus Diversity (C" + pDetectionArmIndex + "L" +  pLightSheetIndex + ")", pLightSheetMicroscope);
         mStepSize.set(pStepSize);
         mLightSheetMicroscope = pLightSheetMicroscope;
         mLightsheetIndex = new BoundedVariable<Integer>("Light sheet index", pLightSheetIndex, 0, pLightSheetMicroscope.getNumberOfLightSheets());
