@@ -466,7 +466,6 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new WriteFusedImageAsTifToDiscInstructionBase("interleaved", this));
       addDevice(0, new DropOldestStackInterfaceContainerInstruction(InterleavedImageDataContainer.class, getDataWarehouse()));
       addDevice(0, new MaxProjectionInstruction<InterleavedImageDataContainer>(InterleavedImageDataContainer.class, this));
-      addDevice(0, new WriteSingleLightSheetImageAsTifToDiscInstruction(0, 0, this));
 
 
       SequentialAcquisitionInstruction
@@ -548,6 +547,9 @@ public class SimulatedLightSheetMicroscope extends
         addDevice(0, new ExposureModulatedAcquisitionInstruction(c, l, this));
         lSequentialStackKeys[c * getNumberOfLightSheets() + l] = "C" + c + "L" + l;
         addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"C" + c + "L" + l}, this));
+
+        addDevice(0, new WriteSingleLightSheetImageAsTifToDiscInstruction(c, l, this));
+
       }
       lOpticPrefusedStackKeys[c] = "C" + c + "opticsprefused";
       lInterleavedStackKeys[c] = "C" + c + "interleaved";
