@@ -198,7 +198,17 @@ public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
         return true;
     }
 
-    public BoundedVariable<Double> getStepSize(){ return mStepSize;}
+    public BoundedVariable<Double> getStepSize(){
+        return mStepSize;
+    }
+
+    public BoundedVariable<Integer> getDetectionArmIndex() {
+        return mDetectionArmIndex;
+    }
+
+    public BoundedVariable<Integer> getLightsheetIndex() {
+        return mLightsheetIndex;
+    }
 
     @Override
     public DefocusDiversityInstruction copy() {
