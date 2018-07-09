@@ -56,14 +56,11 @@ import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DInstr
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.SelectBestQualitySampleInstruction;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.*;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.instructions.GeneticAlgorithmMirrorModeOptimizeInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.LoadMirrorModesFromFolderInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.LogMirrorZernikeFactorsToFileInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.RandomZernikesInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.SequentialZernikesInstruction;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
@@ -388,6 +385,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, lSequentialZernikesScheduler);
 
       addDevice(0, new RandomZernikesInstruction(lMirror));
+      addDevice(0, new SetZernikeModeInstruction(lMirror));
     }
 
   }
