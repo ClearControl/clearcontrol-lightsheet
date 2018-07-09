@@ -11,11 +11,11 @@ public class FocusFinderZInstructionPanel extends CustomGridPane
 {
   public FocusFinderZInstructionPanel(FocusFinderZInstruction pFocusFinderZScheduler) {
     addDoubleField(pFocusFinderZScheduler.getDeltaZVariable(), 0);
-    addIntegerField(pFocusFinderZScheduler.getNumberOfImagesToTakeVariable(), 0);
-    addDoubleField(pFocusFinderZScheduler.getExposureTimeInSecondsVariable(), 0);
-    addIntegerField(pFocusFinderZScheduler.getImageWidthVariable(), 0);
-    addIntegerField(pFocusFinderZScheduler.getImageHeightVariable(), 0);
-    addCheckbox(pFocusFinderZScheduler.getResetAllTheTime(), 0);
+    addIntegerField(pFocusFinderZScheduler.getNumberOfImagesToTakeVariable(), 1);
+    addDoubleField(pFocusFinderZScheduler.getExposureTimeInSecondsVariable(), 2);
+    addIntegerField(pFocusFinderZScheduler.getImageWidthVariable(), 3);
+    addIntegerField(pFocusFinderZScheduler.getImageHeightVariable(), 4);
+    addCheckbox(pFocusFinderZScheduler.getResetAllTheTime(), 5);
   }
 
 }
