@@ -67,7 +67,7 @@ public class ScheduleReader
     for (String lInstructionName : lInstructionNames) {
       InstructionInterface lInstruction = mLightSheetMicroscope.getSchedulerDevice(lInstructionName.replace("\r", ""));
       if (lInstruction != null) {
-        mSchedulerList.add(lInstruction);
+        mSchedulerList.add(lInstruction.copy());
       } else {
         mSchedulerList.add(new InstructionBase("UNKNOWN INSTRUCTION: " + lInstructionName) {
 
