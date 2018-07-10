@@ -4,16 +4,11 @@ import clearcl.imagej.utilities.ImageTypeConverter;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.containers.PSFContainer;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
-import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
-import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
-import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
 import coremem.recycling.RecyclerInterface;
@@ -58,14 +53,20 @@ public class LoadPSFInstruction extends LightSheetMicroscopeInstructionBase impl
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        String filename = "PSF";
+        String filename = getRootFolderVariable().get() + "\\PSF";
 
         for (int i = 0; i < mZernikeFactors.length; i++) {
             double zernikeFactor = mZernikeFactors[i].get();
 
-            if (Math.abs(zernikeFactor) > PRECISION) {
-                zernikeFactor = Math.round(zernikeFactor / PRECISION) * PRECISION;
-                filename = filename + "_Z" + ZernikePolynomials.getZernikeModeName(i) + "_" + zernikeFactor;
+            if (Math.abs(zernikeFactor) >= PRECISION) {
+                String presign = "pos";
+                if (zernikeFactor < 0) {
+                    presign = "neg";
+                }
+
+                zernikeFactor = Math.abs(Math.round(zernikeFactor / PRECISION) * PRECISION);
+
+                filename = filename + "_Z" + ZernikePolynomials.jNoll(i) + "_" + presign + "_" + zernikeFactor;
             }
         }
 
@@ -79,6 +80,11 @@ public class LoadPSFInstruction extends LightSheetMicroscopeInstructionBase impl
                 1024);
 
         ImagePlus psfImage = IJ.openImage(filename);
+        if (psfImage == null) {
+            warning("PSF image file " + filename + " was not found!");
+            return false;
+        }
+        info("Successfully loaded PSF from " + filename);
 
         Img<FloatType> psfImg = ImageJFunctions.convertFloat(psfImage);
 
