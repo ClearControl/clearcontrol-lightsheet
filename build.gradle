@@ -94,8 +94,8 @@ dependencies
     compile ('net.clearcontrol:clearcontrol:0.16.4')      {transitive= true; changing= true}
     
     // post processing:
-    compile ('net.clearcontrol:clearclij:0.2.8')                {transitive= true; changing= true}
-    compile ('de.mpicbg.spimcat:spimcelldetection:0.1.4')       {transitive= true; changing= true}
+    compile ('net.clearcontrol:clearclij:0.3.2')                {transitive= true; changing= true}
+    compile ('de.mpicbg.spimcat:spimcelldetection:0.1.6')       {transitive= true; changing= true}
     compile ('de.mpicbg.rhaase:postprocessing-utilities:0.2.7') {transitive= true; changing= true}
 
     // other:
