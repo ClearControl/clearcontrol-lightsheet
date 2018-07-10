@@ -6,7 +6,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.imaging.SingleStackImager;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.containers.MirrorModeContainer;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;

@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.spatialphasemodulation;
+package clearcontrol.microscope.lightsheet.spatialphasemodulation.containers;
 
 import ch.qos.logback.core.joran.spi.DefaultNestedComponentRegistry;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
