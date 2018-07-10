@@ -388,6 +388,9 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new SetZernikeModeInstruction(lMirror));
     }
 
+    // additional devices/instruction for phase diversty
+    addDevice(0, new LoadPSFInstruction(this, 66));
+
   }
 
   /**
