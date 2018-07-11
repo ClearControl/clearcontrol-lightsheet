@@ -14,6 +14,7 @@ import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.stack.StackInterface;
 import net.imglib2.RandomAccess;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
@@ -84,16 +85,29 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         StackInterface lFactorIncreasedStack = image();
         double[][] lFactorIncreasedQuality = determineTileWiseQuality(lFactorIncreasedStack);
 
-        // TODO Region by region quality determiner
 
+        double dec = zernikesFactorDecreased[mZernikeFactor.get()];
+        double inc = zernikesFactorIncreased[mZernikeFactor.get()];
+        double def = 0;
+        // Tile wise maximum finding
+        double[][] lMaxima = new double[mNumberOfTilesX][mNumberOfTilesY];
+        for (int x = 0; x < mNumberOfTilesX; x++)
+        {
+            for (int y = 0; y < mNumberOfTilesY; y++)
+            {
+                double[] result = CalcParabolaVertex(dec,lFactorDecreasedQuality[x][y],def,lDefaultQuality[x][y],inc,lFactorIncreasedQuality[x][y]);
+                lMaxima[x][y] = result[0];
 
-        //double[] result = CalcParabolaVertex(zernikesFactorDecreased[mZernikeFactor.get()],lFactorDecreasedQuality),0,lDefaultQuality,zernikesFactorIncreased[mZernikeFactor.get()],lFactorIncreasedQuality);
+            }
+        }
+
         System.out.println("Zernikes default state" + Arrays.toString(zernikes));
         System.out.println("Zernikes default quality: " + Arrays.deepToString(lDefaultQuality));
         System.out.println("Zernikes factor decreased state" + Arrays.toString(zernikesFactorDecreased));
         System.out.println("Zernikes factor decreased quality: " + Arrays.deepToString(lFactorDecreasedQuality));
-        System.out.println("Zernikes factor increased state" + Arrays.toString(zernikesFactorIncreased)+ " Quality: " + lFactorIncreasedQuality);
+        System.out.println("Zernikes factor increased state" + Arrays.toString(zernikesFactorIncreased));
         System.out.println("Zernikes factor increased quality: " + Arrays.deepToString(lFactorIncreasedQuality));
+        System.out.println("Zernike for maxima image quality: " + Arrays.deepToString(lMaxima));
 
         System.out.println("Default stack dimension:" + Arrays.toString(lDefaultStack.getDimensions()));
         System.out.println("Decreased stack dimension:" + Arrays.toString(lFactorDecreasedStack.getDimensions()));
@@ -157,7 +171,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
 
     //Checked
-    public double[] CalcParabolaVertex(double x1, double y1, double x2, double y2, double x3, double y3)
+    public static double[] CalcParabolaVertex(double x1, double y1, double x2, double y2, double x3, double y3)
     {
 
         double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
