@@ -2,18 +2,13 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.sens
 
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.imaging.SingleStackImager;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.stack.StackInterface;
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -25,18 +20,19 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
     private BoundedVariable<Double> mPositionZ;
     double[] zernikes;
-    private BoundedVariable<Double> mstepSize = new BoundedVariable<Double>("Defocus step size",0.25, 0.0, 2.0, 0.0000000001);
+    private BoundedVariable<Double> mStepSize = new BoundedVariable<Double>("Defocus step size",0.25, 0.0, 2.0, 0.0000000001);
 
     public SensorLessAOForSinglePlaneInstruction(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
         super("Adaptive optics: Sensorless Single PLane AO optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName(), pLightSheetMicroscope);
         this.mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
+        mStepSize.set(0.25);
+        mZernikeFactor.set(3);
     }
 
 
     @Override
     public boolean initialize() {
         InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
-
         mPositionZ = new BoundedVariable<Double>("position Z", (lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2, lState.getStackZLowVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue(), lState.getStackZLowVariable().getGranularity().doubleValue());
 
         zernikes = mSpatialPhaseModulatorDeviceInterface.getZernikeFactors();
@@ -68,7 +64,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         // decrease Zernike factor by step size
         double[] zernikesFactorDecreased = new double[zernikes.length];
         System.arraycopy(zernikes, 0, zernikesFactorDecreased, 0, zernikes.length);
-        zernikesFactorDecreased[mZernikeFactor.get()] -= mstepSize.get();
+        zernikesFactorDecreased[mZernikeFactor.get()] -= mStepSize.get();
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikesFactorDecreased);
         StackInterface lFactorDecreasedStack = image();
         double lFactorDecreasedQuality = detemineQuality(lFactorDecreasedStack);
@@ -76,7 +72,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         // increase Zernike factor by step size
         double[] zernikesFactorIncreased = new double[zernikes.length];
         System.arraycopy(zernikes, 0, zernikesFactorIncreased, 0, zernikes.length);
-        zernikesFactorIncreased[mZernikeFactor.get()] += mstepSize.get();
+        zernikesFactorIncreased[mZernikeFactor.get()] += mStepSize.get();
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikesFactorIncreased);
         StackInterface lFactorIncreasedStack = image();
         double lFactorIncreasedQuality = detemineQuality(lFactorIncreasedStack);
@@ -110,6 +106,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     }
 
     public double detemineQuality(StackInterface lStack){
+
         DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
         double lQuality = lQualityEstimator.getQualityArray()[0];
         return lQuality;
@@ -132,11 +129,11 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     }
 
     public BoundedVariable<Double> getstepSize(){
-        return mstepSize;
+        return mStepSize;
     }
-    public BoundedVariable<Double> getPositionZ(){
-        return mPositionZ;
-    }
+//    public BoundedVariable<Double> getPositionZ(){
+//        return mPositionZ;
+//    }
     public BoundedVariable<Integer> getZernikeFactor(){
         return mZernikeFactor;
     }
