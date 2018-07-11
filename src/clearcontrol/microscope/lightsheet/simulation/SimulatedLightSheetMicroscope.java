@@ -64,6 +64,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.Lo
 import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.RandomZernikesInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.SequentialZernikesInstruction;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.sensorlessAO.SensorLessAOForSinglePlaneInstruction;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
@@ -377,6 +378,8 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 3));
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 4));
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 5));
+      addDevice(0, new SensorLessAOForSinglePlaneInstruction(this, lMirror));
+
 
       LogMirrorZernikeFactorsToFileInstruction lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileInstruction(lMirror, this);
       addDevice(0, lMirrorModeZernikeFactorsSaver);
