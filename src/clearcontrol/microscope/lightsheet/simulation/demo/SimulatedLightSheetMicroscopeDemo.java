@@ -157,6 +157,8 @@ public class SimulatedLightSheetMicroscopeDemo extends Application
         e.printStackTrace();
       }
 
+      System.exit(0);
+
     };
 
     executeAsynchronously(lRunnable);
