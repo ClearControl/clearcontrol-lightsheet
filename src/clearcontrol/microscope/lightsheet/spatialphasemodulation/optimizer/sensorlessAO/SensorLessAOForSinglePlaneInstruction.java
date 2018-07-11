@@ -27,14 +27,16 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     double[] zernikes;
     private BoundedVariable<Double> mStepSize = new BoundedVariable<Double>("Defocus step size",0.25, 0.0, 2.0, 0.0000000001);
 
-    private int mNumberOfTilesX = 2;
-    private int mNumberOfTilesY = 2;
+    private BoundedVariable<Integer> mNumberOfTilesX = new BoundedVariable<Integer>("Number Of Tiles On X",1,0,2048);
+    private BoundedVariable<Integer> mNumberOfTilesY = new BoundedVariable<Integer>("Number Of Tiles On Y",1,0,2048);;
 
     public SensorLessAOForSinglePlaneInstruction(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
         super("Adaptive optics: Sensorless Single PLane AO optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName(), pLightSheetMicroscope);
         this.mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
         mStepSize.set(0.25);
         mZernikeFactor.set(3);
+        mNumberOfTilesY.set(1);
+        mNumberOfTilesX.set(1);
     }
 
 
@@ -90,10 +92,10 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         double inc = zernikesFactorIncreased[mZernikeFactor.get()];
         double def = 0;
         // Tile wise maximum finding
-        double[][] lMaxima = new double[mNumberOfTilesX][mNumberOfTilesY];
-        for (int x = 0; x < mNumberOfTilesX; x++)
+        double[][] lMaxima = new double[mNumberOfTilesX.get()][mNumberOfTilesY.get()];
+        for (int x = 0; x < mNumberOfTilesX.get(); x++)
         {
-            for (int y = 0; y < mNumberOfTilesY; y++)
+            for (int y = 0; y < mNumberOfTilesY.get(); y++)
             {
                 double[] result = CalcParabolaVertex(dec,lFactorDecreasedQuality[x][y],def,lDefaultQuality[x][y],inc,lFactorIncreasedQuality[x][y]);
                 lMaxima[x][y] = result[0];
@@ -113,10 +115,17 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         System.out.println("Decreased stack dimension:" + Arrays.toString(lFactorDecreasedStack.getDimensions()));
         System.out.println("Increased stack dimension:" + Arrays.toString(lFactorIncreasedStack.getDimensions()));
 
-        //zernikes[mZernikeFactor.get()] = result[0];
+//        for (int x = 0; x < mNumberOfTilesX; x++) {
+//            for (int y = 0; y < mNumberOfTilesY; y++) {
+//                zernikes[mZernikeFactor.get()] = lMaxima[x][y];
+//                mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+//                StackInterface lImage = image();
+//            }
+//        }
 
-
-        System.out.println("Zernikes set to: " + Arrays.toString(zernikes));
+        // Setting back to 0
+        zernikes[mZernikeFactor.get()] = 0;
+        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
         return true;
     }
 
@@ -154,12 +163,12 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     }
 
     public double[][] determineTileWiseQuality(StackInterface lStack){
-        int lTileHeight = (int)lStack.getHeight()/mNumberOfTilesY;
-        int lTileWidth = (int)lStack.getWidth()/mNumberOfTilesX;
-        double[][] tilesQulaity = new double[mNumberOfTilesX][mNumberOfTilesY];
-        for (int x = 0; x < mNumberOfTilesX; x++)
+        int lTileHeight = (int)lStack.getHeight()/mNumberOfTilesY.get();
+        int lTileWidth = (int)lStack.getWidth()/mNumberOfTilesX.get();
+        double[][] tilesQulaity = new double[mNumberOfTilesX.get()][mNumberOfTilesY.get()];
+        for (int x = 0; x < mNumberOfTilesX.get(); x++)
         {
-            for (int y = 0; y < mNumberOfTilesY; y++)
+            for (int y = 0; y < mNumberOfTilesY.get(); y++)
             {
                 final StackInterface lTile = crop(lStack,x *lTileWidth, y * lTileHeight ,lTileHeight,lTileWidth);
                 double focusMeasureValue = determineQuality(lTile);
@@ -189,6 +198,12 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
     public BoundedVariable<Double> getstepSize(){
         return mStepSize;
+    }
+    public BoundedVariable<Integer> getNumberOfTilesX(){
+        return mNumberOfTilesX;
+    }
+    public BoundedVariable<Integer> getmNumberOfTilesY(){
+        return mNumberOfTilesY;
     }
 //    public BoundedVariable<Double> getPositionZ(){
 //        return mPositionZ;
