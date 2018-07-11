@@ -6,6 +6,7 @@ import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
+import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
@@ -98,6 +99,9 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
             for (int y = 0; y < mNumberOfTilesY.get(); y++)
             {
                 double[] result = CalcParabolaVertex(dec,lFactorDecreasedQuality[x][y],def,lDefaultQuality[x][y],inc,lFactorIncreasedQuality[x][y]);
+                if(result[0]>10){
+                    result[0]=0.0;
+                }
                 lMaxima[x][y] = result[0];
 
             }
@@ -116,11 +120,14 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
         // TODO Check rest of the code on actual scope before running this code
         // Taking a stack of images with different mirror modes
+//        WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(0, 0, getLightSheetMicroscope());
 //        for (int x = 0; x < mNumberOfTilesX.get(); x++) {
 //            for (int y = 0; y < mNumberOfTilesY.get(); y++) {
 //                zernikes[mZernikeFactor.get()] = lMaxima[x][y];
 //                mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
 //                StackInterface lImage = image();
+//                lWrite.enqueue(x*10000 + y);
+//                System.out.println(x);
 //            }
 //        }
 
