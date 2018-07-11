@@ -2,12 +2,18 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.sens
 
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.imaging.SingleStackImager;
+import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
+import clearcontrol.microscope.state.AcquisitionStateManager;
+import clearcontrol.stack.StackInterface;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -15,7 +21,7 @@ import java.util.Arrays;
 public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeInstructionBase{
 
 
-    private BoundedVariable<Integer> mZernikeFactor = new BoundedVariable<Integer>("Zernike Factor",4,0,66);
+    private BoundedVariable<Integer> mZernikeFactor = new BoundedVariable<Integer>("Zernike Factor",3,0,66);
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
     private BoundedVariable<Double> mPositionZ;
     double[] zernikes;
@@ -53,37 +59,61 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
         zernikes[mZernikeFactor.get()] = 0;
 
-        // TODO SIngle Plane Imager
-        // Same Zernike factor
-        ZernikeSolution zernikeSolutionZeroFactor = new ZernikeSolution(zernikes, getLightSheetMicroscope(), mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
+        // Unchanged Zernike factor Imager
+        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+        StackInterface lDefaultStack = image();
+        double lDefaultQuality = detemineQuality(lDefaultStack);
 
 
         // decrease Zernike factor by step size
         double[] zernikesFactorDecreased = new double[zernikes.length];
         System.arraycopy(zernikes, 0, zernikesFactorDecreased, 0, zernikes.length);
         zernikesFactorDecreased[mZernikeFactor.get()] -= mstepSize.get();
-        ZernikeSolution zernikeSolutionFactorDecrement = new ZernikeSolution(zernikesFactorDecreased, getLightSheetMicroscope(), mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
+        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikesFactorDecreased);
+        StackInterface lFactorDecreasedStack = image();
+        double lFactorDecreasedQuality = detemineQuality(lFactorDecreasedStack);
 
         // increase Zernike factor by step size
         double[] zernikesFactorIncreased = new double[zernikes.length];
         System.arraycopy(zernikes, 0, zernikesFactorIncreased, 0, zernikes.length);
         zernikesFactorIncreased[mZernikeFactor.get()] += mstepSize.get();
-        ZernikeSolution zernikeSolutionFactorIncrement = new ZernikeSolution(zernikesFactorIncreased, getLightSheetMicroscope(), mSpatialPhaseModulatorDeviceInterface, mPositionZ.get());
+        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikesFactorIncreased);
+        StackInterface lFactorIncreasedStack = image();
+        double lFactorIncreasedQuality = detemineQuality(lFactorIncreasedStack);
 
-        // determine fitness of three solutions
         // TODO Region by region quality determiner
-        double factorZeroQuality = zernikeSolutionZeroFactor.fitness();
-        double factorDecrementQuality = zernikeSolutionFactorDecrement.fitness();
-        double factorIncrementQuality = zernikeSolutionFactorIncrement.fitness();
 
-        double[] result = CalcParabolaVertex(zernikesFactorDecreased[mZernikeFactor.get()],factorDecrementQuality,0,factorZeroQuality,zernikesFactorIncreased[mZernikeFactor.get()],factorIncrementQuality);
+
+        double[] result = CalcParabolaVertex(zernikesFactorDecreased[mZernikeFactor.get()],lFactorDecreasedQuality,0,lDefaultQuality,zernikesFactorIncreased[mZernikeFactor.get()],lFactorIncreasedQuality);
+        System.out.println("Zernikes Default state" + Arrays.toString(zernikes)+ " Quality: " + lDefaultQuality);
+        System.out.println("Zernikes Decreased state" + Arrays.toString(zernikesFactorDecreased)+ " Quality: " + lFactorDecreasedQuality);
+        System.out.println("Zernikes Increased state" + Arrays.toString(zernikesFactorIncreased)+ " Quality: " + lFactorIncreasedQuality);
+
 
         zernikes[mZernikeFactor.get()] = result[0];
-        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+
+
         System.out.println("Zernikes set to: " + Arrays.toString(zernikes));
         return true;
     }
 
+    public StackInterface image(){
+        InterpolatedAcquisitionState currentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getDevice(AcquisitionStateManager.class, 0).getCurrentState();
+        SingleViewPlaneImager lImager = new SingleViewPlaneImager(getLightSheetMicroscope(), mPositionZ.get());
+        lImager.setImageWidth(currentState.getImageWidthVariable().get().intValue());
+        lImager.setImageHeight(currentState.getImageHeightVariable().get().intValue());
+        lImager.setExposureTimeInSeconds(currentState.getExposureInSecondsVariable().get().doubleValue());
+        lImager.setDetectionArmIndex(0);
+        lImager.setLightSheetIndex(0);
+        StackInterface lStack = lImager.acquire();
+        return lStack;
+    }
+
+    public double detemineQuality(StackInterface lStack){
+        DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
+        double lQuality = lQualityEstimator.getQualityArray()[0];
+        return lQuality;
+    }
     //Checked
     public double[] CalcParabolaVertex(double x1, double y1, double x2, double y2, double x3, double y3)
     {
