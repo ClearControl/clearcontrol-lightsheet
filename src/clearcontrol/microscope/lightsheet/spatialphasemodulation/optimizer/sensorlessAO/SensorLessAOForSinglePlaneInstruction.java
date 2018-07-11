@@ -103,20 +103,21 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
             }
         }
 
-        System.out.println("Zernikes default state" + Arrays.toString(zernikes));
-        System.out.println("Zernikes default quality: " + Arrays.deepToString(lDefaultQuality));
         System.out.println("Zernikes factor decreased state" + Arrays.toString(zernikesFactorDecreased));
-        System.out.println("Zernikes factor decreased quality: " + Arrays.deepToString(lFactorDecreasedQuality));
         System.out.println("Zernikes factor increased state" + Arrays.toString(zernikesFactorIncreased));
+
+        System.out.println("Zernikes default quality: " + Arrays.deepToString(lDefaultQuality));
+        System.out.println("Zernikes factor decreased quality: " + Arrays.deepToString(lFactorDecreasedQuality));
         System.out.println("Zernikes factor increased quality: " + Arrays.deepToString(lFactorIncreasedQuality));
-        System.out.println("Zernike for maxima image quality: " + Arrays.deepToString(lMaxima));
 
-        System.out.println("Default stack dimension:" + Arrays.toString(lDefaultStack.getDimensions()));
-        System.out.println("Decreased stack dimension:" + Arrays.toString(lFactorDecreasedStack.getDimensions()));
-        System.out.println("Increased stack dimension:" + Arrays.toString(lFactorIncreasedStack.getDimensions()));
+        System.out.println("Zernikes for maxima image quality: " + Arrays.deepToString(lMaxima));
 
-//        for (int x = 0; x < mNumberOfTilesX; x++) {
-//            for (int y = 0; y < mNumberOfTilesY; y++) {
+
+
+        // TODO Check rest of the code on actual scope before running this code
+        // Taking a stack of images with different mirror modes
+//        for (int x = 0; x < mNumberOfTilesX.get(); x++) {
+//            for (int y = 0; y < mNumberOfTilesY.get(); y++) {
 //                zernikes[mZernikeFactor.get()] = lMaxima[x][y];
 //                mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
 //                StackInterface lImage = image();
