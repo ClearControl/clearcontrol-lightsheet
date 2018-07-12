@@ -127,7 +127,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         for (int x = 0; x < mNumberOfTilesX.get(); x++) {
             for (int y = 0; y < mNumberOfTilesY.get(); y++) {
                 zernikes[mZernikeFactor.get()] = lMaxima[x][y];
-                //mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+                mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
 
                 StackInterface lImage = image();
                 lWrite.enqueue(x*10000 + y);
@@ -135,8 +135,10 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         }
 
         // Setting back to 0
-//        zernikes[mZernikeFactor.get()] = 0;
-//        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+        zernikes[mZernikeFactor.get()] = 0;
+        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+        StackInterface lImage = image();
+        lWrite.enqueue(mNumberOfTilesX.get()*mNumberOfTilesY.get());
         return true;
     }
 
