@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.sens
 import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
+import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.imagej.ImageJFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeInstructionBase implements ImageJFeature{
+public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeInstructionBase implements ImageJFeature, LoggingFeature{
 
 
     private BoundedVariable<Integer> mZernikeFactor = new BoundedVariable<Integer>("Zernike Factor",3,0,66);
@@ -100,7 +101,8 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
             for (int y = 0; y < mNumberOfTilesY.get(); y++)
             {
                 double[] result = CalcParabolaVertex(dec,lFactorDecreasedQuality[x][y],def,lDefaultQuality[x][y],inc,lFactorIncreasedQuality[x][y]);
-                if(result[0]>10 || result[0]<10){
+                if(result[0]>10 || result[0]<-10){
+                    info("Optimizer trying to set extreme amount of optimization" + result[0]);
                     result[0]=0.0;
                 }
                 lMaxima[x][y] = result[0];
@@ -129,7 +131,6 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
                 StackInterface lImage = image();
                 lWrite.enqueue(x*10000 + y);
-                System.out.println(x);
             }
         }
 
