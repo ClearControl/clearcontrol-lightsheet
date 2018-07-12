@@ -46,7 +46,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
     @Override
     public boolean initialize() {
-        showImageJ();
+        //showImageJ();
         zernikes = mSpatialPhaseModulatorDeviceInterface.getZernikeFactors();
         for(int i = 0; i< Array.getLength(zernikes); i++){
             zernikes[i] = 0;
@@ -165,7 +165,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         ClearCLImage dst = clij.createCLImage(new long[]{lWidth, lHieght, lStack.getDepth()},
                 src.getChannelDataType());
         Kernels.crop(clij, src, dst, lCropX, lCropY, 0);
-        clij.show(dst, "Processing Quality On");
+        //clij.show(dst, "Processing Quality On");
 
         StackInterface lCroppedStack = clij.converter(dst).getOffHeapPlanarStack();
         dst.close();
