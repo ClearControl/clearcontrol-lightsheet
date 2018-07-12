@@ -6,17 +6,25 @@ import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.imagej.ImageJFeature;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FWriter;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.stack.StackInterface;
 import net.imglib2.RandomAccess;
+import org.ejml.data.DenseMatrix64F;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -98,16 +106,17 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         double[][] lFactorIncreasedQuality = determineTileWiseQuality(lFactorIncreasedStack);
 
 
-        double dec = zernikesFactorDecreased[mZernikeFactor.get()];
-        double inc = zernikesFactorIncreased[mZernikeFactor.get()];
-        double def = 0;
+        double decreasedValue = zernikesFactorDecreased[mZernikeFactor.get()];
+        double increasedValue = zernikesFactorIncreased[mZernikeFactor.get()];
+        double defaultValue = 0;
+
         // Tile wise maximum finding
         double[][] lMaxima = new double[mNumberOfTilesX.get()][mNumberOfTilesY.get()];
         for (int x = 0; x < mNumberOfTilesX.get(); x++)
         {
             for (int y = 0; y < mNumberOfTilesY.get(); y++)
             {
-                double[] result = CalcParabolaVertex(dec,lFactorDecreasedQuality[x][y],def,lDefaultQuality[x][y],inc,lFactorIncreasedQuality[x][y]);
+                double[] result = CalcParabolaVertex(decreasedValue,lFactorDecreasedQuality[x][y],defaultValue,lDefaultQuality[x][y],increasedValue,lFactorIncreasedQuality[x][y]);
                 if(result[0]>10 || result[0]<-10){
                     info("Optimizer trying to set extreme amount of optimization" + result[0]);
                     result[0]=0.0;
@@ -128,7 +137,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
 
         // Taking a stack of images with different mirror modes
-        int lTimepoint = 0;
+        int lCounter = 0;
         WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(0, 0, getLightSheetMicroscope());
         for (int x = 0; x < mNumberOfTilesX.get(); x++) {
             for (int y = 0; y < mNumberOfTilesY.get(); y++) {
@@ -136,8 +145,8 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
                 mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
                 Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
                 StackInterface lImage = image();
-                lWrite.enqueue(lTimepoint);
-                lTimepoint++;
+                lWrite.enqueue(lCounter);
+                lCounter++;
             }
         }
 
@@ -146,7 +155,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
         Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
         StackInterface lImage = image();
-        lWrite.enqueue(lTimepoint);
+        lWrite.enqueue(lCounter);
         return true;
     }
 
@@ -188,16 +197,49 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         int lTileHeight = (int)lStack.getHeight()/mNumberOfTilesY.get();
         int lTileWidth = (int)lStack.getWidth()/mNumberOfTilesX.get();
         double[][] tilesQulaity = new double[mNumberOfTilesX.get()][mNumberOfTilesY.get()];
-        for (int x = 0; x < mNumberOfTilesX.get(); x++)
-        {
-            for (int y = 0; y < mNumberOfTilesY.get(); y++)
+
+        // Logging the tiles
+        File lFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory();
+        File lFile = new File(lFolder, "TileCoordinates.txt");
+
+        try {
+            BufferedWriter lOutputStream = new BufferedWriter(new FileWriter(lFile));
+            lOutputStream.write("Counter\tCoordX\tCoordY\tWidth\tHeight\n");
+
+            int lCounter = 0;
+            for (int x = 0; x < mNumberOfTilesX.get(); x++)
             {
-                final StackInterface lTile = crop(lStack,x *lTileWidth, y * lTileHeight ,lTileHeight,lTileWidth);
-                double focusMeasureValue = determineQuality(lTile);
-                tilesQulaity[x][y] = focusMeasureValue;
+                for (int y = 0; y < mNumberOfTilesY.get(); y++)
+                {
+                    final StackInterface lTile = crop(lStack,x *lTileWidth, y * lTileHeight ,lTileHeight,lTileWidth);
+                    double focusMeasureValue = determineQuality(lTile);
+                    tilesQulaity[x][y] = focusMeasureValue;
+                    lOutputStream.write(lCounter + "\t" + x *lTileWidth + "\t" + y * lTileHeight + "\t" + lTileWidth + "\t" + lTileHeight + "\n");
+                    lCounter++;
+                }
             }
+            lOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
         return tilesQulaity;
+    }
+
+    public boolean writeTileCoordinatesToDisc(File pFile, int pCounter, int pCoordX, int pCoordY, int pWidth, int pHeight){
+
+        try
+        {
+            BufferedWriter lOutputStream = new BufferedWriter(new FileWriter(pFile));
+
+            lOutputStream.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 
