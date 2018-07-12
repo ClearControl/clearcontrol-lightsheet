@@ -24,8 +24,9 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
     private BoundedVariable<Integer> mZernikeFactor = new BoundedVariable<Integer>("Zernike Factor",3,0,66);
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
-    private BoundedVariable<Double> mPositionZ;
-    double[] zernikes;
+    private BoundedVariable<Double> mPositionZ = new BoundedVariable<Double>("position Z", 50.0,0.0,100.0);
+    ;
+    private double[] zernikes;
     private BoundedVariable<Double> mStepSize = new BoundedVariable<Double>("Defocus step size",0.25, 0.0, 2.0, 0.0000000001);
 
     private BoundedVariable<Integer> mNumberOfTilesX = new BoundedVariable<Integer>("Number Of Tiles On X",1,0,2048);
@@ -38,13 +39,14 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         mZernikeFactor.set(3);
         mNumberOfTilesY.set(1);
         mNumberOfTilesX.set(1);
+        mPositionZ.set(50.0);
     }
 
 
     @Override
     public boolean initialize() {
-        InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
-        mPositionZ = new BoundedVariable<Double>("position Z", (lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2, lState.getStackZLowVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue(), lState.getStackZLowVariable().getGranularity().doubleValue());
+//        InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
+//        mPositionZ = new BoundedVariable<Double>("position Z", (lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2, lState.getStackZLowVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue(), lState.getStackZLowVariable().getGranularity().doubleValue());
 
         zernikes = mSpatialPhaseModulatorDeviceInterface.getZernikeFactors();
         for(int i = 0; i< Array.getLength(zernikes); i++){
@@ -213,9 +215,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     public BoundedVariable<Integer> getmNumberOfTilesY(){
         return mNumberOfTilesY;
     }
-//    public BoundedVariable<Double> getPositionZ(){
-//        return mPositionZ;
-//    }
+    public BoundedVariable<Double> getPositionZ(){ return mPositionZ; }
     public BoundedVariable<Integer> getZernikeFactor(){
         return mZernikeFactor;
     }
