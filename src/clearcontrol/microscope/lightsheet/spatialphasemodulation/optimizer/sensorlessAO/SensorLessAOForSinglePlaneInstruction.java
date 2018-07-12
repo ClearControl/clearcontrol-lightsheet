@@ -4,6 +4,7 @@ import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.devices.imagej.ImageJFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsTifToDiscInstruction;
@@ -19,7 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeInstructionBase{
+public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeInstructionBase implements ImageJFeature{
 
 
     private BoundedVariable<Integer> mZernikeFactor = new BoundedVariable<Integer>("Zernike Factor",3,0,66);
@@ -45,9 +46,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
     @Override
     public boolean initialize() {
-//        InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
-//        mPositionZ = new BoundedVariable<Double>("position Z", (lState.getStackZLowVariable().get().doubleValue() + lState.getStackZHighVariable().get().doubleValue()) / 2, lState.getStackZLowVariable().getMin().doubleValue(), lState.getStackZHighVariable().getMax().doubleValue(), lState.getStackZLowVariable().getGranularity().doubleValue());
-
+        showImageJ();
         zernikes = mSpatialPhaseModulatorDeviceInterface.getZernikeFactors();
         for(int i = 0; i< Array.getLength(zernikes); i++){
             zernikes[i] = 0;
@@ -122,24 +121,25 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
         // TODO Check rest of the code on actual scope before running this code
         // Taking a stack of images with different mirror modes
-//        WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(0, 0, getLightSheetMicroscope());
-//        for (int x = 0; x < mNumberOfTilesX.get(); x++) {
-//            for (int y = 0; y < mNumberOfTilesY.get(); y++) {
-//                zernikes[mZernikeFactor.get()] = lMaxima[x][y];
-//                mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
-//                StackInterface lImage = image();
-//                lWrite.enqueue(x*10000 + y);
-//                System.out.println(x);
-//            }
-//        }
+        WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(0, 0, getLightSheetMicroscope());
+        for (int x = 0; x < mNumberOfTilesX.get(); x++) {
+            for (int y = 0; y < mNumberOfTilesY.get(); y++) {
+                zernikes[mZernikeFactor.get()] = lMaxima[x][y];
+                //mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+
+                StackInterface lImage = image();
+                lWrite.enqueue(x*10000 + y);
+                System.out.println(x);
+            }
+        }
 
         // Setting back to 0
-        zernikes[mZernikeFactor.get()] = 0;
-        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+//        zernikes[mZernikeFactor.get()] = 0;
+//        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
         return true;
     }
 
-    public StackInterface image(){
+    public StackInterface image() {
         InterpolatedAcquisitionState currentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getDevice(AcquisitionStateManager.class, 0).getCurrentState();
         SingleViewPlaneImager lImager = new SingleViewPlaneImager(getLightSheetMicroscope(), mPositionZ.get());
         lImager.setImageWidth(currentState.getImageWidthVariable().get().intValue());
@@ -148,6 +148,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         lImager.setDetectionArmIndex(0);
         lImager.setLightSheetIndex(0);
         StackInterface lStack = lImager.acquire();
+        //ClearCLIJ.getInstance().show(lStack, "acquired stack");
         return lStack;
     }
 
@@ -161,10 +162,10 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     public StackInterface crop(StackInterface lStack, int lCropX, int lCropY, int lHieght, int lWidth){
         ClearCLIJ clij = ClearCLIJ.getInstance();
         ClearCLImage src = clij.converter(lStack).getClearCLImage();
-        ClearCLImage dst = clij.createCLImage(new long[]{lWidth, lHieght},
+        ClearCLImage dst = clij.createCLImage(new long[]{lWidth, lHieght, lStack.getDepth()},
                 src.getChannelDataType());
-        Kernels.crop(clij, src, dst, lCropX, lCropY);
-        //clij.show(dst, "Processing Quality On");
+        Kernels.crop(clij, src, dst, lCropX, lCropY, 0);
+        clij.show(dst, "Processing Quality On");
 
         StackInterface lCroppedStack = clij.converter(dst).getOffHeapPlanarStack();
         dst.close();
