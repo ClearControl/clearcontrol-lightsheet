@@ -100,7 +100,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
             for (int y = 0; y < mNumberOfTilesY.get(); y++)
             {
                 double[] result = CalcParabolaVertex(dec,lFactorDecreasedQuality[x][y],def,lDefaultQuality[x][y],inc,lFactorIncreasedQuality[x][y]);
-                if(result[0]>10){
+                if(result[0]>10 || result[0]<10){
                     result[0]=0.0;
                 }
                 lMaxima[x][y] = result[0];
