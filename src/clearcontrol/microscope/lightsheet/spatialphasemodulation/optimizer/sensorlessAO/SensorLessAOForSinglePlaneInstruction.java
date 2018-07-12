@@ -59,17 +59,22 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     @Override
     public boolean enqueue(long pTimePoint) {
         zernikes = mSpatialPhaseModulatorDeviceInterface.getZernikeFactors();
-        optimize();
+        try {
+            optimize();
+        } catch (InterruptedException e) {
+            System.out.println("Sleeping Error");
+        }
         return false;
     }
 
 
-    public boolean optimize(){
+    public boolean optimize() throws InterruptedException {
 
         zernikes[mZernikeFactor.get()] = 0;
 
         // Unchanged Zernike factor Imager
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+        Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
         StackInterface lDefaultStack = image();
         double[][] lDefaultQuality = determineTileWiseQuality(lDefaultStack);
 
@@ -79,6 +84,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         System.arraycopy(zernikes, 0, zernikesFactorDecreased, 0, zernikes.length);
         zernikesFactorDecreased[mZernikeFactor.get()] -= mStepSize.get();
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikesFactorDecreased);
+        Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
         StackInterface lFactorDecreasedStack = image();
         double[][] lFactorDecreasedQuality = determineTileWiseQuality(lFactorDecreasedStack);
 
@@ -87,6 +93,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         System.arraycopy(zernikes, 0, zernikesFactorIncreased, 0, zernikes.length);
         zernikesFactorIncreased[mZernikeFactor.get()] += mStepSize.get();
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikesFactorIncreased);
+        Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
         StackInterface lFactorIncreasedStack = image();
         double[][] lFactorIncreasedQuality = determineTileWiseQuality(lFactorIncreasedStack);
 
@@ -120,25 +127,26 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         System.out.println("Zernikes for maxima image quality: " + Arrays.deepToString(lMaxima));
 
 
-
-        // TODO Check rest of the code on actual scope before running this code
         // Taking a stack of images with different mirror modes
+        int lTimepoint = 0;
         WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(0, 0, getLightSheetMicroscope());
         for (int x = 0; x < mNumberOfTilesX.get(); x++) {
             for (int y = 0; y < mNumberOfTilesY.get(); y++) {
                 zernikes[mZernikeFactor.get()] = lMaxima[x][y];
                 mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
-
+                Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
                 StackInterface lImage = image();
-                lWrite.enqueue(x*10000 + y);
+                lWrite.enqueue(lTimepoint);
+                lTimepoint++;
             }
         }
 
-        // Setting back to 0
+        // Setting the zernikw factor back to 0
         zernikes[mZernikeFactor.get()] = 0;
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+        Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
         StackInterface lImage = image();
-        lWrite.enqueue(mNumberOfTilesX.get()*mNumberOfTilesY.get());
+        lWrite.enqueue(lTimepoint);
         return true;
     }
 
