@@ -41,6 +41,8 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
     private BoundedVariable<Integer> mNumberOfTilesX = new BoundedVariable<Integer>("Number Of Tiles On X",1,0,2048);
     private BoundedVariable<Integer> mNumberOfTilesY = new BoundedVariable<Integer>("Number Of Tiles On Y",1,0,2048);;
+    private ClearCLIJ clij = ClearCLIJ.getInstance();
+
 
     public SensorLessAOForSinglePlaneInstruction(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
         super("Adaptive optics: Sensorless Single PLane AO optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName(), pLightSheetMicroscope);
@@ -180,7 +182,6 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
 
     public StackInterface crop(StackInterface lStack, int lCropX, int lCropY, int lHieght, int lWidth){
-        ClearCLIJ clij = ClearCLIJ.getInstance();
         ClearCLImage src = clij.converter(lStack).getClearCLImage();
         ClearCLImage dst = clij.createCLImage(new long[]{lWidth, lHieght, lStack.getDepth()},
                 src.getChannelDataType());
