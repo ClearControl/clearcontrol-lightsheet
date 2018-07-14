@@ -12,11 +12,14 @@ import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
+import clearcontrol.microscope.lightsheet.postprocessing.processing.CropInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FWriter;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DropAllContainersOfTypeInstruction;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.stack.StackInterface;
 import net.imglib2.RandomAccess;
@@ -81,12 +84,14 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     public boolean optimize() throws InterruptedException {
 
         zernikes[mZernikeFactor.get()] = 0;
-
+        WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(0, 0, getLightSheetMicroscope());
+        DropAllContainersOfTypeInstruction lRemoveOldContainers = new DropAllContainersOfTypeInstruction(StackInterfaceContainer.class,getLightSheetMicroscope().getDataWarehouse());
         // Unchanged Zernike factor Imager
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
         Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
         StackInterface lDefaultStack = image();
         double[][] lDefaultQuality = determineTileWiseQuality(lDefaultStack);
+        //lWrite.enqueue(mNumberOfTilesX.get()*mNumberOfTilesY.get());
 
 
         // decrease Zernike factor by step size
@@ -140,14 +145,19 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
         // Taking a stack of images with different mirror modes
         int lCounter = 0;
-        WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(0, 0, getLightSheetMicroscope());
+        int lTileHeight = (int)lDefaultStack.getHeight()/mNumberOfTilesY.get();
+        int lTileWidth = (int)lDefaultStack.getWidth()/mNumberOfTilesX.get();
         for (int x = 0; x < mNumberOfTilesX.get(); x++) {
             for (int y = 0; y < mNumberOfTilesY.get(); y++) {
                 zernikes[mZernikeFactor.get()] = lMaxima[x][y];
                 mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
                 Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
                 StackInterface lImage = image();
+                CropInstruction lCrop = new CropInstruction(getLightSheetMicroscope().getDataWarehouse(),
+                        x *lTileWidth, y * lTileHeight ,lTileWidth, lTileHeight);
+                lCrop.enqueue(0);
                 lWrite.enqueue(lCounter);
+                lRemoveOldContainers.enqueue(lCounter);
                 lCounter++;
             }
         }
