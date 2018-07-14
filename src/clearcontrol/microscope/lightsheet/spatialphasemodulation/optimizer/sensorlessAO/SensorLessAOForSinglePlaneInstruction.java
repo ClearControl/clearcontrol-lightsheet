@@ -190,9 +190,9 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
                     mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
                     Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
                     StackInterface lImage = image();
-                    CropInstruction lCrop = new CropInstruction(getLightSheetMicroscope().getDataWarehouse(),
-                            x *mTileWidth, y * mTileHeight ,mTileWidth, mTileHeight);
-                    lCrop.enqueue(0);
+//                    CropInstruction lCrop = new CropInstruction(getLightSheetMicroscope().getDataWarehouse(),
+//                            x *mTileWidth, y * mTileHeight ,mTileWidth, mTileHeight);
+//                    lCrop.enqueue(0);
                     lWrite.enqueue(lCounter);
                     lRemoveOldContainers.enqueue(lCounter);
                     lOutputStream.write(lCounter + "\t" + x *mTileWidth + "\t" + y * mTileHeight + "\t" +
