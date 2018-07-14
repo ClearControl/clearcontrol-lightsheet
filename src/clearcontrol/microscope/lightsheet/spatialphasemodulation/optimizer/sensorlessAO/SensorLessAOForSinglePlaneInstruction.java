@@ -107,6 +107,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
         double[][] lDefaultQuality = determineTileWiseQuality(lDefaultStack);
         lWrite.enqueue(mNumberOfTilesX.get()*mNumberOfTilesY.get());
+        lDefaultStack.release();
 
 
 
@@ -118,6 +119,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
         StackInterface lFactorDecreasedStack = image();
         double[][] lFactorDecreasedQuality = determineTileWiseQuality(lFactorDecreasedStack);
+        lFactorDecreasedStack.release();
 
         // increase Zernike factor by step size
         double[] zernikesFactorIncreased = new double[zernikes.length];
@@ -127,7 +129,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
         StackInterface lFactorIncreasedStack = image();
         double[][] lFactorIncreasedQuality = determineTileWiseQuality(lFactorIncreasedStack);
-
+        lFactorIncreasedStack.release();
 
         double decreasedValue = zernikesFactorDecreased[mZernikeFactor.get()];
         double increasedValue = zernikesFactorIncreased[mZernikeFactor.get()];
@@ -194,7 +196,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
                     lWrite.enqueue(lCounter);
                     lRemoveOldContainers.enqueue(lCounter);
                     lOutputStream.write(lCounter + "\t" + x *mTileWidth + "\t" + y * mTileHeight + "\t" +
-                            mTileWidth + "\t" + mTileHeight + "\t" + lMaxima[x][y] + "\n" );
+                            mTileWidth + "\t" + mTileHeight + "\t" + String.format("%.5f", lMaxima[x][y]) + "\n" );
                     lCounter++;
                 }
             }
