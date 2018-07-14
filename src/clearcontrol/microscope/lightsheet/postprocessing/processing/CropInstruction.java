@@ -9,6 +9,7 @@ import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
 import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.metadata.StackMetaData;
 
 /**
  * CropInstruction
@@ -57,12 +58,12 @@ public class CropInstruction extends DataWarehouseInstructionBase {
             ClearCLImage src = clij.converter(lStack).getClearCLImage();
             ClearCLImage dst = clij.createCLImage(new long[]{(long) mCropWidthVariable.get(), (long) mCropHeightVariable.get(), (long)mCropDepthVariable.get()},
                     src.getChannelDataType());
-            System.out.println("src: " + src);
-            System.out.println("dst: " + src);
+
             Kernels.crop(clij, src, dst, mCropXVariable.get(), mCropYVariable.get(), mCropZVariable.get());
             //clij.show(dst, "Processing Quality On");
 
             StackInterface lCroppedStack = clij.converter(dst).getOffHeapPlanarStack();
+            lCroppedStack.copyMetaDataFrom(lStack);
             dst.close();
             src.close();
 
