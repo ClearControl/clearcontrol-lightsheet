@@ -35,20 +35,32 @@ import java.util.Arrays;
 public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeInstructionBase implements ImageJFeature, LoggingFeature{
 
 
-    private BoundedVariable<Integer> mZernikeFactor = new BoundedVariable<Integer>("Zernike Factor",3,0,66);
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
-    private BoundedVariable<Double> mPositionZ = new BoundedVariable<Double>("position Z", 50.0,0.0,100.0);
-    ;
-    private double[] zernikes;
-    private BoundedVariable<Double> mStepSize = new BoundedVariable<Double>("Defocus step size",0.25, 0.0, 2.0, 0.0000000001);
 
-    private BoundedVariable<Integer> mNumberOfTilesX = new BoundedVariable<Integer>("Number Of Tiles On X",1,0,2048);
-    private BoundedVariable<Integer> mNumberOfTilesY = new BoundedVariable<Integer>("Number Of Tiles On Y",1,0,2048);;
+    private BoundedVariable<Double> mPositionZ = new BoundedVariable<Double>("position Z",
+            50.0,0.0,100.0);
+    private BoundedVariable<Double> mStepSize = new BoundedVariable<Double>("Defocus step size",
+            0.25, 0.0, 2.0, 0.0000000001);
+    private BoundedVariable<Integer> mZernikeFactor = new BoundedVariable<Integer>("Zernike Factor",
+            3,0,66);
+    private BoundedVariable<Integer> mNumberOfTilesX = new BoundedVariable<Integer>("Number Of Tiles On X",
+            1,0,2048);
+    private BoundedVariable<Integer> mNumberOfTilesY = new BoundedVariable<Integer>("Number Of Tiles On Y",
+            1,0,2048);;
     private ClearCLIJ clij = ClearCLIJ.getInstance();
 
+    private double[] zernikes;
+    private int mTileHeight = 0;
+    private int mTileWidth = 0;
 
-    public SensorLessAOForSinglePlaneInstruction(LightSheetMicroscope pLightSheetMicroscope, SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface) {
-        super("Adaptive optics: Sensorless Single PLane AO optimizer for " + pSpatialPhaseModulatorDeviceInterface.getName(), pLightSheetMicroscope);
+    WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(
+            0, 0, getLightSheetMicroscope());
+
+    public SensorLessAOForSinglePlaneInstruction(LightSheetMicroscope pLightSheetMicroscope,
+                                                 SpatialPhaseModulatorDeviceInterface pSpatialPhaseModulatorDeviceInterface)
+    {
+        super("Adaptive optics: Sensorless Single PLane AO optimizer for " +
+                pSpatialPhaseModulatorDeviceInterface.getName(), pLightSheetMicroscope);
         this.mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
         mStepSize.set(0.25);
         mZernikeFactor.set(3);
@@ -84,14 +96,18 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     public boolean optimize() throws InterruptedException {
 
         zernikes[mZernikeFactor.get()] = 0;
-        WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(0, 0, getLightSheetMicroscope());
-        DropAllContainersOfTypeInstruction lRemoveOldContainers = new DropAllContainersOfTypeInstruction(StackInterfaceContainer.class,getLightSheetMicroscope().getDataWarehouse());
+
         // Unchanged Zernike factor Imager
         mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
         Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
         StackInterface lDefaultStack = image();
+
+        mTileHeight = (int)lDefaultStack.getHeight()/mNumberOfTilesY.get();
+        mTileWidth = (int)lDefaultStack.getWidth()/mNumberOfTilesX.get();
+
         double[][] lDefaultQuality = determineTileWiseQuality(lDefaultStack);
-        //lWrite.enqueue(mNumberOfTilesX.get()*mNumberOfTilesY.get());
+        lWrite.enqueue(mNumberOfTilesX.get()*mNumberOfTilesY.get());
+
 
 
         // decrease Zernike factor by step size
@@ -123,7 +139,8 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         {
             for (int y = 0; y < mNumberOfTilesY.get(); y++)
             {
-                double[] result = CalcParabolaVertex(decreasedValue,lFactorDecreasedQuality[x][y],defaultValue,lDefaultQuality[x][y],increasedValue,lFactorIncreasedQuality[x][y]);
+                double[] result = CalcParabolaVertex(decreasedValue,lFactorDecreasedQuality[x][y],defaultValue,
+                        lDefaultQuality[x][y],increasedValue,lFactorIncreasedQuality[x][y]);
                 if(result[0]>10 || result[0]<-10){
                     info("Optimizer trying to set extreme amount of optimization" + result[0]);
                     result[0]=0.0;
@@ -143,10 +160,22 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         System.out.println("Zernikes for maxima image quality: " + Arrays.deepToString(lMaxima));
 
 
-        // Taking a stack of images with different mirror modes
+        // Taking a stack of images with different mirror modes, crop it and save to disc
+        acquireTiledImages(lMaxima);
+
+        // Setting the zernike factor back to 0
+        zernikes[mZernikeFactor.get()] = 0;
+        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+
+        return true;
+    }
+
+    public void acquireTiledImages(double[][] pMaxima) throws InterruptedException {
         int lCounter = 0;
-        int lTileHeight = (int)lDefaultStack.getHeight()/mNumberOfTilesY.get();
-        int lTileWidth = (int)lDefaultStack.getWidth()/mNumberOfTilesX.get();
+        double[][] lMaxima = pMaxima;
+        DropAllContainersOfTypeInstruction lRemoveOldContainers = new DropAllContainersOfTypeInstruction
+                (StackInterfaceContainer.class,getLightSheetMicroscope().getDataWarehouse());
+
         for (int x = 0; x < mNumberOfTilesX.get(); x++) {
             for (int y = 0; y < mNumberOfTilesY.get(); y++) {
                 zernikes[mZernikeFactor.get()] = lMaxima[x][y];
@@ -154,25 +183,18 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
                 Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
                 StackInterface lImage = image();
                 CropInstruction lCrop = new CropInstruction(getLightSheetMicroscope().getDataWarehouse(),
-                        x *lTileWidth, y * lTileHeight ,lTileWidth, lTileHeight);
+                        x *mTileWidth, y * mTileHeight ,mTileWidth, mTileHeight);
                 lCrop.enqueue(0);
                 lWrite.enqueue(lCounter);
                 lRemoveOldContainers.enqueue(lCounter);
                 lCounter++;
             }
         }
-
-        // Setting the zernikw factor back to 0
-        zernikes[mZernikeFactor.get()] = 0;
-        mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
-        Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
-        StackInterface lImage = image();
-        lWrite.enqueue(lCounter);
-        return true;
     }
 
     public StackInterface image() {
-        InterpolatedAcquisitionState currentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getDevice(AcquisitionStateManager.class, 0).getCurrentState();
+        InterpolatedAcquisitionState currentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().
+                getDevice(AcquisitionStateManager.class, 0).getCurrentState();
         SingleViewPlaneImager lImager = new SingleViewPlaneImager(getLightSheetMicroscope(), mPositionZ.get());
         lImager.setImageWidth(currentState.getImageWidthVariable().get().intValue());
         lImager.setImageHeight(currentState.getImageHeightVariable().get().intValue());
@@ -185,28 +207,13 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     }
 
     public double determineQuality(StackInterface lStack){
-        DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator(lStack);
+        DiscreteConsinusTransformEntropyPerSliceEstimator lQualityEstimator = new DiscreteConsinusTransformEntropyPerSliceEstimator
+                (lStack);
         double lQuality = lQualityEstimator.getQualityArray()[0];
         return lQuality;
     }
 
-
-    public StackInterface crop(StackInterface lStack, int lCropX, int lCropY, int lHieght, int lWidth){
-        ClearCLImage src = clij.converter(lStack).getClearCLImage();
-        ClearCLImage dst = clij.createCLImage(new long[]{lWidth, lHieght, lStack.getDepth()},
-                src.getChannelDataType());
-        Kernels.crop(clij, src, dst, lCropX, lCropY, 0);
-        //clij.show(dst, "Processing Quality On");
-
-        StackInterface lCroppedStack = clij.converter(dst).getOffHeapPlanarStack();
-        dst.close();
-        src.close();
-        return lCroppedStack;
-    }
-
     public double[][] determineTileWiseQuality(StackInterface lStack){
-        int lTileHeight = (int)lStack.getHeight()/mNumberOfTilesY.get();
-        int lTileWidth = (int)lStack.getWidth()/mNumberOfTilesX.get();
         double[][] tilesQulaity = new double[mNumberOfTilesX.get()][mNumberOfTilesY.get()];
 
         // Logging the tiles
@@ -222,10 +229,11 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
             {
                 for (int y = 0; y < mNumberOfTilesY.get(); y++)
                 {
-                    final StackInterface lTile = crop(lStack,x *lTileWidth, y * lTileHeight ,lTileHeight,lTileWidth);
+                    final StackInterface lTile = crop(lStack,x *mTileWidth, y * mTileHeight ,mTileHeight,mTileWidth);
                     double focusMeasureValue = determineQuality(lTile);
                     tilesQulaity[x][y] = focusMeasureValue;
-                    lOutputStream.write(lCounter + "\t" + x *lTileWidth + "\t" + y * lTileHeight + "\t" + lTileWidth + "\t" + lTileHeight + "\n");
+                    lOutputStream.write(lCounter + "\t" + x *mTileWidth + "\t" + y * mTileHeight + "\t" +
+                            mTileWidth + "\t" + mTileHeight + "\n");
                     lCounter++;
                 }
             }
@@ -237,21 +245,18 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         return tilesQulaity;
     }
 
-    public boolean writeTileCoordinatesToDisc(File pFile, int pCounter, int pCoordX, int pCoordY, int pWidth, int pHeight){
+    public StackInterface crop(StackInterface lStack, int lCropX, int lCropY, int lHieght, int lWidth){
+        ClearCLImage src = clij.converter(lStack).getClearCLImage();
+        ClearCLImage dst = clij.createCLImage(new long[]{lWidth, lHieght, lStack.getDepth()}, src.getChannelDataType());
+        Kernels.crop(clij, src, dst, lCropX, lCropY, 0);
+        //clij.show(dst, "Processing Quality On");
 
-        try
-        {
-            BufferedWriter lOutputStream = new BufferedWriter(new FileWriter(pFile));
-
-            lOutputStream.close();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
+        StackInterface lCroppedStack = clij.converter(dst).getOffHeapPlanarStack();
+        dst.close();
+        src.close();
+        return lCroppedStack;
     }
+
 
 
     //Checked
@@ -291,3 +296,4 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     }
 
 }
+
