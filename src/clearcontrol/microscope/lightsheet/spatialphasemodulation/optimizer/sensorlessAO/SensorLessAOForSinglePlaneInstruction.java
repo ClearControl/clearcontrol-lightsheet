@@ -175,20 +175,32 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         double[][] lMaxima = pMaxima;
         DropAllContainersOfTypeInstruction lRemoveOldContainers = new DropAllContainersOfTypeInstruction
                 (StackInterfaceContainer.class,getLightSheetMicroscope().getDataWarehouse());
+        File lFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory();
+        File lFile = new File(lFolder, "TileCoordinates.txt");
 
-        for (int x = 0; x < mNumberOfTilesX.get(); x++) {
-            for (int y = 0; y < mNumberOfTilesY.get(); y++) {
-                zernikes[mZernikeFactor.get()] = lMaxima[x][y];
-                mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
-                Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
-                StackInterface lImage = image();
-                CropInstruction lCrop = new CropInstruction(getLightSheetMicroscope().getDataWarehouse(),
-                        x *mTileWidth, y * mTileHeight ,mTileWidth, mTileHeight);
-                lCrop.enqueue(0);
-                lWrite.enqueue(lCounter);
-                lRemoveOldContainers.enqueue(lCounter);
-                lCounter++;
+        try {
+            BufferedWriter lOutputStream = new BufferedWriter(new FileWriter(lFile));
+            lOutputStream.write("Counter\tCoordX\tCoordY\tWidth\tHeight\tBestAberrationCoeff\n");
+
+            for (int x = 0; x < mNumberOfTilesX.get(); x++) {
+                for (int y = 0; y < mNumberOfTilesY.get(); y++) {
+                    zernikes[mZernikeFactor.get()] = lMaxima[x][y];
+                    mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
+                    Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
+                    StackInterface lImage = image();
+                    CropInstruction lCrop = new CropInstruction(getLightSheetMicroscope().getDataWarehouse(),
+                            x *mTileWidth, y * mTileHeight ,mTileWidth, mTileHeight);
+                    lCrop.enqueue(0);
+                    lWrite.enqueue(lCounter);
+                    lRemoveOldContainers.enqueue(lCounter);
+                    lOutputStream.write(lCounter + "\t" + x *mTileWidth + "\t" + y * mTileHeight + "\t" +
+                            mTileWidth + "\t" + mTileHeight + "\t" + lMaxima[x][y] + "\n" );
+                    lCounter++;
+                }
             }
+            lOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -214,35 +226,17 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     }
 
     public double[][] determineTileWiseQuality(StackInterface lStack){
-        double[][] tilesQulaity = new double[mNumberOfTilesX.get()][mNumberOfTilesY.get()];
-
-        // Logging the tiles
-        File lFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory();
-        File lFile = new File(lFolder, "TileCoordinates.txt");
-
-        try {
-            BufferedWriter lOutputStream = new BufferedWriter(new FileWriter(lFile));
-            lOutputStream.write("Counter\tCoordX\tCoordY\tWidth\tHeight\n");
-
-            int lCounter = 0;
-            for (int x = 0; x < mNumberOfTilesX.get(); x++)
+        double[][] tilesQuality = new double[mNumberOfTilesX.get()][mNumberOfTilesY.get()];
+        for (int x = 0; x < mNumberOfTilesX.get(); x++)
+        {
+            for (int y = 0; y < mNumberOfTilesY.get(); y++)
             {
-                for (int y = 0; y < mNumberOfTilesY.get(); y++)
-                {
-                    final StackInterface lTile = crop(lStack,x *mTileWidth, y * mTileHeight ,mTileHeight,mTileWidth);
-                    double focusMeasureValue = determineQuality(lTile);
-                    tilesQulaity[x][y] = focusMeasureValue;
-                    lOutputStream.write(lCounter + "\t" + x *mTileWidth + "\t" + y * mTileHeight + "\t" +
-                            mTileWidth + "\t" + mTileHeight + "\n");
-                    lCounter++;
-                }
+                final StackInterface lTile = crop(lStack,x *mTileWidth, y * mTileHeight ,mTileHeight,mTileWidth);
+                double focusMeasureValue = determineQuality(lTile);
+                tilesQuality[x][y] = focusMeasureValue;
             }
-            lOutputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
-        return tilesQulaity;
+        return tilesQuality;
     }
 
     public StackInterface crop(StackInterface lStack, int lCropX, int lCropY, int lHieght, int lWidth){
