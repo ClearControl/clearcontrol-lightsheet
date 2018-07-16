@@ -449,6 +449,7 @@ public class SimulatedLightSheetMicroscope extends
       ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(getDevice(DataWarehouseResetInstruction.class, 0));
     }
 
+    /*
     for (int i = 0; i < 3; i++)
     {
       final Stack2DDisplay lStack2DDisplay =
@@ -459,6 +460,7 @@ public class SimulatedLightSheetMicroscope extends
       lStack2DDisplay.setVisible(false);
       addDevice(i, lStack2DDisplay);
     }
+    */
 
     if (getNumberOfLightSheets() > 1) {
       addDevice(0, new InterleavedAcquisitionInstruction(this));
