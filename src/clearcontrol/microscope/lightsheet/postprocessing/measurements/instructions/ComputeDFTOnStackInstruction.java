@@ -32,7 +32,7 @@ public class ComputeDFTOnStackInstruction <T extends StackInterfaceContainer> ex
         StackInterface lStack = lContainer.get(key);
 
         DiscreteFourierTransform lDFT = new DiscreteFourierTransform();
-        lDFT.computeDiscreteFourierTransform((OffHeapPlanarStack) lStack, getLightSheetMicroscope());
+        lDFT.computeDiscreteFourierTransform(pTimePoint, key, (OffHeapPlanarStack) lStack, getLightSheetMicroscope());
 
         return true;
     }

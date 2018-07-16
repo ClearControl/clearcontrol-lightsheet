@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class DiscreteFourierTransform {
 
-    public void computeDiscreteFourierTransform(OffHeapPlanarStack pStack, LightSheetMicroscope pLightSheetMicroscope)
+    public void computeDiscreteFourierTransform(long pTimePoint, String key, OffHeapPlanarStack pStack, LightSheetMicroscope pLightSheetMicroscope)
     {
         long lWidth = pStack.getWidth();
         long lHeight = pStack.getHeight();
@@ -41,9 +41,8 @@ public class DiscreteFourierTransform {
             //fft.complexInverse(input_2D,true);
             DFTArray[z] = input_2D;
         }
-//        DFTContainer lDftContainer = new DFTContainer(0);
-//        lDftContainer.
-//        pLightSheetMicroscope.getDataWarehouse().put("dft", lDftContainer)
+        DFTContainer lDftContainer = new DFTContainer(pTimePoint,(int)lDepth,(int)lHeight,(int)lWidth*2,DFTArray);
+        pLightSheetMicroscope.getDataWarehouse().put("dft_"+key, lDftContainer);
     }
 
 
