@@ -1,7 +1,6 @@
 package clearcontrol.microscope.lightsheet.postprocessing.measurements;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.postprocessing.containers.DFTContainer;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.OffHeapPlanarStack;
 import coremem.ContiguousMemoryInterface;
