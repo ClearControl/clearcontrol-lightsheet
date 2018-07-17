@@ -62,7 +62,7 @@ def getVersionName = {
 sourceCompatibility = 1.8
 
 group = 'net.clearcontrol'
-version = "1.27.1" //getVersionName()
+version = "1.27.3" //getVersionName()
 
 test 
 {
@@ -91,7 +91,7 @@ dependencies
     compile ('net.clearcontrol:asdkj:1.0.3-RH')              {transitive=true; changing= true}
 
     // ClearControl:
-    compile ('net.clearcontrol:clearcontrol:0.16.4')      {transitive= true; changing= true}
+    compile ('net.clearcontrol:clearcontrol:0.16.6')      {transitive= true; changing= true}
     
     // post processing:
     compile ('net.clearcontrol:clearclij:0.3.2')                {transitive= true; changing= true}
@@ -101,7 +101,6 @@ dependencies
     // other:
     compile 'pl.edu.icm:jlargearrays:1.3-RH'
     compile 'com.github.wendykierp:jtransforms:3.1.2-RH'
-
 }
 
 

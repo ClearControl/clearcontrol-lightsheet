@@ -12,10 +12,10 @@ public class FocusFinderAlphaByVariationInstructionPanel extends
 {
   public FocusFinderAlphaByVariationInstructionPanel(FocusFinderAlphaByVariationInstruction pFocusFinderAlphaByVariationScheduler) {
     addDoubleField(pFocusFinderAlphaByVariationScheduler.getAlphaStepVariable(), 0);
-    addIntegerField(pFocusFinderAlphaByVariationScheduler.getNumberOfImagesToTakeVariable(), 0);
-    addDoubleField(pFocusFinderAlphaByVariationScheduler.getExposureTimeInSecondsVariable(), 0);
-    addIntegerField(pFocusFinderAlphaByVariationScheduler.getImageWidthVariable(), 0);
-    addIntegerField(pFocusFinderAlphaByVariationScheduler.getImageHeightVariable(), 0);
+    addIntegerField(pFocusFinderAlphaByVariationScheduler.getNumberOfImagesToTakeVariable(), 1);
+    addDoubleField(pFocusFinderAlphaByVariationScheduler.getExposureTimeInSecondsVariable(), 2);
+    addIntegerField(pFocusFinderAlphaByVariationScheduler.getImageWidthVariable(), 3);
+    addIntegerField(pFocusFinderAlphaByVariationScheduler.getImageHeightVariable(), 4);
   }
 
 }

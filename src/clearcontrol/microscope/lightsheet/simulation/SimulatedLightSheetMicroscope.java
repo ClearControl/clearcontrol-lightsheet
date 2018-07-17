@@ -43,6 +43,7 @@ import clearcontrol.microscope.lightsheet.imaging.sequential.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.AppendConsecutiveSingleViewImagingInstruction;
 import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightSheetStackInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.ComputeDFTOnStackInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.CountsSpotsInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.MeasureDCTS2DOnStackInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.SpotShiftDeterminationInstruction;
@@ -61,6 +62,9 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defoc
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.instructions.GeneticAlgorithmMirrorModeOptimizeInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenInstruction;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.RandomZernikesInstruction;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.SequentialZernikesInstruction;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.sensorlessAO.SensorLessAOForSinglePlaneInstruction;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
@@ -374,6 +378,8 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 3));
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 4));
       addDevice(0, new GradientBasedZernikeModeOptimizerInstruction(this, lMirror, 5));
+      addDevice(0, new SensorLessAOForSinglePlaneInstruction(this, lMirror));
+
 
       LogMirrorZernikeFactorsToFileInstruction lMirrorModeZernikeFactorsSaver = new LogMirrorZernikeFactorsToFileInstruction(lMirror, this);
       addDevice(0, lMirrorModeZernikeFactorsSaver);
@@ -446,6 +452,7 @@ public class SimulatedLightSheetMicroscope extends
       ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(getDevice(DataWarehouseResetInstruction.class, 0));
     }
 
+    /*
     for (int i = 0; i < 3; i++)
     {
       final Stack2DDisplay lStack2DDisplay =
@@ -456,6 +463,7 @@ public class SimulatedLightSheetMicroscope extends
       lStack2DDisplay.setVisible(false);
       addDevice(i, lStack2DDisplay);
     }
+    */
 
     if (getNumberOfLightSheets() > 1) {
       addDevice(0, new InterleavedAcquisitionInstruction(this));
@@ -469,8 +477,7 @@ public class SimulatedLightSheetMicroscope extends
 
       SequentialAcquisitionInstruction
           lSequentialAcquisitionScheduler = new SequentialAcquisitionInstruction(this);
-      BeamAcquisitionInstruction
-              lBeamAcquisitionScheduler = new BeamAcquisitionInstruction(this,0);
+
       SequentialFusionInstruction lSequentialFusionScheduler = new SequentialFusionInstruction(this);
       WriteFusedImageAsRawToDiscInstruction lWriteSequentialFusedImageToDiscScheduler = new WriteFusedImageAsRawToDiscInstruction("sequential", this);
       DropOldestStackInterfaceContainerInstruction lDropContainerScheduler = new DropOldestStackInterfaceContainerInstruction(SequentialImageDataContainer.class, getDataWarehouse());
@@ -482,14 +489,13 @@ public class SimulatedLightSheetMicroscope extends
       if (lTimelapse instanceof LightSheetTimelapse)
       {
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
-        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lBeamAcquisitionScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialFusionScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewFusedStackScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSequentialFusedImageToDiscScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lFusedMaxProjectionScheduler);
       }
       addDevice(0, lSequentialAcquisitionScheduler);
-      addDevice(0, lBeamAcquisitionScheduler);
+      addDevice(0, new BeamAcquisitionInstruction(this,0));
       addDevice(0, lSequentialFusionScheduler);
       addDevice(0, new WriteSequentialRawDataToDiscInstruction(this));
       addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
@@ -576,6 +582,7 @@ public class SimulatedLightSheetMicroscope extends
 
     addDevice(0, new MeasureDCTS2DOnStackInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
     addDevice(0, new MeasureDCTS2DOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
+    addDevice(0, new ComputeDFTOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
 
     addDevice(0, new SpotShiftDeterminationInstruction(this));
 

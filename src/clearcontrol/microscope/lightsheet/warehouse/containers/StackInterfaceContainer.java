@@ -47,7 +47,7 @@ public abstract class StackInterfaceContainer extends DataContainerBase implemen
 
   @Override public boolean containsValue(Object value)
   {
-    return mData.containsKey(value);
+    return mData.containsValue(value);
   }
 
   @Override public StackInterface get(Object key)

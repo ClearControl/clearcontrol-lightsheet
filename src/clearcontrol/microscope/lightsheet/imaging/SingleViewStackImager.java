@@ -69,7 +69,7 @@ public class SingleViewStackImager implements ImagerInterface,
     lAcquisitionScheduler.initialize();
     lAcquisitionScheduler.enqueue(0);
 
-    StackInterface lStack = ((StackInterfaceContainer)mLightSheetMicroscope.getDataWarehouse().getOldestContainer(StackInterfaceContainer.class)).get("C" + mDetectionArmIndex + "L" + mLightSheetIndex);
+    StackInterface lStack = //((StackInterfaceContainer)mLightSheetMicroscope.getDataWarehouse().getOldestContainer(StackInterfaceContainer.class)).get("C" + mDetectionArmIndex + "L" + mLightSheetIndex);
         lAcquisitionScheduler.getLastAcquiredStack();
     return lStack;
   }

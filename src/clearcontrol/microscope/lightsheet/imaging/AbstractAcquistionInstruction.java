@@ -100,6 +100,8 @@ public abstract class AbstractAcquistionInstruction extends LightSheetMicroscope
     pContainer.put(pKey,
                    lStackCopyVariable.get());
 
+    mLastAcquiredStack = lStackCopyVariable.get();
+
   }
 
   @Deprecated
