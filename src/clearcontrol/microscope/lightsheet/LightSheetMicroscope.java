@@ -25,7 +25,7 @@ import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotCountCon
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.containers.MirrorModeContainer;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.instructions.ChangeExposureTimeInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
