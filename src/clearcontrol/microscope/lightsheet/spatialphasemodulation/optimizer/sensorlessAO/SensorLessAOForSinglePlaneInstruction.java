@@ -109,6 +109,15 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         lWrite.enqueue(mNumberOfTilesX.get()*mNumberOfTilesY.get());
         lDefaultStack.release();
 
+        int lCounter = mNumberOfTilesX.get()*mNumberOfTilesY.get() + 1;
+        for( int i = 0; i < mNumberOfTilesX.get()*mNumberOfTilesY.get()-1;i ++){
+            lDefaultStack = image();
+            lWrite.enqueue(lCounter);
+            lDefaultStack.release();
+            lCounter ++;
+        }
+
+        lCounter = 0;
 
 
         // decrease Zernike factor by step size
