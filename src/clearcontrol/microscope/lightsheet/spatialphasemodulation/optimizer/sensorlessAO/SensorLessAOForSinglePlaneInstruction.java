@@ -185,7 +185,12 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
             lOutputStream.write("Counter\tCoordX\tCoordY\tWidth\tHeight\tBestAberrationCoeff\n");
 
             for (int x = 0; x < mNumberOfTilesX.get(); x++) {
+                boolean stopFlag = false;
                 for (int y = 0; y < mNumberOfTilesY.get(); y++) {
+                    if (getLightSheetMicroscope().getTimelapse().getStopSignalVariable().get()){
+                        stopFlag = true;
+                        break;
+                    }
                     zernikes[mZernikeFactor.get()] = lMaxima[x][y];
                     mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
                     Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
@@ -198,6 +203,9 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
                     lOutputStream.write(lCounter + "\t" + x *mTileWidth + "\t" + y * mTileHeight + "\t" +
                             mTileWidth + "\t" + mTileHeight + "\t" + String.format("%.5f", lMaxima[x][y]) + "\n" );
                     lCounter++;
+                }
+                if(stopFlag) {
+                    break;
                 }
             }
             lOutputStream.close();
