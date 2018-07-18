@@ -1,6 +1,8 @@
 package clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions;
 
+import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
+import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
@@ -32,7 +34,8 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
 
     private final Class<T> mClass;
     private Variable<Boolean> mViewFrontVariable = new Variable<Boolean>("Front view", true);
-    private Variable<String> mMustContainStringVariable = new Variable<String>("", "");
+    private Variable<String> mMustContainStringVariable = new Variable<String>("Stack lable must contain", "");
+    private BoundedVariable<Double> mScalingFactorVariable = new BoundedVariable<Double>("Scaling factor", 0.5, 0.0001, Double.MAX_VALUE, 0.0001);
 
     private BoundedVariable<Integer> mFontSizeVariable = new BoundedVariable<Integer>("Font size", 14, 5, Integer.MAX_VALUE);
 
@@ -90,6 +93,16 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
         halfStackProjectionPlugin.run();
         ImagePlus lResultImagePlus = halfStackProjectionPlugin.getOutputImage();
 
+        // downsample the image if scaling is set != 1.0
+        if (Math.abs(mScalingFactorVariable.get() - 1.0) > 0.0001) {
+            ClearCLImage lCLImage = clij.converter(lResultImagePlus).getClearCLImage();
+            ClearCLImage lClImageScaled = clij.createCLImage(new long[]{(long)(lCLImage.getWidth() * mScalingFactorVariable.get().floatValue()), (long)(lCLImage.getHeight() * mScalingFactorVariable.get().floatValue())}, lCLImage.getChannelDataType());
+            Kernels.downsample(clij, lCLImage, lClImageScaled, mScalingFactorVariable.get().floatValue(), mScalingFactorVariable.get().floatValue());
+            lResultImagePlus = clij.converter(lClImageScaled).getImagePlus();
+            lCLImage.close();
+            lClImageScaled.close();
+        }
+
         String folderName = "thumbnails_" + (mViewFrontVariable.get()?"front":"back");
 
         new File(targetFolder + "/stacks/" + folderName + "/").mkdirs();
@@ -142,6 +155,10 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
 
     public Variable<Boolean> getViewFront() {
         return mViewFrontVariable;
+    }
+
+    public BoundedVariable<Double> getScalingVariable() {
+        return mScalingFactorVariable;
     }
 
     @Override

@@ -23,5 +23,6 @@ public class HalfStackMaxProjectionInstructionPanel extends CustomGridPane {
         add(lTextField.getTextField(), 1, 1);
 
         addIntegerField(pHalfStackMaxProjectionInstruction.getFontSizeVariable(), 3);
+        addDoubleField(pHalfStackMaxProjectionInstruction.getScalingVariable(), 4);
     }
 }
