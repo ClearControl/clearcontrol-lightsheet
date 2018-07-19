@@ -34,6 +34,8 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
 
     private final Class<T> mClass;
     private Variable<Boolean> mViewFrontVariable = new Variable<Boolean>("Front view", true);
+    private Variable<Boolean> mPrintSequenceNameVariable = new Variable<Boolean>("Print sequence name", true);
+    private Variable<Boolean> mPrintTimePointVariable = new Variable<Boolean>("Print time point", true);
     private Variable<String> mMustContainStringVariable = new Variable<String>("Stack lable must contain", "");
     private BoundedVariable<Double> mScalingFactorVariable = new BoundedVariable<Double>("Scaling factor", 0.5, 0.0001, Double.MAX_VALUE, 0.0001);
 
@@ -101,6 +103,13 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
             lResultImagePlus = clij.converter(lClImageScaled).getImagePlus();
             lCLImage.close();
             lClImageScaled.close();
+
+            if (lStack.getMetaData() != null) {
+                lResultImagePlus.getCalibration().setUnit("micron");
+                lResultImagePlus.getCalibration().pixelWidth = lStack.getMetaData().getVoxelDimX() / mScalingFactorVariable.get().floatValue();
+                lResultImagePlus.getCalibration().pixelHeight = lStack.getMetaData().getVoxelDimY() / mScalingFactorVariable.get().floatValue();
+            }
+
         }
 
         String folderName = "thumbnails_" + (mViewFrontVariable.get()?"front":"back");
@@ -126,7 +135,7 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
             }
             Duration duration = Duration.ofNanos(lStack.getMetaData().getTimeStampInNanoseconds() - lStartTimeInNanoSecondsContainer.getTimeStampInNanoSeconds());
             long s = duration.getSeconds();
-            ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + " (tp " + pTimePoint + ")\n" + key, 20, 30);
+            ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + (mPrintTimePointVariable.get()?" (tp " + pTimePoint + ")":"") + "\n" + (mPrintSequenceNameVariable.get()?key:""), 20, 30);
 
             lResultImagePlus.updateAndDraw();
 
@@ -159,6 +168,14 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
 
     public BoundedVariable<Double> getScalingVariable() {
         return mScalingFactorVariable;
+    }
+
+    public Variable<Boolean> getPrintSequenceNameVariable() {
+        return mPrintSequenceNameVariable;
+    }
+
+    public Variable<Boolean> getPrintTimePointVariable() {
+        return mPrintTimePointVariable;
     }
 
     @Override

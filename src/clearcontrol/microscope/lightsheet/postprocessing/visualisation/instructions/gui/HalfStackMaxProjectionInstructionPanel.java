@@ -17,12 +17,14 @@ import javafx.scene.control.TextField;
 public class HalfStackMaxProjectionInstructionPanel extends CustomGridPane {
     public HalfStackMaxProjectionInstructionPanel(HalfStackMaxProjectionInstruction pHalfStackMaxProjectionInstruction) {
         addCheckbox(pHalfStackMaxProjectionInstruction.getViewFront(), 0);
+        addCheckbox(pHalfStackMaxProjectionInstruction.getPrintSequenceNameVariable(), 1);
+        addCheckbox(pHalfStackMaxProjectionInstruction.getPrintTimePointVariable(), 2);
 
         StringVariableTextField lTextField = new StringVariableTextField(pHalfStackMaxProjectionInstruction.getMustContainStringVariable().getName(), pHalfStackMaxProjectionInstruction.getMustContainStringVariable());
-        add(lTextField.getLabel(), 0, 1);
-        add(lTextField.getTextField(), 1, 1);
+        add(lTextField.getLabel(), 0, 3);
+        add(lTextField.getTextField(), 1, 3);
 
-        addIntegerField(pHalfStackMaxProjectionInstruction.getFontSizeVariable(), 3);
-        addDoubleField(pHalfStackMaxProjectionInstruction.getScalingVariable(), 4);
+        addIntegerField(pHalfStackMaxProjectionInstruction.getFontSizeVariable(), 4);
+        addDoubleField(pHalfStackMaxProjectionInstruction.getScalingVariable(), 5);
     }
 }
