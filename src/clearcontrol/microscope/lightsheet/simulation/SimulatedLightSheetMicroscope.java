@@ -546,7 +546,6 @@ public class SimulatedLightSheetMicroscope extends
         addDevice(0, lViewSingleLightSheetStackScheduler);
         addDevice(0, lWriteSingleLightSheetImageToDiscScheduler);
 
-        addDevice(0, new ExposureModulatedAcquisitionInstruction(c, l, this));
         lSequentialStackKeys[c * getNumberOfLightSheets() + l] = "C" + c + "L" + l;
         addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"C" + c + "L" + l}, this));
 
