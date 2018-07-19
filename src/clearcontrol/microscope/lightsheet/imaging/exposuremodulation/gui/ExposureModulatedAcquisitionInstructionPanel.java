@@ -16,5 +16,6 @@ public class ExposureModulatedAcquisitionInstructionPanel extends CustomGridPane
     {
         addDoubleField(pExposureModulatedAcquisitionScheduler.getShortExposureTimeInSecondsVariable(), 0);
         addDoubleField(pExposureModulatedAcquisitionScheduler.getLongExposureTimeInSecondsVariable(), 1);
+        addIntegerField(pExposureModulatedAcquisitionScheduler.getNumberOfRepeats(), 2);
     }
 }

@@ -33,6 +33,7 @@ public class ExposureModulatedAcquisitionInstruction extends
 
   private BoundedVariable<Double> mLongExposureTimeInSecondsVariable = new BoundedVariable<Double>("long exposure", 0.1, 0.0, Double.MAX_VALUE, 0.0001);
   private BoundedVariable<Double> mShortExposureTimeInSecondsVariable = new BoundedVariable<Double>("short exposure", 0.01, 0.0, Double.MAX_VALUE, 0.0001);
+  private BoundedVariable<Integer> mNumberOfRepeats = new BoundedVariable<Integer>("repeats", 1, 1, Integer.MAX_VALUE);
 
 
   public ExposureModulatedAcquisitionInstruction(int pCameraIndex, int pLightSheetIndex, LightSheetMicroscope pLightSheetMicroscope) {
@@ -117,9 +118,13 @@ public class ExposureModulatedAcquisitionInstruction extends
       }
 
       lQueue.setExp(mShortExposureTimeInSecondsVariable.get());
-      lQueue.addCurrentStateToQueue();
+      for (int i = 0; i < mNumberOfRepeats.get(); i++) {
+        lQueue.addCurrentStateToQueue();
+      }
       lQueue.setExp(mLongExposureTimeInSecondsVariable.get());
-      lQueue.addCurrentStateToQueue();
+      for (int i = 0; i < mNumberOfRepeats.get(); i++) {
+        lQueue.addCurrentStateToQueue();
+      }
     }
 /*
         pCurrentState.getQueue(0,
@@ -164,6 +169,10 @@ public class ExposureModulatedAcquisitionInstruction extends
 
   public BoundedVariable<Double> getShortExposureTimeInSecondsVariable() {
     return mShortExposureTimeInSecondsVariable;
+  }
+
+  public BoundedVariable<Integer> getNumberOfRepeats() {
+    return mNumberOfRepeats;
   }
 
   @Override
