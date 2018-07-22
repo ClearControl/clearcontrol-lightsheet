@@ -10,25 +10,25 @@ public class SequentialZernikesInstruction extends InstructionBase implements
 
     private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
 
-    private BoundedVariable<Double> mMaximumZernikeCoefficientVariable = new BoundedVariable<Double>("Maximum Zernike coefficient", 1.0, 0.0, Double.MAX_VALUE, 0.0001);
-    private BoundedVariable<Double> mMinimumZernikeCoefficientVariable = new BoundedVariable<Double>("Minimum Zernike coefficient", 1.0, 0.0, Double.MAX_VALUE, 0.0001);
-    private BoundedVariable<Double> mStepperVariable = new BoundedVariable<Double>("Step size", 1.0, 0.0, Double.MAX_VALUE, 0.0001);
-    private BoundedVariable<Double> mInitialValueVariable = new BoundedVariable<Double>("Initial value", 1.0, 0.0, Double.MAX_VALUE, 0.0001);
-    private BoundedVariable<Integer> mStartingModeVariable = new BoundedVariable<Integer>("Starting mode", 1, 0, Integer.MAX_VALUE);
+    private BoundedVariable<Double> mMaximumZernikeCoefficientVariable = new BoundedVariable<Double>("Maximum Zernike coefficient", 0.5, -5.0, 5.0, 0.0001);
+    private BoundedVariable<Double> mMinimumZernikeCoefficientVariable = new BoundedVariable<Double>("Minimum Zernike coefficient", -0.5, -5.0, 5.0, 0.0001);
+    private BoundedVariable<Double> mStepperVariable = new BoundedVariable<Double>("Step size", 0.01, 0.0, Double.MAX_VALUE, 0.0001);
+    private BoundedVariable<Double> mInitialValueVariable = new BoundedVariable<Double>("Initial value", 0.0, 0.0, Double.MAX_VALUE, 0.0001);
+    private BoundedVariable<Integer> mStartingModeVariable = new BoundedVariable<Integer>("Starting mode", 3, 0, Integer.MAX_VALUE);
     private BoundedVariable<Integer> mChangingModeVariable = new BoundedVariable<Integer>("Changing mode", 1, 0, Integer.MAX_VALUE);
-    private BoundedVariable<Integer> mEndingModeVariable = new BoundedVariable<Integer>("Ending mode", 1, 0, Integer.MAX_VALUE);
+    private BoundedVariable<Integer> mEndingModeVariable = new BoundedVariable<Integer>("Ending mode", 3, 0, Integer.MAX_VALUE);
 
 
     private double[] mArray;
     private String mDirection;
 
-    public SequentialZernikesInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase, double pStepper, double pInitialValue, double pMaxZernCoeff, double pMinZernCoeff) {
+    public SequentialZernikesInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
         super("Adaptive optics: Send sequential mirror modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
         mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
-        mMaximumZernikeCoefficientVariable.set(pMaxZernCoeff);
-        mMinimumZernikeCoefficientVariable.set(pMinZernCoeff);
-        mStepperVariable.set(pStepper);
-        mInitialValueVariable.set(pInitialValue);
+        mMaximumZernikeCoefficientVariable.set(0.5);
+        mMinimumZernikeCoefficientVariable.set(-0.5);
+        mStepperVariable.set(0.01);
+        mInitialValueVariable.set(0.0);
         mStartingModeVariable.set(3);
         mEndingModeVariable.set(3);
     }
@@ -50,15 +50,6 @@ public class SequentialZernikesInstruction extends InstructionBase implements
             System.out.println("Stepper is too big");
             return false;
         }
-        if (mArray[mChangingModeVariable.get()] >= mMaximumZernikeCoefficientVariable.get()) {
-            mDirection = "negative";
-            mArray[mChangingModeVariable.get()] = mInitialValueVariable.get();
-        }
-        else if (mArray[mChangingModeVariable.get()] <= mMinimumZernikeCoefficientVariable.get()) {
-            mDirection = "positive";
-            mArray[mChangingModeVariable.get()] = mInitialValueVariable.get();
-            mChangingModeVariable.set(mChangingModeVariable.get() + 1);
-        }
         if(mChangingModeVariable.get() <= mEndingModeVariable.get()) {
             switch (mDirection){
                 case "positive": {
@@ -74,13 +65,23 @@ public class SequentialZernikesInstruction extends InstructionBase implements
 
         }
         mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(mArray);
+        if (mArray[mChangingModeVariable.get()] >= mMaximumZernikeCoefficientVariable.get()) {
+            mDirection = "negative";
+            mArray[mChangingModeVariable.get()] = mInitialValueVariable.get();
+        }
+        else if (mArray[mChangingModeVariable.get()] <= mMinimumZernikeCoefficientVariable.get()) {
+            mDirection = "positive";
+            mArray[mChangingModeVariable.get()] = mInitialValueVariable.get();
+            mChangingModeVariable.set(mChangingModeVariable.get() + 1);
+        }
+
         return true;
 
     }
 
     @Override
     public SequentialZernikesInstruction copy() {
-        return new SequentialZernikesInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase, mStepperVariable.get(), mInitialValueVariable.get(), mMaximumZernikeCoefficientVariable.get(), mMinimumZernikeCoefficientVariable.get());
+        return new SequentialZernikesInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase);
     }
 
     public BoundedVariable<Double> getInitialValueVariable() {
@@ -103,9 +104,9 @@ public class SequentialZernikesInstruction extends InstructionBase implements
         return mEndingModeVariable;
     }
 
-    public BoundedVariable<Integer> getChangingModeVariable() {
+    /*public BoundedVariable<Integer> getChangingModeVariable() {
         return mChangingModeVariable;
-    }
+    }*/
 
     public BoundedVariable<Integer> getStartingModeVariable() {
         return mStartingModeVariable;
