@@ -387,7 +387,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new LoadMirrorModesFromFolderInstruction(lMirror, this));
 
       SequentialZernikesInstruction lSequentialZernikesScheduler =
-              new SequentialZernikesInstruction(lMirror,1,0.0,5.0,-5.0);
+              new SequentialZernikesInstruction(lMirror);
       addDevice(0, lSequentialZernikesScheduler);
 
       addDevice(0, new RandomZernikesInstruction(lMirror));
