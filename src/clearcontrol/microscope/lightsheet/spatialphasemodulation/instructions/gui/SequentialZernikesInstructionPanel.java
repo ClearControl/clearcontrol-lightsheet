@@ -21,6 +21,5 @@ public class SequentialZernikesInstructionPanel extends CustomGridPane {
 
         addIntegerField(pInstruction.getStartingModeVariable(), 4 );
         addIntegerField(pInstruction.getEndingModeVariable(), 5 );
-        addIntegerField(pInstruction.getChangingModeVariable(), 6 );
-    }
+        }
 }
