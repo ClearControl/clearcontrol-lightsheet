@@ -9,6 +9,7 @@ import clearcontrol.devices.imagej.ImageJFeature;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
+import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsRawToDiscInstruction;
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
@@ -39,8 +40,8 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
     private BoundedVariable<Double> mPositionZ = new BoundedVariable<Double>("position Z",
             50.0,0.0,100.0);
-    private BoundedVariable<Double> mStepSize = new BoundedVariable<Double>("Defocus step size",
-            0.25, 0.0, 2.0, 0.0000000001);
+    private BoundedVariable<Double> mStepSize = new BoundedVariable<Double>("Aberration step size",
+            0.02, 0.0, 2.0, 0.0000000001);
     private BoundedVariable<Integer> mZernikeFactor = new BoundedVariable<Integer>("Zernike Factor",
             3,0,66);
     private BoundedVariable<Integer> mNumberOfTilesX = new BoundedVariable<Integer>("Number Of Tiles On X",
@@ -53,7 +54,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     private int mTileHeight = 0;
     private int mTileWidth = 0;
 
-    WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(
+    WriteSingleLightSheetImageAsRawToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsRawToDiscInstruction(
             0, 0, getLightSheetMicroscope());
 
     public SensorLessAOForSinglePlaneInstruction(LightSheetMicroscope pLightSheetMicroscope,
@@ -62,7 +63,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         super("Adaptive optics: Sensorless Single PLane AO optimizer for " +
                 pSpatialPhaseModulatorDeviceInterface.getName(), pLightSheetMicroscope);
         this.mSpatialPhaseModulatorDeviceInterface = pSpatialPhaseModulatorDeviceInterface;
-        mStepSize.set(0.25);
+        mStepSize.set(0.02);
         mZernikeFactor.set(3);
         mNumberOfTilesY.set(1);
         mNumberOfTilesX.set(1);
@@ -111,6 +112,9 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
         int lCounter = mNumberOfTilesX.get()*mNumberOfTilesY.get() + 1;
         for( int i = 0; i < mNumberOfTilesX.get()*mNumberOfTilesY.get()-1;i ++){
+            if (getLightSheetMicroscope().getTimelapse().getStopSignalVariable().get()){
+                return false;
+            }
             lDefaultStack = image();
             lWrite.enqueue(lCounter);
             lDefaultStack.release();
@@ -194,7 +198,12 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
             lOutputStream.write("Counter\tCoordX\tCoordY\tWidth\tHeight\tBestAberrationCoeff\n");
 
             for (int x = 0; x < mNumberOfTilesX.get(); x++) {
+                boolean stopFlag = false;
                 for (int y = 0; y < mNumberOfTilesY.get(); y++) {
+                    if (getLightSheetMicroscope().getTimelapse().getStopSignalVariable().get()){
+                        stopFlag = true;
+                        break;
+                    }
                     zernikes[mZernikeFactor.get()] = lMaxima[x][y];
                     mSpatialPhaseModulatorDeviceInterface.setZernikeFactors(zernikes);
                     Thread.sleep(mSpatialPhaseModulatorDeviceInterface.getRelaxationTimeInMilliseconds());
@@ -207,6 +216,9 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
                     lOutputStream.write(lCounter + "\t" + x *mTileWidth + "\t" + y * mTileHeight + "\t" +
                             mTileWidth + "\t" + mTileHeight + "\t" + String.format("%.5f", lMaxima[x][y]) + "\n" );
                     lCounter++;
+                }
+                if(stopFlag) {
+                    break;
                 }
             }
             lOutputStream.close();
