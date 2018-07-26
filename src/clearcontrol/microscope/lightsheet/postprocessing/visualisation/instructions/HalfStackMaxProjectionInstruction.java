@@ -21,6 +21,7 @@ import ij.process.ImageProcessor;
 import java.awt.*;
 import java.io.File;
 import java.time.Duration;
+import java.util.Iterator;
 
 /**
  * HalfStackMaxProjectionInstruction
@@ -63,8 +64,20 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
 
         T lContainer = lDataWarehouse.getOldestContainer(mClass);
 
-        String key = lContainer.keySet().iterator().next();
-        StackInterface lStack = lContainer.get(key);
+        Iterator<String> iterator = lContainer.keySet().iterator();
+        String key = "";
+        StackInterface lStack = null;
+        while(iterator.hasNext()) {
+            key = iterator.next();
+            if (key.toLowerCase().contains(mMustContainStringVariable.get().toLowerCase()) || getMustContainStringVariable().get().length() == 0) {
+                lStack = lContainer.get(key);
+                break;
+            }
+        }
+        if (lStack == null) {
+            warning("Couldn't find key '" + getMustContainStringVariable().get() + "' in containter " + lContainer + ". Skipping thumbnail creation.");
+            return false;
+        }
 
         String targetFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
         long lTimePoint = lContainer.getTimepoint();
