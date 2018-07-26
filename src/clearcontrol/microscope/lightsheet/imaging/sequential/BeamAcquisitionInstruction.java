@@ -22,6 +22,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * This class has been deprecated because the same functionality can be achieved using the ChangeLightSheetHeightInstruction and
+ * SequentialAcuisitionInstruction
+ * 
+ */
+@Deprecated
 public class BeamAcquisitionInstruction  extends
         AbstractAcquistionInstruction implements
         InstructionInterface,
