@@ -44,10 +44,7 @@ import clearcontrol.microscope.lightsheet.imaging.sequential.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.AppendConsecutiveSingleViewImagingInstruction;
 import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightSheetStackInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.ComputeDFTOnStackInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.CountsSpotsInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.MeasureDCTS2DOnStackInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.SpotShiftDeterminationInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.*;
 import clearcontrol.microscope.lightsheet.postprocessing.processing.CropInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.*;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
@@ -578,6 +575,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new MeasureDCTS2DOnStackInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
     addDevice(0, new MeasureDCTS2DOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
     addDevice(0, new ComputeDFTOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
+    addDevice( 0, new MeasureImageQualityInstruction(this));
 
     addDevice(0, new SpotShiftDeterminationInstruction(this));
 
