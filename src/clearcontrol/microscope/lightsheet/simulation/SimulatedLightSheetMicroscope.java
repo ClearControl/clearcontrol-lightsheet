@@ -24,14 +24,13 @@ import clearcontrol.devices.stages.kcube.instructions.BasicThreeAxesStageInstruc
 import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.devices.stages.kcube.sim.SimulatedBasicStageDevice;
 import clearcontrol.devices.stages.kcube.sim.SimulatedThreeAxesStageDevice;
-import clearcontrol.gui.video.video2d.Stack2DDisplay;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.adaptive.instructions.*;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
-import clearcontrol.microscope.lightsheet.component.lightsheet.schedulers.ChangeLightSheetWidthInstruction;
+import clearcontrol.microscope.lightsheet.component.lightsheet.instructions.ChangeLightSheetWidthInstruction;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.instructions.implementations.PauseInstruction;

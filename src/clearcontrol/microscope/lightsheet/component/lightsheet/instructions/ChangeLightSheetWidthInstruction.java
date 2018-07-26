@@ -1,8 +1,7 @@
-package clearcontrol.microscope.lightsheet.component.lightsheet.schedulers;
+package clearcontrol.microscope.lightsheet.component.lightsheet.instructions;
 
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.state.AcquisitionStateManager;
