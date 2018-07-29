@@ -4,6 +4,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
 
 import java.util.Random;
 
@@ -22,7 +23,7 @@ public class RandomZernikesInstruction extends InstructionBase implements
         mRangeOfZernikeCoefficientsArray = new BoundedVariable[mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors().length];
 
         for(int i = 0; i < mRangeOfZernikeCoefficientsArray.length; i++) {
-            mRangeOfZernikeCoefficientsArray[i] = new BoundedVariable<Double>("Zernike Coeff Pos/Neg Range", 0.0, 0.0, 5.0, 0.0000001);
+            mRangeOfZernikeCoefficientsArray[i] = new BoundedVariable<Double>("Z" + ZernikePolynomials.jNoll(i) + "(" + ZernikePolynomials.getZernikeModeName(i) + ") -min/max", 0.0, 0.0, 5.0, 0.0000001);
         }
     }
 
@@ -55,7 +56,7 @@ public class RandomZernikesInstruction extends InstructionBase implements
         return copied;
     }
 
-    public BoundedVariable<Double> getRangeOfZernikeCoeffArray(int i) {
+    public BoundedVariable<Double> getRangeOfZernikeCoefficientArray(int i) {
         return mRangeOfZernikeCoefficientsArray[i];
     }
 
