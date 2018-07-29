@@ -47,7 +47,13 @@ public class RandomZernikesInstruction extends InstructionBase implements
 
     @Override
     public RandomZernikesInstruction copy() {
-        return new RandomZernikesInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase);
+        RandomZernikesInstruction copied = new RandomZernikesInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase);
+
+        for (int i = 0; i < mRangeOfZernikeCoeffArray.length; i++) {
+            copied.mRangeOfZernikeCoeffArray[i] = mRangeOfZernikeCoeffArray[i];
+        }
+
+        return copied;
     }
 
     public BoundedVariable<Double> getRangeOfZernikeCoeffArray(int i) {
