@@ -11,9 +11,7 @@ public class RandomZernikesInstruction extends InstructionBase implements
         LoggingFeature {
 
     private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
-    private BoundedVariable<Double>[] mRangeOfZernikeCoeffArray;
-
-
+    private BoundedVariable<Double>[] mRangeOfZernikeCoefficientsArray;
 
     private Random mRandom = new Random();
 
@@ -21,10 +19,11 @@ public class RandomZernikesInstruction extends InstructionBase implements
         super("Adaptive optics: Send random Zernike modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
         mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
 
-        mRangeOfZernikeCoeffArray = new BoundedVariable[mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors().length];
-        for(int i = 0; i < mRangeOfZernikeCoeffArray.length; i++) {
-            mRangeOfZernikeCoeffArray[i] = new BoundedVariable<Double>("Zernike Coeff Pos/Neg Range", 0.0, 0.0, 5.0, 0.0000001);
-            }
+        mRangeOfZernikeCoefficientsArray = new BoundedVariable[mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors().length];
+
+        for(int i = 0; i < mRangeOfZernikeCoefficientsArray.length; i++) {
+            mRangeOfZernikeCoefficientsArray[i] = new BoundedVariable<Double>("Zernike Coeff Pos/Neg Range", 0.0, 0.0, 5.0, 0.0000001);
+        }
     }
 
     @Override
@@ -37,7 +36,7 @@ public class RandomZernikesInstruction extends InstructionBase implements
         double[] lArray = mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors();
 
         for (int i = 0; i < lArray.length; i++) {
-            double value = (-(mRangeOfZernikeCoeffArray[i].get()) + (mRangeOfZernikeCoeffArray[i].get() - (-mRangeOfZernikeCoeffArray[i].get())) * mRandom.nextDouble());
+            double value = (-(mRangeOfZernikeCoefficientsArray[i].get()) + (mRangeOfZernikeCoefficientsArray[i].get() - (-mRangeOfZernikeCoefficientsArray[i].get())) * mRandom.nextDouble());
             lArray[i] = value;
         }
 
@@ -49,15 +48,15 @@ public class RandomZernikesInstruction extends InstructionBase implements
     public RandomZernikesInstruction copy() {
         RandomZernikesInstruction copied = new RandomZernikesInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase);
 
-        for (int i = 0; i < mRangeOfZernikeCoeffArray.length; i++) {
-            copied.mRangeOfZernikeCoeffArray[i] = mRangeOfZernikeCoeffArray[i];
+        for (int i = 0; i < mRangeOfZernikeCoefficientsArray.length; i++) {
+            copied.mRangeOfZernikeCoefficientsArray[i] = mRangeOfZernikeCoefficientsArray[i];
         }
 
         return copied;
     }
 
     public BoundedVariable<Double> getRangeOfZernikeCoeffArray(int i) {
-        return mRangeOfZernikeCoeffArray[i];
+        return mRangeOfZernikeCoefficientsArray[i];
     }
 
 }
