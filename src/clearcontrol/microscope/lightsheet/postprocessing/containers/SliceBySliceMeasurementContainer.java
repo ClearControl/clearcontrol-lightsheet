@@ -16,10 +16,10 @@ public class SliceBySliceMeasurementContainer extends DataContainerBase {
     double[] mMeasurements = null;
     Double mMeanMeasurement = null;
 
-    public SliceBySliceMeasurementContainer(long pTimePoint, double[] pDCTS2D) {
+    public SliceBySliceMeasurementContainer(long pTimePoint, double[] pMeasurements) {
         super(pTimePoint);
-        mMeasurements = new double[pDCTS2D.length];
-        System.arraycopy(pDCTS2D, 0, mMeasurements, 0, mMeasurements.length);
+        mMeasurements = new double[pMeasurements.length];
+        System.arraycopy(pMeasurements, 0, mMeasurements, 0, mMeasurements.length);
     }
 
     @Override
