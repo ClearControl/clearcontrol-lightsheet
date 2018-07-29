@@ -2,17 +2,25 @@ package clearcontrol.microscope.lightsheet.postprocessing.measurements.instructi
 
 import autopilot.image.DoubleArrayImage;
 import autopilot.measures.FocusMeasures;
+import clearcl.ClearCLImage;
+import clearcl.enums.ImageChannelDataType;
 import clearcl.imagej.ClearCLIJ;
+import clearcl.imagej.kernels.Kernels;
+import clearcl.imagej.utilities.ImageTypeConverter;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
+import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
 import de.mpicbg.rhaase.utils.DoubleArrayImageImgConverter;
 import ij.measure.ResultsTable;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImg;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
@@ -81,9 +89,16 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
 
         ClearCLIJ clij = ClearCLIJ.getInstance();
 
-        // todo: the conversion here may fail. Images from the camera are UnsignedShort, not Float
+        // todo: conversion without GPU should be faster...
+        ClearCLImage lUnsignedShortImage = clij.converter(lStack).getClearCLImage();
+        ClearCLImage lFloatImage = clij.createCLImage(lUnsignedShortImage.getDimensions(), ImageChannelDataType.Float);
 
-        RandomAccessibleInterval<FloatType> floatData = clij.converter(lStack).getRandomAccessibleInterval();
+        Kernels.copy(clij, lUnsignedShortImage, lFloatImage);
+
+        RandomAccessibleInterval<FloatType> floatData = (RandomAccessibleInterval<FloatType>) clij.converter(lFloatImage).getRandomAccessibleInterval();
+
+        lUnsignedShortImage.close();
+        lFloatImage.close();
 
         resultsTable = new ResultsTable();
 
@@ -110,7 +125,8 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
             }
         }
 
-        // todo: save resultstable to disc and put it in the dataWarheouse
+        String targetFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
+        resultsTable.save(targetFolder + "/imageQuality" + pTimePoint + ".xls");
 
         return true;
     }
