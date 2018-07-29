@@ -12,6 +12,7 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
+import clearcontrol.microscope.lightsheet.postprocessing.containers.FocusMeasuresContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
@@ -125,8 +126,22 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
             }
         }
 
+        // save result to disc
         String targetFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
         resultsTable.save(targetFolder + "/imageQuality" + pTimePoint + ".xls");
+
+        // save result to data warehouse
+        for (FocusMeasures.FocusMeasure focusMeasure : mSelectedFeaturesMap.keySet()) {
+            if (mSelectedFeaturesMap.get(focusMeasure).get()) {
+                double[] measurements = new double[resultsTable.getCounter()];
+                for (int i = 0; i < measurements.length; i++) {
+                    measurements[i] = resultsTable.getValue(focusMeasure.getLongName(), i);
+                }
+
+                FocusMeasuresContainer lCoontainer = new FocusMeasuresContainer(pTimePoint, focusMeasure, measurements);
+                getLightSheetMicroscope().getDataWarehouse().put(focusMeasure.getLongName() + "_" + pTimePoint, lContainer);
+            }
+        }
 
         return true;
     }
