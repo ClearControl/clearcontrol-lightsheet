@@ -574,7 +574,6 @@ public class SimulatedLightSheetMicroscope extends
 
     addDevice(0, new MeasureDCTS2DOnStackInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
     addDevice(0, new MeasureDCTS2DOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
-    addDevice(0, new ComputeDFTOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
     addDevice( 0, new MeasureImageQualityInstruction(this));
 
     addDevice(0, new SpotShiftDeterminationInstruction(this));
