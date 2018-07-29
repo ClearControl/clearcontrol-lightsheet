@@ -6,7 +6,7 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomZernikesInstruction extends InstructionBase implements
         LoggingFeature {
@@ -14,7 +14,6 @@ public class RandomZernikesInstruction extends InstructionBase implements
     private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
     private BoundedVariable<Double>[] mRangeOfZernikeCoefficientsArray;
 
-    private Random mRandom = new Random();
 
     public RandomZernikesInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
         super("Adaptive optics: Send random Zernike modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
@@ -37,8 +36,18 @@ public class RandomZernikesInstruction extends InstructionBase implements
         double[] lArray = mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors();
 
         for (int i = 0; i < lArray.length; i++) {
-            double value = (-(mRangeOfZernikeCoefficientsArray[i].get()) + (mRangeOfZernikeCoefficientsArray[i].get() - (-mRangeOfZernikeCoefficientsArray[i].get())) * mRandom.nextDouble());
-            lArray[i] = value;
+            double absZernCoeff = mRangeOfZernikeCoefficientsArray[i].get();
+
+            double randomValue = 0.0;
+            if(absZernCoeff == 0.0){
+                randomValue = 0.0;
+            }
+            else {
+                double min = -absZernCoeff;
+                double max = absZernCoeff;
+                randomValue = ThreadLocalRandom.current().nextDouble(min, max);
+            }
+            lArray[i] = randomValue;
         }
 
         mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(lArray);
