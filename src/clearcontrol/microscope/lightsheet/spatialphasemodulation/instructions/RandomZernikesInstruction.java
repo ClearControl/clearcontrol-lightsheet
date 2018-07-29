@@ -11,7 +11,7 @@ public class RandomZernikesInstruction extends InstructionBase implements
         LoggingFeature {
 
     private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
-    private BoundedVariable<Double>[] mRangeOfZernikeCoeffArray = new BoundedVariable[66];
+    private BoundedVariable<Double>[] mRangeOfZernikeCoeffArray;
 
 
 
@@ -20,6 +20,8 @@ public class RandomZernikesInstruction extends InstructionBase implements
     public RandomZernikesInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
         super("Adaptive optics: Send random Zernike modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
         mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
+
+        mRangeOfZernikeCoeffArray = new BoundedVariable[mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors().length];
         for(int i = 0; i < mRangeOfZernikeCoeffArray.length; i++) {
             mRangeOfZernikeCoeffArray[i] = new BoundedVariable<Double>("Zernike Coeff Pos/Neg Range", 0.0, 0.0, 5.0, 0.0000001);
             }
