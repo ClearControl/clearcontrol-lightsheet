@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.postprocessing.containers;
 
 
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerBase;
+import org.apache.commons.math.stat.descriptive.moment.Mean;
 
 /**
  * DCTS2DContainer
@@ -12,21 +13,10 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerBase
  * 05 2018
  */
 
-public class SliceBySliceDCTS2DContainer extends DataContainerBase {
+public class SliceBySliceDCTS2DContainer extends SliceBySliceMeasurementContainer {
 
-    double[] mMeasurements = null;
-
-    public SliceBySliceDCTS2DContainer(long pTimePoint, double pX, double pY, double pZ, double[] pDCTS2D) {
-        super(pTimePoint);
-    }
-
-    @Override
-    public boolean isDataComplete() {
-        return true;
-    }
-
-    @Override
-    public void dispose() {
+    public SliceBySliceDCTS2DContainer(long pTimePoint, double[] pDCTS2D) {
+        super(pTimePoint, pDCTS2D);
     }
 
 }

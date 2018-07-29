@@ -24,14 +24,16 @@ import clearcontrol.devices.stages.kcube.instructions.BasicThreeAxesStageInstruc
 import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.devices.stages.kcube.sim.SimulatedBasicStageDevice;
 import clearcontrol.devices.stages.kcube.sim.SimulatedThreeAxesStageDevice;
-import clearcontrol.gui.video.video2d.Stack2DDisplay;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.adaptive.instructions.*;
 import clearcontrol.microscope.lightsheet.calibrator.CalibrationEngine;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheet;
-import clearcontrol.microscope.lightsheet.component.lightsheet.schedulers.ChangeLightSheetWidthInstruction;
+import clearcontrol.microscope.lightsheet.component.lightsheet.instructions.ChangeLightSheetHeightInstruction;
+import clearcontrol.microscope.lightsheet.component.lightsheet.instructions.ChangeLightSheetWidthInstruction;
+import clearcontrol.microscope.lightsheet.component.lightsheet.instructions.ChangeLightSheetXInstruction;
+import clearcontrol.microscope.lightsheet.component.lightsheet.instructions.ChangeLightSheetYInstruction;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.instructions.implementations.PauseInstruction;
@@ -42,10 +44,7 @@ import clearcontrol.microscope.lightsheet.imaging.sequential.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.AppendConsecutiveSingleViewImagingInstruction;
 import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightSheetStackInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.ComputeDFTOnStackInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.CountsSpotsInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.MeasureDCTS2DOnStackInstruction;
-import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.SpotShiftDeterminationInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.*;
 import clearcontrol.microscope.lightsheet.postprocessing.processing.CropInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.*;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
@@ -56,14 +55,11 @@ import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DInstr
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.SelectBestQualitySampleInstruction;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.*;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.instructions.GeneticAlgorithmMirrorModeOptimizeInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.LoadMirrorModesFromFolderInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.LogMirrorZernikeFactorsToFileInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.RandomZernikesInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.SequentialZernikesInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.sensorlessAO.SensorLessAOForSinglePlaneInstruction;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
@@ -391,6 +387,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, lSequentialZernikesScheduler);
 
       addDevice(0, new RandomZernikesInstruction(lMirror));
+      addDevice( 0 , new MakeMirrorFlatInstruction(lMirror));
     }
 
   }
@@ -578,6 +575,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new MeasureDCTS2DOnStackInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
     addDevice(0, new MeasureDCTS2DOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
     addDevice(0, new ComputeDFTOnStackInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
+    addDevice( 0, new MeasureImageQualityInstruction(this));
 
     addDevice(0, new SpotShiftDeterminationInstruction(this));
 
@@ -626,6 +624,16 @@ public class SimulatedLightSheetMicroscope extends
               l,
               d,
               cpi, this));
+
+          if (d == 0) {
+            addDevice(0, new ChangeLightSheetHeightInstruction(this, l, 0.0));
+            addDevice(0, new ChangeLightSheetHeightInstruction(this, l, 100.0));
+            addDevice(0, new ChangeLightSheetHeightInstruction(this, l, 500.0));
+
+            addDevice(0, new ChangeLightSheetXInstruction(this, l, 0.0));
+            addDevice(0, new ChangeLightSheetYInstruction(this, l, 0.0));
+          }
+
         }
         addDevice(0, new ControlPlaneFocusFinderAlphaByVariationInstruction(d, cpi, this));
         addDevice(0, new ControlPlaneFocusFinderZInstruction(d, cpi, this));
@@ -686,6 +694,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new ChangeLightSheetWidthInstruction(this, 0.15));
     addDevice(0, new ChangeLightSheetWidthInstruction(this, 0.3));
     addDevice(0, new ChangeLightSheetWidthInstruction(this, 0.45));
+
   }
 
 }

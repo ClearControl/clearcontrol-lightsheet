@@ -123,6 +123,7 @@ public class SpaceTravelInstruction extends LightSheetMicroscopeInstructionBase 
 
     @Override
     public SpaceTravelInstruction copy() {
-        return new SpaceTravelInstruction(getLightSheetMicroscope());
+        return this;
+                //new SpaceTravelInstruction(getLightSheetMicroscope());
     }
 }
