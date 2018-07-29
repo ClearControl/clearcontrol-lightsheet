@@ -33,6 +33,10 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
+/*
+Author: Debayan Saha
+Sensorless AO optimizes image quality metrics for single mirror mode
+ */
 public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeInstructionBase implements ImageJFeature, LoggingFeature{
 
 
@@ -54,7 +58,7 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
     private int mTileHeight = 0;
     private int mTileWidth = 0;
 
-    WriteSingleLightSheetImageAsRawToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsRawToDiscInstruction(
+    WriteSingleLightSheetImageAsTifToDiscInstruction lWrite =  new WriteSingleLightSheetImageAsTifToDiscInstruction(
             0, 0, getLightSheetMicroscope());
 
     public SensorLessAOForSinglePlaneInstruction(LightSheetMicroscope pLightSheetMicroscope,
@@ -73,7 +77,6 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
 
     @Override
     public boolean initialize() {
-        //showImageJ();
         zernikes = mSpatialPhaseModulatorDeviceInterface.getZernikeFactors();
         for(int i = 0; i< Array.getLength(zernikes); i++){
             zernikes[i] = 0;
