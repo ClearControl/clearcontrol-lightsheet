@@ -138,8 +138,8 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
                     measurements[i] = resultsTable.getValue(focusMeasure.getLongName(), i);
                 }
 
-                FocusMeasuresContainer lCoontainer = new FocusMeasuresContainer(pTimePoint, focusMeasure, measurements);
-                getLightSheetMicroscope().getDataWarehouse().put(focusMeasure.getLongName() + "_" + pTimePoint, lContainer);
+                FocusMeasuresContainer lMeasurementContainer = new FocusMeasuresContainer(pTimePoint, focusMeasure, measurements);
+                getLightSheetMicroscope().getDataWarehouse().put(focusMeasure.getLongName() + "_" + pTimePoint, lMeasurementContainer);
             }
         }
 
