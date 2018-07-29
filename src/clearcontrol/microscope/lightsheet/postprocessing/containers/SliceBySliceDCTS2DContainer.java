@@ -18,6 +18,8 @@ public class SliceBySliceDCTS2DContainer extends DataContainerBase {
 
     public SliceBySliceDCTS2DContainer(long pTimePoint, double pX, double pY, double pZ, double[] pDCTS2D) {
         super(pTimePoint);
+        mMeasurements = new double[pDCTS2D.length];
+        System.arraycopy(pDCTS2D, 0, mMeasurements, 0, mMeasurements.length);
     }
 
     @Override
@@ -27,6 +29,10 @@ public class SliceBySliceDCTS2DContainer extends DataContainerBase {
 
     @Override
     public void dispose() {
+    }
+
+    public double[] getMeasurements() {
+        return mMeasurements;
     }
 
 }
