@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertTrue;
 
+@Deprecated
 public class DiscreteFourierTransform {
 
     public void computeDiscreteFourierTransform(long pTimePoint, String key, OffHeapPlanarStack pStack, LightSheetMicroscope pLightSheetMicroscope)
@@ -51,6 +52,9 @@ public class DiscreteFourierTransform {
             //fft.complexInverse(input_2D,true);
             DFTArray[z] = input_2D;
         }
+
+        // TODO Correct it
+        //ClearCLIJ.getInstance().show(ArrayToStack(DFTArray));
         DFTContainer lDftContainer = new DFTContainer(pTimePoint,(int)lDepth,(int)lHeight,(int)lWidth*2,DFTArray);
         pLightSheetMicroscope.getDataWarehouse().put("dft_"+key, lDftContainer);
     }
