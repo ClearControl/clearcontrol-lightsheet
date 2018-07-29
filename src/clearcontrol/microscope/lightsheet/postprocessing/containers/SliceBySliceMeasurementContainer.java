@@ -3,6 +3,8 @@ package clearcontrol.microscope.lightsheet.postprocessing.containers;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerBase;
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 
+import java.util.Arrays;
+
 /**
  * SliceBySliceMeasurementContainer
  * <p>
@@ -42,5 +44,11 @@ public class SliceBySliceMeasurementContainer extends DataContainerBase {
             mMeanMeasurement = new Mean().evaluate(mMeasurements);
         }
         return mMeanMeasurement;
+    }
+
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + " " + Arrays.toString(getMeasurements());
     }
 }

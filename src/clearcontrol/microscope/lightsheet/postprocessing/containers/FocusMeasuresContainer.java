@@ -2,6 +2,8 @@ package clearcontrol.microscope.lightsheet.postprocessing.containers;
 
 import autopilot.measures.FocusMeasures;
 
+import java.util.Arrays;
+
 /**
  * FocusMeasuresContainer
  * <p>
@@ -21,5 +23,10 @@ public class FocusMeasuresContainer extends SliceBySliceMeasurementContainer {
 
     public FocusMeasures.FocusMeasure getFocusMeasure() {
         return mFocusMeasure;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + " " + mFocusMeasure + " " + Arrays.toString(getMeasurements());
     }
 }
