@@ -81,7 +81,7 @@ public class MeasureDCTS2DOnStackInstruction<T extends StackInterfaceContainer> 
             }
 
             DCTS2DContainer lDCTS2DContainer = new DCTS2DContainer(pTimePoint, lX, lY, lZ, lMeanDCTS2DQuality);
-            SliceBySliceDCTS2DContainer lSliceBySliceDCTS2DContainer = new SliceBySliceDCTS2DContainer(pTimePoint, lX, lY, lZ, lQualityPerslice);
+            SliceBySliceDCTS2DContainer lSliceBySliceDCTS2DContainer = new SliceBySliceDCTS2DContainer(pTimePoint, lQualityPerslice);
 
             getLightSheetMicroscope().getDataWarehouse().put("DCTS2D_" + pTimePoint, lDCTS2DContainer);
             getLightSheetMicroscope().getDataWarehouse().put("SliceBySliceDCTS2D_" + pTimePoint, lSliceBySliceDCTS2DContainer);
