@@ -4,7 +4,6 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
-import net.imglib2.RandomAccessibleInterval;
 
 import java.util.Random;
 
@@ -12,13 +11,18 @@ public class RandomZernikesInstruction extends InstructionBase implements
         LoggingFeature {
 
     private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
-    private BoundedVariable<Double> mMaximumZernikeFactor = new BoundedVariable<Double>("Maximum Zernike factor", 5.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.0000001);
-    private BoundedVariable<Double> mMinimumZernikeFactor = new BoundedVariable<Double>("Minimum Zernike factor", -5.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.0000001);
+    private BoundedVariable<Double>[] mRangeOfZernikeCoeffArray = new BoundedVariable[66];
+
+
+
     private Random mRandom = new Random();
 
     public RandomZernikesInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
         super("Adaptive optics: Send random Zernike modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
         mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
+        for(int i = 0; i < mRangeOfZernikeCoeffArray.length; i++) {
+            mRangeOfZernikeCoeffArray[i] = new BoundedVariable<Double>("Zernike Coeff Pos/Neg Range", 0.0, 0.0, 5.0, 0.0000001);
+            }
     }
 
     @Override
@@ -31,7 +35,7 @@ public class RandomZernikesInstruction extends InstructionBase implements
         double[] lArray = mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors();
 
         for (int i = 0; i < lArray.length; i++) {
-            double value = (mMinimumZernikeFactor.get() + (mMaximumZernikeFactor.get() - mMinimumZernikeFactor.get()) * mRandom.nextDouble());
+            double value = (-(mRangeOfZernikeCoeffArray[i].get()) + (mRangeOfZernikeCoeffArray[i].get() - (-mRangeOfZernikeCoeffArray[i].get())) * mRandom.nextDouble());
             lArray[i] = value;
         }
 
@@ -44,11 +48,8 @@ public class RandomZernikesInstruction extends InstructionBase implements
         return new RandomZernikesInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase);
     }
 
-    public BoundedVariable<Double> getMaximumZernikeFactor() {
-        return mMaximumZernikeFactor;
+    public BoundedVariable<Double> getRangeOfZernikeCoeffArray(int i) {
+        return mRangeOfZernikeCoeffArray[i];
     }
 
-    public BoundedVariable<Double> getMinimumZernikeFactor() {
-        return mMinimumZernikeFactor;
-    }
 }

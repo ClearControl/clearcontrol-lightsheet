@@ -13,7 +13,8 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.Ra
  */
 public class RandomZernikesInstructionPanel extends CustomGridPane {
     public RandomZernikesInstructionPanel(RandomZernikesInstruction pInstruction) {
-        addDoubleField(pInstruction.getMinimumZernikeFactor(), 0);
-        addDoubleField(pInstruction.getMaximumZernikeFactor(), 1);
+        for(int i = 0; i<66;i++) {
+            addDoubleField(pInstruction.getRangeOfZernikeCoeffArray(i), i);
+        }
     }
 }
