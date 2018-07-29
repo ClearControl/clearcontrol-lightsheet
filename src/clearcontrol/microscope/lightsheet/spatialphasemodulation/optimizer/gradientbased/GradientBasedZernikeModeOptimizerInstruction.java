@@ -22,7 +22,7 @@ public class GradientBasedZernikeModeOptimizerInstruction extends LightSheetMicr
 
     private final int mZernikeFactorIndexToOptimize;
 
-    private BoundedVariable<Double> stepSize = new BoundedVariable<Double>("Defocus step size",0.25, 0.0, Double.MAX_VALUE, 0.0000000001);
+    private BoundedVariable<Double> stepSize = new BoundedVariable<Double>("Defocus step size",0.05, 0.0, Double.MAX_VALUE, 0.0000000001);
 
     private BoundedVariable<Double> mPositionZ = null;
 
@@ -77,5 +77,9 @@ public class GradientBasedZernikeModeOptimizerInstruction extends LightSheetMicr
     @Override
     public GradientBasedZernikeModeOptimizerInstruction copy() {
         return new GradientBasedZernikeModeOptimizerInstruction(getLightSheetMicroscope(), mSpatialPhaseModulatorDeviceInterface, mZernikeFactorIndexToOptimize);
+    }
+
+    public BoundedVariable<Double> getStepSize() {
+        return stepSize;
     }
 }
