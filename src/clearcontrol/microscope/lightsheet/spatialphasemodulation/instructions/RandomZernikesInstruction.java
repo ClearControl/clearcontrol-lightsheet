@@ -6,6 +6,7 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
 
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomZernikesInstruction extends InstructionBase implements
@@ -13,6 +14,8 @@ public class RandomZernikesInstruction extends InstructionBase implements
 
     private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
     private BoundedVariable<Double>[] mRangeOfZernikeCoefficientsArray;
+
+    private Random mRandom = new Random();
 
 
     public RandomZernikesInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
@@ -36,18 +39,7 @@ public class RandomZernikesInstruction extends InstructionBase implements
         double[] lArray = mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors();
 
         for (int i = 0; i < lArray.length; i++) {
-            double absZernCoeff = mRangeOfZernikeCoefficientsArray[i].get();
-
-            double randomValue = 0.0;
-            if(absZernCoeff == 0.0){
-                randomValue = 0.0;
-            }
-            else {
-                double min = -absZernCoeff;
-                double max = absZernCoeff;
-                randomValue = ThreadLocalRandom.current().nextDouble(min, max);
-            }
-            lArray[i] = randomValue;
+            lArray[i] = (mRandom.nextDouble() * 2.0 - 1.0) * mRangeOfZernikeCoefficientsArray[i].get();
         }
 
         mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(lArray);
