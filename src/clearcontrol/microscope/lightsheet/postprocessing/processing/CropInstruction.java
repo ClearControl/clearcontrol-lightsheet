@@ -12,10 +12,10 @@ import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
 
 /**
- * CropInstruction
- * <p>
- * <p>
- * <p>
+ * The CropInstruction takes a StackInterfaceContainer from the DataWarehouse, crops all images
+ * in it according to its configuration and put the result back to the DataWarehouse in a new
+ * container.
+ *
  * Author: @haesleinhuepf
  * 06 2018
  */
