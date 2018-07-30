@@ -45,6 +45,11 @@ import java.util.concurrent.TimeoutException;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+/**
+ * Deprecated: This class might be removed in the future as it contains similar functionality as in
+ * clearcontrol.microscope.lightsheet.adaptive.instructions.FocusFinderZInstruction
+ */
+@Deprecated
 public class DefocusDiversityInstruction extends AbstractAcquistionInstruction {
 
     private BoundedVariable<Double> mStepSize = new BoundedVariable<Double>("Defocus step size",5.0, 0.0, Double.MAX_VALUE, 0.0000000001);
