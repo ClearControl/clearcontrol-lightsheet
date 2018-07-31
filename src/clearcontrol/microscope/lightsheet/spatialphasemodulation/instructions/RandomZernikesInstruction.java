@@ -14,6 +14,7 @@ public class RandomZernikesInstruction extends InstructionBase implements
 
     private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
     private BoundedVariable<Double>[] mRangeOfZernikeCoefficientsArray;
+    private BoundedVariable<Integer> mDigitsAfterDecimal = new BoundedVariable("Number Of Places After decimal",3,0,5);
 
     private Random mRandom = new Random();
 
@@ -27,6 +28,8 @@ public class RandomZernikesInstruction extends InstructionBase implements
         for(int i = 0; i < mRangeOfZernikeCoefficientsArray.length; i++) {
             mRangeOfZernikeCoefficientsArray[i] = new BoundedVariable<Double>("Z" + ZernikePolynomials.jNoll(i) + "(" + ZernikePolynomials.getZernikeModeName(i) + ") -min/max", 0.0, 0.0, 5.0, 0.0000001);
         }
+
+        mDigitsAfterDecimal.set(3);
     }
 
     @Override
@@ -37,11 +40,10 @@ public class RandomZernikesInstruction extends InstructionBase implements
     @Override
     public boolean enqueue(long pTimePoint) {
         double[] lArray = mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors();
-
+        double thousands = Math.pow(10,mDigitsAfterDecimal.get());
         for (int i = 0; i < lArray.length; i++) {
-            lArray[i] = (mRandom.nextDouble() * 2.0 - 1.0) * mRangeOfZernikeCoefficientsArray[i].get();
+            lArray[i] = Math.round((mRandom.nextDouble() * 2.0 - 1.0) * mRangeOfZernikeCoefficientsArray[i].get()*thousands)/thousands;
         }
-
         mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(lArray);
         return true;
     }
@@ -59,6 +61,14 @@ public class RandomZernikesInstruction extends InstructionBase implements
 
     public BoundedVariable<Double> getRangeOfZernikeCoefficientArray(int i) {
         return mRangeOfZernikeCoefficientsArray[i];
+    }
+    public BoundedVariable<Integer> getNumberOfPlacesAfterDecimal(){
+        return mDigitsAfterDecimal;
+    }
+    public static void main(String ...args){
+        Random mRandom = new Random();
+        double thousands = Math.pow(10,3);
+        System.out.println(Math.round((mRandom.nextDouble() * 2.0 - 1.0) * 2.0*thousands)/thousands);
     }
 
 }
