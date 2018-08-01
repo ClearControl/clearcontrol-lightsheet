@@ -257,6 +257,28 @@ public class ZernikePolynomials
     }
   }
 
+  public static String getZernikeNameFromNollIndex(int jNollIndex){
+    if (jNollIndex >= jANSIIndicedZernikeModeNames.length) {
+      return "";
+    }
+    else{
+      boolean matchFound = false;
+      int i =0;
+      for(i = 0; i < jNollIndices.length; i++){
+        if(jNollIndex == jNollIndices[i]){
+          matchFound = true;
+          break;
+        }
+      }
+      if (matchFound) {
+        return jANSIIndicedZernikeModeNames[i];
+      }
+      else{
+        return "";
+      }
+    }
+  }
+
   // source: https://oeis.org/A176988/b176988.txt
   private static int[] jNollIndices = {
         1,
