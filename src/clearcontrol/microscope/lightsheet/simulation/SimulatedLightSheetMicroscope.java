@@ -388,6 +388,7 @@ public class SimulatedLightSheetMicroscope extends
 
       addDevice(0, new RandomZernikesInstruction(lMirror));
       addDevice( 0 , new MakeMirrorFlatInstruction(lMirror));
+      addDevice(0, new RandomSingleZernikeModesInstruction(lMirror));
     }
 
   }
