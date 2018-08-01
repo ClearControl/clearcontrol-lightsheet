@@ -67,10 +67,6 @@ public class RandomZernikesInstruction extends InstructionBase implements
     public BoundedVariable<Integer> getNumberOfPlacesAfterDecimal(){
         return mDigitsAfterDecimal;
     }
-    public static void main(String ...args){
-        Random mRandom = new Random();
-        double thousands = Math.pow(10,3);
-        System.out.println(Math.round((mRandom.nextDouble() * 2.0 - 1.0) * 2.0*thousands)/thousands);
-    }
+    
 
 }
