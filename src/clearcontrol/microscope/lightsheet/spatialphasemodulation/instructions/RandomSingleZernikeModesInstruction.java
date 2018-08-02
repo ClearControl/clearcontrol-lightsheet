@@ -10,34 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class RandomSingleZernikeModesInstruction extends InstructionBase implements
+public class RandomSingleZernikeModesInstruction extends RandomZernikesInstruction implements
         LoggingFeature {
 
-    private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
-    private BoundedVariable<Double>[] mRangeOfZernikeCoefficientsArray;
-    private BoundedVariable<Integer> mDigitsAfterDecimal = new BoundedVariable("Number Of Places After decimal",3,0,5);
-
-    private Random mRandom = new Random();
-
-
     public RandomSingleZernikeModesInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
-        super("Adaptive optics: Send randomly chosen single random Zernike modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
-        mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
-
-        mRangeOfZernikeCoefficientsArray = new BoundedVariable[mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors().length];
-
-        for(int i = 0; i < mRangeOfZernikeCoefficientsArray.length; i++) {
-            mRangeOfZernikeCoefficientsArray[i] = new BoundedVariable<Double>("Z" + i + "(" + ZernikePolynomials.getZernikeModeNameFromNollIndex(i+1) + ") -min/max", 0.0, 0.0, 5.0, 0.0000001);
-            //mRangeOfZernikeCoefficientsArray[i] = new BoundedVariable<Double>("Z" + i + " -min/max", 0.0, 0.0, 5.0, 0.0000001);
-
-        }
-
-        mDigitsAfterDecimal.set(3);
-    }
-
-    @Override
-    public boolean initialize() {
-        return true;
+        super("Adaptive optics: Send randomly chosen single random Zernike modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName(), pZernikeModeFactorBasedSpatialPhaseModulatorBase);
     }
 
     @Override
@@ -67,24 +44,6 @@ public class RandomSingleZernikeModesInstruction extends InstructionBase impleme
 
         mZernikeModeFactorBasedSpatialPhaseModulatorBase.setZernikeFactors(lArray);
         return true;
-    }
-
-    @Override
-    public RandomSingleZernikeModesInstruction copy() {
-        RandomSingleZernikeModesInstruction copied = new RandomSingleZernikeModesInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase);
-
-        for (int i = 0; i < mRangeOfZernikeCoefficientsArray.length; i++) {
-            copied.mRangeOfZernikeCoefficientsArray[i] = mRangeOfZernikeCoefficientsArray[i];
-        }
-
-        return copied;
-    }
-
-    public BoundedVariable<Double> getRangeOfZernikeCoefficientArray(int i) {
-        return mRangeOfZernikeCoefficientsArray[i];
-    }
-    public BoundedVariable<Integer> getNumberOfPlacesAfterDecimal(){
-        return mDigitsAfterDecimal;
     }
 
 }

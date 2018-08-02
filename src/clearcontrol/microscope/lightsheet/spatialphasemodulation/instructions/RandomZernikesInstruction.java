@@ -11,23 +11,25 @@ import java.util.Random;
 public class RandomZernikesInstruction extends InstructionBase implements
         LoggingFeature {
 
-    private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
-    private BoundedVariable<Double>[] mRangeOfZernikeCoefficientsArray;
-    private BoundedVariable<Integer> mDigitsAfterDecimal = new BoundedVariable("Number Of Places After decimal",3,0,5);
+    protected ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
+    protected BoundedVariable<Double>[] mRangeOfZernikeCoefficientsArray;
+    protected BoundedVariable<Integer> mDigitsAfterDecimal = new BoundedVariable("Number Of Places After decimal",3,0,5);
 
-    private Random mRandom = new Random();
+    protected Random mRandom = new Random();
 
 
     public RandomZernikesInstruction(ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
-        super("Adaptive optics: Send random Zernike modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName());
+        this("Adaptive optics: Send random Zernike modes to " + pZernikeModeFactorBasedSpatialPhaseModulatorBase.getName(), pZernikeModeFactorBasedSpatialPhaseModulatorBase);
+    }
+
+    protected RandomZernikesInstruction(String pName, ZernikeModeFactorBasedSpatialPhaseModulatorBase pZernikeModeFactorBasedSpatialPhaseModulatorBase) {
+        super(pName);
         mZernikeModeFactorBasedSpatialPhaseModulatorBase = pZernikeModeFactorBasedSpatialPhaseModulatorBase;
 
         mRangeOfZernikeCoefficientsArray = new BoundedVariable[mZernikeModeFactorBasedSpatialPhaseModulatorBase.getZernikeFactors().length];
 
         for(int i = 0; i < mRangeOfZernikeCoefficientsArray.length; i++) {
             mRangeOfZernikeCoefficientsArray[i] = new BoundedVariable<Double>("Z" + i + "(" + ZernikePolynomials.getZernikeModeNameFromNollIndex(i+1) + ") -min/max", 0.0, 0.0, 5.0, 0.0000001);
-            //mRangeOfZernikeCoefficientsArray[i] = new BoundedVariable<Double>("Z" + i + " -min/max", 0.0, 0.0, 5.0, 0.0000001);
-
         }
 
         mDigitsAfterDecimal.set(3);
