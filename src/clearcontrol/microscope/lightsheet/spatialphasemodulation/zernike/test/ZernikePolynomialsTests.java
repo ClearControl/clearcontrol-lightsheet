@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
 
@@ -118,6 +119,14 @@ public class ZernikePolynomialsTests
 
 
 
+  }
+
+  @Test
+  public void testZernikeModeNames() {
+    assertEquals("Defocus", ZernikePolynomials.getZernikeModeName(4));
+    assertEquals("Defocus", ZernikePolynomials.getZernikeModeNameFromNollIndex(4));
+    assertEquals("Vertical astigmatism", ZernikePolynomials.getZernikeModeName(5));
+    assertEquals("Vertical astigmatism", ZernikePolynomials.getZernikeModeNameFromNollIndex(6));
   }
 
 }
