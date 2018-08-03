@@ -463,6 +463,8 @@ public class SimulatedLightSheetMicroscope extends
     }
     */
 
+    // ------------------------------------------------------------------------
+    // setup multiview acquisition and fusion
     if (multiview) {
       addDevice(0, new InterleavedAcquisitionInstruction(this));
       addDevice(0, new InterleavedFusionInstruction(this));
@@ -520,7 +522,6 @@ public class SimulatedLightSheetMicroscope extends
     }
 
 
-    addDevice(0, new WriteSpecificStackToSpecificRawFolderInstruction("fused", "default", this));
 
     String[] lOpticPrefusedStackKeys = new String[getNumberOfDetectionArms()];
     String[] lInterleavedStackKeys = new String[getNumberOfDetectionArms()];
@@ -560,6 +561,12 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new SingleCameraFusionInstruction(this, c));
     }
 
+    // ------------------------------------------------------------------------
+    // setup writers
+    addDevice(0, new WriteSpecificStackToSpecificRawFolderInstruction("fused", "default", this));
+
+    // ------------------------------------------------------------------------
+    // setup reades / simulated acquisition
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"default"}, this));
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"sequential"}, this));
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"interleaved"}, this));
@@ -568,12 +575,11 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lSequentialStackKeys, this));
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lInterleavedStackKeys, this));
 
-    addDevice(0, new MaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
-    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,true, this));
-    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,false, this));
-    addDevice(0, new CenterMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
 
 
+
+    // ------------------------------------------------------------------------
+    // setup processing
     addDevice(0, new CountsSpotsInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
     addDevice(0, new CountsSpotsInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
 
@@ -586,11 +592,19 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new CropInstruction(getDataWarehouse(),0,0,256,256));
 
     // ------------------------------------------------------------------------
+    // setup projections
+    addDevice(0, new MaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
+    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,true, this));
+    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,false, this));
+    addDevice(0, new CenterMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
+
+    // ------------------------------------------------------------------------
     // Setup viewers
     addDevice( 0, new ViewStack2DInstruction( 0, StackInterfaceContainer.class, this));
     addDevice( 0, new ViewStack3DInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
     addDevice(0, new ViewStack3DInBigDataViewerInstruction<StackInterfaceContainer, UnsignedByteType>(StackInterfaceContainer.class, this));
     if (getNumberOfLightSheets() > 1 || getNumberOfDetectionArms() > 1) {
+      addDevice(0, new ViewStack2DInstruction(0, FusedImageDataContainer.class, this));
       addDevice(0, new ViewStack3DInBigDataViewerInstruction<FusedImageDataContainer, UnsignedByteType>(FusedImageDataContainer.class, this));
     }
     if (lTimelapse instanceof LightSheetTimelapse) {

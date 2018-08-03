@@ -6,6 +6,8 @@ import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstr
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
+
 /**
  * ViewStackInstructionBase
  * <p>
