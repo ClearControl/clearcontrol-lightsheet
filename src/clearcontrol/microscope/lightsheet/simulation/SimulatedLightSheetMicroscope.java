@@ -79,6 +79,7 @@ import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStack
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
  * Simulated lightsheet microscope
@@ -508,6 +509,9 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,true, this));
       addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,false, this));
       addDevice(0, new CenterMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
+
+      addDevice(0, new ShowInBigDataViewerInstruction<FusedImageDataContainer, UnsignedByteType>(FusedImageDataContainer.class, getDataWarehouse()));
+      addDevice(0, new ShowInBigDataViewerInstruction<StackInterfaceContainer, UnsignedByteType>(StackInterfaceContainer.class, getDataWarehouse()));
 
       addDevice(0, lDropFusedContainerScheduler);
       addDevice(0, lViewFusedStackScheduler);
