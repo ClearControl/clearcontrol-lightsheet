@@ -1,7 +1,9 @@
 package clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions;
 
+import bdv.tools.brightness.ConverterSetup;
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
+import bdv.util.BdvOptions;
 import clearcl.ClearCL;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.utilities.ImageTypeConverter;
@@ -58,9 +60,20 @@ public class ShowInBigDataViewerInstruction<T extends StackInterfaceContainer, P
             );
         }
 
+        BdvOptions options = BdvOptions.options();
+        options.sourceTransform(stack.getMetaData().getVoxelDimX(), stack.getMetaData().getVoxelDimY(), stack.getMetaData().getVoxelDimZ());
+
         if ( bdv == null ) {
-            bdv = BdvFunctions.show(rai, "BigDataViewer");
+            bdv = BdvFunctions.show(rai, "BigDataViewer", options);
+            ConverterSetup converterSetup = bdv.getBdvHandle().getSetupAssignments().getConverterSetups().get(0);
+            converterSetup.setDisplayRange(100, 1000);
+        } else {
+            bdv.getBdvHandle().getViewerPanel().paint();
         }
+
+
+
+
 
         return true;
     }
