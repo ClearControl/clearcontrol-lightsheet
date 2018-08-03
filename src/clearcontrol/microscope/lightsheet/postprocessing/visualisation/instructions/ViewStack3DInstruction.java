@@ -1,31 +1,33 @@
-package clearcontrol.microscope.lightsheet.imaging.singleview;
+package clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.video.video3d.Stack3DDisplay;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.stack.StackInterface;
 
 /**
- * Deprecated because replacable with ViewStack3DInstruction
+ * ViewStack3DInstruction
+ * <p>
+ * <p>
+ * <p>
+ * Author: @haesleinhuepf
+ * 08 2018
  */
-@Deprecated
-public class ViewSingleLightSheetStackInstruction extends LightSheetMicroscopeInstructionBase implements
+public class ViewStack3DInstruction<T extends StackInterfaceContainer> extends ViewStackInstructionBase<T> implements
         LoggingFeature
 {
-
-    private final int mDetectionArmIndex;
-    private final int mLightSheetIndex;
 
     /**
      * INstanciates a virtual device with a given name
      *
      */
-    public ViewSingleLightSheetStackInstruction(int pDetectionArmIndex, int pLightSheetIndex, LightSheetMicroscope pLightSheetMicroscope) {
-        super("Visualisation: View C" + pDetectionArmIndex + "L" + pLightSheetIndex + " stack", pLightSheetMicroscope);
-        mDetectionArmIndex = pDetectionArmIndex;
-        mLightSheetIndex = pLightSheetIndex;
+    public ViewStack3DInstruction(Class<T> pContainerStackInterfaceClass, LightSheetMicroscope pLightSheetMicroscope) {
+        super("Visualisation: View stack '" + pContainerStackInterfaceClass.getSimpleName() + "' in 3D", pContainerStackInterfaceClass, pLightSheetMicroscope);
     }
 
     @Override
@@ -36,7 +38,7 @@ public class ViewSingleLightSheetStackInstruction extends LightSheetMicroscopeIn
     @Override
     public boolean enqueue(long pTimePoint) {
         DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
-        StackInterfaceContainer lContainer = lDataWarehouse.getOldestContainer(StackInterfaceContainer.class);
+        FusedImageDataContainer lContainer = lDataWarehouse.getOldestContainer(getStackInterfaceContainerClass());
         if (lContainer == null || !lContainer.isDataComplete()) {
             return false;
         }
@@ -46,14 +48,15 @@ public class ViewSingleLightSheetStackInstruction extends LightSheetMicroscopeIn
             return false;
         }
 
-        lDisplay.getInputStackVariable().set(lContainer.get("C" + mDetectionArmIndex + "L" + mLightSheetIndex));
+
+        lDisplay.getInputStackVariable().set(getImageFromContainer(lContainer));
 
         return true;
     }
 
+
     @Override
-    public ViewSingleLightSheetStackInstruction copy() {
-        return new ViewSingleLightSheetStackInstruction(mDetectionArmIndex, mLightSheetIndex, getLightSheetMicroscope());
+    public ViewStack3DInstruction copy() {
+        return new ViewStack3DInstruction(getStackInterfaceContainerClass(), getLightSheetMicroscope());
     }
 }
-

@@ -106,4 +106,14 @@ public abstract class StackInterfaceContainer extends DataContainerBase implemen
     return this.getClass().getSimpleName() + " [" + this.keySet() + "]";
   }
 
+  public String getKeyContainingString(String pSearchString) {
+
+    for (String key : keySet()) {
+      if (key.toLowerCase().contains(pSearchString)) {
+        return key;
+      }
+    }
+    return null;
+  }
+
 }
