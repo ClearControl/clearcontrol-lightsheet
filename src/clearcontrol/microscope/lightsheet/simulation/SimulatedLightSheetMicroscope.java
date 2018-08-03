@@ -75,6 +75,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteSpecificStackToSpecificRawFolderInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseResetInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DropAllContainersOfTypeInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
@@ -444,7 +445,7 @@ public class SimulatedLightSheetMicroscope extends
     //lTimelapse.addFileStackSinkType(SqeazyFileStackSink.class);
 
     if (lTimelapse instanceof LightSheetTimelapse) {
-      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(getDevice(DataWarehouseResetInstruction.class, 0));
+      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new DropAllContainersOfTypeInstruction(StackInterfaceContainer.class, getDataWarehouse()));
     }
 
     /*
@@ -535,13 +536,13 @@ public class SimulatedLightSheetMicroscope extends
         ViewSingleLightSheetStackInstruction lViewSingleLightSheetStackScheduler = new ViewSingleLightSheetStackInstruction(c, l, this);
         WriteSingleLightSheetImageAsRawToDiscInstruction lWriteSingleLightSheetImageToDiscScheduler = new WriteSingleLightSheetImageAsRawToDiscInstruction(c, l, this);
 
-
-        if (lTimelapse instanceof LightSheetTimelapse && ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().size() == 0)
+        if (lTimelapse instanceof LightSheetTimelapse && c == 0 && l == 0 && getNumberOfLightSheets() == 1)
         {
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSingleViewAcquisitionScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewSingleLightSheetStackScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSingleLightSheetImageToDiscScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lStackMaxProjectionScheduler);
+          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new DropOldestStackInterfaceContainerInstruction(StackInterfaceContainer.class, getDataWarehouse()));
         }
 
         addDevice(0, lViewSingleLightSheetStackScheduler);
@@ -585,8 +586,12 @@ public class SimulatedLightSheetMicroscope extends
 
     addDevice(0, new CropInstruction(getDataWarehouse(),0,0,256,256));
     addDevice( 0, new ViewStack2DInstruction("C0L0", 0, this));
-    addDevice(0, new PauseInstruction());
 
+    if (lTimelapse instanceof LightSheetTimelapse) {
+      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new ShowInBigDataViewerInstruction<StackInterfaceContainer, UnsignedByteType>(StackInterfaceContainer.class, getDataWarehouse()));
+    }
+
+    addDevice(0, new PauseInstruction());
     int[] pauseTimes = {
         1000,  // 1 s
         10000, // 10 s
