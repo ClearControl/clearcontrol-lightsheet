@@ -65,7 +65,9 @@ public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceConta
         }
 
         BdvOptions options = BdvOptions.options();
-        options.sourceTransform(stack.getMetaData().getVoxelDimX(), stack.getMetaData().getVoxelDimY(), stack.getMetaData().getVoxelDimZ());
+        if (stack.getMetaData() != null) {
+            options.sourceTransform(stack.getMetaData().getVoxelDimX(), stack.getMetaData().getVoxelDimY(), stack.getMetaData().getVoxelDimZ());
+        }
 
         TimeStampContainer lStartTimeInNanoSecondsContainer = TimeStampContainer.getGlobalTimeSinceStart(getLightSheetMicroscope().getDataWarehouse(), pTimePoint, stack);
 
