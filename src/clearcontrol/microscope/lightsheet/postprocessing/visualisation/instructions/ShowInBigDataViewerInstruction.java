@@ -7,6 +7,7 @@ import bdv.util.BdvOptions;
 import clearcl.ClearCL;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.utilities.ImageTypeConverter;
+import clearcontrol.core.concurrent.timing.ElapsedTime;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
@@ -56,11 +57,14 @@ public class ShowInBigDataViewerInstruction<T extends StackInterfaceContainer, P
         if (rai == null) {
             rai = newRai;
         } else {
-            LoopBuilder.setImages(rai, newRai).forEachPixel(
-                    (result, back) -> {
-                        result.set(back);
-                    }
-            );
+            ElapsedTime.sStandardOutput = true;
+            ElapsedTime.measure("conversion for BDV", ()-> {
+                LoopBuilder.setImages(rai, newRai).forEachPixel(
+                        (result, back) -> {
+                            result.set(back);
+                        }
+                );
+            });
         }
 
         BdvOptions options = BdvOptions.options();
