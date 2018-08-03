@@ -8,6 +8,7 @@ import clearcl.ClearCL;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.utilities.ImageTypeConverter;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
@@ -15,6 +16,8 @@ import clearcontrol.stack.StackInterface;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.RealType;
+
+import java.time.Duration;
 
 /**
  * ShowInBigDataViewerInstruction
@@ -63,17 +66,21 @@ public class ShowInBigDataViewerInstruction<T extends StackInterfaceContainer, P
         BdvOptions options = BdvOptions.options();
         options.sourceTransform(stack.getMetaData().getVoxelDimX(), stack.getMetaData().getVoxelDimY(), stack.getMetaData().getVoxelDimZ());
 
+        TimeStampContainer lStartTimeInNanoSecondsContainer = TimeStampContainer.getGlobalTimeSinceStart(getDataWarehouse(), pTimePoint, stack);
+
+        Duration duration = Duration.ofNanos(stack.getMetaData().getTimeStampInNanoseconds() - lStartTimeInNanoSecondsContainer.getTimeStampInNanoSeconds());
+        long s = duration.getSeconds();
+        String title = String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) ;
+
         if ( bdv == null ) {
-            bdv = BdvFunctions.show(rai, "BigDataViewer", options);
+            bdv = BdvFunctions.show(rai, title, options);
             ConverterSetup converterSetup = bdv.getBdvHandle().getSetupAssignments().getConverterSetups().get(0);
             converterSetup.setDisplayRange(100, 1000);
         } else {
             bdv.getBdvHandle().getViewerPanel().paint();
+            bdv.getBdvHandle().getViewerPanel().setName(title);
         }
-
-
-
-
+        System.out.println(title);
 
         return true;
     }
