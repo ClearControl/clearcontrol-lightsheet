@@ -1,6 +1,7 @@
 package clearcontrol.devices.lasers.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
@@ -15,6 +16,8 @@ public class LaserOnOffInstruction extends InstructionBase implements
 {
   LaserDeviceInterface mLaserDevice;
   boolean mTurnOn;
+
+  private Variable<Boolean> mDebugVariable = new Variable<Boolean>("Debug", true);
 
   /**
    * INstanciates a virtual device with a given name
@@ -34,10 +37,29 @@ public class LaserOnOffInstruction extends InstructionBase implements
 
   @Override public boolean enqueue(long pTimePoint)
   {
+    if (mDebugVariable.get()) {
+      info("Laser " + (mTurnOn?"On":"Off"));
+      info("Laser operating mode " + mLaserDevice.getOperatingModeVariable().get());
+      info( "Wavelength " + mLaserDevice.getWavelengthInNanoMeter());
+      info( "Power on before " + mLaserDevice.getPowerOnVariable().get());
+      info( "Laser on before " + mLaserDevice.getLaserOnVariable().get());
+      info( "Current power before " + mLaserDevice.getCurrentPowerInMilliWattVariable().get());
+      info( "Target power before " + mLaserDevice.getTargetPowerInMilliWattVariable().get());
+    }
     mLaserDevice.setLaserPowerOn(mTurnOn);
     mLaserDevice.setLaserOn(mTurnOn);
     mLaserDevice.setLaserPowerOn(mTurnOn);
     mLaserDevice.setLaserOn(mTurnOn);
+
+    if (mDebugVariable.get()) {
+      info("Laser " + (mTurnOn?"On":"Off"));
+      info("Laser operating mode " + mLaserDevice.getOperatingModeVariable().get());
+      info( "Wavelength " + mLaserDevice.getWavelengthInNanoMeter());
+      info( "Power on after " + mLaserDevice.getPowerOnVariable().get());
+      info( "Laser on after " + mLaserDevice.getLaserOnVariable().get());
+      info( "Current power after " + mLaserDevice.getCurrentPowerInMilliWattVariable().get());
+      info( "Target power after " + mLaserDevice.getTargetPowerInMilliWattVariable().get());
+    }
     return true;
   }
 
@@ -46,4 +68,7 @@ public class LaserOnOffInstruction extends InstructionBase implements
     return new LaserOnOffInstruction(mLaserDevice, mTurnOn);
   }
 
+  public Variable<Boolean> getDebugVariable() {
+    return mDebugVariable;
+  }
 }
