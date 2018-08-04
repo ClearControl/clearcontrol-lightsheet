@@ -25,6 +25,10 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -45,9 +49,11 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
     private Variable<String> mKeyMustContainString = new Variable<String>("Image key", "");
     private HashMap<FocusMeasures.FocusMeasure, Variable<Boolean>> mSelectedFeaturesMap;
 
-    private static final FocusMeasures.FocusMeasure[] cDefaultFeatures = {FocusMeasures.FocusMeasure.SpectralNormDCTEntropyShannon};
+    private static final FocusMeasures.FocusMeasure[] cDefaultFeatures = {FocusMeasures.FocusMeasure.SpectralNormDCTEntropyShannon, FocusMeasures.FocusMeasure.StatisticMean, FocusMeasures.FocusMeasure.StatisticMax, FocusMeasures.FocusMeasure.StatisticVariance};
 
     private ResultsTable resultsTable;
+
+    private HashMap<FocusMeasures.FocusMeasure, Double> mFeatureSums;
 
     public MeasureImageQualityInstruction(LightSheetMicroscope pLightSheetMicroscope) {
         super("Post-processing: Measure image quality", pLightSheetMicroscope);
@@ -71,6 +77,7 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
 
     @Override
     public boolean enqueue(long pTimePoint) {
+
         StackInterfaceContainer lContainer = getLightSheetMicroscope().getDataWarehouse().getOldestContainer(StackInterfaceContainer.class);
 
         Iterator<String> iterator = lContainer.keySet().iterator();
@@ -102,7 +109,7 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
         lFloatImage.close();
 
         resultsTable = new ResultsTable();
-
+        mFeatureSums = new HashMap<FocusMeasures.FocusMeasure, Double>();
 
 
 
@@ -129,6 +136,39 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
         // save result to disc
         String targetFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
         resultsTable.save(targetFolder + "/imageQuality" + pTimePoint + ".xls");
+
+        // save mean average to disc
+        String meanStatsFilename = targetFolder + "/imageQuality_mean.csv";
+        String headline = "";
+        File lOutputFile = new File(meanStatsFilename);
+        boolean existedBefore = (lOutputFile.exists());
+
+        String contentline = "";
+        for (FocusMeasures.FocusMeasure focusMeasure : mSelectedFeaturesMap.keySet()) {
+            if (mSelectedFeaturesMap.get(focusMeasure).get()) {
+                double sumFeatureValue = mFeatureSums.get(focusMeasure);
+                double meanFeatureValue = sumFeatureValue / resultsTable.getCounter();
+
+                if (headline.length() == 0) {
+                    contentline = "" + pTimePoint;
+                    headline = "timepoint";
+                }
+                contentline = contentline + "," + meanFeatureValue;
+                headline = headline + "," + focusMeasure.getLongName();
+            }
+        }
+        try {
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(lOutputFile, true));
+            if (!existedBefore) {
+                writer.write(headline + "\n");
+            }
+            writer.write (contentline + "\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         // save result to data warehouse
         for (FocusMeasures.FocusMeasure focusMeasure : mSelectedFeaturesMap.keySet()) {
@@ -158,6 +198,11 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
                 System.out.println("Determining " + focusMeasure.getLongName());
                 double focusMeasureValue = FocusMeasures.computeFocusMeasure(focusMeasure, image);
                 resultsTable.addValue(focusMeasure.getLongName(), focusMeasureValue);
+                if (mFeatureSums.keySet().contains(focusMeasure)) {
+                    focusMeasureValue += mFeatureSums.get(focusMeasure);
+                    mFeatureSums.remove(focusMeasure);
+                }
+                mFeatureSums.put(focusMeasure, focusMeasureValue);
             }
         }
     }
