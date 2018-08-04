@@ -38,7 +38,7 @@ public class ViewStack3DInstruction<T extends StackInterfaceContainer> extends V
     @Override
     public boolean enqueue(long pTimePoint) {
         DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
-        FusedImageDataContainer lContainer = lDataWarehouse.getOldestContainer(getStackInterfaceContainerClass());
+        T lContainer = lDataWarehouse.getOldestContainer(getStackInterfaceContainerClass());
         if (lContainer == null || !lContainer.isDataComplete()) {
             return false;
         }
@@ -47,7 +47,6 @@ public class ViewStack3DInstruction<T extends StackInterfaceContainer> extends V
         if (lDisplay == null) {
             return false;
         }
-
 
         lDisplay.getInputStackVariable().set(getImageFromContainer(lContainer));
 
