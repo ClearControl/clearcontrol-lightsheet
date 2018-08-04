@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.simulation;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 import clearcl.ClearCLContext;
 import clearcontrol.core.variable.Variable;
@@ -74,7 +75,6 @@ import clearcontrol.microscope.lightsheet.timelapse.instructions.TimelapseStopIn
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteSpecificStackToSpecificRawFolderInstruction;
-import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseResetInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropAllContainersOfTypeInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -402,6 +402,8 @@ public class SimulatedLightSheetMicroscope extends
   @SuppressWarnings("unchecked")
   public void addStandardDevices(int pNumberOfControlPlanes) {
 
+    boolean multiview = getNumberOfDetectionArms() > 1 || getNumberOfLightSheets() > 1;
+
     // Adding calibrator:
     {
       CalibrationEngine lCalibrator = addCalibrator();
@@ -461,7 +463,9 @@ public class SimulatedLightSheetMicroscope extends
     }
     */
 
-    if (getNumberOfLightSheets() > 1) {
+    // ------------------------------------------------------------------------
+    // setup multiview acquisition and fusion
+    if (multiview) {
       addDevice(0, new InterleavedAcquisitionInstruction(this));
       addDevice(0, new InterleavedFusionInstruction(this));
       addDevice(0, new WriteInterleavedRawDataToDiscInstruction(this));
@@ -480,13 +484,13 @@ public class SimulatedLightSheetMicroscope extends
       DropOldestStackInterfaceContainerInstruction lDropFusedContainerScheduler = new DropOldestStackInterfaceContainerInstruction(FusedImageDataContainer.class, getDataWarehouse());
 
       MaxProjectionInstruction<FusedImageDataContainer> lFusedMaxProjectionScheduler =  new MaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this);
-      ViewFusedStackInstruction lViewFusedStackScheduler = new ViewFusedStackInstruction(this);
+
 
       if (lTimelapse instanceof LightSheetTimelapse)
       {
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialAcquisitionScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSequentialFusionScheduler);
-        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewFusedStackScheduler);
+        ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new ViewStack3DInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSequentialFusedImageToDiscScheduler);
         ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lFusedMaxProjectionScheduler);
       }
@@ -511,17 +515,13 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,false, this));
       addDevice(0, new CenterMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
 
-      addDevice(0, new ShowInBigDataViewerInstruction<FusedImageDataContainer, UnsignedByteType>(FusedImageDataContainer.class, getDataWarehouse()));
-      addDevice(0, new ShowInBigDataViewerInstruction<StackInterfaceContainer, UnsignedByteType>(StackInterfaceContainer.class, getDataWarehouse()));
 
       addDevice(0, lDropFusedContainerScheduler);
-      addDevice(0, lViewFusedStackScheduler);
+      addDevice(0, new ViewStack3DInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
       addDevice(0, lFusedMaxProjectionScheduler);
     }
 
-    addDevice(0, new WriteSpecificStackToSpecificRawFolderInstruction("fused", "default", this));
 
-    MaxProjectionInstruction<StackInterfaceContainer> lStackMaxProjectionScheduler = new MaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this);
 
     String[] lOpticPrefusedStackKeys = new String[getNumberOfDetectionArms()];
     String[] lInterleavedStackKeys = new String[getNumberOfDetectionArms()];
@@ -541,7 +541,7 @@ public class SimulatedLightSheetMicroscope extends
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lSingleViewAcquisitionScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lViewSingleLightSheetStackScheduler);
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lWriteSingleLightSheetImageToDiscScheduler);
-          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(lStackMaxProjectionScheduler);
+          ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new MaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
           ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new DropOldestStackInterfaceContainerInstruction(StackInterfaceContainer.class, getDataWarehouse()));
         }
 
@@ -561,6 +561,12 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new SingleCameraFusionInstruction(this, c));
     }
 
+    // ------------------------------------------------------------------------
+    // setup writers
+    addDevice(0, new WriteSpecificStackToSpecificRawFolderInstruction("fused", "default", this));
+
+    // ------------------------------------------------------------------------
+    // setup reades / simulated acquisition
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"default"}, this));
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"sequential"}, this));
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(new String[]{"interleaved"}, this));
@@ -569,12 +575,11 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lSequentialStackKeys, this));
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lInterleavedStackKeys, this));
 
-    addDevice(0, lStackMaxProjectionScheduler);
-    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,true, this));
-    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,false, this));
-    addDevice(0, new CenterMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
 
 
+
+    // ------------------------------------------------------------------------
+    // setup processing
     addDevice(0, new CountsSpotsInstruction<FusedImageDataContainer>(FusedImageDataContainer.class, this));
     addDevice(0, new CountsSpotsInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
 
@@ -585,12 +590,29 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new SpotShiftDeterminationInstruction(this));
 
     addDevice(0, new CropInstruction(getDataWarehouse(),0,0,256,256));
-    addDevice( 0, new ViewStack2DInstruction("C0L0", 0, this));
 
+    // ------------------------------------------------------------------------
+    // setup projections
+    addDevice(0, new MaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
+    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,true, this));
+    addDevice(0, new HalfStackMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class,false, this));
+    addDevice(0, new CenterMaxProjectionInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
+
+    // ------------------------------------------------------------------------
+    // Setup viewers
+    addDevice( 0, new ViewStack2DInstruction( 0, StackInterfaceContainer.class, this));
+    addDevice( 0, new ViewStack3DInstruction<StackInterfaceContainer>(StackInterfaceContainer.class, this));
+    addDevice(0, new ViewStack3DInBigDataViewerInstruction<StackInterfaceContainer, UnsignedByteType>(StackInterfaceContainer.class, this));
+    if (getNumberOfLightSheets() > 1 || getNumberOfDetectionArms() > 1) {
+      addDevice(0, new ViewStack2DInstruction(0, FusedImageDataContainer.class, this));
+      addDevice(0, new ViewStack3DInBigDataViewerInstruction<FusedImageDataContainer, UnsignedByteType>(FusedImageDataContainer.class, this));
+    }
     if (lTimelapse instanceof LightSheetTimelapse) {
-      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new ShowInBigDataViewerInstruction<StackInterfaceContainer, UnsignedByteType>(StackInterfaceContainer.class, getDataWarehouse()));
+      ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new ViewStack3DInBigDataViewerInstruction<StackInterfaceContainer, UnsignedByteType>(StackInterfaceContainer.class, this));
     }
 
+    // -------------------------------------------------------------------------
+    // Setup pauses
     addDevice(0, new PauseInstruction());
     int[] pauseTimes = {
         1000,  // 1 s
