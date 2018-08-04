@@ -17,7 +17,6 @@ import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
  * 05 2018
  */
 public class XWingRapidAutoFocusInstruction extends LightSheetMicroscopeInstructionBase {
-    private LightSheetMicroscope mLightSheetMicroscope;
 
     public XWingRapidAutoFocusInstruction(LightSheetMicroscope pLightSheetMicroscope) {
         super("Smart: XWingScope rapid autofocus Z and alpha", pLightSheetMicroscope);
@@ -32,7 +31,7 @@ public class XWingRapidAutoFocusInstruction extends LightSheetMicroscopeInstruct
     public boolean enqueue(long pTimePoint) {
         InterpolatedAcquisitionState
                 lAcquisitionState =
-                (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager()
+                (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager()
                         .getCurrentState();
 
         //XWing specific
@@ -57,7 +56,7 @@ public class XWingRapidAutoFocusInstruction extends LightSheetMicroscopeInstruct
         }
 
         // Copy configuration to other control planes
-        for (int lLightSheetIndex = 0; lLightSheetIndex < mLightSheetMicroscope.getNumberOfLightSheets(); lLightSheetIndex++) {
+        for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
             for (int cpi = 0; cpi < lAcquisitionState.getNumberOfControlPlanes(); cpi++) {
                 InterpolationTables it = lAcquisitionState.getInterpolationTables();
 
