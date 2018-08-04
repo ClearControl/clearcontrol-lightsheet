@@ -13,9 +13,12 @@ import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
  *
  * Todo: This is XWing specific code and should move to its repository at some point.
  *
+ * Derecated: use AutoFocusSinglePlaneInstruction
+ *
  * Author: @haesleinhuepf
  * 05 2018
  */
+@Deprecated
 public class XWingRapidAutoFocusInstruction extends LightSheetMicroscopeInstructionBase {
 
     public XWingRapidAutoFocusInstruction(LightSheetMicroscope pLightSheetMicroscope) {

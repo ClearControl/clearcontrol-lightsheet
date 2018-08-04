@@ -676,6 +676,7 @@ public class SimulatedLightSheetMicroscope extends
       }
     }
 
+    addDevice(0, new AutoFocusSinglePlaneInstruction(this));
     addDevice(0, new XWingRapidAutoFocusInstruction(this));
     addDevice(0, new SpaceTravelInstruction(this));
 
