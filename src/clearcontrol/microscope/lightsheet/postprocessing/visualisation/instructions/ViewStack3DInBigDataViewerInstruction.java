@@ -45,7 +45,7 @@ public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceConta
     public boolean enqueue(long pTimePoint) {
 
         T lContainer = getLightSheetMicroscope().getDataWarehouse().getOldestContainer(getStackInterfaceContainerClass());
-        StackInterface stack = lContainer.get(getImageFromContainer(lContainer));
+        StackInterface stack = getImageFromContainer(lContainer);
 
         ClearCLIJ clij = ClearCLIJ.getInstance();
 
