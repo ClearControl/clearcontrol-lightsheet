@@ -20,7 +20,7 @@ import net.imglib2.type.numeric.RealType;
 import java.time.Duration;
 
 /**
- * ViewStack3DInBigDataViewerInstruction
+ * ViewStack3DInBigDataViewerInstructionPanel
  * <p>
  * <p>
  * <p>
@@ -91,5 +91,10 @@ public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceConta
     @Override
     public InstructionInterface copy() {
         return new ViewStack3DInBigDataViewerInstruction<T, P>(getStackInterfaceContainerClass(), getLightSheetMicroscope());
+    }
+
+    public void resetBigDataViewer() {
+        bdv = null;
+        rai = null;
     }
 }
