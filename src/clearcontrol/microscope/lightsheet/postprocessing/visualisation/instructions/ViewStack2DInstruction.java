@@ -27,7 +27,7 @@ public class ViewStack2DInstruction<T extends StackInterfaceContainer> extends V
      * @param pLightSheetMicroscope
      */
     public ViewStack2DInstruction(int pViewerIndex, Class<T> pTargetStackInterfaceContainerClass, LightSheetMicroscope pLightSheetMicroscope) {
-        super("Visualisation: View stack '" + pTargetStackInterfaceContainerClass + "' in 2D viewer", pTargetStackInterfaceContainerClass, pLightSheetMicroscope);
+        super("Visualisation: View stack '" + pTargetStackInterfaceContainerClass.getSimpleName() + "' in 2D viewer", pTargetStackInterfaceContainerClass, pLightSheetMicroscope);
 
         mViewerIndexVariable.set(pViewerIndex);
     }
