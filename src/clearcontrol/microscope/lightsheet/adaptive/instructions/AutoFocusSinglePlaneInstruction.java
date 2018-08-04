@@ -20,6 +20,7 @@ import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
 public class AutoFocusSinglePlaneInstruction  extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
     private BoundedVariable<Integer> mControlPlaneIndex = new BoundedVariable<Integer>("Control plane index", 5, 0, Integer.MAX_VALUE);
+    private BoundedVariable<Integer> mDetectionArmIndex = new BoundedVariable<Integer>("Detection arm index", 0, 0, Integer.MAX_VALUE);
 
     public AutoFocusSinglePlaneInstruction(LightSheetMicroscope pLightSheetMicroscope) {
         super("Smart: Rapid autofocus (single plane) for Z and alpha", pLightSheetMicroscope);
@@ -49,8 +50,8 @@ public class AutoFocusSinglePlaneInstruction  extends LightSheetMicroscopeInstru
             return false;
         }
 
-        ControlPlaneFocusFinderZInstruction lFocusScheduler = new ControlPlaneFocusFinderZInstruction(0, mControlPlaneIndex.get(), getLightSheetMicroscope());
-        ControlPlaneFocusFinderAlphaByVariationInstruction lAlphaScheduler = new ControlPlaneFocusFinderAlphaByVariationInstruction(0, mControlPlaneIndex.get(), getLightSheetMicroscope());
+        ControlPlaneFocusFinderZInstruction lFocusScheduler = new ControlPlaneFocusFinderZInstruction(mDetectionArmIndex.get(), mControlPlaneIndex.get(), getLightSheetMicroscope());
+        ControlPlaneFocusFinderAlphaByVariationInstruction lAlphaScheduler = new ControlPlaneFocusFinderAlphaByVariationInstruction(mDetectionArmIndex.get(), mControlPlaneIndex.get(), getLightSheetMicroscope());
 
         InstructionInterface[] lSchedulers = new InstructionInterface[]{
                 lAlphaScheduler,
@@ -85,6 +86,10 @@ public class AutoFocusSinglePlaneInstruction  extends LightSheetMicroscopeInstru
 
     public BoundedVariable<Integer> getControlPlaneIndex() {
         return mControlPlaneIndex;
+    }
+
+    public BoundedVariable<Integer> getDetectionArmIndex() {
+        return mDetectionArmIndex;
     }
 }
 

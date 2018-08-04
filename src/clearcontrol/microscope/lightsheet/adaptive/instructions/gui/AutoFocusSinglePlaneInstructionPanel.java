@@ -14,5 +14,6 @@ import clearcontrol.microscope.lightsheet.adaptive.instructions.AutoFocusSingleP
 public class AutoFocusSinglePlaneInstructionPanel extends CustomGridPane {
     public AutoFocusSinglePlaneInstructionPanel(AutoFocusSinglePlaneInstruction pInstruction) {
         addIntegerField(pInstruction.getControlPlaneIndex(), 0);
+        addIntegerField(pInstruction.getDetectionArmIndex(), 1);
     }
 }
