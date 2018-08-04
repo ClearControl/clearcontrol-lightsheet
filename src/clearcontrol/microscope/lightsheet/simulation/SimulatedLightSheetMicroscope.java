@@ -62,6 +62,7 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.genet
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.sensorlessAO.SensorLessAOForSinglePlaneInstruction;
+import clearcontrol.microscope.lightsheet.state.instructions.WriteAcquisitionStateToDiscInstruction;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
@@ -564,6 +565,10 @@ public class SimulatedLightSheetMicroscope extends
     // ------------------------------------------------------------------------
     // setup writers
     addDevice(0, new WriteSpecificStackToSpecificRawFolderInstruction("fused", "default", this));
+
+    // Setup acquisition state IO
+    addDevice( 0, new WriteAcquisitionStateToDiscInstruction(this));
+    addDevice( 0, new WriteAcquisitionStateToDiscInstruction(this));
 
     // ------------------------------------------------------------------------
     // setup reades / simulated acquisition
