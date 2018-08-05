@@ -50,6 +50,8 @@ public class LaserOnOffInstruction extends InstructionBase implements
     mLaserDevice.setLaserOn(mTurnOn);
     mLaserDevice.setLaserPowerOn(mTurnOn);
     mLaserDevice.setLaserOn(mTurnOn);
+    mLaserDevice.getLaserOnVariable().set(mTurnOn);
+    mLaserDevice.getPowerOnVariable().set(mTurnOn);
 
     if (mDebugVariable.get()) {
       info("Laser " + (mTurnOn?"On":"Off"));
