@@ -38,6 +38,7 @@ public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceConta
 
     @Override
     public boolean initialize() {
+        resetBigDataViewer();
         return true;
     }
 
