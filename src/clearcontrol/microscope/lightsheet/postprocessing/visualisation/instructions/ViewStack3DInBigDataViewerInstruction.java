@@ -6,6 +6,7 @@ import bdv.util.BdvFunctions;
 import bdv.util.BdvOptions;
 import clearcl.imagej.ClearCLIJ;
 import clearcontrol.core.concurrent.timing.ElapsedTime;
+import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
@@ -27,7 +28,7 @@ import java.time.Duration;
  * Author: @haesleinhuepf
  * 08 2018
  */
-public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceContainer, P extends RealType<P>> extends ViewStackInstructionBase<T> {
+public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceContainer, P extends RealType<P>> extends ViewStackInstructionBase<T> implements LoggingFeature {
 
     private static Bdv bdv = null;
     private RandomAccessibleInterval<P> rai = null;
@@ -52,7 +53,18 @@ public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceConta
 
         RandomAccessibleInterval<P> newRai = clij.converter(stack).getRandomAccessibleInterval();
 
-        if (rai == null) {
+        if (rai == null ||
+                rai.dimension(0) != newRai.dimension(0) ||
+                rai.dimension(1) != newRai.dimension(1) ||
+                rai.dimension(2) != newRai.dimension(2)
+                ) {
+            if (bdv != null) {
+                info("resarting BDV");
+                info("x: " + rai.dimension(0) + " " + newRai.dimension(0));
+                info("y: " + rai.dimension(1) + " " + newRai.dimension(1));
+                info("z: " + rai.dimension(2) + " " + newRai.dimension(2));
+            }
+            resetBigDataViewer();
             rai = newRai;
         } else {
             ElapsedTime.sStandardOutput = true;
@@ -95,6 +107,9 @@ public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceConta
     }
 
     public void resetBigDataViewer() {
+        if (bdv != null) {
+            bdv.close();
+        }
         bdv = null;
         rai = null;
     }
