@@ -32,8 +32,12 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> e
 
     private final Class<T> mClass;
     private Variable<String> mMustContainStringVariable = new Variable<String>("", "");
+    private Variable<Boolean> mPrintSequenceNameVariable = new Variable<Boolean>("Print sequence name", true);
+    private Variable<Boolean> mPrintTimePointVariable = new Variable<Boolean>("Print time point", true);
 
     private BoundedVariable<Integer> mFontSizeVariable = new BoundedVariable<Integer>("Font size", 14, 5, Integer.MAX_VALUE);
+    private BoundedVariable<Integer> mStartZPlaneIndex = new BoundedVariable<Integer>("Start Z plane index", 0, 0, Integer.MAX_VALUE);
+    private BoundedVariable<Integer> mEndZPlaneIndex = new BoundedVariable<Integer>("End Z plane index", 0, 0, Integer.MAX_VALUE);
 
     /**
      * INstanciates a virtual device with a given name
@@ -76,8 +80,8 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> e
 
         HalfStackProjectionPlugin halfStackProjectionPlugin = new HalfStackProjectionPlugin();
         halfStackProjectionPlugin.setInputImage(lImagePlus);
-        halfStackProjectionPlugin.minSlice = (int)(lImagePlus.getNSlices() * 0.25);
-        halfStackProjectionPlugin.maxSlice = (int)(lImagePlus.getNSlices() * 0.75);
+        halfStackProjectionPlugin.minSlice = mStartZPlaneIndex.get(); //(int)(lImagePlus.getNSlices() * 0.25);
+        halfStackProjectionPlugin.maxSlice = mEndZPlaneIndex.get(); //(int)(lImagePlus.getNSlices() * 0.75);
 
         halfStackProjectionPlugin.setSilent(true);
         halfStackProjectionPlugin.setShowResult(false);
@@ -91,6 +95,7 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> e
         IJ.run(lResultImagePlus, "Enhance Contrast", "saturated=0.35");
         IJ.saveAsTiff(lResultImagePlus, targetFolder + "/stacks/" + folderName + "/" +  String.format("%0" + lDigits + "d", lTimePoint) + ".tif");
 
+
         //
         if (lStack.getMetaData() != null) {
             IJ.run(lResultImagePlus, "16-bit", "");
@@ -100,21 +105,20 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> e
             ip.setFont(font);
             ip.setColor(new Color(255, 255, 255));
 
-            TimeStampContainer lStartTimeInNanoSecondsContainer = getLightSheetMicroscope().getDataWarehouse().getOldestContainer(TimeStampContainer.class);
-            if (lStartTimeInNanoSecondsContainer == null) {
-                lStartTimeInNanoSecondsContainer = new TimeStampContainer(pTimePoint, lStack.getMetaData().getTimeStampInNanoseconds());
-                getLightSheetMicroscope().getDataWarehouse().put("timestamp" + pTimePoint, lStartTimeInNanoSecondsContainer);
-            }
+            TimeStampContainer lStartTimeInNanoSecondsContainer = TimeStampContainer.getGlobalTimeSinceStart(getLightSheetMicroscope().getDataWarehouse(), pTimePoint, lStack);
+
             Duration duration = Duration.ofNanos(lStack.getMetaData().getTimeStampInNanoseconds() - lStartTimeInNanoSecondsContainer.getTimeStampInNanoSeconds());
             long s = duration.getSeconds();
-            ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + " (ts" + lStack.getMetaData().getTimeStampInNanoseconds() + " tp" + pTimePoint + ")\n" + key, 20, 30);
+            ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + (mPrintTimePointVariable.get()?" (tp " + pTimePoint + ")":"") + "\n" + (mPrintSequenceNameVariable.get()?key:""), 20, 30);
 
             lResultImagePlus.updateAndDraw();
 
             IJ.run(lResultImagePlus, "Scale Bar...", "width=100 height=3 font=" + mFontSizeVariable.get() + " color=White background=None location=[Lower Left]");
 
-            new File(targetFolder + "/stacks/" + folderName + "_text/").mkdirs();
-            IJ.saveAsTiff(lResultImagePlus, targetFolder + "/stacks/" + folderName + "_text/" + String.format("%0" + lDigits + "d", lTimePoint) + ".tif");
+            String foldername = targetFolder + "/stacks/" + folderName + "_" + mStartZPlaneIndex.get() + "_" + mEndZPlaneIndex.get() + "_text/";
+
+            new File(foldername).mkdirs();
+            IJ.saveAsTiff(lResultImagePlus, foldername + String.format("%0" + lDigits + "d", lTimePoint) + ".tif");
         } else {
             warning("Error: No meta data provided!");
         }
@@ -136,4 +140,21 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> e
         copied.mMustContainStringVariable.set(mMustContainStringVariable.get());
         return copied;
     }
+
+    public BoundedVariable<Integer> getStartZPlaneIndex() {
+        return mStartZPlaneIndex;
+    }
+
+    public BoundedVariable<Integer> getEndZPlaneIndex() {
+        return mEndZPlaneIndex;
+    }
+
+    public Variable<Boolean> getPrintSequenceNameVariable() {
+        return mPrintSequenceNameVariable;
+    }
+
+    public Variable<Boolean> getPrintTimePointVariable() {
+        return mPrintTimePointVariable;
+    }
+
 }
