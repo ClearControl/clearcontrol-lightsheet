@@ -48,7 +48,7 @@ public class ScheduleWriter
 
       for (Variable lVariable : lVariableArray) {
         result = result + variableNameToString(lVariable)
-                + "=[" + lVariable.getName() + "] ";
+                + "=[" + lVariable.get() + "] ";
       }
     }
 

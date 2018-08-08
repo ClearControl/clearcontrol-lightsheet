@@ -68,7 +68,7 @@ public class ScheduleReader implements LoggingFeature
 
     String[] lInstructionNames = sb.toString().split("\n");
     for (String lInstructionName : lInstructionNames) {
-      String lSearchForName = lInstructionName.split(":")[0].replace("\r", "");
+      String lSearchForName = lInstructionName.split(":")[0] + ":" + lInstructionName.split(":")[1].replace("\r", "");
 
       InstructionInterface lInstruction = mLightSheetMicroscope.getSchedulerDevice(lSearchForName);
       if (lInstruction != null) {
@@ -102,12 +102,12 @@ public class ScheduleReader implements LoggingFeature
     if (lInstruction instanceof PropertyIOableInstructionInterface) {
       String[] temp = lInstructionName.split(":");
       if (temp.length > 1) {
-        String[] properties = temp[1].split("] ");
+        String[] properties = temp[2].split("] ");
         for (String property : properties) {
           temp = property.split("=");
           String name = temp[0];
           if (temp.length > 1) {
-            String value = temp[1];
+            String value = temp[1].replace("[", "");
 
             for (Variable variable : ((PropertyIOableInstructionInterface) lInstruction).getProperties()) {
               if (ScheduleWriter.variableNameToString(variable).compareTo(name) == 0) {
