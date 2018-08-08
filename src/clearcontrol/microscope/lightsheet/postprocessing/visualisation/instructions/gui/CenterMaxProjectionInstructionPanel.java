@@ -20,6 +20,7 @@ public class CenterMaxProjectionInstructionPanel extends CustomGridPane {
 
         addCheckbox(pInstruction.getPrintSequenceNameVariable(), 4);
         addCheckbox(pInstruction.getPrintTimePointVariable(), 5);
+        addDoubleField(pInstruction.getScalingVariable(), 6);
 
 
     }

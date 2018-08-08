@@ -1,6 +1,8 @@
 package clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions;
 
+import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
+import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
@@ -19,6 +21,7 @@ import ij.process.ImageProcessor;
 import java.awt.*;
 import java.io.File;
 import java.time.Duration;
+import java.util.Iterator;
 
 /**
  * HalfStackMaxProjectionInstruction
@@ -31,13 +34,14 @@ import java.time.Duration;
 public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
     private final Class<T> mClass;
-    private Variable<String> mMustContainStringVariable = new Variable<String>("", "");
+    private Variable<String> mMustContainStringVariable = new Variable<String>("Stack lable must contain", "");
     private Variable<Boolean> mPrintSequenceNameVariable = new Variable<Boolean>("Print sequence name", true);
     private Variable<Boolean> mPrintTimePointVariable = new Variable<Boolean>("Print time point", true);
 
     private BoundedVariable<Integer> mFontSizeVariable = new BoundedVariable<Integer>("Font size", 14, 5, Integer.MAX_VALUE);
     private BoundedVariable<Integer> mStartZPlaneIndex = new BoundedVariable<Integer>("Start Z plane index", 0, 0, Integer.MAX_VALUE);
     private BoundedVariable<Integer> mEndZPlaneIndex = new BoundedVariable<Integer>("End Z plane index", 0, 0, Integer.MAX_VALUE);
+    private BoundedVariable<Double> mScalingFactorVariable = new BoundedVariable<Double>("Scaling factor", 0.5, 0.0001, Double.MAX_VALUE, 0.0001);
 
     /**
      * INstanciates a virtual device with a given name
@@ -60,8 +64,21 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> e
 
         T lContainer = lDataWarehouse.getOldestContainer(mClass);
 
-        String key = lContainer.keySet().iterator().next();
-        StackInterface lStack = lContainer.get(key);
+        Iterator<String> iterator = lContainer.keySet().iterator();
+        String key = "";
+        StackInterface lStack = null;
+        while(iterator.hasNext()) {
+            key = iterator.next();
+            if (key.toLowerCase().contains(mMustContainStringVariable.get().toLowerCase()) || getMustContainStringVariable().get().length() == 0) {
+                lStack = lContainer.get(key);
+                info("Grabbing " + key);
+                break;
+            }
+        }
+        if (lStack == null) {
+            warning("Couldn't find key '" + getMustContainStringVariable().get() + "' in containter " + lContainer + ". Skipping thumbnail creation.");
+            return false;
+        }
 
         String targetFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
         long lTimePoint = lContainer.getTimepoint();
@@ -87,6 +104,25 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> e
         halfStackProjectionPlugin.setShowResult(false);
         halfStackProjectionPlugin.run();
         ImagePlus lResultImagePlus = halfStackProjectionPlugin.getOutputImage();
+
+
+        // downsample the image if scaling is set != 1.0
+        if (Math.abs(mScalingFactorVariable.get() - 1.0) > 0.0001) {
+            ClearCLImage lCLImage = clij.converter(lResultImagePlus).getClearCLImage();
+            ClearCLImage lClImageScaled = clij.createCLImage(new long[]{(long)(lCLImage.getWidth() * mScalingFactorVariable.get().floatValue()), (long)(lCLImage.getHeight() * mScalingFactorVariable.get().floatValue())}, lCLImage.getChannelDataType());
+            Kernels.downsample(clij, lCLImage, lClImageScaled, mScalingFactorVariable.get().floatValue(), mScalingFactorVariable.get().floatValue());
+            lResultImagePlus = clij.converter(lClImageScaled).getImagePlus();
+            lCLImage.close();
+            lClImageScaled.close();
+
+            if (lStack.getMetaData() != null) {
+                lResultImagePlus.getCalibration().setUnit("micron");
+                lResultImagePlus.getCalibration().pixelWidth = lStack.getMetaData().getVoxelDimX() / mScalingFactorVariable.get().floatValue();
+                lResultImagePlus.getCalibration().pixelHeight = lStack.getMetaData().getVoxelDimY() / mScalingFactorVariable.get().floatValue();
+            }
+
+        }
+
 
         String folderName = "thumbnails_center";
 
@@ -155,6 +191,10 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> e
 
     public Variable<Boolean> getPrintTimePointVariable() {
         return mPrintTimePointVariable;
+    }
+
+    public BoundedVariable<Double> getScalingVariable() {
+        return mScalingFactorVariable;
     }
 
 }
