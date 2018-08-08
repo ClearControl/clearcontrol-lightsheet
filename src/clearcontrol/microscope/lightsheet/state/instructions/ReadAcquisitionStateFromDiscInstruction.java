@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.state.instructions;
 
 import clearcontrol.core.variable.Variable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -18,7 +19,7 @@ import java.io.File;
  * Author: @haesleinhuepf
  * 08 2018
  */
-public class ReadAcquisitionStateFromDiscInstruction extends LightSheetMicroscopeInstructionBase {
+public class ReadAcquisitionStateFromDiscInstruction extends LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface {
 
     public Variable<String> mFilename = new Variable<String> ("Filename", "state.acqstate");
 
@@ -59,6 +60,13 @@ public class ReadAcquisitionStateFromDiscInstruction extends LightSheetMicroscop
 
     public Variable<String> getFilename() {
         return mFilename;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getFilename()
+        };
     }
 }
 

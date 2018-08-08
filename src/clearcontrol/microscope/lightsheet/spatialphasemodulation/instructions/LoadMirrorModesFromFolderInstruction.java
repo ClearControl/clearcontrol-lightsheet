@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FReader;
@@ -16,7 +17,7 @@ import java.io.File;
  * January 2018
  */
 public class LoadMirrorModesFromFolderInstruction extends LightSheetMicroscopeInstructionBase implements
-                                                                            LoggingFeature
+                                                                            LoggingFeature, PropertyIOableInstructionInterface
 {
   private Variable<File> mRootFolderVariable =
       new Variable("RootFolder",
@@ -82,5 +83,12 @@ public class LoadMirrorModesFromFolderInstruction extends LightSheetMicroscopeIn
   @Override
   public LoadMirrorModesFromFolderInstruction copy() {
     return new LoadMirrorModesFromFolderInstruction(mZernikeModeFactorBasedSpatialPhaseModulatorBase, getLightSheetMicroscope());
+  }
+
+  @Override
+  public Variable[] getProperties() {
+    return new Variable[] {
+            getRootFolderVariable()
+    };
   }
 }

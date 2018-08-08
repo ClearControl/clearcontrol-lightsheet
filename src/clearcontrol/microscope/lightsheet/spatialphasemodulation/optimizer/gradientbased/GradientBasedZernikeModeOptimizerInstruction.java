@@ -1,6 +1,8 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.implementations.zernike.ZernikeSolution;
@@ -16,7 +18,7 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class GradientBasedZernikeModeOptimizerInstruction extends LightSheetMicroscopeInstructionBase {
+public class GradientBasedZernikeModeOptimizerInstruction extends LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface {
 
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
 
@@ -81,5 +83,17 @@ public class GradientBasedZernikeModeOptimizerInstruction extends LightSheetMicr
 
     public BoundedVariable<Double> getStepSize() {
         return stepSize;
+    }
+
+    public BoundedVariable<Double> getPositionZ() {
+        return mPositionZ;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getStepSize(),
+                getPositionZ()
+        };
     }
 }

@@ -1,12 +1,14 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 
 public class SequentialZernikesInstruction extends InstructionBase implements
-        LoggingFeature {
+        LoggingFeature, PropertyIOableInstructionInterface {
 
     private ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
 
@@ -110,5 +112,17 @@ public class SequentialZernikesInstruction extends InstructionBase implements
 
     public BoundedVariable<Integer> getStartingModeVariable() {
         return mStartingModeVariable;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getStartingModeVariable(),
+                getEndingModeVariable(),
+                getInitialValueVariable(),
+                getMinimumZernikeCoefficientVariable(),
+                getMaximumZernikeCoefficientVariable(),
+                getStepperVariable()
+        };
     }
 }

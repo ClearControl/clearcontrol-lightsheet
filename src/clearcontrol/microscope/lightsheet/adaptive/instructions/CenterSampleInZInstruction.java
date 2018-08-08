@@ -2,8 +2,10 @@ package clearcontrol.microscope.lightsheet.adaptive.instructions;
 
 import clearcl.imagej.ClearCLIJ;
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
@@ -16,7 +18,8 @@ import ij.process.ImageStatistics;
 public class CenterSampleInZInstruction extends
         LightSheetMicroscopeInstructionBase implements
         InstructionInterface,
-        LoggingFeature {
+        LoggingFeature,
+        PropertyIOableInstructionInterface {
 
     private InterpolatedAcquisitionState mInterpolatedAcquisitionState;
 
@@ -124,6 +127,10 @@ public class CenterSampleInZInstruction extends
         return mSearchRangeMaxZVariable;
     }
 
+    public BoundedVariable<Double> getSearchRangeZVariable() {
+        return mSearchRangeZVariable;
+    }
+
     public BoundedVariable<Integer> getNumberOfStepsVariable() {
         return mNumberOfStepsVariable;
     }
@@ -138,4 +145,13 @@ public class CenterSampleInZInstruction extends
         return copied;
     }
 
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getNumberOfStepsVariable(),
+                getSearchRangeMaxZVariable(),
+                getSearchRangeMinZVariable(),
+                getSearchRangeZVariable()
+        };
+    }
 }

@@ -1,7 +1,9 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.Population;
@@ -19,7 +21,7 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class GeneticAlgorithmMirrorModeOptimizeInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class GeneticAlgorithmMirrorModeOptimizeInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     private BoundedVariable<Integer> mNumberOfEpochsPerTimePoint = new BoundedVariable<Integer>("Number of epochs per time point",10, 0, Integer.MAX_VALUE);
     private BoundedVariable<Integer> mPopulationSize = new BoundedVariable<Integer>("Population size",10, 0, Integer.MAX_VALUE);
@@ -97,5 +99,16 @@ public class GeneticAlgorithmMirrorModeOptimizeInstruction extends LightSheetMic
         copied.mZernikeRangeFactor.set(mZernikeRangeFactor.get());
         copied.mPositionZ.set(mPositionZ.get());
         return copied;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getNumberOfEpochsPerTimePoint(),
+                getNumberOfMutations(),
+                getPopulationSize(),
+                getPositionZ(),
+                getZernikeRangeFactor()
+        };
     }
 }

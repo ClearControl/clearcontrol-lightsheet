@@ -1,7 +1,9 @@
 package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
@@ -23,7 +25,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class AppendConsecutiveSingleViewImagingInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class AppendConsecutiveSingleViewImagingInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     private final BoundedVariable<Integer> mNumberOfImages = new BoundedVariable<Integer>("Number of images", 100);
     private final BoundedVariable<Double> mIntervalInSeconds = new BoundedVariable<Double>("Frame delay in s", 15.0);
@@ -95,5 +97,15 @@ public class AppendConsecutiveSingleViewImagingInstruction extends LightSheetMic
 
     public BoundedVariable<Integer> getDetectionArmIndex() {
         return mDetectionArmIndex;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getIntervalInSeconds(),
+                getNumberOfImages(),
+                getLightSheetIndex(),
+                getDetectionArmIndex()
+        };
     }
 }

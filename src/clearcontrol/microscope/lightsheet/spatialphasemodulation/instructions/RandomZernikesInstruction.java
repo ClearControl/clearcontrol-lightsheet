@@ -1,15 +1,17 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionBase;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
 
 import java.util.Random;
 
 public class RandomZernikesInstruction extends InstructionBase implements
-        LoggingFeature {
+        LoggingFeature, PropertyIOableInstructionInterface {
 
     protected ZernikeModeFactorBasedSpatialPhaseModulatorBase mZernikeModeFactorBasedSpatialPhaseModulatorBase;
     protected BoundedVariable<Double>[] mRangeOfZernikeCoefficientsArray;
@@ -70,4 +72,14 @@ public class RandomZernikesInstruction extends InstructionBase implements
     }
 
 
+    @Override
+    public Variable[] getProperties() {
+        Variable[] variables = new Variable[mRangeOfZernikeCoefficientsArray.length + 1];
+        for (int i = 0; i < mRangeOfZernikeCoefficientsArray.length; i++){
+            variables[i] = mRangeOfZernikeCoefficientsArray[i];
+        }
+        variables[variables.length - 1] = mDigitsAfterDecimal;
+
+        return variables;
+    }
 }

@@ -6,5 +6,6 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradi
 public class GradientBasedZernikeModeOptimizerInstructionPanel extends CustomGridPane {
     public GradientBasedZernikeModeOptimizerInstructionPanel(GradientBasedZernikeModeOptimizerInstruction pInstruction) {
         addDoubleField(pInstruction.getStepSize(), 0 );
+        addDoubleField(pInstruction.getPositionZ(), 1);
     }
 }

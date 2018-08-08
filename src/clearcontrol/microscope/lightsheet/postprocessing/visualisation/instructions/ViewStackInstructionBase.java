@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions;
 
 import clearcontrol.core.variable.Variable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -16,7 +17,7 @@ import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
  * Author: @haesleinhuepf
  * 08 2018
  */
-public abstract class ViewStackInstructionBase<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase {
+public abstract class ViewStackInstructionBase<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface {
 
     private Class mStackInterfaceContainerClass;
 
@@ -50,4 +51,12 @@ public abstract class ViewStackInstructionBase<T extends StackInterfaceContainer
     public Variable<String> getImageKeyToShowVariable() {
         return mImageContainerKeyMustContain;
     }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getImageKeyToShowVariable()
+        };
+    }
+
 }

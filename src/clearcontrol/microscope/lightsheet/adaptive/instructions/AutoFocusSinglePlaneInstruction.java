@@ -1,8 +1,10 @@
 package clearcontrol.microscope.lightsheet.adaptive.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
@@ -17,7 +19,7 @@ import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
  * Author: @haesleinhuepf
  * 08 2018
  */
-public class AutoFocusSinglePlaneInstruction  extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class AutoFocusSinglePlaneInstruction  extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     private BoundedVariable<Integer> mControlPlaneIndex = new BoundedVariable<Integer>("Control plane index", 5, 0, Integer.MAX_VALUE);
     private BoundedVariable<Integer> mDetectionArmIndex = new BoundedVariable<Integer>("Detection arm index", 0, 0, Integer.MAX_VALUE);
@@ -90,6 +92,14 @@ public class AutoFocusSinglePlaneInstruction  extends LightSheetMicroscopeInstru
 
     public BoundedVariable<Integer> getDetectionArmIndex() {
         return mDetectionArmIndex;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getControlPlaneIndex(),
+                getDetectionArmIndex()
+        };
     }
 }
 

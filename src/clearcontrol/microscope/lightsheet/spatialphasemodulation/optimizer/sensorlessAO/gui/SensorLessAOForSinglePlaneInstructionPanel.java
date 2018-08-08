@@ -7,9 +7,9 @@ public class SensorLessAOForSinglePlaneInstructionPanel extends CustomGridPane {
     public SensorLessAOForSinglePlaneInstructionPanel(SensorLessAOForSinglePlaneInstruction pInstruction) {
         addIntegerField(pInstruction.getZernikeFactor(), 0);
         addDoubleField(pInstruction.getPositionZ(), 1);
-        addDoubleField(pInstruction.getstepSize(), 2);
+        addDoubleField(pInstruction.getStepSize(), 2);
         addIntegerField(pInstruction.getNumberOfTilesX(), 3);
-        addIntegerField(pInstruction.getmNumberOfTilesY(),4);
+        addIntegerField(pInstruction.getNumberOfTilesY(),4);
     }
 }
 

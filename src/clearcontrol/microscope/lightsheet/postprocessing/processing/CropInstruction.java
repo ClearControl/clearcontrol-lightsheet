@@ -3,8 +3,10 @@ package clearcontrol.microscope.lightsheet.postprocessing.processing;
 import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
@@ -19,7 +21,7 @@ import clearcontrol.stack.metadata.StackMetaData;
  * Author: @haesleinhuepf
  * 06 2018
  */
-public class CropInstruction extends DataWarehouseInstructionBase {
+public class CropInstruction extends DataWarehouseInstructionBase implements PropertyIOableInstructionInterface {
 
     private BoundedVariable<Integer> mCropXVariable = new BoundedVariable<Integer>("Crop X", 0, 0, Integer.MAX_VALUE);
     private BoundedVariable<Integer> mCropYVariable = new BoundedVariable<Integer>("Crop Y", 0, 0, Integer.MAX_VALUE);
@@ -101,5 +103,17 @@ public class CropInstruction extends DataWarehouseInstructionBase {
 
     public BoundedVariable<Integer> getCropDepthVariable() {
         return mCropDepthVariable;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getCropXVariable(),
+                getCropYVariable(),
+                getCropZVariable(),
+                getCropWidthVariable(),
+                getCropHeightVariable(),
+                getCropDepthVariable()
+        };
     }
 }

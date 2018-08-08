@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.warehouse.containers.io;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
@@ -27,7 +28,7 @@ import java.util.Arrays;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     String[] mDatasetNames;
     BoundedVariable<Integer> mTimepointStepSize = new BoundedVariable<Integer>("Read every nth time point", 1, 1, Integer.MAX_VALUE);
@@ -150,5 +151,15 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMi
 
     public Variable<Boolean> getRestartFromBeginningWhenReachingEnd() {
         return mRestartFromBeginningWhenReachingEnd;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getRestartFromBeginningWhenReachingEnd(),
+                getRootFolderVariable(),
+                getTimepointOffset(),
+                getTimepointStepSize()
+        };
     }
 }

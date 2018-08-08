@@ -4,27 +4,22 @@ import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.imagej.ImageJFeature;
-import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.SingleViewPlaneImager;
-import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsRawToDiscInstruction;
 import clearcontrol.microscope.lightsheet.imaging.singleview.WriteSingleLightSheetImageAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.DiscreteConsinusTransformEntropyPerSliceEstimator;
-import clearcontrol.microscope.lightsheet.postprocessing.processing.CropInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.io.DenseMatrix64FWriter;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceInterface;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropAllContainersOfTypeInstruction;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.stack.StackInterface;
-import net.imglib2.RandomAccess;
-import org.ejml.data.DenseMatrix64F;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,7 +32,7 @@ import java.util.Arrays;
 Author: Debayan Saha
 Sensorless AO optimizes image quality metrics for single mirror mode
  */
-public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeInstructionBase implements ImageJFeature, LoggingFeature{
+public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeInstructionBase implements ImageJFeature, LoggingFeature, PropertyIOableInstructionInterface {
 
 
     private final SpatialPhaseModulatorDeviceInterface mSpatialPhaseModulatorDeviceInterface;
@@ -296,13 +291,13 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         return result;
     }
 
-    public BoundedVariable<Double> getstepSize(){
+    public BoundedVariable<Double> getStepSize(){
         return mStepSize;
     }
     public BoundedVariable<Integer> getNumberOfTilesX(){
         return mNumberOfTilesX;
     }
-    public BoundedVariable<Integer> getmNumberOfTilesY(){
+    public BoundedVariable<Integer> getNumberOfTilesY(){
         return mNumberOfTilesY;
     }
     public BoundedVariable<Double> getPositionZ(){ return mPositionZ; }
@@ -315,5 +310,15 @@ public class SensorLessAOForSinglePlaneInstruction extends LightSheetMicroscopeI
         return new clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.sensorlessAO.SensorLessAOForSinglePlaneInstruction(getLightSheetMicroscope(), mSpatialPhaseModulatorDeviceInterface);
     }
 
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[] {
+                getNumberOfTilesX(),
+                getNumberOfTilesY(),
+                getPositionZ(),
+                getStepSize(),
+                getZernikeFactor()
+        };
+    }
 }
 

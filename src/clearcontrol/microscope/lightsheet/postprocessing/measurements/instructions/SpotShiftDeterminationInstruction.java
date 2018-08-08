@@ -5,8 +5,10 @@ import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SorensonDiceIndexContainer;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class SpotShiftDeterminationInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class SpotShiftDeterminationInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
 
     private BoundedVariable<Integer> mNumberOfDilations = new BoundedVariable<Integer>("Number of dilations", 8, 2, Integer.MAX_VALUE, 2);
@@ -156,5 +158,12 @@ public class SpotShiftDeterminationInstruction extends LightSheetMicroscopeInstr
     @Override
     public SpotShiftDeterminationInstruction copy() {
         return new SpotShiftDeterminationInstruction(getLightSheetMicroscope());
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+            mNumberOfDilations
+        };
     }
 }

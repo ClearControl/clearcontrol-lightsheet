@@ -4,6 +4,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.math.argmax.SmartArgMaxFinder;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
@@ -28,7 +29,8 @@ import java.util.concurrent.TimeoutException;
  */
 public class FocusFinderZInstruction extends LightSheetMicroscopeInstructionBase implements
         InstructionInterface,
-                                                         LoggingFeature
+                                                         LoggingFeature,
+        PropertyIOableInstructionInterface
 {
   private int mControlPlaneIndex;
   private int mLightSheetIndex;
@@ -309,5 +311,17 @@ public class FocusFinderZInstruction extends LightSheetMicroscopeInstructionBase
     copied.mImageWidthVariable.set(mImageWidthVariable.get());
     copied.mNumberOfImagesToTakeVariable.set(mNumberOfImagesToTakeVariable.get());
     return copied;
+  }
+
+  @Override
+  public Variable[] getProperties() {
+    return new Variable[]{
+            getDeltaZVariable(),
+            getExposureTimeInSecondsVariable(),
+            getImageHeightVariable(),
+            getImageWidthVariable(),
+            getNumberOfImagesToTakeVariable(),
+            getResetAllTheTime()
+    };
   }
 }

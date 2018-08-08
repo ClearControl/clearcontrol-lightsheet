@@ -4,6 +4,7 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.gui.video.video2d.Stack2DDisplay;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
@@ -17,7 +18,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * Author: @haesleinhuepf
  * 06 2018
  */
-public class ViewStack2DInstruction<T extends StackInterfaceContainer> extends ViewStackInstructionBase<T> {
+public class ViewStack2DInstruction<T extends StackInterfaceContainer> extends ViewStackInstructionBase<T> implements PropertyIOableInstructionInterface {
 
     private BoundedVariable<Integer> mViewerIndexVariable = new BoundedVariable<Integer>("Viewer index", 0, 0, Integer.MAX_VALUE);
 
@@ -66,4 +67,11 @@ public class ViewStack2DInstruction<T extends StackInterfaceContainer> extends V
         return mViewerIndexVariable;
     }
 
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getViewerIndexVariable(),
+                getImageKeyToShowVariable()
+        };
+    }
 }

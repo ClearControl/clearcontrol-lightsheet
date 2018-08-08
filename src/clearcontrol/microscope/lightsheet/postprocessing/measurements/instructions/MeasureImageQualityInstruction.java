@@ -10,6 +10,7 @@ import clearcl.imagej.utilities.ImageTypeConverter;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.FocusMeasuresContainer;
@@ -44,7 +45,7 @@ import java.util.*;
  * Author: haesleinhuepf
  * July 2018
  */
-public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     private Variable<String> mKeyMustContainString = new Variable<String>("Image key", "");
     private HashMap<FocusMeasures.FocusMeasure, Variable<Boolean>> mSelectedFeaturesMap;
@@ -227,5 +228,16 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
 
     public Variable<String> getKeyMustContainString() {
         return mKeyMustContainString;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        Variable[] variables = new Variable[mSelectedFeaturesMap.keySet().size() + 1];
+        int i = 0;
+        for (FocusMeasures.FocusMeasure key : mSelectedFeaturesMap.keySet()) {
+            variables[i] = mSelectedFeaturesMap.get(key);
+        }
+        variables[i] = mKeyMustContainString;
+        return variables;
     }
 }
