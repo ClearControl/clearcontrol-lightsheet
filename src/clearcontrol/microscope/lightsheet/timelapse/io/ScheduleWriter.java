@@ -1,6 +1,8 @@
 package clearcontrol.microscope.lightsheet.timelapse.io;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ public class ScheduleWriter
     {
       BufferedWriter lOutputStream = new BufferedWriter(new FileWriter(mTargetFile));
       for (InstructionInterface lScheduler : mScheduledList) {
-        lOutputStream.write(lScheduler.toString() + "\n");
+        lOutputStream.write(lScheduler.toString() + ":" + propertiesToString(lScheduler) + "\n");
       }
       lOutputStream.close();
     }
@@ -36,5 +38,28 @@ public class ScheduleWriter
       return false;
     }
     return true;
+  }
+
+  private String propertiesToString(InstructionInterface pInstruction) {
+    String result = "";
+
+    if (pInstruction instanceof PropertyIOableInstructionInterface) {
+      Variable[] lVariableArray = ((PropertyIOableInstructionInterface) pInstruction).getProperties();
+
+      for (Variable lVariable : lVariableArray) {
+        result = result + variableNameToString(lVariable)
+                + "=[" + lVariable.getName() + "] ";
+      }
+    }
+
+    return result;
+  }
+
+  public static String variableNameToString(Variable lVariable) {
+    return lVariable.getName().
+            replace(" ", "_").
+            replace("[", "_").
+            replace("]", "_").
+            replace("=", "_");
   }
 }
