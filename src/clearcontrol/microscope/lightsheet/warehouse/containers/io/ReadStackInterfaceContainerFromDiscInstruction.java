@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.warehouse.containers.io;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
@@ -29,11 +30,14 @@ import java.util.Arrays;
 public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
     String[] mDatasetNames;
-
+    BoundedVariable<Integer> mTimepointStepSize = new BoundedVariable<Integer>("Read every nth time point", 1, 1, Integer.MAX_VALUE);
+    BoundedVariable<Integer> mTimepointOffset = new BoundedVariable<Integer>("Start at nth time point", 0, 0, Integer.MAX_VALUE);
 
     private Variable<File> mRootFolderVariable =
             new Variable("RootFolder",
                     (Object) null);
+
+    private Variable<Boolean> mRestartFromBeginningWhenReachingEnd = new Variable<Boolean>("Restart when reached final file", false);
 
     private long mReadTimePoint = 0;
 
@@ -48,7 +52,7 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMi
 
     @Override
     public boolean initialize() {
-        mReadTimePoint = 0;
+        mReadTimePoint = mTimepointOffset.get();
         return true;
     }
 
@@ -101,12 +105,12 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMi
                 new RawFileStackSource(lRecycler);
         rawFileStackSource.setLocation(lRootFolder, lDatasetname);
         for (int i = 0; i < mDatasetNames.length; i++) {
-            info("getting" + mDatasetNames[i]);
+            info("getting " + mDatasetNames[i] + " tp " + mReadTimePoint );
             StackInterface stack =
                     rawFileStackSource.getStack(mDatasetNames[i],
                             mReadTimePoint);
-            if (stack == null) {
-                mReadTimePoint = 0;
+            if (stack == null && mRestartFromBeginningWhenReachingEnd.get()) {
+                mReadTimePoint = mTimepointOffset.get();
                 stack =
                         rawFileStackSource.getStack(mDatasetNames[i],
                                 mReadTimePoint);
@@ -118,7 +122,7 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMi
             }
 
             lContainer.put(mDatasetNames[i], stack);
-            mReadTimePoint ++;
+            mReadTimePoint += mTimepointStepSize.get();
         }
         getLightSheetMicroscope().getDataWarehouse().put(lContainerWarehouseKey, lContainer);
 
@@ -134,5 +138,17 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMi
     @Override
     public ReadStackInterfaceContainerFromDiscInstruction copy() {
         return new ReadStackInterfaceContainerFromDiscInstruction(mDatasetNames, getLightSheetMicroscope());
+    }
+
+    public BoundedVariable<Integer> getTimepointOffset() {
+        return mTimepointOffset;
+    }
+
+    public BoundedVariable<Integer> getTimepointStepSize() {
+        return mTimepointStepSize;
+    }
+
+    public Variable<Boolean> getRestartFromBeginningWhenReachingEnd() {
+        return mRestartFromBeginningWhenReachingEnd;
     }
 }

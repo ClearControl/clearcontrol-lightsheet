@@ -35,5 +35,12 @@ public class ReadStackInterfaceContainerFromDiscInstructionPanel extends CustomG
             lRow++;
         }
 
+        addIntegerField(pScheduler.getTimepointOffset(), lRow);
+        lRow++;
+        addIntegerField(pScheduler.getTimepointStepSize(), lRow);
+        lRow++;
+        addCheckbox(pScheduler.getRestartFromBeginningWhenReachingEnd(), lRow);
+        lRow++;
+
     }
 }
