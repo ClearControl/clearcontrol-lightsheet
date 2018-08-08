@@ -6,6 +6,7 @@ import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
@@ -31,7 +32,7 @@ import java.util.Iterator;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     private final Class<T> mClass;
     private Variable<Boolean> mViewFrontVariable = new Variable<Boolean>("Front view", true);
@@ -193,5 +194,17 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
         HalfStackMaxProjectionInstruction copied = new HalfStackMaxProjectionInstruction(mClass, mViewFrontVariable.get(), getLightSheetMicroscope());
         copied.mMustContainStringVariable.set(mMustContainStringVariable.get());
         return copied;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getFontSizeVariable(),
+                getMustContainStringVariable(),
+                getViewFront(),
+                getScalingVariable(),
+                getPrintSequenceNameVariable(),
+                getPrintTimePointVariable()
+        };
     }
 }

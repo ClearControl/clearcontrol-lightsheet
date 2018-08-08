@@ -6,6 +6,7 @@ import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
@@ -31,7 +32,7 @@ import java.util.Iterator;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     private final Class<T> mClass;
     private Variable<String> mMustContainStringVariable = new Variable<String>("Stack lable must contain", "");
@@ -197,4 +198,16 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> e
         return mScalingFactorVariable;
     }
 
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getFontSizeVariable(),
+                getMustContainStringVariable(),
+                getScalingVariable(),
+                getPrintSequenceNameVariable(),
+                getPrintTimePointVariable(),
+                getStartZPlaneIndex(),
+                getEndZPlaneIndex()
+        };
+    }
 }
