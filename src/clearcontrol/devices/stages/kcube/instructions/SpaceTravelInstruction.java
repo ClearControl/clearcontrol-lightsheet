@@ -1,7 +1,9 @@
 package clearcontrol.devices.stages.kcube.instructions;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
@@ -14,7 +16,7 @@ import clearcontrol.microscope.lightsheet.state.spatial.PositionListContainer;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class SpaceTravelInstruction extends LightSheetMicroscopeInstructionBase {
+public class SpaceTravelInstruction extends LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface {
 
 
     private int mCurrentTravelPathPosition = 0;
@@ -125,5 +127,13 @@ public class SpaceTravelInstruction extends LightSheetMicroscopeInstructionBase 
     public SpaceTravelInstruction copy() {
         return this;
                 //new SpaceTravelInstruction(getLightSheetMicroscope());
+    }
+
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[] {
+                mTravelPath.getAsStringVariable()
+        };
     }
 }
