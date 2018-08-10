@@ -27,6 +27,7 @@ import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.lightsheet.timelapse.containers.InstructionDurationContainer;
+import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.state.AcquisitionType;
@@ -168,6 +169,10 @@ public class LightSheetTimelapse extends TimelapseBase implements
         e.printStackTrace();
         mLogFileWriter = null;
       }
+
+      File lProgramFile = new File(getWorkingDirectory(), "program.txt");
+      ScheduleWriter writer = new ScheduleWriter(mListOfActivatedSchedulers, lProgramFile);
+      writer.write();
 
       mInitializedSchedulerList = new ArrayList<InstructionInterface>();
 
