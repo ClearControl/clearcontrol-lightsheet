@@ -71,7 +71,7 @@ public class ScheduleReader implements LoggingFeature
       System.out.println(lInstructionName);
       String lSearchForName = lInstructionName.split(":")[0] + ":" + lInstructionName.split(":")[1].replace("\r", "");
 
-      InstructionInterface lInstruction = mLightSheetMicroscope.getSchedulerDevice(lSearchForName);
+      InstructionInterface lInstruction = mLightSheetMicroscope.getSchedulerDevice(lSearchForName).copy();
       if (lInstruction != null) {
         parseParameters(lInstruction, lInstructionName);
         mSchedulerList.add(lInstruction);
