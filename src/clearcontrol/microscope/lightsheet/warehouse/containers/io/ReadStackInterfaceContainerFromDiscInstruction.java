@@ -34,9 +34,7 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMi
     BoundedVariable<Integer> mTimepointStepSize = new BoundedVariable<Integer>("Read every nth time point", 1, 1, Integer.MAX_VALUE);
     BoundedVariable<Integer> mTimepointOffset = new BoundedVariable<Integer>("Start at nth time point", 0, 0, Integer.MAX_VALUE);
 
-    private Variable<File> mRootFolderVariable =
-            new Variable("RootFolder",
-                    (Object) null);
+    private Variable<File> mRootFolderVariable;
 
     private Variable<Boolean> mRestartFromBeginningWhenReachingEnd = new Variable<Boolean>("Restart when reached final file", false);
 
@@ -49,6 +47,10 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMi
     public ReadStackInterfaceContainerFromDiscInstruction(String[] pDatasetNames, LightSheetMicroscope pLightSheetMicroscope) {
         super("IO: Read stacks from disc " + Arrays.toString(pDatasetNames), pLightSheetMicroscope);
         mDatasetNames = pDatasetNames;
+
+        mRootFolderVariable =
+                new Variable("RootFolder",
+                        new File(System.getProperty("user.home") + "/Desktop") );
     }
 
     @Override

@@ -101,9 +101,9 @@ public class ScheduleReader implements LoggingFeature
 
   private void parseParameters(InstructionInterface lInstruction, String lInstructionName) {
     if (lInstruction instanceof PropertyIOableInstructionInterface) {
-      String[] temp = lInstructionName.split(":");
+      String[] temp = lInstructionName.split("::");
       if (temp.length > 1) {
-        String[] properties = temp[2].split("] ");
+        String[] properties = temp[1].split("] ");
         for (String property : properties) {
           temp = property.split("=");
           String name = temp[0];
