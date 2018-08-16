@@ -265,6 +265,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
         lRow++;
       }
 
+      /*
       {
         Button lLinkButton = new Button("->");
         lLinkButton.setTooltip(new Tooltip("Link (experimental)"));
@@ -283,7 +284,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
         lSchedulerChecklistGridPane.add(lLinkButton, 1, lRow);
         lRow++;
       }
-
+      */
 
 
 
