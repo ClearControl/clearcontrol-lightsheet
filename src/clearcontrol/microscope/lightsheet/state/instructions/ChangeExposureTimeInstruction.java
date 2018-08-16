@@ -1,6 +1,8 @@
 package clearcontrol.microscope.lightsheet.state.instructions;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 
@@ -10,7 +12,7 @@ import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstr
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class ChangeExposureTimeInstruction extends LightSheetMicroscopeInstructionBase {
+public class ChangeExposureTimeInstruction extends LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface {
     BoundedVariable<Double> mExposureTimeInSecondsVariable = new BoundedVariable<Double>("Exposure time in seconds", 0.01, 0.0, Double.MAX_VALUE, 0.00001);
 
     public ChangeExposureTimeInstruction(double pExposureTimeInSeconds, LightSheetMicroscope pLightSheetMicroscope) {
@@ -37,5 +39,12 @@ public class ChangeExposureTimeInstruction extends LightSheetMicroscopeInstructi
 
     public BoundedVariable<Double> getExposureTimeInSecondsVariable() {
         return mExposureTimeInSecondsVariable;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getExposureTimeInSecondsVariable()
+        };
     }
 }

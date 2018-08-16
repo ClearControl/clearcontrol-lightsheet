@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.warehouse.containers.io;
 
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.VariableSetListener;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
@@ -13,7 +14,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * Author: @haesleinhuepf
  * 06 2018
  */
-public class WriteSpecificStackToSpecificRawFolderInstruction extends WriteStackInterfaceContainerAsRawToDiscInstructionBase {
+public class WriteSpecificStackToSpecificRawFolderInstruction extends WriteStackInterfaceContainerAsRawToDiscInstructionBase implements PropertyIOableInstructionInterface {
 
     Variable<String> mSourceStackKeyVariable = new Variable<String>("Stack key to save", "C0L0");
     Variable<String> mTargetRawFolderNameVariable = new Variable<String>("Foldername", "C0L0");
@@ -59,5 +60,13 @@ public class WriteSpecificStackToSpecificRawFolderInstruction extends WriteStack
     @Override
     public String toString() {
         return "IO: Write '" + mSourceStackKeyVariable.get() + "' as '" + mTargetRawFolderNameVariable.get() + "' RAW folder ot disc";
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[] {
+                getSourceStackKeyVariable(),
+                getTargetRawFolderNameVariable()
+        };
     }
 }

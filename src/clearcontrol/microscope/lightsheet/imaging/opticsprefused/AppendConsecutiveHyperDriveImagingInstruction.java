@@ -1,7 +1,9 @@
 package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -22,7 +24,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * 05 2018
  */
-public class AppendConsecutiveHyperDriveImagingInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class AppendConsecutiveHyperDriveImagingInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     private final BoundedVariable<Integer> mNumberOfImages = new BoundedVariable<Integer>("Number of images", 100);
     private final BoundedVariable<Double> mIntervalInSeconds = new BoundedVariable<Double>("Frame delay in s", 15.0);
@@ -88,5 +90,13 @@ public class AppendConsecutiveHyperDriveImagingInstruction extends LightSheetMic
 
     public BoundedVariable<Integer> getNumberOfImages() {
         return mNumberOfImages;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[] {
+                getIntervalInSeconds(),
+                getNumberOfImages()
+        };
     }
 }

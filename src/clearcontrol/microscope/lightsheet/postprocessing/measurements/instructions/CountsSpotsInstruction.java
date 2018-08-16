@@ -8,6 +8,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicStageInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotCountContainer;
@@ -30,7 +31,7 @@ import java.io.IOException;
  * Author: @haesleinhuepf
  * 04 2018
  */
-public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
     private final Class<T> mClass;
 
     BoundedVariable<Double> mThreshold = new BoundedVariable<Double>("threshold", 200.0, 0.0, Double.MAX_VALUE, 0.1);
@@ -205,5 +206,21 @@ public class CountsSpotsInstruction<T extends StackInterfaceContainer> extends L
         copied.mXYDownsamplingFactor.set(mXYDownsamplingFactor.get());
         copied.mZDownsamplingFactor.set(mZDownsamplingFactor.get());
         return copied;
+    }
+
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getBlurSigma(),
+                getThreshold(),
+                getXYDownsamplingFactor(),
+                getDoGSigmaMinued(),
+                getZDownsamplingFactor(),
+                getDoGSigmaSubtrahend(),
+                getBlurRadius(),
+                getDoGRadius(),
+                getShowIntermediateResults()
+        };
     }
 }

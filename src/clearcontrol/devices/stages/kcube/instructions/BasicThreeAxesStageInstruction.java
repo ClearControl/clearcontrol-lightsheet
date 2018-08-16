@@ -6,6 +6,7 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
@@ -13,7 +14,7 @@ import clearcontrol.instructions.InstructionInterface;
  */
 public class BasicThreeAxesStageInstruction extends InstructionBase implements
         InstructionInterface,
-                                                                LoggingFeature
+                                                                LoggingFeature, PropertyIOableInstructionInterface
 {
 
   private BoundedVariable<Double> mStartXVariable;
@@ -145,4 +146,17 @@ public class BasicThreeAxesStageInstruction extends InstructionBase implements
     return copied;
   }
 
+  @Override
+  public Variable[] getProperties() {
+    return new Variable[]{
+            getStartXVariable(),
+            getStartYVariable(),
+            getStartZVariable(),
+            getStopXVariable(),
+            getStopYVariable(),
+            getStopZVariable(),
+            getRestartAfterFinishVariable(),
+            getNumberOfStepsVariable()
+    };
+  }
 }

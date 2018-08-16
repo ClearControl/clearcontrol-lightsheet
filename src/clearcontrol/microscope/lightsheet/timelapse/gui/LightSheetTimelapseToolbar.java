@@ -162,6 +162,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
 
       {
         Button lMoveUpButton = new Button("^");
+        lMoveUpButton.setTooltip(new Tooltip("Move up"));
         lMoveUpButton.setMinWidth(35);
         lMoveUpButton.setMinHeight(35);
         lMoveUpButton.setOnAction((e) -> {
@@ -182,6 +183,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
 
       {
         Button lMoveDownButton = new Button("v");
+        lMoveDownButton.setTooltip(new Tooltip("Move down"));
         lMoveDownButton.setMinWidth(35);
         lMoveDownButton.setMinHeight(35);
         lMoveDownButton.setOnAction((e) -> {
@@ -204,6 +206,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
 
       {
         Button lMinusButton = new Button("-");
+        lMinusButton.setTooltip(new Tooltip("Remove"));
         lMinusButton.setMinWidth(35);
         lMinusButton.setMinHeight(35);
         lMinusButton.setOnAction((e) -> {
@@ -228,6 +231,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
 
       {
         Button lUnselectButton = new Button("[]");
+        lUnselectButton.setTooltip(new Tooltip("Unselect"));
         lUnselectButton.setMinWidth(35);
         lUnselectButton.setMinHeight(35);
         lUnselectButton.setOnAction((e) -> {
@@ -240,6 +244,49 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar implements Logg
         lSchedulerChecklistGridPane.add(lUnselectButton, 1, lRow);
         lRow++;
       }
+
+
+      {
+        Button lCloneButton = new Button("++");
+        lCloneButton.setTooltip(new Tooltip("Clone"));
+        lCloneButton.setMinWidth(35);
+        lCloneButton.setMinHeight(35);
+        lCloneButton.setOnAction((e) -> {
+          int lSelectedIndex = mCurrentProgramScheduleListView.getSelectionModel().getSelectedIndex();
+          if (lSelectedIndex > -1) {
+            lSchedulerList.add(lSelectedIndex, lSchedulerList.get(lSelectedIndex).copy());
+          }
+          mCurrentProgramScheduleListView.setItems(FXCollections.observableArrayList(
+                  lSchedulerList));
+          refreshPropertiesScrollPane();
+        });
+        GridPane.setValignment(lCloneButton, VPos.BOTTOM);
+        lSchedulerChecklistGridPane.add(lCloneButton, 1, lRow);
+        lRow++;
+      }
+
+      /*
+      {
+        Button lLinkButton = new Button("->");
+        lLinkButton.setTooltip(new Tooltip("Link (experimental)"));
+        lLinkButton.setMinWidth(35);
+        lLinkButton.setMinHeight(35);
+        lLinkButton.setOnAction((e) -> {
+          int lSelectedIndex = mCurrentProgramScheduleListView.getSelectionModel().getSelectedIndex();
+          if (lSelectedIndex > -1) {
+            lSchedulerList.add(lSelectedIndex, lSchedulerList.get(lSelectedIndex));
+          }
+          mCurrentProgramScheduleListView.setItems(FXCollections.observableArrayList(
+                  lSchedulerList));
+          refreshPropertiesScrollPane();
+        });
+        GridPane.setValignment(lLinkButton, VPos.BOTTOM);
+        lSchedulerChecklistGridPane.add(lLinkButton, 1, lRow);
+        lRow++;
+      }
+      */
+
+
 
 
       lRow = 10;

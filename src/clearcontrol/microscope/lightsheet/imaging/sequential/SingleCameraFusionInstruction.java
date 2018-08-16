@@ -1,7 +1,9 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -15,7 +17,7 @@ import clearcontrol.stack.StackInterface;
  * Author: @haesleinhuepf
  * 06 2018
  */
-public class SingleCameraFusionInstruction extends FusionInstruction {
+public class SingleCameraFusionInstruction extends FusionInstruction implements PropertyIOableInstructionInterface {
     BoundedVariable<Integer> mCameraIndexVariable;
 
     /**
@@ -58,5 +60,10 @@ public class SingleCameraFusionInstruction extends FusionInstruction {
 
     public BoundedVariable<Integer> getCameraIndexVariable() {
         return mCameraIndexVariable;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{getCameraIndexVariable()};
     }
 }
