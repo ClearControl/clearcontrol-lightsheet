@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.processor.fusion;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.stack.StackInterface;
 
 /**
  * This DataContainer is used to store results for fast fusion. The
@@ -14,6 +15,11 @@ public class FusedImageDataContainer extends StackInterfaceContainer
 {
   public FusedImageDataContainer(long pTimePoint) {
     super(pTimePoint);
+  }
+
+  @Override
+  public StackInterface put(String key, StackInterface value) {
+    return super.put("fused", value);
   }
 
   @Override public boolean isDataComplete()
