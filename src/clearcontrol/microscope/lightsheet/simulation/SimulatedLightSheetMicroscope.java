@@ -81,6 +81,7 @@ import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStack
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 import clearcontrol.stack.sourcesink.sink.RawFileStackSink;
+import clearcontrol.stack.sourcesink.sink.SqeazyFileStackSink;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
@@ -445,7 +446,7 @@ public class SimulatedLightSheetMicroscope extends
     lTimelapse.getAdaptiveEngineOnVariable().set(false);
 
     lTimelapse.addFileStackSinkType(RawFileStackSink.class);
-    //lTimelapse.addFileStackSinkType(SqeazyFileStackSink.class);
+    lTimelapse.addFileStackSinkType(SqeazyFileStackSink.class);
 
     if (lTimelapse instanceof LightSheetTimelapse) {
       ((LightSheetTimelapse) lTimelapse).getListOfActivatedSchedulers().add(new DropAllContainersOfTypeInstruction(StackInterfaceContainer.class, getDataWarehouse()));
