@@ -11,9 +11,10 @@ import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDa
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
-import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.metadata.MetaDataChannel;
+import clearcontrol.stack.metadata.MetaDataOrdinals;
 
 /**
  * HybridInterleavedOpticsPrefusedSplitImageDataInstruction
@@ -62,30 +63,38 @@ public class HybridInterleavedOpticsPrefusedSplitImageDataInstruction extends Li
             int numberOfLightSheets = getLightSheetMicroscope().getNumberOfLightSheets();
 
             ClearCLImage[] splitImages = new ClearCLImage[numberOfLightSheets + 1];
-            for (int l = 0; l < numberOfLightSheets + 1 ; l++)
-                    clij.createCLImage(new long[] {
-               fullCLImage.getWidth(),
-               fullCLImage.getHeight(),
-               fullCLImage.getDepth() / numberOfLightSheets
-            }, fullCLImage.getChannelDataType());
+            for (int l = 0; l < numberOfLightSheets + 1 ; l++) {
+                splitImages[l] = clij.createCLImage(new long[]{
+                        fullCLImage.getWidth(),
+                        fullCLImage.getHeight(),
+                        fullCLImage.getDepth() / numberOfLightSheets
+                }, fullCLImage.getChannelDataType());
+            }
 
             Kernels.splitStack(clij, fullCLImage, splitImages);
 
             // Fill the virtual sequential container
             for (int l = 0; l < numberOfLightSheets; l++) {
                 StackInterface lVirtualSequentialStack = clij.converter(splitImages[l]).getStack();
+
+                lVirtualSequentialStack.setMetaData(lStack.getMetaData().clone());
+                lVirtualSequentialStack.getMetaData().removeEntry(MetaDataChannel.Channel);
+                lVirtualSequentialStack.getMetaData().addEntry(MetaDataChannel.Channel, "sequential");
                 lSequentialContainer.put("C" + d + "L" + l, lVirtualSequentialStack);
             }
 
             // Fill the virtual opticsprefused container
             StackInterface lOpticsPrefusedStack = clij.converter(splitImages[splitImages.length - 1]).getStack();
+            lOpticsPrefusedStack.setMetaData(lStack.getMetaData().clone());
+            lOpticsPrefusedStack.getMetaData().removeEntry(MetaDataChannel.Channel);
+            lOpticsPrefusedStack.getMetaData().addEntry(MetaDataChannel.Channel, "opticsprefused");
             lOpticsPrefusedContainer.put("C" + d + "opticsprefused", lOpticsPrefusedStack);
 
 
         }
 
-        getLightSheetMicroscope().getDataWarehouse().put("virtual_sequential", lSequentialContainer);
-        getLightSheetMicroscope().getDataWarehouse().put("virtual_opticsprefused", lOpticsPrefusedContainer);
+        getLightSheetMicroscope().getDataWarehouse().put("virtual_sequential_" + pTimePoint, lSequentialContainer);
+        getLightSheetMicroscope().getDataWarehouse().put("virtual_opticsprefused_" + pTimePoint, lOpticsPrefusedContainer);
 
 
         //StackInterface lFusedStack = fuseStacks(lContainer, lInputImageKeys);
@@ -97,8 +106,8 @@ public class HybridInterleavedOpticsPrefusedSplitImageDataInstruction extends Li
     }
 
     @Override
-    public InterleavedFusionInstruction copy() {
-        return new InterleavedFusionInstruction(getLightSheetMicroscope());
+    public HybridInterleavedOpticsPrefusedSplitImageDataInstruction copy() {
+        return new HybridInterleavedOpticsPrefusedSplitImageDataInstruction(getLightSheetMicroscope());
     }
 }
 

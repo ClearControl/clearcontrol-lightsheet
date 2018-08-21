@@ -18,7 +18,7 @@ public class WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction  exten
 {
     public WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction(LightSheetMicroscope pLightSheetMicroscope)
     {
-        super("IO: Write hybrid interleaved/optics prefused raw data to disc", InterleavedImageDataContainer.class, listKeys(pLightSheetMicroscope.getNumberOfDetectionArms()), null, pLightSheetMicroscope);
+        super("IO: Write hybrid interleaved/optics prefused raw data to disc", HybridInterleavedOpticsPrefusedImageDataContainer.class, listKeys(pLightSheetMicroscope.getNumberOfDetectionArms()), null, pLightSheetMicroscope);
     }
 
     private static String[] listKeys(int pNumberOfDetectionArms) {
