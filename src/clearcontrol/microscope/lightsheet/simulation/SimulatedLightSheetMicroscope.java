@@ -39,6 +39,10 @@ import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpti
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.instructions.implementations.PauseInstruction;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
+import clearcontrol.microscope.lightsheet.imaging.advanced.HybridInterleavedOpticsPrefusedAcquisitionInstruction;
+import clearcontrol.microscope.lightsheet.imaging.advanced.HybridInterleavedOpticsPrefusedImageDataContainer;
+import clearcontrol.microscope.lightsheet.imaging.advanced.HybridInterleavedOpticsPrefusedSplitImageDataInstruction;
+import clearcontrol.microscope.lightsheet.imaging.advanced.WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.*;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.*;
 import clearcontrol.microscope.lightsheet.imaging.sequential.*;
@@ -475,6 +479,13 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new DropOldestStackInterfaceContainerInstruction(InterleavedImageDataContainer.class, getDataWarehouse()));
       addDevice(0, new MaxProjectionInstruction<InterleavedImageDataContainer>(InterleavedImageDataContainer.class, this));
 
+      addDevice(0, new HybridInterleavedOpticsPrefusedAcquisitionInstruction(this));
+      addDevice(0, new HybridInterleavedOpticsPrefusedSplitImageDataInstruction(this));
+      addDevice(0, new WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction(this));
+      addDevice(0, new DropOldestStackInterfaceContainerInstruction(HybridInterleavedOpticsPrefusedImageDataContainer.class, getDataWarehouse()));
+      addDevice(0, new DropAllContainersOfTypeInstruction(HybridInterleavedOpticsPrefusedImageDataContainer.class, getDataWarehouse()));
+
+
 
       SequentialAcquisitionInstruction
           lSequentialAcquisitionScheduler = new SequentialAcquisitionInstruction(this);
@@ -526,6 +537,7 @@ public class SimulatedLightSheetMicroscope extends
 
     String[] lOpticPrefusedStackKeys = new String[getNumberOfDetectionArms()];
     String[] lInterleavedStackKeys = new String[getNumberOfDetectionArms()];
+    String[] lHybridInterleavedOpticsPrefusedStackKeys = new String[getNumberOfDetectionArms()];
     String[] lSequentialStackKeys = new String[getNumberOfDetectionArms() * getNumberOfLightSheets()];
 
     for (int c = 0; c < getNumberOfDetectionArms(); c++) {
@@ -558,6 +570,7 @@ public class SimulatedLightSheetMicroscope extends
       }
       lOpticPrefusedStackKeys[c] = "C" + c + "opticsprefused";
       lInterleavedStackKeys[c] = "C" + c + "interleaved";
+      lHybridInterleavedOpticsPrefusedStackKeys[c] = "hybrid_interleaved_opticsprefused";
 
       addDevice(0, new SingleCameraFusionInstruction(this, c));
     }
@@ -579,6 +592,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lOpticPrefusedStackKeys, this));
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lSequentialStackKeys, this));
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lInterleavedStackKeys, this));
+    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lHybridInterleavedOpticsPrefusedStackKeys, this));
 
 
 
