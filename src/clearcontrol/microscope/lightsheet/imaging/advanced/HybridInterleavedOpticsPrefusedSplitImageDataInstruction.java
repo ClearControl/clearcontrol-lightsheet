@@ -6,12 +6,13 @@ import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedFusionInstruction;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
+import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
+import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
@@ -34,7 +35,7 @@ public class HybridInterleavedOpticsPrefusedSplitImageDataInstruction extends Li
      */
     public HybridInterleavedOpticsPrefusedSplitImageDataInstruction(LightSheetMicroscope pLightSheetMicroscope)
     {
-        super("Post-processing: Split image data from hybrid interleaved/optics-Prefused acquisition", pLightSheetMicroscope);
+        super("Post-processing: Split image data from hybrid interleaved/optics-prefused acquisition", pLightSheetMicroscope);
     }
 
 
@@ -80,6 +81,9 @@ public class HybridInterleavedOpticsPrefusedSplitImageDataInstruction extends Li
                 lVirtualSequentialStack.setMetaData(lStack.getMetaData().clone());
                 lVirtualSequentialStack.getMetaData().removeEntry(MetaDataChannel.Channel);
                 lVirtualSequentialStack.getMetaData().addEntry(MetaDataChannel.Channel, "sequential");
+                lVirtualSequentialStack.getMetaData().removeEntry(MetaDataAcquisitionType.AcquisitionType);
+                lVirtualSequentialStack.getMetaData().addEntry(MetaDataAcquisitionType.AcquisitionType, AcquisitionType.TimelapseSequential);
+                lVirtualSequentialStack.getMetaData().addEntry(MetaDataView.LightSheet, l);
                 lSequentialContainer.put("C" + d + "L" + l, lVirtualSequentialStack);
             }
 
@@ -88,6 +92,8 @@ public class HybridInterleavedOpticsPrefusedSplitImageDataInstruction extends Li
             lOpticsPrefusedStack.setMetaData(lStack.getMetaData().clone());
             lOpticsPrefusedStack.getMetaData().removeEntry(MetaDataChannel.Channel);
             lOpticsPrefusedStack.getMetaData().addEntry(MetaDataChannel.Channel, "opticsprefused");
+            lOpticsPrefusedStack.getMetaData().removeEntry(MetaDataAcquisitionType.AcquisitionType);
+            lOpticsPrefusedStack.getMetaData().addEntry(MetaDataAcquisitionType.AcquisitionType, AcquisitionType.TimeLapseOpticallyCameraFused);
             lOpticsPrefusedContainer.put("C" + d + "opticsprefused", lOpticsPrefusedStack);
 
 

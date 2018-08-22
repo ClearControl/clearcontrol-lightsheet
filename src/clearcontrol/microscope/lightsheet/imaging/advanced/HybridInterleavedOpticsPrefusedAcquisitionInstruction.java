@@ -165,6 +165,7 @@ public class HybridInterleavedOpticsPrefusedAcquisitionInstruction  extends
             StackInterface lStack = getLightSheetMicroscope().getCameraStackVariable(
                     d).get();
 
+
             putStackInContainer("C" + d + "hybrid_interleaved_opticsprefused", lStack, lContainer);
         }
         getLightSheetMicroscope().getDataWarehouse().put("hybrid_interleaved_opticsprefused_raw_" + pTimePoint, lContainer);
