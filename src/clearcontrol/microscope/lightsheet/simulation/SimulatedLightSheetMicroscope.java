@@ -1,7 +1,6 @@
 package clearcontrol.microscope.lightsheet.simulation;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 import clearcl.ClearCLContext;
 import clearcontrol.core.variable.Variable;
@@ -54,7 +53,7 @@ import clearcontrol.microscope.lightsheet.postprocessing.processing.CropInstruct
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.*;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscInstruction;
-import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscInstructionBase;
+import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DInstruction;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DInstruction;
@@ -80,6 +79,7 @@ import clearcontrol.microscope.lightsheet.timelapse.instructions.TimelapseStopIn
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteSpecificStackToSpecificRawFolderInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropAllContainersOfTypeInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -475,7 +475,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new InterleavedFusionInstruction(this));
       addDevice(0, new WriteInterleavedRawDataToDiscInstruction(this));
       addDevice(0, new WriteFusedImageAsRawToDiscInstruction("interleaved", this));
-      addDevice(0, new WriteFusedImageAsTifToDiscInstructionBase("interleaved", this));
+      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("interleaved", this));
       addDevice(0, new DropOldestStackInterfaceContainerInstruction(InterleavedImageDataContainer.class, getDataWarehouse()));
       addDevice(0, new MaxProjectionInstruction<InterleavedImageDataContainer>(InterleavedImageDataContainer.class, this));
 
@@ -484,8 +484,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction(this));
       addDevice(0, new DropOldestStackInterfaceContainerInstruction(HybridInterleavedOpticsPrefusedImageDataContainer.class, getDataWarehouse()));
       addDevice(0, new DropAllContainersOfTypeInstruction(HybridInterleavedOpticsPrefusedImageDataContainer.class, getDataWarehouse()));
-
-
+      addDevice(0, new WriteStackInterfaceContainerAsTifToDiscInstruction(HybridInterleavedOpticsPrefusedImageDataContainer.class, this));
 
       SequentialAcquisitionInstruction
           lSequentialAcquisitionScheduler = new SequentialAcquisitionInstruction(this);
@@ -511,7 +510,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, lSequentialFusionScheduler);
       addDevice(0, new WriteSequentialRawDataToDiscInstruction(this));
       addDevice(0, lWriteSequentialFusedImageToDiscScheduler);
-      addDevice(0, new WriteFusedImageAsTifToDiscInstructionBase("sequential", this));
+      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("sequential", this));
       addDevice(0, lDropContainerScheduler);
       addDevice(0, new MaxProjectionInstruction<SequentialImageDataContainer>(SequentialImageDataContainer.class, this));
 
@@ -519,7 +518,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new OpticsPrefusedFusionInstruction(this));
       addDevice(0, new WriteOpticsPrefusedRawDataAsRawToDiscInstruction(this));
       addDevice(0, new WriteFusedImageAsRawToDiscInstruction("opticsprefused", this));
-      addDevice(0, new WriteFusedImageAsTifToDiscInstructionBase("opticsprefused", this));
+      addDevice(0, new WriteFusedImageAsTifToDiscInstruction("opticsprefused", this));
       addDevice(0, new DropOldestStackInterfaceContainerInstruction(OpticsPrefusedImageDataContainer.class, getDataWarehouse()));
       addDevice(0, new MaxProjectionInstruction<OpticsPrefusedImageDataContainer>(OpticsPrefusedImageDataContainer.class, this));
 

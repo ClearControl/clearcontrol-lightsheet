@@ -2,10 +2,16 @@ package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsTifToDiscInstructionBase;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsTifToDiscInstruction;
 
+/**
+ *
+ *
+ * Deprecated: Use WriteStackInterfaceContainerAsTifToDiscInstruction directly instead
+ */
+@Deprecated
 public class WriteSingleLightSheetImageAsTifToDiscInstruction extends
-        WriteStackInterfaceContainerAsTifToDiscInstructionBase
+        WriteStackInterfaceContainerAsTifToDiscInstruction
 {
     private int mDetectionArmIndex;
     private int mLightSheetIndex;

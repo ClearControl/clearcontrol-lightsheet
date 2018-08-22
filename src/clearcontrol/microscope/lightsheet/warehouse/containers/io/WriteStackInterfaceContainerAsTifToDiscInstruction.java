@@ -16,14 +16,14 @@ import ij.measure.Calibration;
 import java.io.File;
 
 /**
- * WriteStackInterfaceContainerAsTifToDiscInstructionBase
+ * WriteStackInterfaceContainerAsTifToDiscInstruction
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 05 2018
  */
-public abstract class WriteStackInterfaceContainerAsTifToDiscInstructionBase extends
+public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
         LightSheetMicroscopeInstructionBase implements
         LoggingFeature
 {
@@ -31,12 +31,16 @@ public abstract class WriteStackInterfaceContainerAsTifToDiscInstructionBase ext
     protected String[] mImageKeys = null;
     protected String mChannelName = null;
 
+    public WriteStackInterfaceContainerAsTifToDiscInstruction(Class pContainerClass, LightSheetMicroscope pLightSheetMicroscope){
+        this("IO: Write " + pContainerClass.getSimpleName() + " as TIF to disc", pContainerClass, null, null, pLightSheetMicroscope);
+    }
+
     /**
      * INstanciates a virtual device with a given name
      *
      * @param pDeviceName device name
      */
-    public WriteStackInterfaceContainerAsTifToDiscInstructionBase(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
+    public WriteStackInterfaceContainerAsTifToDiscInstruction(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
     {
         super(pDeviceName, pLightSheetMicroscope);
         mContainerClass = pContainerClass;
@@ -65,7 +69,12 @@ public abstract class WriteStackInterfaceContainerAsTifToDiscInstructionBase ext
             return false;
         }
 
-        for (String key : mImageKeys)
+        String[] lImageKeys = mImageKeys;
+        if (lImageKeys == null) {
+            lImageKeys = new String[lContainer.keySet().size()];
+            lContainer.keySet().toArray(lImageKeys);
+        }
+        for (String key : lImageKeys)
         {
             StackInterface lStack = lContainer.get(key);
             if (mChannelName != null)
@@ -76,6 +85,11 @@ public abstract class WriteStackInterfaceContainerAsTifToDiscInstructionBase ext
             }
         }
         return true;
+    }
+
+    @Override
+    public WriteStackInterfaceContainerAsTifToDiscInstruction copy() {
+        return new WriteStackInterfaceContainerAsTifToDiscInstruction(getName(), mContainerClass, mImageKeys, mChannelName, getLightSheetMicroscope());
     }
 
     private void saveStack(File lWorkingDirectory, String pChannelName, StackInterface lStack, long lTimePoint){
