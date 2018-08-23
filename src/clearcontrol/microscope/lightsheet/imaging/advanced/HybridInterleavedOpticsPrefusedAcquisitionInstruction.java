@@ -81,20 +81,19 @@ public class HybridInterleavedOpticsPrefusedAcquisitionInstruction  extends
             for (int l = 0; l
                     < getLightSheetMicroscope().getNumberOfLightSheets() + 1; l++)
             {
+                mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
+                        lImageCounter);
+
                 // configure light sheets accordingly
                 for (int k = 0; k
                         < getLightSheetMicroscope().getNumberOfLightSheets(); k++)
                 {
-                    mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
-                            lImageCounter);
-                    if (l < getLightSheetMicroscope().getNumberOfLightSheets()) {
-                        //in the first rounds, turn all but one light sheet off
-                        lQueue.setI(k, k == l);
-                    } else {
-                        // in the fifth round, turn all light sheets on
-                        lQueue.setI(k, true);
-                    }
+                    lQueue.setI(k, l == getLightSheetMicroscope().getNumberOfLightSheets());
                 }
+                if (l < getLightSheetMicroscope().getNumberOfLightSheets()) {
+                    lQueue.setI(l, true);
+                }
+
                 lQueue.addCurrentStateToQueue();
             }
         }

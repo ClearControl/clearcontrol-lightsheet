@@ -94,15 +94,16 @@ public class InterleavedAcquisitionInstruction extends
       for (int l = 0; l
                       < getLightSheetMicroscope().getNumberOfLightSheets(); l++)
       {
+        mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
+                lImageCounter);
+
         // configure light sheets accordingly
         for (int k = 0; k
                         < getLightSheetMicroscope().getNumberOfLightSheets(); k++)
         {
-          mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
-                                                        lImageCounter);
-
-          lQueue.setI(k, k == l);
+          lQueue.setI(k, false);
         }
+        lQueue.setI(l, true);
         lQueue.addCurrentStateToQueue();
       }
     }
