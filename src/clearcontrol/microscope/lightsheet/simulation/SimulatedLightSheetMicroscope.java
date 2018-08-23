@@ -572,6 +572,7 @@ public class SimulatedLightSheetMicroscope extends
       lHybridInterleavedOpticsPrefusedStackKeys[c] = "hybrid_interleaved_opticsprefused";
 
       addDevice(0, new SingleCameraFusionInstruction(this, c));
+      addDevice( 0, new SequentialSingleCameraFusionInstruction(c, this));
     }
 
     // ------------------------------------------------------------------------
@@ -608,6 +609,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new SpotShiftDeterminationInstruction(this));
 
     addDevice(0, new CropInstruction(getDataWarehouse(),0,0,256,256));
+
 
     // ------------------------------------------------------------------------
     // setup projections

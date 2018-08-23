@@ -14,9 +14,12 @@ import clearcontrol.stack.StackInterface;
  * <p>
  * <p>
  * <p>
+ *     Deprecated: Use SequentialSingleCameraFusionInstruction
+ *
  * Author: @haesleinhuepf
  * 06 2018
  */
+@Deprecated
 public class SingleCameraFusionInstruction extends FusionInstruction implements PropertyIOableInstructionInterface {
     BoundedVariable<Integer> mCameraIndexVariable;
 
