@@ -478,6 +478,7 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new WriteFusedImageAsTifToDiscInstruction("interleaved", this));
       addDevice(0, new DropOldestStackInterfaceContainerInstruction(InterleavedImageDataContainer.class, getDataWarehouse()));
       addDevice(0, new MaxProjectionInstruction<InterleavedImageDataContainer>(InterleavedImageDataContainer.class, this));
+      addDevice(0, new WriteStackInterfaceContainerAsTifToDiscInstruction(InterleavedImageDataContainer.class, this));
 
       addDevice(0, new HybridInterleavedOpticsPrefusedAcquisitionInstruction(this));
       addDevice(0, new HybridInterleavedOpticsPrefusedSplitImageDataInstruction(this));
@@ -513,6 +514,8 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new WriteFusedImageAsTifToDiscInstruction("sequential", this));
       addDevice(0, lDropContainerScheduler);
       addDevice(0, new MaxProjectionInstruction<SequentialImageDataContainer>(SequentialImageDataContainer.class, this));
+      addDevice(0, new WriteStackInterfaceContainerAsTifToDiscInstruction(SequentialImageDataContainer.class, this));
+
 
       addDevice(0, new OpticsPrefusedAcquisitionInstruction(this));
       addDevice(0, new OpticsPrefusedFusionInstruction(this));
@@ -521,6 +524,8 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0, new WriteFusedImageAsTifToDiscInstruction("opticsprefused", this));
       addDevice(0, new DropOldestStackInterfaceContainerInstruction(OpticsPrefusedImageDataContainer.class, getDataWarehouse()));
       addDevice(0, new MaxProjectionInstruction<OpticsPrefusedImageDataContainer>(OpticsPrefusedImageDataContainer.class, this));
+      addDevice(0, new WriteStackInterfaceContainerAsTifToDiscInstruction(OpticsPrefusedImageDataContainer.class, this));
+
 
       addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,true, this));
       addDevice(0, new HalfStackMaxProjectionInstruction<FusedImageDataContainer>(FusedImageDataContainer.class,false, this));

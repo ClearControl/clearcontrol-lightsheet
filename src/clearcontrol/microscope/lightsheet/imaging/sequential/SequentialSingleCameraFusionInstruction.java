@@ -79,6 +79,8 @@ public class SequentialSingleCameraFusionInstruction extends LightSheetMicroscop
         FusedImageDataContainer resultContainer = new FusedImageDataContainer(pTimePoint);
         resultContainer.put("fused", result);
 
+        getLightSheetMicroscope().getDataWarehouse().put("fused_sequential_single_camera_" + pTimePoint, resultContainer);
+
         return false;
     }
 

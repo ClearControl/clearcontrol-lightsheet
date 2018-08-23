@@ -29,7 +29,7 @@ public class SingleCameraFusionInstruction extends FusionInstruction implements 
      * @param pLightSheetMicroscope
      */
     public SingleCameraFusionInstruction(LightSheetMicroscope pLightSheetMicroscope, int pCameraIndex) {
-        super("Post-processing: Single camera fusion C" + pCameraIndex, pLightSheetMicroscope);
+        super("Post-processing: Single camera fusion (deprecated) C" + pCameraIndex, pLightSheetMicroscope);
         mCameraIndexVariable = new BoundedVariable<Integer>("Camera index", pCameraIndex, 0, pLightSheetMicroscope.getNumberOfDetectionArms());
     }
 
