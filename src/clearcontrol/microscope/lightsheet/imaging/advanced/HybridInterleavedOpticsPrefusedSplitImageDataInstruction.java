@@ -56,7 +56,7 @@ public class HybridInterleavedOpticsPrefusedSplitImageDataInstruction extends Li
         for (int d = 0; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++) {
             String lInputImageKey = "C" + d + "hybrid_interleaved_opticsprefused";
 
-            StackInterface lStack = lContainer.get(5);
+            StackInterface lStack = lContainer.get(lInputImageKey);
 
             ClearCLIJ clij = ClearCLIJ.getInstance();
             ClearCLImage fullCLImage = clij.converter(lStack).getClearCLImage();
