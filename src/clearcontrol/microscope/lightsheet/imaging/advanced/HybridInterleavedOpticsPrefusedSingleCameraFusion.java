@@ -29,7 +29,7 @@ public class HybridInterleavedOpticsPrefusedSingleCameraFusion extends LightShee
 
     @Override
     public boolean enqueue(long pTimePoint) {
-        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
+        /*DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
         final HybridInterleavedOpticsPrefusedImageDataContainer
                 lContainer = lDataWarehouse.getOldestContainer(HybridInterleavedOpticsPrefusedImageDataContainer.class);
 
@@ -82,7 +82,7 @@ public class HybridInterleavedOpticsPrefusedSingleCameraFusion extends LightShee
         dst4.close();
         result.close();
 
-
+*/
         return true;
     }
 
