@@ -16,12 +16,12 @@ import clearcontrol.stack.StackInterface;
 
 /**
  * SequentialSingleCameraFusionInstruction
- * <p>
- * <p>
- * <p>
+ *
+ * Deprecated: Use TenengradFusionPerCameraInstruction instead
  * Author: @haesleinhuepf
  * 08 2018
  */
+@Deprecated
 public class SequentialSingleCameraFusionInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     private BoundedVariable<Integer> cameraIndex = new BoundedVariable<Integer>("Camera index", 0, 0, Integer.MAX_VALUE);

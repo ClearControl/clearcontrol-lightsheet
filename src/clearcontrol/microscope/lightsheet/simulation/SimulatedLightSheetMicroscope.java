@@ -48,6 +48,7 @@ import clearcontrol.microscope.lightsheet.imaging.sequential.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.AppendConsecutiveSingleViewImagingInstruction;
 import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightSheetStackInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.fusion.TenengradFusionPerCameraInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.*;
 import clearcontrol.microscope.lightsheet.postprocessing.processing.CropInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions.*;
@@ -576,6 +577,9 @@ public class SimulatedLightSheetMicroscope extends
       lInterleavedStackKeys[c] = "C" + c + "interleaved";
       lHybridInterleavedOpticsPrefusedStackKeys[c] = "hybrid_interleaved_opticsprefused";
 
+      if (c == 0) {
+        addDevice(0, new TenengradFusionPerCameraInstruction(this));
+      }
       addDevice(0, new SingleCameraFusionInstruction(this, c));
       addDevice( 0, new SequentialSingleCameraFusionInstruction(c, this));
     }

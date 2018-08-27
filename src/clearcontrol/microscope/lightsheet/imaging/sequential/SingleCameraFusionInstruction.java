@@ -14,7 +14,7 @@ import clearcontrol.stack.StackInterface;
  * <p>
  * <p>
  * <p>
- *     Deprecated: Use SequentialSingleCameraFusionInstruction
+ *     Deprecated: Use TenengradFusionPerCameraInstruction
  *
  * Author: @haesleinhuepf
  * 06 2018
