@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.imaging.advanced;
+package clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;

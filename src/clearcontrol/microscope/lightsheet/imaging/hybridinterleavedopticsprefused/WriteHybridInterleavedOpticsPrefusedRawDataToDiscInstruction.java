@@ -1,8 +1,6 @@
-package clearcontrol.microscope.lightsheet.imaging.advanced;
+package clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.WriteInterleavedRawDataToDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstructionBase;
 
 /**

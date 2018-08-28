@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.imaging.advanced;
+package clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused;
 
 import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
@@ -15,7 +15,6 @@ import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.MetaDataChannel;
-import clearcontrol.stack.metadata.MetaDataOrdinals;
 
 /**
  * HybridInterleavedOpticsPrefusedSplitImageDataInstruction

@@ -1,12 +1,10 @@
-package clearcontrol.microscope.lightsheet.imaging.advanced;
+package clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionInstruction;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedAcquisitionInstruction;
-import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
