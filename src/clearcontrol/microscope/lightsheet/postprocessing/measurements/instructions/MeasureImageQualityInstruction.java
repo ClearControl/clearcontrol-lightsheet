@@ -236,6 +236,7 @@ public class MeasureImageQualityInstruction extends LightSheetMicroscopeInstruct
         int i = 0;
         for (FocusMeasures.FocusMeasure key : mSelectedFeaturesMap.keySet()) {
             variables[i] = mSelectedFeaturesMap.get(key);
+            i++;
         }
         variables[i] = mKeyMustContainString;
         return variables;
