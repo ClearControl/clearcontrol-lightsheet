@@ -56,6 +56,7 @@ import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContain
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsRawToDiscInstruction;
 import clearcontrol.microscope.lightsheet.processor.fusion.WriteFusedImageAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
+import clearcontrol.microscope.lightsheet.smart.samplesearch.MoveInBoundingBoxInstruction;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch1DInstruction;
 import clearcontrol.microscope.lightsheet.smart.samplesearch.SampleSearch2DInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelectSampleJustBeforeInvaginationInstruction;
@@ -703,6 +704,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new AutoFocusSinglePlaneInstruction(this));
     addDevice(0, new XWingRapidAutoFocusInstruction(this));
     addDevice(0, new SpaceTravelInstruction(this));
+    addDevice(0, new MoveInBoundingBoxInstruction(this));
 
     addDevice(0, new FOVBoundingBox(this));
     addDevice(0, new SampleSearch1DInstruction(this));
