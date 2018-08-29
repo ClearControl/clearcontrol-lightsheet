@@ -41,14 +41,17 @@ public class ScheduleWriter
   }
 
   private String propertiesToString(InstructionInterface pInstruction) {
+
     String result = "";
 
     if (pInstruction instanceof PropertyIOableInstructionInterface) {
       Variable[] lVariableArray = ((PropertyIOableInstructionInterface) pInstruction).getProperties();
 
       for (Variable lVariable : lVariableArray) {
-        result = result + variableNameToString(lVariable)
-                + "=[" + lVariable.get() + "] ";
+        if (lVariable != null) {
+          result = result + variableNameToString(lVariable)
+                  + "=[" + lVariable.get() + "] ";
+        }
       }
     }
 
@@ -56,6 +59,9 @@ public class ScheduleWriter
   }
 
   public static String variableNameToString(Variable lVariable) {
+    if (lVariable == null) {
+      return "null";
+    }
     return lVariable.getName().
             replace(" ", "_").
             replace("[", "_").
