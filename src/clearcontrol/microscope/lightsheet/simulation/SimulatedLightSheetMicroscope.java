@@ -43,6 +43,7 @@ import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefuse
 import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused.HybridInterleavedOpticsPrefusedSplitImageDataInstruction;
 import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused.WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.*;
+import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.InterleavedWaistAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.*;
 import clearcontrol.microscope.lightsheet.imaging.sequential.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.*;
@@ -551,6 +552,11 @@ public class SimulatedLightSheetMicroscope extends
         SingleViewAcquisitionInstruction
             lSingleViewAcquisitionScheduler = new SingleViewAcquisitionInstruction(c, l, this);
         addDevice(0, lSingleViewAcquisitionScheduler);
+
+        if (c == 0) {
+          addDevice(0, new InterleavedWaistAcquisitionInstruction(l, this));
+        }
+
 
         ViewSingleLightSheetStackInstruction lViewSingleLightSheetStackScheduler = new ViewSingleLightSheetStackInstruction(c, l, this);
         WriteSingleLightSheetImageAsRawToDiscInstruction lWriteSingleLightSheetImageToDiscScheduler = new WriteSingleLightSheetImageAsRawToDiscInstruction(c, l, this);
