@@ -6,12 +6,12 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * March 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) March 2018
  */
 public class LaserPowerInstruction extends InstructionBase implements
-        InstructionInterface,
-                                                       LoggingFeature
+                                   InstructionInterface,
+                                   LoggingFeature
 {
   private final LaserDeviceInterface mLaser;
   private final double mLaserPowerInPercent;
@@ -19,29 +19,38 @@ public class LaserPowerInstruction extends InstructionBase implements
   /**
    * INstanciates a virtual device with a given name
    *
-   * @param pLaser laser to control
-   * @param pLaserPowerInPercent power to sent in percent
+   * @param pLaser
+   *          laser to control
+   * @param pLaserPowerInPercent
+   *          power to sent in percent
    */
-  public LaserPowerInstruction(LaserDeviceInterface pLaser, double pLaserPowerInPercent)
+  public LaserPowerInstruction(LaserDeviceInterface pLaser,
+                               double pLaserPowerInPercent)
   {
-    super("Laser: Set " + pLaser.getName() + " power to " + pLaserPowerInPercent + "%");
+    super("Laser: Set " + pLaser.getName()
+          + " power to "
+          + pLaserPowerInPercent
+          + "%");
     mLaser = pLaser;
     mLaserPowerInPercent = pLaserPowerInPercent;
   }
 
-  @Override public boolean initialize()
+  @Override
+  public boolean initialize()
   {
     return true;
   }
 
-  @Override public boolean enqueue(long pTimePoint)
+  @Override
+  public boolean enqueue(long pTimePoint)
   {
     mLaser.setTargetPowerInPercent(mLaserPowerInPercent);
     return true;
   }
 
   @Override
-  public LaserPowerInstruction copy() {
+  public LaserPowerInstruction copy()
+  {
     return new LaserPowerInstruction(mLaser, mLaserPowerInPercent);
   }
 }

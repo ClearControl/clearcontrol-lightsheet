@@ -1,97 +1,117 @@
 package clearcontrol.microscope.lightsheet.warehouse;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
-import com.jgoodies.looks.plastic.theme.SkyYellow;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Stack;
 
 /**
- * The DataWarehouse represents central data storage. It allows
- * collecting a number of DataContainers containing image data grouped
- * per timepoint. It has its own recycler to ensure memory stays under
- * a certain limit.
+ * The DataWarehouse represents central data storage. It allows collecting a
+ * number of DataContainers containing image data grouped per timepoint. It has
+ * its own recycler to ensure memory stays under a certain limit.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
-public class DataWarehouse extends HashMap<String, DataContainerInterface> implements
-                                                           LoggingFeature
+public class DataWarehouse extends
+                           HashMap<String, DataContainerInterface>
+                           implements LoggingFeature
 {
 
   @Override
-  public DataContainerInterface put(String key, DataContainerInterface value) {
-    if (containsKey(key)) {
+  public DataContainerInterface put(String key,
+                                    DataContainerInterface value)
+  {
+    if (containsKey(key))
+    {
       warning(key + " already exists!");
     }
     super.put(key, value);
     return value;
   }
 
-  public <DCI extends DataContainerInterface> DCI getOldestContainer(Class pClass) {
+  public <DCI extends DataContainerInterface> DCI getOldestContainer(Class pClass)
+  {
     long lMinimumTimePoint = Long.MAX_VALUE;
     DCI lOldestContainer = null;
-    for (String key : keySet()) {
+    for (String key : keySet())
+    {
       DataContainerInterface lContainer = get(key);
-      if (pClass.isInstance(lContainer) && lContainer.getTimepoint() < lMinimumTimePoint) {
+      if (pClass.isInstance(lContainer)
+          && lContainer.getTimepoint() < lMinimumTimePoint)
+      {
         lMinimumTimePoint = lContainer.getTimepoint();
-        lOldestContainer = (DCI)lContainer;
+        lOldestContainer = (DCI) lContainer;
       }
     }
 
     if (lOldestContainer != null)
     {
-      info("Oldest container is from timepoint " + lOldestContainer.getTimepoint());
-    } else {
+      info("Oldest container is from timepoint "
+           + lOldestContainer.getTimepoint());
+    }
+    else
+    {
       warning("Warning, no container to return!");
     }
     return lOldestContainer;
   }
 
-  public <DCI extends DataContainerInterface> DCI getNewestContainer(Class pClass) {
+  public <DCI extends DataContainerInterface> DCI getNewestContainer(Class pClass)
+  {
     long lMaximumTimePoint = -Long.MAX_VALUE;
     DCI lNewestContainer = null;
-    for (String key : keySet()) {
+    for (String key : keySet())
+    {
       DataContainerInterface lContainer = get(key);
-      if (pClass.isInstance(lContainer) && lContainer.getTimepoint() > lMaximumTimePoint) {
+      if (pClass.isInstance(lContainer)
+          && lContainer.getTimepoint() > lMaximumTimePoint)
+      {
         lMaximumTimePoint = lContainer.getTimepoint();
-        lNewestContainer = (DCI)lContainer;
+        lNewestContainer = (DCI) lContainer;
       }
     }
 
     if (lNewestContainer != null)
     {
-      info("Newest container is from timepoint " + lNewestContainer.getTimepoint());
-    } else {
+      info("Newest container is from timepoint "
+           + lNewestContainer.getTimepoint());
+    }
+    else
+    {
       warning("Warning, no container to return!");
     }
     return lNewestContainer;
   }
 
-
-  public <DCI extends DataContainerInterface> ArrayList<DCI> getContainers(Class pClass) {
+  public <DCI extends DataContainerInterface> ArrayList<DCI> getContainers(Class pClass)
+  {
     return getContainers(pClass, true);
   }
 
-
-  public <DCI extends DataContainerInterface> ArrayList<DCI> getContainers(Class pClass, boolean pSortedByTimePointAscending) {
+  public <DCI extends DataContainerInterface> ArrayList<DCI> getContainers(Class pClass,
+                                                                           boolean pSortedByTimePointAscending)
+  {
     ArrayList<DCI> lContainerList = new ArrayList<DCI>();
-    for (String key : keySet()) {
+    for (String key : keySet())
+    {
       DataContainerInterface lContainer = get(key);
-      if (pClass.isInstance(lContainer)) {
-        lContainerList.add((DCI)lContainer);
+      if (pClass.isInstance(lContainer))
+      {
+        lContainerList.add((DCI) lContainer);
       }
     }
 
-    if (pSortedByTimePointAscending) {
+    if (pSortedByTimePointAscending)
+    {
       lContainerList.sort((a, b) -> {
-        if (a.getTimepoint() > b.getTimepoint()) {
+        if (a.getTimepoint() > b.getTimepoint())
+        {
           return 1;
         }
-        if (a.getTimepoint() < b.getTimepoint()) {
+        if (a.getTimepoint() < b.getTimepoint())
+        {
           return -1;
         }
         return 0;
@@ -101,8 +121,10 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
     return lContainerList;
   }
 
-  public void disposeContainer(DataContainerInterface pContainer) {
-    if (pContainer == null) {
+  public void disposeContainer(DataContainerInterface pContainer)
+  {
+    if (pContainer == null)
+    {
       return;
     }
 
@@ -120,9 +142,11 @@ public class DataWarehouse extends HashMap<String, DataContainerInterface> imple
     }
   }
 
-  @Override public void clear()
+  @Override
+  public void clear()
   {
-    for (DataContainerInterface lContainer : values()) {
+    for (DataContainerInterface lContainer : values())
+    {
       lContainer.dispose();
     }
     super.clear();

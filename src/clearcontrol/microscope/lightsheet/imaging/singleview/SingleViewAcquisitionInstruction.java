@@ -7,26 +7,32 @@ import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialAcquisiti
 import clearcontrol.stack.StackInterface;
 
 /**
- * This instructions acquires a single image stack for a defined camera
- * and light sheet.
- * The image stacks are stored in the DataWarehouse in
- * an StackInterfaceContainer with a key like:
+ * This instructions acquires a single image stack for a defined camera and
+ * light sheet. The image stacks are stored in the DataWarehouse in an
+ * StackInterfaceContainer with a key like:
  *
  * C0L0
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * February 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) February 2018
  */
 public class SingleViewAcquisitionInstruction extends
-        SequentialAcquisitionInstruction implements
-        InstructionInterface,
-                                                                                LoggingFeature
+                                              SequentialAcquisitionInstruction
+                                              implements
+                                              InstructionInterface,
+                                              LoggingFeature
 {
   int mCameraIndex;
   int mLightSheetIndex;
 
-  public SingleViewAcquisitionInstruction(int pCameraIndex, int pLightSheetIndex, LightSheetMicroscope pLightSheetMicroscope) {
-    super("Acquisition: Single view C" + pCameraIndex + "L" + pLightSheetIndex, pLightSheetMicroscope);
+  public SingleViewAcquisitionInstruction(int pCameraIndex,
+                                          int pLightSheetIndex,
+                                          LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super("Acquisition: Single view C" + pCameraIndex
+          + "L"
+          + pLightSheetIndex,
+          pLightSheetMicroscope);
     mCameraIndex = pCameraIndex;
     mLightSheetIndex = pLightSheetIndex;
 
@@ -34,24 +40,28 @@ public class SingleViewAcquisitionInstruction extends
     mChannelName.set(mImageKeyToSave);
   }
 
-
-  protected boolean isLightSheetOn(int pLightIndex) {
+  protected boolean isLightSheetOn(int pLightIndex)
+  {
     return mLightSheetIndex == pLightIndex;
   }
 
-  protected boolean isCameraOn(int pCameraIndex) {
+  protected boolean isCameraOn(int pCameraIndex)
+  {
     return mCameraIndex == pCameraIndex;
   }
 
-  protected boolean isFused() {
+  protected boolean isFused()
+  {
     return true;
   }
 
-  public int getLightSheetIndex() {
+  public int getLightSheetIndex()
+  {
     return mLightSheetIndex;
   }
 
-  public int getCameraIndex() {
+  public int getCameraIndex()
+  {
     return mCameraIndex;
   }
 
@@ -62,7 +72,10 @@ public class SingleViewAcquisitionInstruction extends
   }
 
   @Override
-  public SingleViewAcquisitionInstruction copy() {
-    return new SingleViewAcquisitionInstruction(mCameraIndex, mLightSheetIndex, getLightSheetMicroscope());
+  public SingleViewAcquisitionInstruction copy()
+  {
+    return new SingleViewAcquisitionInstruction(mCameraIndex,
+                                                mLightSheetIndex,
+                                                getLightSheetMicroscope());
   }
 }

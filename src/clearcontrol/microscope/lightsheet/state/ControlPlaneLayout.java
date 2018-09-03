@@ -89,9 +89,12 @@ public enum ControlPlaneLayout
     }
     else
     {
-      return 0.5 + ((double) (pControlPlaneIndex
-                              - lFirstHalfNumberOfControlPlanes))
-                   / (lSecondHalfNumberOfControlPlanes - 1) / 2.0 + (pControlPlaneIndex == lFirstHalfNumberOfControlPlanes?0.01:0.0);
+      return 0.5
+             + ((double) (pControlPlaneIndex
+                          - lFirstHalfNumberOfControlPlanes))
+               / (lSecondHalfNumberOfControlPlanes - 1) / 2.0
+             + (pControlPlaneIndex == lFirstHalfNumberOfControlPlanes ? 0.01
+                                                                      : 0.0);
     }
   }
 

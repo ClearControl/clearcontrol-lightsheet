@@ -5,11 +5,13 @@ package clearcontrol.microscope.lightsheet.postprocessing.containers;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class SorensonDiceIndexContainer extends MeasurementContainer {
-    public SorensonDiceIndexContainer(long pTimePoint, double pMeasurement) {
-        super(pTimePoint, pMeasurement);
-    }
+public class SorensonDiceIndexContainer extends MeasurementContainer
+{
+  public SorensonDiceIndexContainer(long pTimePoint,
+                                    double pMeasurement)
+  {
+    super(pTimePoint, pMeasurement);
+  }
 }

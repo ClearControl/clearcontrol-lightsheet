@@ -1,5 +1,7 @@
 package clearcontrol.microscope.lightsheet;
 
+import java.util.ArrayList;
+
 import clearcl.ClearCLContext;
 import clearcontrol.core.concurrent.future.FutureBooleanList;
 import clearcontrol.core.device.switches.SwitchingDeviceInterface;
@@ -37,8 +39,6 @@ import clearcontrol.microscope.lightsheet.warehouse.instructions.*;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseLogInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
-
-import java.util.ArrayList;
 
 /**
  * Lightsheet microscope class
@@ -81,38 +81,39 @@ public class LightSheetMicroscope extends
                                                             pStackFusionContext);
     addDevice(0, mStackFusionProcessor);
 
-
     mDataWarehouse = new DataWarehouse();
 
-    addDevice(0, new DataWarehouseResetInstruction(getDataWarehouse()));
+    addDevice(0,
+              new DataWarehouseResetInstruction(getDataWarehouse()));
     addDevice(0, new DataWarehouseLogInstruction(this));
 
-
-    for (Class lContainerType : new Class[]{
-            StackInterfaceContainer.class,
-            FusedImageDataContainer.class,
-            InterleavedImageDataContainer.class,
-            OpticsPrefusedImageDataContainer.class,
-            SequentialImageDataContainer.class,
-            MeasurementInSpaceContainer.class,
-            MeasurementContainer.class,
-            DCTS2DContainer.class,
-            SpotCountContainer.class,
-            InstructionDurationContainer.class,
-            DataContainerInterface.class,
-            MirrorModeContainer.class
-    }) {
-      addDevice(0, new DropOldestStackInterfaceContainerInstruction(lContainerType, getDataWarehouse()));
-      addDevice(0, new DropAllContainersOfTypeInstruction(lContainerType, getDataWarehouse()));
+    for (Class lContainerType : new Class[]
+    { StackInterfaceContainer.class,
+      FusedImageDataContainer.class,
+      InterleavedImageDataContainer.class,
+      OpticsPrefusedImageDataContainer.class,
+      SequentialImageDataContainer.class,
+      MeasurementInSpaceContainer.class,
+      MeasurementContainer.class,
+      DCTS2DContainer.class,
+      SpotCountContainer.class,
+      InstructionDurationContainer.class,
+      DataContainerInterface.class,
+      MirrorModeContainer.class })
+    {
+      addDevice(0,
+                new DropOldestStackInterfaceContainerInstruction(lContainerType,
+                                                                 getDataWarehouse()));
+      addDevice(0,
+                new DropAllContainersOfTypeInstruction(lContainerType,
+                                                       getDataWarehouse()));
     }
 
-
-
-/*    mStackProcessingPipeline.addStackProcessor(mStackFusionProcessor,
+    /*    mStackProcessingPipeline.addStackProcessor(mStackFusionProcessor,
                                                "StackFusion",
                                                32,
                                                32);
-
+    
     mLiveStatisticsProcessor =
                              new LiveStatisticsProcessor("Live statistics processor",
                                                          this,
@@ -225,7 +226,8 @@ public class LightSheetMicroscope extends
     return lTimelapseInterface;
   }
 
-  public LightSheetTimelapse getTimelapse() {
+  public LightSheetTimelapse getTimelapse()
+  {
     return getDevice(LightSheetTimelapse.class, 0);
   }
 
@@ -411,33 +413,44 @@ public class LightSheetMicroscope extends
     return super.playQueue(pQueue);
   }
 
-  public DataWarehouse getDataWarehouse() {
+  public DataWarehouse getDataWarehouse()
+  {
     return mDataWarehouse;
   }
 
-  public InstructionInterface getSchedulerDevice(String... pMustContainStrings) {
-    return getDevice(InstructionInterface.class, 0, pMustContainStrings);
+  public InstructionInterface getSchedulerDevice(String... pMustContainStrings)
+  {
+    return getDevice(InstructionInterface.class,
+                     0,
+                     pMustContainStrings);
   }
 
-  public <O extends Object> O getDevice(Class<O> pClass, int pDeviceIndex, String ... pMustContainStrings)
+  public <O extends Object> O getDevice(Class<O> pClass,
+                                        int pDeviceIndex,
+                                        String... pMustContainStrings)
   {
     int lDeviceIndex = 0;
-    ArrayList<O>
-        lDeviceList = getDevices(pClass);
-    for (O lDevice : lDeviceList) {
+    ArrayList<O> lDeviceList = getDevices(pClass);
+    for (O lDevice : lDeviceList)
+    {
       String lName = lDevice.toString();
       boolean lNameMatches = true;
-      for (String lMustContainString : pMustContainStrings) {
+      for (String lMustContainString : pMustContainStrings)
+      {
         lNameMatches = lName.contains(lMustContainString);
-        if (!lNameMatches) {
+        if (!lNameMatches)
+        {
           break;
         }
       }
-      if (lNameMatches) {
+      if (lNameMatches)
+      {
         if (lDeviceIndex == pDeviceIndex)
         {
           return lDevice;
-        } else {
+        }
+        else
+        {
           lDeviceIndex++;
         }
       }

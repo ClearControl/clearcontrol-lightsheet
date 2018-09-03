@@ -11,9 +11,9 @@ import org.ejml.ops.CommonOps;
  */
 @Deprecated
 public abstract class ZernikeSpatialPhaseModulatorDevice extends
-                                                 SpatialPhaseModulatorDeviceBase
-                                                 implements
-                                                 SpatialPhaseModulatorDeviceInterface
+                                                         SpatialPhaseModulatorDeviceBase
+                                                         implements
+                                                         SpatialPhaseModulatorDeviceInterface
 {
 
   final DenseMatrix64F mZernickeTransformMatrix;

@@ -8,12 +8,14 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteSpecificS
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 06 2018
+ * Author: @haesleinhuepf 06 2018
  */
-public class WriteSpecificStackToSpecificRawFolderInstructionPanel extends CustomGridPane {
-    public WriteSpecificStackToSpecificRawFolderInstructionPanel(WriteSpecificStackToSpecificRawFolderInstruction pInstruction) {
-        addStringField(pInstruction.getSourceStackKeyVariable(), 0 );
-        addStringField(pInstruction.getTargetRawFolderNameVariable(), 1 );
-    }
+public class WriteSpecificStackToSpecificRawFolderInstructionPanel extends
+                                                                   CustomGridPane
+{
+  public WriteSpecificStackToSpecificRawFolderInstructionPanel(WriteSpecificStackToSpecificRawFolderInstruction pInstruction)
+  {
+    addStringField(pInstruction.getSourceStackKeyVariable(), 0);
+    addStringField(pInstruction.getTargetRawFolderNameVariable(), 1);
+  }
 }

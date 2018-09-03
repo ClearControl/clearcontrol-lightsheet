@@ -5,21 +5,23 @@ package clearcontrol.microscope.lightsheet.state.spatial;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class Position {
-    public Position(double x, double y, double z) {
-        mX = x;
-        mY = y;
-        mZ = z;
-    }
+public class Position
+{
+  public Position(double x, double y, double z)
+  {
+    mX = x;
+    mY = y;
+    mZ = z;
+  }
 
-    public String toString() {
-        return mX + "/" + mY + "/" + mZ;
-    }
+  public String toString()
+  {
+    return mX + "/" + mY + "/" + mZ;
+  }
 
-    public double mX;
-    public double mY;
-    public double mZ;
+  public double mX;
+  public double mY;
+  public double mZ;
 }

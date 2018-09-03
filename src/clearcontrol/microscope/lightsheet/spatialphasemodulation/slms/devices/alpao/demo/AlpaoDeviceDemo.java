@@ -59,6 +59,4 @@ public class AlpaoDeviceDemo
     assertTrue(lAlpaoDMDevice.close());
   }
 
-
-
 }

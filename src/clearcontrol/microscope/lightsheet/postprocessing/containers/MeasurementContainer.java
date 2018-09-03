@@ -1,6 +1,5 @@
 package clearcontrol.microscope.lightsheet.postprocessing.containers;
 
-import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerBase;
 
 /**
@@ -8,32 +7,36 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerBase
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class MeasurementContainer extends DataContainerBase {
-    Double mMeasurement = null;
+public class MeasurementContainer extends DataContainerBase
+{
+  Double mMeasurement = null;
 
-    public MeasurementContainer(long pTimePoint, double pMeasurement) {
-        super(pTimePoint);
-        mMeasurement = pMeasurement;
-    }
+  public MeasurementContainer(long pTimePoint, double pMeasurement)
+  {
+    super(pTimePoint);
+    mMeasurement = pMeasurement;
+  }
 
-    @Override
-    public boolean isDataComplete() {
-        return true;
-    }
+  @Override
+  public boolean isDataComplete()
+  {
+    return true;
+  }
 
-    @Override
-    public void dispose() {
-    }
+  @Override
+  public void dispose()
+  {
+  }
 
-    public Double getMeasurement() {
-        return mMeasurement;
-    }
+  public Double getMeasurement()
+  {
+    return mMeasurement;
+  }
 
-
-    public String toString() {
-        return this.getClass().getSimpleName() + " " + getMeasurement();
-    }
+  public String toString()
+  {
+    return this.getClass().getSimpleName() + " " + getMeasurement();
+  }
 }

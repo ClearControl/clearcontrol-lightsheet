@@ -8,8 +8,8 @@ import clearcontrol.stack.StackInterface;
  * sychronous image acquisition, e.g. from within scripts.
  *
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * March 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) March 2018
  */
 public interface ImagerInterface
 {
@@ -18,6 +18,7 @@ public interface ImagerInterface
   LightSheetMicroscope getLightSheetMicroscope();
 
   void setImageWidth(int pImageWidth);
+
   void setImageHeight(int pImageHeight);
 
   StackInterface acquire();

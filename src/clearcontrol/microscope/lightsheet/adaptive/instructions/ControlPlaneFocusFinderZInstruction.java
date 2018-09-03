@@ -8,49 +8,62 @@ import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstr
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
-public class ControlPlaneFocusFinderZInstruction extends LightSheetMicroscopeInstructionBase implements
-        InstructionInterface,
-                                                               LoggingFeature
+public class ControlPlaneFocusFinderZInstruction extends
+                                                 LightSheetMicroscopeInstructionBase
+                                                 implements
+                                                 InstructionInterface,
+                                                 LoggingFeature
 {
   private final int mControlPlaneIndex;
   private final int mDetectionArmIndex;
 
-  private Variable<Boolean>
-      mResetAllTheTime = new Variable<Boolean>("resetAllTheTime", false);
+  private Variable<Boolean> mResetAllTheTime =
+                                             new Variable<Boolean>("resetAllTheTime",
+                                                                   false);
 
   boolean mNeedsReset = true;
 
-  public ControlPlaneFocusFinderZInstruction(int pDetectionArmIndex, int pControlPlaneIndex, LightSheetMicroscope pLightSheetMicroscope)
+  public ControlPlaneFocusFinderZInstruction(int pDetectionArmIndex,
+                                             int pControlPlaneIndex,
+                                             LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Adaptation: Focus finder Z for C" + pDetectionArmIndex + "LxCPI" + pControlPlaneIndex, pLightSheetMicroscope);
+    super("Adaptation: Focus finder Z for C" + pDetectionArmIndex
+          + "LxCPI"
+          + pControlPlaneIndex,
+          pLightSheetMicroscope);
     mDetectionArmIndex = pDetectionArmIndex;
     mControlPlaneIndex = pControlPlaneIndex;
   }
 
-  @Override public boolean initialize()
+  @Override
+  public boolean initialize()
   {
     mNeedsReset = true;
     return true;
   }
 
-  @Override public boolean enqueue(long pTimePoint)
+  @Override
+  public boolean enqueue(long pTimePoint)
   {
-    int
-        lNumberOfControlPlanes =
-        ((InterpolatedAcquisitionState) (getLightSheetMicroscope().getAcquisitionStateManager()
-                                                              .getCurrentState()))
-            .getNumberOfControlPlanes();
+    int lNumberOfControlPlanes =
+                               ((InterpolatedAcquisitionState) (getLightSheetMicroscope().getAcquisitionStateManager()
+                                                                                         .getCurrentState())).getNumberOfControlPlanes();
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++)
     {
-      FocusFinderZInstruction
-          lFocusFinder = new FocusFinderZInstruction(lLightSheetIndex, mDetectionArmIndex, mControlPlaneIndex, getLightSheetMicroscope());
+      FocusFinderZInstruction lFocusFinder =
+                                           new FocusFinderZInstruction(lLightSheetIndex,
+                                                                       mDetectionArmIndex,
+                                                                       mControlPlaneIndex,
+                                                                       getLightSheetMicroscope());
       lFocusFinder.initialize();
       lFocusFinder.mNeedsReset = mNeedsReset;
-      lFocusFinder.enqueue(pTimePoint); // this method returns success; we ignore it and continue focussing
+      lFocusFinder.enqueue(pTimePoint); // this method returns success; we
+                                        // ignore it and continue focussing
     }
 
     mNeedsReset = false;
@@ -58,7 +71,10 @@ public class ControlPlaneFocusFinderZInstruction extends LightSheetMicroscopeIns
   }
 
   @Override
-  public ControlPlaneFocusFinderZInstruction copy() {
-    return new ControlPlaneFocusFinderZInstruction(mDetectionArmIndex, mControlPlaneIndex, getLightSheetMicroscope());
+  public ControlPlaneFocusFinderZInstruction copy()
+  {
+    return new ControlPlaneFocusFinderZInstruction(mDetectionArmIndex,
+                                                   mControlPlaneIndex,
+                                                   getLightSheetMicroscope());
   }
 }

@@ -1,8 +1,6 @@
 package clearcontrol.microscope.lightsheet.warehouse.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
-import clearcontrol.instructions.InstructionBase;
-import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -12,47 +10,55 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
 public class DropAllContainersOfTypeInstruction extends
-        DataWarehouseInstructionBase implements
-        InstructionInterface,
-        LoggingFeature
+                                                DataWarehouseInstructionBase
+                                                implements
+                                                InstructionInterface,
+                                                LoggingFeature
 {
-    Class mContainerClassToDrop;
+  Class mContainerClassToDrop;
 
-    /**
-     * INstanciates a virtual device with a given name
-     *
-     */
-    public DropAllContainersOfTypeInstruction(Class pContainerClassToDrop, DataWarehouse pDataWarehouse)
+  /**
+   * INstanciates a virtual device with a given name
+   *
+   */
+  public DropAllContainersOfTypeInstruction(Class pContainerClassToDrop,
+                                            DataWarehouse pDataWarehouse)
+  {
+    super("Memory: Recycle all containers of type "
+          + pContainerClassToDrop.getSimpleName(), pDataWarehouse);
+    mContainerClassToDrop = pContainerClassToDrop;
+  }
+
+  @Override
+  public boolean initialize()
+  {
+    return false;
+  }
+
+  @Override
+  public boolean enqueue(long pTimePoint)
+  {
+    DataWarehouse lWarehouse = getDataWarehouse();
+    while (true)
     {
-        super("Memory: Recycle all containers of type " + pContainerClassToDrop.getSimpleName(), pDataWarehouse);
-        mContainerClassToDrop = pContainerClassToDrop;
+      StackInterfaceContainer lContainer =
+                                         lWarehouse.getOldestContainer(mContainerClassToDrop);
+      if (lContainer == null)
+      {
+        break;
+      }
+      lWarehouse.disposeContainer(lContainer);
     }
+    return true;
+  }
 
-    @Override public boolean initialize()
-    {
-        return false;
-    }
-
-    @Override public boolean enqueue(long pTimePoint)
-    {
-        DataWarehouse lWarehouse = getDataWarehouse();
-        while (true) {
-            StackInterfaceContainer lContainer = lWarehouse.getOldestContainer(mContainerClassToDrop);
-            if (lContainer == null) {
-                break;
-            }
-            lWarehouse.disposeContainer(lContainer);
-        }
-        return true;
-    }
-
-    @Override
-    public DropAllContainersOfTypeInstruction copy() {
-        return new DropAllContainersOfTypeInstruction(mContainerClassToDrop, getDataWarehouse());
-    }
+  @Override
+  public DropAllContainersOfTypeInstruction copy()
+  {
+    return new DropAllContainersOfTypeInstruction(mContainerClassToDrop,
+                                                  getDataWarehouse());
+  }
 }
-

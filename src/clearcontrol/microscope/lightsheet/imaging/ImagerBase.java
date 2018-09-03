@@ -1,26 +1,28 @@
 package clearcontrol.microscope.lightsheet.imaging;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.imglib2.StackToImgConverter;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * This is the base class for all Imagers. Imager is a convenience layer for
  * sychronous image acquisition, e.g. from within scripts.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * February 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) February 2018
  */
-public abstract class ImagerBase implements ImagerInterface, LoggingFeature
+public abstract class ImagerBase implements
+                                 ImagerInterface,
+                                 LoggingFeature
 {
   // input
   private LightSheetMicroscope mLightSheetMicroscope;
@@ -46,19 +48,26 @@ public abstract class ImagerBase implements ImagerInterface, LoggingFeature
   // output
   StackInterface mResultImage = null;
 
-  public ImagerBase(LightSheetMicroscope pLightSheetMicroscope) {
+  public ImagerBase(LightSheetMicroscope pLightSheetMicroscope)
+  {
     mLightSheetMicroscope = pLightSheetMicroscope;
   }
 
-  private synchronized boolean image() {
+  private synchronized boolean image()
+  {
 
-    LightSheetMicroscopeQueue lQueue = mLightSheetMicroscope.requestQueue();
+    LightSheetMicroscopeQueue lQueue =
+                                     mLightSheetMicroscope.requestQueue();
     lQueue.clearQueue();
     // lQueue.zero();
 
-    if (mInterpolatedAcquisitionState != null) {
-      mInterpolatedAcquisitionState.applyAcquisitionStateAtZ(lQueue, mAcquisitionZ);
-      info("Imaging at I " + lQueue.getIZ(mLightSheetIndex)  + " instead of " + mIlluminationZ );
+    if (mInterpolatedAcquisitionState != null)
+    {
+      mInterpolatedAcquisitionState.applyAcquisitionStateAtZ(lQueue,
+                                                             mAcquisitionZ);
+      info("Imaging at I " + lQueue.getIZ(mLightSheetIndex)
+           + " instead of "
+           + mIlluminationZ);
     }
 
     lQueue.setFullROI();
@@ -67,7 +76,8 @@ public abstract class ImagerBase implements ImagerInterface, LoggingFeature
     lQueue.setExp(mExposureTimeInSeconds);
 
     // reset everything
-    for (int i = 0; i < mLightSheetMicroscope.getNumberOfLightSheets(); i++)
+    for (int i =
+               0; i < mLightSheetMicroscope.getNumberOfLightSheets(); i++)
     {
       lQueue.setI(i, false);
     }
@@ -88,7 +98,7 @@ public abstract class ImagerBase implements ImagerInterface, LoggingFeature
     mQueue.setIPattern(i,
                        0,
                        new BinaryStructuredIlluminationPattern());
- */
+    */
 
     lQueue.setC(mDetectionArmIndex, false);
 
@@ -105,9 +115,10 @@ public abstract class ImagerBase implements ImagerInterface, LoggingFeature
     final Boolean lPlayQueueAndWait;
     try
     {
-      lPlayQueueAndWait = mLightSheetMicroscope.playQueueAndWaitForStacks(lQueue,
-                                                                          100 + lQueue.getQueueLength(),
-                                                                          TimeUnit.SECONDS);
+      lPlayQueueAndWait =
+                        mLightSheetMicroscope.playQueueAndWaitForStacks(lQueue,
+                                                                        100 + lQueue.getQueueLength(),
+                                                                        TimeUnit.SECONDS);
     }
     catch (InterruptedException e)
     {
@@ -130,64 +141,76 @@ public abstract class ImagerBase implements ImagerInterface, LoggingFeature
       return false;
     }
 
-    mResultImage = mLightSheetMicroscope.getCameraStackVariable(mDetectionArmIndex)
-                                                  .get();
+    mResultImage =
+                 mLightSheetMicroscope.getCameraStackVariable(mDetectionArmIndex)
+                                      .get();
 
     return true;
   }
 
-  public StackInterface acquire() {
+  public StackInterface acquire()
+  {
     image();
     return mResultImage;
   }
 
-  public RandomAccessibleInterval<UnsignedShortType> getRandomAccessibleInterval() {
+  public RandomAccessibleInterval<UnsignedShortType> getRandomAccessibleInterval()
+  {
     image();
-    if (mResultImage == null) {
+    if (mResultImage == null)
+    {
       return null;
     }
 
-    StackToImgConverter<UnsignedShortType>
-        lStackToImgConverter = new StackToImgConverter<UnsignedShortType>(mResultImage);
-    RandomAccessibleInterval<UnsignedShortType> img = lStackToImgConverter.getRandomAccessibleInterval();
+    StackToImgConverter<UnsignedShortType> lStackToImgConverter =
+                                                                new StackToImgConverter<UnsignedShortType>(mResultImage);
+    RandomAccessibleInterval<UnsignedShortType> img =
+                                                    lStackToImgConverter.getRandomAccessibleInterval();
 
     return img;
   }
 
-  public void invalidate() {
+  public void invalidate()
+  {
     mResultImage = null;
   }
+
   protected abstract boolean configureQueue(LightSheetMicroscopeQueue pQueue);
 
-
-  public void setIlluminationZ(double pIlluminationZ) {
+  public void setIlluminationZ(double pIlluminationZ)
+  {
     invalidate();
     mInterpolatedAcquisitionState = null;
     mIlluminationZ = pIlluminationZ;
   }
 
-  public void setIlluminationX(double pIlluminationX) {
+  public void setIlluminationX(double pIlluminationX)
+  {
     this.mIlluminationX = pIlluminationX;
   }
 
-  public void setIlluminationY(double pIlluminationY) {
+  public void setIlluminationY(double pIlluminationY)
+  {
     this.mIlluminationY = pIlluminationY;
   }
 
-  public void setIlluminationH(double pIlluminationH) {
+  public void setIlluminationH(double pIlluminationH)
+  {
     this.mIlluminationH = pIlluminationH;
   }
 
-  public void setIlluminationW(double pIlluminationW) {
+  public void setIlluminationW(double pIlluminationW)
+  {
     this.mIlluminationW = pIlluminationW;
   }
 
-
-  public void setIlluminationA(double pIlluminationA) {
+  public void setIlluminationA(double pIlluminationA)
+  {
     this.mIlluminationA = pIlluminationA;
   }
 
-  public void setDetectionZ(double pDetectionZ) {
+  public void setDetectionZ(double pDetectionZ)
+  {
     invalidate();
     mDetectionZ = pDetectionZ;
   }
@@ -209,16 +232,16 @@ public abstract class ImagerBase implements ImagerInterface, LoggingFeature
     this.mImageHeight = pImageHeight;
   }
 
-  public void setImageWidth(int pImageWidth) {
+  public void setImageWidth(int pImageWidth)
+  {
     this.mImageWidth = pImageWidth;
   }
 
   InterpolatedAcquisitionState mInterpolatedAcquisitionState;
   Double mAcquisitionZ;
 
-  public void applyInterpolatedAcquisitionState(
-      InterpolatedAcquisitionState pInterpolatedAcquisitionState,
-      Double pAcquisitionZ)
+  public void applyInterpolatedAcquisitionState(InterpolatedAcquisitionState pInterpolatedAcquisitionState,
+                                                Double pAcquisitionZ)
   {
     invalidate();
     mInterpolatedAcquisitionState = pInterpolatedAcquisitionState;
@@ -230,7 +253,8 @@ public abstract class ImagerBase implements ImagerInterface, LoggingFeature
     return mLightSheetMicroscope;
   }
 
-  public void setExposureTimeInSeconds(double pExposureTimeInSeconds) {
+  public void setExposureTimeInSeconds(double pExposureTimeInSeconds)
+  {
     mExposureTimeInSeconds = pExposureTimeInSeconds;
   }
 

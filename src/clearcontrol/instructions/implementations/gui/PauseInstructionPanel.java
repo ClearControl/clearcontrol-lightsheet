@@ -8,11 +8,13 @@ import clearcontrol.instructions.implementations.PauseInstruction;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class PauseInstructionPanel extends CustomGridPane {
-    public PauseInstructionPanel(PauseInstruction pPauseInstruction) {
-        addIntegerField(pPauseInstruction.getPauseTimeInMilliseconds(), 0);
-    }
+public class PauseInstructionPanel extends CustomGridPane
+{
+  public PauseInstructionPanel(PauseInstruction pPauseInstruction)
+  {
+    addIntegerField(pPauseInstruction.getPauseTimeInMilliseconds(),
+                    0);
+  }
 }

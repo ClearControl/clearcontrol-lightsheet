@@ -8,11 +8,12 @@ import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class LaserOnOffInstructionPanel extends CustomGridPane {
-    public LaserOnOffInstructionPanel(LaserOnOffInstruction pInstruction){
-        addCheckbox(pInstruction.getDebugVariable(), 0);
-    }
+public class LaserOnOffInstructionPanel extends CustomGridPane
+{
+  public LaserOnOffInstructionPanel(LaserOnOffInstruction pInstruction)
+  {
+    addCheckbox(pInstruction.getDebugVariable(), 0);
+  }
 }

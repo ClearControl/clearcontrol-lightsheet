@@ -5,15 +5,14 @@ import asdk.TriggerMode;
 import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.SpatialPhaseModulatorDeviceBase;
-
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.TransformMatrices;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
-import org.ejml.data.DenseMatrix64F;
-import org.ejml.data.Matrix64F;
 
-public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBase
+import org.ejml.data.DenseMatrix64F;
+
+public class AlpaoDMDevice extends
+                           ZernikeModeFactorBasedSpatialPhaseModulatorBase
                            implements LoggingFeature
 {
   private static final int cFullMatrixWidthHeight = 11;
@@ -36,16 +35,11 @@ public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBa
     super("ALPAO_" + pAlpaoSerialName,
           cFullMatrixWidthHeight,
           cActuatorResolution,
-            cNumberOfZernikeModeFactors);
+          cNumberOfZernikeModeFactors);
 
     mAlpaoDeformableMirror =
                            new AlpaoDeformableMirror(pAlpaoSerialName);
     mAlpaoDeformableMirror.setDebugPrintout(true);
-
-
-
-
-
 
     DenseMatrix64F lMatrix = null;
     if (mMatrixVariable != null)
@@ -64,8 +58,8 @@ public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBa
         info("Setting the dm device");
         mAlpaoDeformableMirror.sendFullMatrixMirrorShapeVector(pNewValue.data);
 
-        //info("Setting trigger disabled");
-        //mAlpaoDeformableMirror.setInputTriggerMode(TriggerMode.Disabled);
+        // info("Setting trigger disabled");
+        // mAlpaoDeformableMirror.setInputTriggerMode(TriggerMode.Disabled);
 
         return super.setEventHook(pOldValue, pNewValue);
       }
@@ -91,7 +85,6 @@ public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBa
 
       info("Resetting ALPAO DM DACs");
       mAlpaoDeformableMirror.resetDAC();
-
 
       return lOpen;
     }
@@ -151,25 +144,35 @@ public class AlpaoDMDevice extends ZernikeModeFactorBasedSpatialPhaseModulatorBa
   }
 
   @Override
-  public boolean setZernikeFactors(double[] pZernikeFactors) {
+  public boolean setZernikeFactors(double[] pZernikeFactors)
+  {
     setZernikeFactorsInternal(pZernikeFactors);
     pZernikeFactors = convertNollOrderToANSIOrder(pZernikeFactors);
 
-    DenseMatrix64F lActuatorPositions = getActuatorPositions(pZernikeFactors);
+    DenseMatrix64F lActuatorPositions =
+                                      getActuatorPositions(pZernikeFactors);
     mAlpaoDeformableMirror.sendRawMirrorShapeVector(TransformMatrices.convertDense64MatrixTo1DDoubleArray(lActuatorPositions));
-    info("Sending to Mirror:" + TransformMatrices.convertDense64MatrixTo1DDoubleArray(lActuatorPositions).toString());
+    info("Sending to Mirror:"
+         + TransformMatrices.convertDense64MatrixTo1DDoubleArray(lActuatorPositions)
+                            .toString());
     return true;
   }
 
-  private double[] convertNollOrderToANSIOrder(double[] pNollOrderedZernikeFactors) {
-    double[] pANSIOrderedZernikeFactors = new double[pNollOrderedZernikeFactors.length];
-    for (int i = 0; i < pNollOrderedZernikeFactors.length; i++) {
-      pANSIOrderedZernikeFactors[i] = pNollOrderedZernikeFactors[ZernikePolynomials.jNoll(i) - 1];
+  private double[] convertNollOrderToANSIOrder(double[] pNollOrderedZernikeFactors)
+  {
+    double[] pANSIOrderedZernikeFactors =
+                                        new double[pNollOrderedZernikeFactors.length];
+    for (int i = 0; i < pNollOrderedZernikeFactors.length; i++)
+    {
+      pANSIOrderedZernikeFactors[i] =
+                                    pNollOrderedZernikeFactors[ZernikePolynomials.jNoll(i)
+                                                               - 1];
     }
     return pANSIOrderedZernikeFactors;
   }
 
-  public boolean setActuatorPositions(double[] pActuatorsPositions){
+  public boolean setActuatorPositions(double[] pActuatorsPositions)
+  {
     double[] lActuatorPositions = pActuatorsPositions;
     mAlpaoDeformableMirror.sendRawMirrorShapeVector(lActuatorPositions);
     return true;

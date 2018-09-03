@@ -8,12 +8,14 @@ import clearcontrol.microscope.lightsheet.imaging.opticsprefused.AppendConsecuti
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class AppendConsecutiveOpticsPrefusedImagingInstructionPanel extends CustomGridPane {
-    public AppendConsecutiveOpticsPrefusedImagingInstructionPanel(AppendConsecutiveOpticsPrefusedImagingInstruction pInstruction) {
-        addIntegerField(pInstruction.getNumberOfImages(), 0);
-        addDoubleField(pInstruction.getIntervalInSeconds(), 1);
-    }
+public class AppendConsecutiveOpticsPrefusedImagingInstructionPanel extends
+                                                                    CustomGridPane
+{
+  public AppendConsecutiveOpticsPrefusedImagingInstructionPanel(AppendConsecutiveOpticsPrefusedImagingInstruction pInstruction)
+  {
+    addIntegerField(pInstruction.getNumberOfImages(), 0);
+    addDoubleField(pInstruction.getIntervalInSeconds(), 1);
+  }
 }

@@ -8,20 +8,21 @@ import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructi
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class CenterMaxProjectionInstructionPanel extends CustomGridPane {
-    public CenterMaxProjectionInstructionPanel(CenterMaxProjectionInstruction pInstruction) {
-        addStringField(pInstruction.getMustContainStringVariable(), 0);
-        addIntegerField(pInstruction.getFontSizeVariable(), 1);
-        addIntegerField(pInstruction.getStartZPlaneIndex(), 2);
-        addIntegerField(pInstruction.getEndZPlaneIndex(), 3);
+public class CenterMaxProjectionInstructionPanel extends
+                                                 CustomGridPane
+{
+  public CenterMaxProjectionInstructionPanel(CenterMaxProjectionInstruction pInstruction)
+  {
+    addStringField(pInstruction.getMustContainStringVariable(), 0);
+    addIntegerField(pInstruction.getFontSizeVariable(), 1);
+    addIntegerField(pInstruction.getStartZPlaneIndex(), 2);
+    addIntegerField(pInstruction.getEndZPlaneIndex(), 3);
 
-        addCheckbox(pInstruction.getPrintSequenceNameVariable(), 4);
-        addCheckbox(pInstruction.getPrintTimePointVariable(), 5);
-        addDoubleField(pInstruction.getScalingVariable(), 6);
+    addCheckbox(pInstruction.getPrintSequenceNameVariable(), 4);
+    addCheckbox(pInstruction.getPrintTimePointVariable(), 5);
+    addDoubleField(pInstruction.getScalingVariable(), 6);
 
-
-    }
+  }
 }

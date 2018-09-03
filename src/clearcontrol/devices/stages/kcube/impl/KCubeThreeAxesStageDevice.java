@@ -5,11 +5,12 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * January 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) January 2018
  */
-public class KCubeThreeAxesStageDevice extends VirtualDevice implements
-                                                             BasicThreeAxesStageInterface
+public class KCubeThreeAxesStageDevice extends VirtualDevice
+                                       implements
+                                       BasicThreeAxesStageInterface
 {
   private Variable<Double> mPositionX;
   private Variable<Double> mPositionY;
@@ -22,9 +23,13 @@ public class KCubeThreeAxesStageDevice extends VirtualDevice implements
   /**
    * INstanciates a virtual device with a given name
    *
-   * @param pDeviceName device name
+   * @param pDeviceName
+   *          device name
    */
-  public KCubeThreeAxesStageDevice(String pDeviceName, KCubeDevice pXStepMotorDevice, KCubeDevice pYStepMotorDevice, KCubeDevice pZStepMotorDevice)
+  public KCubeThreeAxesStageDevice(String pDeviceName,
+                                   KCubeDevice pXStepMotorDevice,
+                                   KCubeDevice pYStepMotorDevice,
+                                   KCubeDevice pZStepMotorDevice)
   {
     super(pDeviceName);
 
@@ -32,59 +37,77 @@ public class KCubeThreeAxesStageDevice extends VirtualDevice implements
     mYStepMotor = pYStepMotorDevice;
     mZStepMotor = pZStepMotorDevice;
 
-
-    mPositionX = new Variable<Double>("positionX", pXStepMotorDevice.getCurrentPosition());
-    mPositionY = new Variable<Double>("positionY", pYStepMotorDevice.getCurrentPosition());
-    mPositionZ = new Variable<Double>("positionZ", pZStepMotorDevice.getCurrentPosition());
+    mPositionX =
+               new Variable<Double>("positionX",
+                                    pXStepMotorDevice.getCurrentPosition());
+    mPositionY =
+               new Variable<Double>("positionY",
+                                    pYStepMotorDevice.getCurrentPosition());
+    mPositionZ =
+               new Variable<Double>("positionZ",
+                                    pZStepMotorDevice.getCurrentPosition());
 
   }
 
-  public boolean moveXBy(double pDistance, boolean pWaitUntilMotionFinished) {
-    boolean lResult = mXStepMotor.moveBy(pDistance, pWaitUntilMotionFinished);
-    if (pWaitUntilMotionFinished) {
+  public boolean moveXBy(double pDistance,
+                         boolean pWaitUntilMotionFinished)
+  {
+    boolean lResult = mXStepMotor.moveBy(pDistance,
+                                         pWaitUntilMotionFinished);
+    if (pWaitUntilMotionFinished)
+    {
       refreshVariables();
     }
     return lResult;
   }
 
-  public boolean moveYBy(double pDistance, boolean pWaitUntilMotionFinished) {
-    boolean lResult = mYStepMotor.moveBy(pDistance, pWaitUntilMotionFinished);
-    if (pWaitUntilMotionFinished) {
+  public boolean moveYBy(double pDistance,
+                         boolean pWaitUntilMotionFinished)
+  {
+    boolean lResult = mYStepMotor.moveBy(pDistance,
+                                         pWaitUntilMotionFinished);
+    if (pWaitUntilMotionFinished)
+    {
       refreshVariables();
     }
     return lResult;
   }
 
-  public boolean moveZBy(double pDistance, boolean pWaitUntilMotionFinished) {
-    boolean lResult = mZStepMotor.moveBy(pDistance, pWaitUntilMotionFinished);
-    if (pWaitUntilMotionFinished) {
+  public boolean moveZBy(double pDistance,
+                         boolean pWaitUntilMotionFinished)
+  {
+    boolean lResult = mZStepMotor.moveBy(pDistance,
+                                         pWaitUntilMotionFinished);
+    if (pWaitUntilMotionFinished)
+    {
       refreshVariables();
     }
     return lResult;
   }
 
-  @Override public Variable<Double> getXPositionVariable()
+  @Override
+  public Variable<Double> getXPositionVariable()
   {
     return mPositionX;
   }
 
-  @Override public Variable<Double> getYPositionVariable()
+  @Override
+  public Variable<Double> getYPositionVariable()
   {
     return mPositionY;
   }
 
-  @Override public Variable<Double> getZPositionVariable()
+  @Override
+  public Variable<Double> getZPositionVariable()
   {
     return mPositionZ;
   }
 
-  public void refreshVariables() {
+  public void refreshVariables()
+  {
     mPositionX.set(mXStepMotor.getCurrentPosition());
     mPositionY.set(mYStepMotor.getCurrentPosition());
     mPositionZ.set(mZStepMotor.getCurrentPosition());
   }
-
-
-
 
 }

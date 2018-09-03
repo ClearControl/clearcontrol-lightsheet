@@ -8,16 +8,17 @@ import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
 
 /**
- * This FusionInstruction takes the oldest InterleavedImageDataContainer
- * from the DataWarehouse and fuses the images. Results are saved as
+ * This FusionInstruction takes the oldest InterleavedImageDataContainer from
+ * the DataWarehouse and fuses the images. Results are saved as
  * FusedImageContainer back to the DataWarehouse.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
-public class InterleavedFusionInstruction extends FusionInstruction implements
-        InstructionInterface,
-                                                                LoggingFeature
+public class InterleavedFusionInstruction extends FusionInstruction
+                                          implements
+                                          InstructionInterface,
+                                          LoggingFeature
 {
   /**
    * INstanciates a virtual device with a given name
@@ -25,25 +26,32 @@ public class InterleavedFusionInstruction extends FusionInstruction implements
    */
   public InterleavedFusionInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Post-processing: Interleaved fusion", pLightSheetMicroscope);
+    super("Post-processing: Interleaved fusion",
+          pLightSheetMicroscope);
   }
 
-
-  @Override public boolean enqueue(long pTimePoint)
+  @Override
+  public boolean enqueue(long pTimePoint)
   {
-    DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
-    final InterleavedImageDataContainer
-        lContainer = lDataWarehouse.getOldestContainer(InterleavedImageDataContainer.class);
-    String[] lInputImageKeys = new String[getLightSheetMicroscope().getNumberOfDetectionArms()];
+    DataWarehouse lDataWarehouse =
+                                 getLightSheetMicroscope().getDataWarehouse();
+    final InterleavedImageDataContainer lContainer =
+                                                   lDataWarehouse.getOldestContainer(InterleavedImageDataContainer.class);
+    String[] lInputImageKeys =
+                             new String[getLightSheetMicroscope().getNumberOfDetectionArms()];
 
     int count = 0;
-    for (int d = 0; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++) {
+    for (int d =
+               0; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++)
+    {
       lInputImageKeys[count] = "C" + d + "interleaved";
-      count ++;
+      count++;
     }
 
-    StackInterface lFusedStack = fuseStacks(lContainer, lInputImageKeys);
-    if (lFusedStack == null) {
+    StackInterface lFusedStack = fuseStacks(lContainer,
+                                            lInputImageKeys);
+    if (lFusedStack == null)
+    {
       return false;
     }
 
@@ -52,8 +60,8 @@ public class InterleavedFusionInstruction extends FusionInstruction implements
   }
 
   @Override
-  public InterleavedFusionInstruction copy() {
+  public InterleavedFusionInstruction copy()
+  {
     return new InterleavedFusionInstruction(getLightSheetMicroscope());
   }
 }
-

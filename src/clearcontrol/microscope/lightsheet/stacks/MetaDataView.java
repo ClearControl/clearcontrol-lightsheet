@@ -34,19 +34,27 @@ public enum MetaDataView implements MetaDataEntryInterface<Integer>
     Integer lCameraIndex =
                          pStackMetaData.getValue(MetaDataView.Camera);
 
-
-
-    if (pStackMetaData.getValue(MetaDataAcquisitionType.AcquisitionType) == AcquisitionType.TimeLapseInterleaved) {
-      return "C" + pStackMetaData.getValue(MetaDataView.Camera) + "interleaved";
-    } else if (pStackMetaData.getValue(MetaDataAcquisitionType.AcquisitionType) == AcquisitionType.TimeLapseOpticallyCameraFused) {
-      return "C" + pStackMetaData.getValue(MetaDataView.Camera) + "opticallycamerafused";
-    } else{
-      Integer lLightSheetIndex = pStackMetaData.getValue(MetaDataView.LightSheet);
+    if (pStackMetaData.getValue(MetaDataAcquisitionType.AcquisitionType) == AcquisitionType.TimeLapseInterleaved)
+    {
+      return "C" + pStackMetaData.getValue(MetaDataView.Camera)
+             + "interleaved";
+    }
+    else if (pStackMetaData.getValue(MetaDataAcquisitionType.AcquisitionType) == AcquisitionType.TimeLapseOpticallyCameraFused)
+    {
+      return "C" + pStackMetaData.getValue(MetaDataView.Camera)
+             + "opticallycamerafused";
+    }
+    else
+    {
+      Integer lLightSheetIndex =
+                               pStackMetaData.getValue(MetaDataView.LightSheet);
 
       if (lCameraIndex == null || lLightSheetIndex == null)
         return null;
 
-      String lKey = String.format("C%dL%d", (int) lCameraIndex, (int) lLightSheetIndex);
+      String lKey = String.format("C%dL%d",
+                                  (int) lCameraIndex,
+                                  (int) lLightSheetIndex);
       return lKey;
     }
   }

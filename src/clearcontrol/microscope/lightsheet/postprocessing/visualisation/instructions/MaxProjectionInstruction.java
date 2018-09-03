@@ -1,5 +1,7 @@
 package clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructions;
 
+import java.io.File;
+
 import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
@@ -13,67 +15,93 @@ import clearcontrol.stack.StackInterface;
 import ij.IJ;
 import ij.ImagePlus;
 
-import java.io.File;
-
 /**
- * The thumbnail generator create a thumbnail of the oldest image stack in the warehouse and saves it the current working directory
+ * The thumbnail generator create a thumbnail of the oldest image stack in the
+ * warehouse and saves it the current working directory
  *
  *
- * Author: @haesleinhuepf
- * April 2018
+ * Author: @haesleinhuepf April 2018
  */
-public class MaxProjectionInstruction<T extends StackInterfaceContainer> extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class MaxProjectionInstruction<T extends StackInterfaceContainer>
+                                     extends
+                                     LightSheetMicroscopeInstructionBase
+                                     implements LoggingFeature
+{
 
-    private final Class<T> mClass;
+  private final Class<T> mClass;
 
-    /**
-     * INstanciates a virtual device with a given name
-     *
-     */
-    public MaxProjectionInstruction(Class<T> pClass, LightSheetMicroscope pLightSheetMicroscope) {
-        super("Post-processing: Thumbnail (max projection) generator for " + pClass.getSimpleName(), pLightSheetMicroscope);
-        mClass = pClass;
-    }
+  /**
+   * INstanciates a virtual device with a given name
+   *
+   */
+  public MaxProjectionInstruction(Class<T> pClass,
+                                  LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super("Post-processing: Thumbnail (max projection) generator for "
+          + pClass.getSimpleName(), pLightSheetMicroscope);
+    mClass = pClass;
+  }
 
-    @Override
-    public boolean initialize() {
-        return true;
-    }
+  @Override
+  public boolean initialize()
+  {
+    return true;
+  }
 
-    @Override
-    public boolean enqueue(long pTimePoint) {
-        // Read oldest image from the warehouse
-        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
+  @Override
+  public boolean enqueue(long pTimePoint)
+  {
+    // Read oldest image from the warehouse
+    DataWarehouse lDataWarehouse =
+                                 getLightSheetMicroscope().getDataWarehouse();
 
-        T lContainer = lDataWarehouse.getOldestContainer(mClass);
+    T lContainer = lDataWarehouse.getOldestContainer(mClass);
 
-        String key = lContainer.keySet().iterator().next();
-        StackInterface lStack = lContainer.get(key);
+    String key = lContainer.keySet().iterator().next();
+    StackInterface lStack = lContainer.get(key);
 
-        String targetFolder = getLightSheetMicroscope().getDevice(LightSheetTimelapse.class, 0).getWorkingDirectory().toString();
-        long lTimePoint = lContainer.getTimepoint();
-        int lDigits = 6;
+    String targetFolder = getLightSheetMicroscope()
+                                                   .getDevice(LightSheetTimelapse.class,
+                                                              0)
+                                                   .getWorkingDirectory()
+                                                   .toString();
+    long lTimePoint = lContainer.getTimepoint();
+    int lDigits = 6;
 
-        // Process the image
-        ClearCLIJ clij = ClearCLIJ.getInstance();
-        ClearCLImage lCLImage = clij.converter(lStack).getClearCLImage();
-        ClearCLImage lCLMaximumProjectionImage = clij.createCLImage(new long[]{lCLImage.getWidth(), lCLImage.getHeight()}, lCLImage.getChannelDataType());
+    // Process the image
+    ClearCLIJ clij = ClearCLIJ.getInstance();
+    ClearCLImage lCLImage = clij.converter(lStack).getClearCLImage();
+    ClearCLImage lCLMaximumProjectionImage =
+                                           clij.createCLImage(new long[]
+                                           { lCLImage.getWidth(), lCLImage.getHeight() }, lCLImage.getChannelDataType());
 
-        Kernels.maxProjection(clij, lCLImage, lCLMaximumProjectionImage);
+    Kernels.maxProjection(clij, lCLImage, lCLMaximumProjectionImage);
 
-        ImagePlus lImpMaximumProjection = clij.converter(lCLMaximumProjectionImage).getImagePlus();
-        lCLImage.close();
-        lCLMaximumProjectionImage.close();
+    ImagePlus lImpMaximumProjection =
+                                    clij.converter(lCLMaximumProjectionImage)
+                                        .getImagePlus();
+    lCLImage.close();
+    lCLMaximumProjectionImage.close();
 
-        new File(targetFolder + "/stacks/thumbnails_max/").mkdirs();
+    new File(targetFolder + "/stacks/thumbnails_max/").mkdirs();
 
-        IJ.run(lImpMaximumProjection, "Enhance Contrast", "saturated=0.35");
-        IJ.saveAsTiff(lImpMaximumProjection, targetFolder + "/stacks/thumbnails_max/" +  String.format("%0" + lDigits + "d", lTimePoint) + ".tif");
-        return true;
-    }
+    IJ.run(lImpMaximumProjection,
+           "Enhance Contrast",
+           "saturated=0.35");
+    IJ.saveAsTiff(lImpMaximumProjection,
+                  targetFolder + "/stacks/thumbnails_max/"
+                                         + String.format("%0"
+                                                         + lDigits
+                                                         + "d",
+                                                         lTimePoint)
+                                         + ".tif");
+    return true;
+  }
 
-    @Override
-    public MaxProjectionInstruction copy() {
-        return new MaxProjectionInstruction(mClass, getLightSheetMicroscope());
-    }
+  @Override
+  public MaxProjectionInstruction copy()
+  {
+    return new MaxProjectionInstruction(mClass,
+                                        getLightSheetMicroscope());
+  }
 }

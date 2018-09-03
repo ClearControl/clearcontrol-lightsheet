@@ -335,10 +335,14 @@ public class InterpolatedAcquisitionState extends
 
     getInterpolationTables().set(pInterpolatedAcquisitionState.getInterpolationTables());
 
-    getStackZLowVariable().set(pInterpolatedAcquisitionState.getStackZLowVariable().get());
-    getStackZHighVariable().set(pInterpolatedAcquisitionState.getStackZHighVariable().get());
-    getStackZStepVariable().set(pInterpolatedAcquisitionState.getStackZStepVariable().get());
-    getNumberOfZPlanesVariable().set(pInterpolatedAcquisitionState.getNumberOfZPlanesVariable().get());
+    getStackZLowVariable().set(pInterpolatedAcquisitionState.getStackZLowVariable()
+                                                            .get());
+    getStackZHighVariable().set(pInterpolatedAcquisitionState.getStackZHighVariable()
+                                                             .get());
+    getStackZStepVariable().set(pInterpolatedAcquisitionState.getStackZStepVariable()
+                                                             .get());
+    getNumberOfZPlanesVariable().set(pInterpolatedAcquisitionState.getNumberOfZPlanesVariable()
+                                                                  .get());
 
     for (int i = 0; i < mCameraOnOff.length; i++)
       mCameraOnOff[i] =
@@ -551,13 +555,17 @@ public class InterpolatedAcquisitionState extends
 
     lQueue.clearQueue();
 
-    int lEDFRelativeMinSliceDistance = - (pExtendedDepthOfFieldSliceCount / 2);
-    int lEDFRelativeMaxSliceDistance = pExtendedDepthOfFieldSliceCount + lEDFRelativeMinSliceDistance;
-
+    int lEDFRelativeMinSliceDistance =
+                                     -(pExtendedDepthOfFieldSliceCount
+                                       / 2);
+    int lEDFRelativeMaxSliceDistance = pExtendedDepthOfFieldSliceCount
+                                       + lEDFRelativeMinSliceDistance;
 
     for (int lIndex = 0; lIndex < lStackDepthInPlanes; lIndex++)
     {
-      for (int lRelativeIndex = lIndex + lEDFRelativeMinSliceDistance; lRelativeIndex <= lIndex + lEDFRelativeMaxSliceDistance; lRelativeIndex ++)
+      for (int lRelativeIndex = lIndex
+                                + lEDFRelativeMinSliceDistance; lRelativeIndex <= lIndex
+                                                                                  + lEDFRelativeMaxSliceDistance; lRelativeIndex++)
       {
         applyAcquisitionStateAtStackPlane(lQueue,
                                           lRelativeIndex,

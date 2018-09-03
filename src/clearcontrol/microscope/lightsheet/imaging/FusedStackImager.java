@@ -16,19 +16,21 @@ import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
 
 /**
- * The fused imager is a sychronous imager.
- * After calling its acquire method, it will e.g. take 8 image stacks
- * in sequential acquisition mode, fuse them and return the resulting
- * stack
+ * The fused imager is a sychronous imager. After calling its acquire method, it
+ * will e.g. take 8 image stacks in sequential acquisition mode, fuse them and
+ * return the resulting stack
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * March 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) March 2018
  */
-public class FusedStackImager implements ImagerInterface, LoggingFeature
+public class FusedStackImager implements
+                              ImagerInterface,
+                              LoggingFeature
 {
   private LightSheetMicroscope mLightSheetMicroscope;
 
-  private AcquisitionType mAcquisitionType = AcquisitionType.TimeLapseInterleaved;
+  private AcquisitionType mAcquisitionType =
+                                           AcquisitionType.TimeLapseInterleaved;
   private double mMinZ = 0;
   private double mMaxZ = 0;
   private double mSliceDistance = 2.0;
@@ -36,47 +38,73 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
   private int mImageHeight;
   private int mImageWidth;
 
-  public FusedStackImager(LightSheetMicroscope pLightSheetMicroscope) {
+  public FusedStackImager(LightSheetMicroscope pLightSheetMicroscope)
+  {
     mLightSheetMicroscope = pLightSheetMicroscope;
-    mMinZ = pLightSheetMicroscope.getDetectionArm(0).getZVariable().getMin().doubleValue();
-    mMaxZ = pLightSheetMicroscope.getDetectionArm(0).getZVariable().getMax().doubleValue();
+    mMinZ =
+          pLightSheetMicroscope.getDetectionArm(0)
+                               .getZVariable()
+                               .getMin()
+                               .doubleValue();
+    mMaxZ =
+          pLightSheetMicroscope.getDetectionArm(0)
+                               .getZVariable()
+                               .getMax()
+                               .doubleValue();
 
   }
 
-  public StackInterface acquire() {
+  public StackInterface acquire()
+  {
 
     // set the imaging state
-    InterpolatedAcquisitionState lCurrentState = (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager().getCurrentState();
-    lCurrentState.getExposureInSecondsVariable().set(mExposureTimeInSeconds);
+    InterpolatedAcquisitionState lCurrentState =
+                                               (InterpolatedAcquisitionState) mLightSheetMicroscope.getAcquisitionStateManager()
+                                                                                                   .getCurrentState();
+    lCurrentState.getExposureInSecondsVariable()
+                 .set(mExposureTimeInSeconds);
     lCurrentState.getStackZLowVariable().set(mMinZ);
     lCurrentState.getStackZHighVariable().set(mMaxZ);
-    lCurrentState.getNumberOfZPlanesVariable().set((mMaxZ - mMinZ) / mSliceDistance + 1);
+    lCurrentState.getNumberOfZPlanesVariable()
+                 .set((mMaxZ - mMinZ) / mSliceDistance + 1);
     lCurrentState.getImageWidthVariable().set(mImageWidth);
     lCurrentState.getImageHeightVariable().set(mImageHeight);
 
-    LightSheetFastFusionProcessor
-        lProcessor =
-        mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class, 0);
+    LightSheetFastFusionProcessor lProcessor =
+                                             mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class,
+                                                                             0);
     lProcessor.initializeEngine();
     lProcessor.reInitializeEngine();
     lProcessor.getEngine().reset(true);
 
-
     AbstractAcquistionInstruction lAcquisitionScheduler;
     FusionInstruction lFusionScheduler;
-    switch (mAcquisitionType) {
+    switch (mAcquisitionType)
+    {
     case TimelapseSequential:
-      lAcquisitionScheduler = mLightSheetMicroscope.getDevice(SequentialAcquisitionInstruction.class, 0);
-      lFusionScheduler = mLightSheetMicroscope.getDevice(SequentialFusionInstruction.class, 0);
+      lAcquisitionScheduler =
+                            mLightSheetMicroscope.getDevice(SequentialAcquisitionInstruction.class,
+                                                            0);
+      lFusionScheduler =
+                       mLightSheetMicroscope.getDevice(SequentialFusionInstruction.class,
+                                                       0);
       break;
     case TimeLapseOpticallyCameraFused:
-      lAcquisitionScheduler = mLightSheetMicroscope.getDevice(OpticsPrefusedAcquisitionInstruction.class, 0);
-      lFusionScheduler = mLightSheetMicroscope.getDevice(OpticsPrefusedFusionInstruction.class, 0);
+      lAcquisitionScheduler =
+                            mLightSheetMicroscope.getDevice(OpticsPrefusedAcquisitionInstruction.class,
+                                                            0);
+      lFusionScheduler =
+                       mLightSheetMicroscope.getDevice(OpticsPrefusedFusionInstruction.class,
+                                                       0);
       break;
     case TimeLapseInterleaved:
     default:
-      lAcquisitionScheduler = mLightSheetMicroscope.getDevice(InterleavedAcquisitionInstruction.class, 0);
-      lFusionScheduler = mLightSheetMicroscope.getDevice(InterleavedFusionInstruction.class, 0);
+      lAcquisitionScheduler =
+                            mLightSheetMicroscope.getDevice(InterleavedAcquisitionInstruction.class,
+                                                            0);
+      lFusionScheduler =
+                       mLightSheetMicroscope.getDevice(InterleavedFusionInstruction.class,
+                                                       0);
       break;
     }
 
@@ -86,7 +114,9 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
     lFusionScheduler.initialize();
     lFusionScheduler.enqueue(0);
 
-    StackInterface lStack = ((FusedImageDataContainer)mLightSheetMicroscope.getDataWarehouse().getOldestContainer(FusedImageDataContainer.class)).get("fused");
+    StackInterface lStack =
+                          ((FusedImageDataContainer) mLightSheetMicroscope.getDataWarehouse()
+                                                                          .getOldestContainer(FusedImageDataContainer.class)).get("fused");
     return lStack;
   }
 
@@ -97,8 +127,11 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
 
   public void setAcquisitionType(AcquisitionType pAcquisitionType)
   {
-    if (pAcquisitionType == AcquisitionType.Interactive || pAcquisitionType == AcquisitionType.TimeLapse) {
-      warning("Acquistion type " + pAcquisitionType + " is not supported!");
+    if (pAcquisitionType == AcquisitionType.Interactive
+        || pAcquisitionType == AcquisitionType.TimeLapse)
+    {
+      warning("Acquistion type " + pAcquisitionType
+              + " is not supported!");
       return;
     }
     this.mAcquisitionType = pAcquisitionType;
@@ -124,13 +157,13 @@ public class FusedStackImager implements ImagerInterface, LoggingFeature
     this.mExposureTimeInSeconds = pExposureTimeInSeconds;
   }
 
-
   public void setImageHeight(int pImageHeight)
   {
     this.mImageHeight = pImageHeight;
   }
 
-  public void setImageWidth(int pImageWidth) {
+  public void setImageWidth(int pImageWidth)
+  {
     this.mImageWidth = pImageWidth;
   }
 }

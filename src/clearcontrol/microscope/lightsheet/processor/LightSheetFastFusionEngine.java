@@ -1,6 +1,5 @@
 package clearcontrol.microscope.lightsheet.processor;
 
-import java.io.IOException;
 import java.util.List;
 
 import clearcl.ClearCLContext;
@@ -52,14 +51,12 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                                           .getBooleanProperty("fastfuse.downscale",
                                                                               true);
 
-
   private volatile double mMemRatio =
                                     MachineConfiguration.get()
                                                         .getDoubleProperty("fastfuse.memratio",
                                                                            0.8);
 
   private Object mRunningLock = new Object();
-
 
   private boolean mTimeStepping = true;
 
@@ -253,20 +250,30 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
     } else*/
 
     ImageChannelDataType lInitialFusionDataType =
-        isRegistration() ? ImageChannelDataType.Float
-                         : ImageChannelDataType.UnsignedInt16;
+                                                isRegistration() ? ImageChannelDataType.Float
+                                                                 : ImageChannelDataType.UnsignedInt16;
 
     if (isDownscale())
     {
       // process optically camera-fused input
-      addTask(new DownsampleXYbyHalfTask("C0opticallycamerafused", "C0", Type.Median, lInitialFusionDataType ));
+      addTask(new DownsampleXYbyHalfTask("C0opticallycamerafused",
+                                         "C0",
+                                         Type.Median,
+                                         lInitialFusionDataType));
       addTask(new MemoryReleaseTask("C0", "C0opticallycamerafused"));
-      addTask(new DownsampleXYbyHalfTask("C1opticallycamerafused", "C1", Type.Median, lInitialFusionDataType ));
+      addTask(new DownsampleXYbyHalfTask("C1opticallycamerafused",
+                                         "C1",
+                                         Type.Median,
+                                         lInitialFusionDataType));
       addTask(new MemoryReleaseTask("C1", "C1opticallycamerafused"));
 
       // process interleaved acquisition input
-      addTasks(StackSplitTask.splitStackAndReleaseInputs("C0interleaved", new String[]{"C0L0d","C0L1d","C0L2d","C0L3d"}, true));
-      addTasks(StackSplitTask.splitStackAndReleaseInputs("C1interleaved", new String[]{"C1L0d","C1L1d","C1L2d","C1L3d"}, true));
+      addTasks(StackSplitTask.splitStackAndReleaseInputs("C0interleaved",
+                                                         new String[]
+                                                         { "C0L0d", "C0L1d", "C0L2d", "C0L3d" }, true));
+      addTasks(StackSplitTask.splitStackAndReleaseInputs("C1interleaved",
+                                                         new String[]
+                                                         { "C1L0d", "C1L1d", "C1L2d", "C1L3d" }, true));
 
       // process sequential acquisition input
       addTasks(DownsampleXYbyHalfTask.applyAndReleaseInputs(Type.Median,
@@ -287,8 +294,12 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
       addTask(new IdentityTask("C1opticallycamerafused", "C1"));
 
       // process interleaved acquisition input
-      addTasks(StackSplitTask.splitStackAndReleaseInputs("C0interleaved", new String[]{"C0L0d","C0L1d","C0L2d","C0L3d"}, false));
-      addTasks(StackSplitTask.splitStackAndReleaseInputs("C1interleaved", new String[]{"C1L0d","C1L1d","C1L2d","C1L3d"}, false));
+      addTasks(StackSplitTask.splitStackAndReleaseInputs("C0interleaved",
+                                                         new String[]
+                                                         { "C0L0d", "C0L1d", "C0L2d", "C0L3d" }, false));
+      addTasks(StackSplitTask.splitStackAndReleaseInputs("C1interleaved",
+                                                         new String[]
+                                                         { "C1L0d", "C1L1d", "C1L2d", "C1L3d" }, false));
 
       // process sequential acquisition input
       addTasks(IdentityTask.withSuffix("d",
@@ -301,7 +312,6 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                                        "C1L2",
                                        "C1L3"));
     }
-
 
     addTasks(CompositeTasks.fuseWithSmoothWeights("C0",
                                                   lInitialFusionDataType,
@@ -653,7 +663,7 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
                            lStackMetaData.getValue(MetaDataView.Camera);
       Integer lLightSheetIndex =
                                lStackMetaData.getValue(MetaDataView.LightSheet);
-
+      
       if (lCameraIndex == null || lLightSheetIndex == null)
       {
         pStack.release();
@@ -661,7 +671,9 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
       }
       */
 
-      if (mRegistrationTask != null && lStackMetaData != null && lStackMetaData.getVoxelDimX() != null && lStackMetaData.getVoxelDimZ() != null)
+      if (mRegistrationTask != null && lStackMetaData != null
+          && lStackMetaData.getVoxelDimX() != null
+          && lStackMetaData.getVoxelDimZ() != null)
       {
         float lZAspectRatio =
                             (float) (lStackMetaData.getVoxelDimZ()
@@ -679,8 +691,6 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
       }
 
       String lKey = MetaDataView.getCxLyString(lStackMetaData);
-
-
 
       synchronized (mRunningLock)
       {
@@ -921,6 +931,5 @@ public class LightSheetFastFusionEngine extends FastFusionEngine
   {
     this.mTimeStepping = mTimeStepping;
   }
-
 
 }

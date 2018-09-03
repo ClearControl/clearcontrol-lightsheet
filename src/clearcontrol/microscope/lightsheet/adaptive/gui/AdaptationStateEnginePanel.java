@@ -1,7 +1,5 @@
 package clearcontrol.microscope.lightsheet.adaptive.gui;
 
-import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.microscope.lightsheet.component.lightsheet.LightSheetQueue;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -12,11 +10,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Paint;
 import javafx.util.Duration;
+
+import javax.swing.*;
 
 import clearcontrol.core.device.name.ReadOnlyNameableInterface;
 import clearcontrol.core.variable.Variable;
@@ -24,6 +21,7 @@ import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.adaptive.AdaptationStateEngine;
 import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.HasControlPlaneState;
 import clearcontrol.microscope.lightsheet.adaptive.controlplanestate.gui.ControlPlaneStatePanel;
@@ -33,8 +31,6 @@ import clearcontrol.microscope.lightsheet.configurationstate.CanBeActive;
 import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStatePanel;
 import clearcontrol.microscope.lightsheet.gui.VariableLabel;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-
-import javax.swing.*;
 
 /**
  * Todo: this class may be too XWing specific and should move to its repository
@@ -63,9 +59,10 @@ public class AdaptationStateEnginePanel extends CustomGridPane
     int lRow = 0;
 
     mAdaptiveEngine = pAdaptationStateEngine.getAdaptiveEngine();
-    mLightSheetMicroscope = pAdaptationStateEngine.getLightSheetMicroscope();
-    mInterpolatedAcquisitionState = pAdaptationStateEngine.getInterpolatedAcquisitionState();
-
+    mLightSheetMicroscope =
+                          pAdaptationStateEngine.getLightSheetMicroscope();
+    mInterpolatedAcquisitionState =
+                                  pAdaptationStateEngine.getInterpolatedAcquisitionState();
 
     TabPane lTabPane = new TabPane();
     lTabPane.getTabs().add(buildCalibrationTab());
@@ -75,48 +72,45 @@ public class AdaptationStateEnginePanel extends CustomGridPane
 
   }
 
-
   private Tab buildLastStateTab()
   {
     int lRow = 0;
 
-
     CustomGridPane lGridPane = new CustomGridPane();
 
-    // The following blocks are XWing specific; they should move to the corresponding repository
-    if (mLightSheetMicroscope.getNumberOfLightSheets() > 0 )
+    // The following blocks are XWing specific; they should move to the
+    // corresponding repository
+    if (mLightSheetMicroscope.getNumberOfLightSheets() > 0)
     {
       Node lLightSheetNode = buildLightSheetCurrentStatePane(0);
       lLightSheetNode.setRotate(15);
       lGridPane.add(lLightSheetNode, 2, 1);
     }
-    if (mLightSheetMicroscope.getNumberOfLightSheets() > 1 )
+    if (mLightSheetMicroscope.getNumberOfLightSheets() > 1)
     {
       Node lLightSheetNode = buildLightSheetCurrentStatePane(1);
       lLightSheetNode.setRotate(-15);
       lGridPane.add(lLightSheetNode, 2, 0);
     }
-    if (mLightSheetMicroscope.getNumberOfLightSheets() > 2 )
+    if (mLightSheetMicroscope.getNumberOfLightSheets() > 2)
     {
       Node lLightSheetNode = buildLightSheetCurrentStatePane(2);
       lLightSheetNode.setRotate(15);
       lGridPane.add(lLightSheetNode, 0, 0);
     }
-    if (mLightSheetMicroscope.getNumberOfLightSheets() > 3 )
+    if (mLightSheetMicroscope.getNumberOfLightSheets() > 3)
     {
       Node lLightSheetNode = buildLightSheetCurrentStatePane(3);
       lLightSheetNode.setRotate(-15);
       lGridPane.add(lLightSheetNode, 0, 1);
     }
 
-
-
-    if (mLightSheetMicroscope.getNumberOfDetectionArms() > 0 )
+    if (mLightSheetMicroscope.getNumberOfDetectionArms() > 0)
     {
       Node lLightSheetNode = buildDetectionArmCurrentStatePane(0);
       lGridPane.add(lLightSheetNode, 1, 1);
     }
-    if (mLightSheetMicroscope.getNumberOfDetectionArms() > 1 )
+    if (mLightSheetMicroscope.getNumberOfDetectionArms() > 1)
     {
       Node lLightSheetNode = buildDetectionArmCurrentStatePane(1);
       lGridPane.add(lLightSheetNode, 1, 0);
@@ -124,8 +118,7 @@ public class AdaptationStateEnginePanel extends CustomGridPane
 
     lGridPane.setGap(50);
 
-
-    //lGridPane.add(placeHolder(300, 75), 1, 1);
+    // lGridPane.add(placeHolder(300, 75), 1, 1);
 
     Tab lMostRecentStateTab = new Tab("Most recent state");
     lMostRecentStateTab.setContent(lGridPane);
@@ -133,17 +126,20 @@ public class AdaptationStateEnginePanel extends CustomGridPane
     return lMostRecentStateTab;
   }
 
-  private Node placeHolder(int lWidth, int lHeight) {
+  private Node placeHolder(int lWidth, int lHeight)
+  {
     Label lPlaceHolder1 = new Label();
     lPlaceHolder1.setMinWidth(lWidth);
     lPlaceHolder1.setMinHeight(lHeight);
     return lPlaceHolder1;
   }
 
-  private Node buildDetectionArmCurrentStatePane(final int pDetectionArmIndex) {
-    //Variable<LightSheetMicroscopeQueue> lQueueVariable = new Variable<LightSheetMicroscopeQueue>("D" + pDetectionArmIndex + "lastQueue", mLightSheetMicroscope.getLastQueueVariable().get());
-    //mLightSheetMicroscope.getLastQueueVariable().sendUpdatesTo(lQueueVariable);
-
+  private Node buildDetectionArmCurrentStatePane(final int pDetectionArmIndex)
+  {
+    // Variable<LightSheetMicroscopeQueue> lQueueVariable = new
+    // Variable<LightSheetMicroscopeQueue>("D" + pDetectionArmIndex +
+    // "lastQueue", mLightSheetMicroscope.getLastQueueVariable().get());
+    // mLightSheetMicroscope.getLastQueueVariable().sendUpdatesTo(lQueueVariable);
 
     CustomGridPane lGridPane = new CustomGridPane();
 
@@ -153,7 +149,7 @@ public class AdaptationStateEnginePanel extends CustomGridPane
     final Label lQueueLengthLabel = new Label("Queue length");
     lGridPane.add(lQueueLengthLabel, 0, 1);
 
-/*
+    /*
     lQueueVariable.addSetListener(new VariableSetListener<LightSheetMicroscopeQueue>()
     {
       @Override public void setEvent(LightSheetMicroscopeQueue pCurrentValue,
@@ -164,26 +160,29 @@ public class AdaptationStateEnginePanel extends CustomGridPane
           @Override public void run()
           {
             lQueueLengthLabel.setText("Queue length: " + pNewValue.getDetectionArmDeviceQueue(pDetectionArmIndex).getQueueLength());
-
+    
           }
         });
-
+    
       }
     });
-*/
+    */
     Timeline timeline =
-        new Timeline(new KeyFrame(Duration.millis(500),
-                                  (ae) -> {
-                                    lZLabel.setText("Z: " + formatNumber(mLightSheetMicroscope.getDetectionArm(pDetectionArmIndex).getZVariable().get().doubleValue()));
+                      new Timeline(new KeyFrame(Duration.millis(500),
+                                                (ae) -> {
+                                                  lZLabel.setText("Z: "
+                                                                  + formatNumber(mLightSheetMicroscope.getDetectionArm(pDetectionArmIndex)
+                                                                                                      .getZVariable()
+                                                                                                      .get()
+                                                                                                      .doubleValue()));
 
-                                  }));
+                                                }));
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.play();
 
-
-
-
-    TitledPane lTitledPane = new TitledPane("Detection arm " + pDetectionArmIndex + " state",
+    TitledPane lTitledPane = new TitledPane("Detection arm "
+                                            + pDetectionArmIndex
+                                            + " state",
                                             lGridPane);
     lTitledPane.setAnimated(false);
     lTitledPane.setExpanded(true);
@@ -197,12 +196,15 @@ public class AdaptationStateEnginePanel extends CustomGridPane
 
   private Node buildLightSheetCurrentStatePane(final int pLightSheetIndex)
   {
-    //Variable<LightSheetMicroscopeQueue> lQueueVariable = new Variable<LightSheetMicroscopeQueue>("L" + pLightSheetIndex + "lastQueue", mLightSheetMicroscope.getLastQueueVariable().get());
-    //mLightSheetMicroscope.getLastQueueVariable().sendUpdatesTo(lQueueVariable);
+    // Variable<LightSheetMicroscopeQueue> lQueueVariable = new
+    // Variable<LightSheetMicroscopeQueue>("L" + pLightSheetIndex + "lastQueue",
+    // mLightSheetMicroscope.getLastQueueVariable().get());
+    // mLightSheetMicroscope.getLastQueueVariable().sendUpdatesTo(lQueueVariable);
 
     int maxColumns = 0;
     int presign = 1;
-    if (pLightSheetIndex > 1) {
+    if (pLightSheetIndex > 1)
+    {
       maxColumns = 3;
       presign = -1;
     }
@@ -231,8 +233,7 @@ public class AdaptationStateEnginePanel extends CustomGridPane
     final Label lWLabel = new Label("H");
     lGridPane.add(lWLabel, maxColumns + presign * 3, 1);
 
-
-/*
+    /*
     lQueueVariable.addSetListener(new VariableSetListener<LightSheetMicroscopeQueue>()
     {
       @Override public void setEvent(LightSheetMicroscopeQueue pCurrentValue,
@@ -242,56 +243,69 @@ public class AdaptationStateEnginePanel extends CustomGridPane
                           {
                             @Override public void run()
                             {
-
-
-
+    
+    
+    
                             }
                           });
-
+    
       }
     });*/
 
-
     Timeline timeline =
-        new Timeline(new KeyFrame(Duration.millis(500),
-                                  (ae) -> {
+                      new Timeline(new KeyFrame(Duration.millis(500),
+                                                (ae) -> {
 
-                                    if (mLightSheetMicroscope.getPlayedQueueVariable().get() != null)
-                                    {
-                                      LightSheetMicroscopeQueue pNewValue = mLightSheetMicroscope.getPlayedQueueVariable().get();
+                                                  if (mLightSheetMicroscope.getPlayedQueueVariable()
+                                                                           .get() != null)
+                                                  {
+                                                    LightSheetMicroscopeQueue pNewValue =
+                                                                                        mLightSheetMicroscope.getPlayedQueueVariable()
+                                                                                                             .get();
 
-                                      lXLabel.setText("X: " + formatNumber(pNewValue.getIX(pLightSheetIndex)));
-                                      lYLabel.setText("Y: " + formatNumber(pNewValue.getIY(pLightSheetIndex)));
-                                      lALabel.setText("A: " + formatNumber(pNewValue.getIA(pLightSheetIndex)));
-                                      lBLabel.setText("B: " + formatNumber(pNewValue.getIB(pLightSheetIndex)));
-                                      lWLabel.setText("W: " + formatNumber(pNewValue.getIW(pLightSheetIndex)));
-                                      lHLabel.setText("H: " + formatNumber(pNewValue.getIH(pLightSheetIndex)));
+                                                    lXLabel.setText("X: "
+                                                                    + formatNumber(pNewValue.getIX(pLightSheetIndex)));
+                                                    lYLabel.setText("Y: "
+                                                                    + formatNumber(pNewValue.getIY(pLightSheetIndex)));
+                                                    lALabel.setText("A: "
+                                                                    + formatNumber(pNewValue.getIA(pLightSheetIndex)));
+                                                    lBLabel.setText("B: "
+                                                                    + formatNumber(pNewValue.getIB(pLightSheetIndex)));
+                                                    lWLabel.setText("W: "
+                                                                    + formatNumber(pNewValue.getIW(pLightSheetIndex)));
+                                                    lHLabel.setText("H: "
+                                                                    + formatNumber(pNewValue.getIH(pLightSheetIndex)));
 
-                                      if (pNewValue.getI(pLightSheetIndex)) {
-                                        lLaserOnLabel.setStyle("-fx-background-color: blue;");
-                                      } else {
-                                        lLaserOnLabel.setStyle("");
-                                      }
+                                                    if (pNewValue.getI(pLightSheetIndex))
+                                                    {
+                                                      lLaserOnLabel.setStyle("-fx-background-color: blue;");
+                                                    }
+                                                    else
+                                                    {
+                                                      lLaserOnLabel.setStyle("");
+                                                    }
 
-                                    /*LightSheetMicroscopeQueue lQueue = lQueueVariable.get();
-                                    if (lQueue != null) {
-                                      lZLabel.setText("Z: " + formatNumber(lQueue.getIZ(pLightSheetIndex)));
-                                      //lZLabel.setText("Z: " + lQueue.getDZ(pDetectionArmIndex));
-                                    }*/
+                                                    /*LightSheetMicroscopeQueue lQueue = lQueueVariable.get();
+                                                    if (lQueue != null) {
+                                                      lZLabel.setText("Z: " + formatNumber(lQueue.getIZ(pLightSheetIndex)));
+                                                      //lZLabel.setText("Z: " + lQueue.getDZ(pDetectionArmIndex));
+                                                    }*/
 
-                                      lZLabel.setText("Z: " + formatNumber(
-                                          //    mLightSheetMicroscope.getLightSheet(pLightSheetIndex).getZVariable().get().doubleValue()
-                                          mLightSheetMicroscope.getPlayedQueueVariable()
-                                                               .get()
-                                                               .getIZ(
-                                                                   pLightSheetIndex)));
-                                    }
-                                  }));
+                                                    lZLabel.setText("Z: "
+                                                                    + formatNumber(
+                                                                                   // mLightSheetMicroscope.getLightSheet(pLightSheetIndex).getZVariable().get().doubleValue()
+                                                                                   mLightSheetMicroscope.getPlayedQueueVariable()
+                                                                                                        .get()
+                                                                                                        .getIZ(pLightSheetIndex)));
+                                                  }
+                                                }));
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.play();
     //
 
-    TitledPane lTitledPane = new TitledPane("Light sheet " + pLightSheetIndex + " state",
+    TitledPane lTitledPane = new TitledPane("Light sheet "
+                                            + pLightSheetIndex
+                                            + " state",
                                             lGridPane);
     lTitledPane.setAnimated(false);
     lTitledPane.setExpanded(true);
@@ -306,18 +320,15 @@ public class AdaptationStateEnginePanel extends CustomGridPane
 
     CustomGridPane lMainGridPane = new CustomGridPane();
 
-
     CustomGridPane lCustomGridPane = new CustomGridPane();
 
-    CalibrationEngine
-        lCalibrationEngine =
-        mLightSheetMicroscope.getDevice(CalibrationEngine.class, 0);
+    CalibrationEngine lCalibrationEngine =
+                                         mLightSheetMicroscope.getDevice(CalibrationEngine.class,
+                                                                         0);
 
-    ConfigurationStatePanel
-        lConfigurationStatePanel =
-        new ConfigurationStatePanel(lCalibrationEngine.getModuleList(),
-                                    mLightSheetMicroscope.getNumberOfLightSheets());
-
+    ConfigurationStatePanel lConfigurationStatePanel =
+                                                     new ConfigurationStatePanel(lCalibrationEngine.getModuleList(),
+                                                                                 mLightSheetMicroscope.getNumberOfLightSheets());
 
     TitledPane lTitledPane = new TitledPane("Calibration state",
                                             lConfigurationStatePanel);
@@ -342,19 +353,23 @@ public class AdaptationStateEnginePanel extends CustomGridPane
 
     buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(0),
                          2,
-                         1, lMainGridPane);
+                         1,
+                         lMainGridPane);
 
     buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(1),
                          2,
-                         0, lMainGridPane);
+                         0,
+                         lMainGridPane);
 
     buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(2),
                          0,
-                         0, lMainGridPane);
+                         0,
+                         lMainGridPane);
 
     buildLightSheetPanel(mLightSheetMicroscope.getLightSheet(3),
                          0,
-                         1, lMainGridPane);
+                         1,
+                         lMainGridPane);
 
     lCalibrationTab.setContent(lMainGridPane);
     return lCalibrationTab;
@@ -493,7 +508,8 @@ public class AdaptationStateEnginePanel extends CustomGridPane
     return lTitledPane;
   }
 
-  private String formatNumber(double pNumber){
+  private String formatNumber(double pNumber)
+  {
     return String.format("%.3f", pNumber);
   }
 }

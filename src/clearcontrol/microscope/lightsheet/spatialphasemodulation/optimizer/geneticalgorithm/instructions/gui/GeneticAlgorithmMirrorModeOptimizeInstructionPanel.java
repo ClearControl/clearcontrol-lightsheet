@@ -8,15 +8,17 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.genet
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 04 2018
+ * Author: @haesleinhuepf 04 2018
  */
-public class GeneticAlgorithmMirrorModeOptimizeInstructionPanel extends CustomGridPane {
-    public GeneticAlgorithmMirrorModeOptimizeInstructionPanel(GeneticAlgorithmMirrorModeOptimizeInstruction pGAScheduler) {
-        addIntegerField(pGAScheduler.getNumberOfEpochsPerTimePoint(), 0);
-        addIntegerField(pGAScheduler.getNumberOfMutations(), 1);
-        addIntegerField(pGAScheduler.getPopulationSize(), 2);
-        addDoubleField(pGAScheduler.getPositionZ(), 3);
-        addDoubleField(pGAScheduler.getZernikeRangeFactor(), 4);
-    }
+public class GeneticAlgorithmMirrorModeOptimizeInstructionPanel extends
+                                                                CustomGridPane
+{
+  public GeneticAlgorithmMirrorModeOptimizeInstructionPanel(GeneticAlgorithmMirrorModeOptimizeInstruction pGAScheduler)
+  {
+    addIntegerField(pGAScheduler.getNumberOfEpochsPerTimePoint(), 0);
+    addIntegerField(pGAScheduler.getNumberOfMutations(), 1);
+    addIntegerField(pGAScheduler.getPopulationSize(), 2);
+    addDoubleField(pGAScheduler.getPositionZ(), 3);
+    addDoubleField(pGAScheduler.getZernikeRangeFactor(), 4);
+  }
 }

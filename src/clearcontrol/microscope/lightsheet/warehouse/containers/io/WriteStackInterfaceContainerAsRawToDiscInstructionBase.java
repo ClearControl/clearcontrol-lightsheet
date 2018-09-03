@@ -12,26 +12,32 @@ import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.sourcesink.sink.FileStackSinkInterface;
 
 /**
- * This generalised IO Scheduler writes all images in a
- * StackInterfaceContainer of a given Class to disc.
+ * This generalised IO Scheduler writes all images in a StackInterfaceContainer
+ * of a given Class to disc.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
 public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase extends
-        LightSheetMicroscopeInstructionBase implements
-                                                                       LoggingFeature
+                                                                             LightSheetMicroscopeInstructionBase
+                                                                             implements
+                                                                             LoggingFeature
 {
   protected Class mContainerClass;
   protected String[] mImageKeys = null;
   protected String mChannelName = null;
 
-    /**
-     * INstanciates a virtual device with a given name
-     *
-     * @param pDeviceName device name
-     */
-  public WriteStackInterfaceContainerAsRawToDiscInstructionBase(String pDeviceName, Class pContainerClass, String[] pImageKeys, String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
+  /**
+   * INstanciates a virtual device with a given name
+   *
+   * @param pDeviceName
+   *          device name
+   */
+  public WriteStackInterfaceContainerAsRawToDiscInstructionBase(String pDeviceName,
+                                                                Class pContainerClass,
+                                                                String[] pImageKeys,
+                                                                String pChannelName,
+                                                                LightSheetMicroscope pLightSheetMicroscope)
   {
     super(pDeviceName, pLightSheetMicroscope);
     mContainerClass = pContainerClass;
@@ -42,23 +48,31 @@ public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase ext
     }
   }
 
-  @Override public boolean initialize()
+  @Override
+  public boolean initialize()
   {
     return false;
   }
 
-  @Override public boolean enqueue(long pTimePoint)
+  @Override
+  public boolean enqueue(long pTimePoint)
   {
-    LightSheetTimelapse lTimelapse = (LightSheetTimelapse) getLightSheetMicroscope().getDevice(TimelapseInterface.class, 0);
-    FileStackSinkInterface
-        lFileStackSinkInterface =
-        lTimelapse.getCurrentFileStackSinkVariable().get();
+    LightSheetTimelapse lTimelapse =
+                                   (LightSheetTimelapse) getLightSheetMicroscope().getDevice(TimelapseInterface.class,
+                                                                                             0);
+    FileStackSinkInterface lFileStackSinkInterface =
+                                                   lTimelapse.getCurrentFileStackSinkVariable()
+                                                             .get();
 
-    DataWarehouse lDataWarehouse = ((LightSheetMicroscope) getLightSheetMicroscope()).getDataWarehouse();
+    DataWarehouse lDataWarehouse =
+                                 ((LightSheetMicroscope) getLightSheetMicroscope()).getDataWarehouse();
 
-    StackInterfaceContainer lContainer = lDataWarehouse.getOldestContainer(mContainerClass);
-    if (lContainer == null) {
-      warning("No " + mContainerClass.getCanonicalName() + " found for saving");
+    StackInterfaceContainer lContainer =
+                                       lDataWarehouse.getOldestContainer(mContainerClass);
+    if (lContainer == null)
+    {
+      warning("No " + mContainerClass.getCanonicalName()
+              + " found for saving");
       return false;
     }
 
@@ -68,18 +82,22 @@ public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase ext
       if (mChannelName != null)
       {
         saveStack(lFileStackSinkInterface, mChannelName, lStack);
-      } else {
+      }
+      else
+      {
         saveStack(lFileStackSinkInterface, key, lStack);
       }
     }
     return true;
   }
 
-  private void saveStack(FileStackSinkInterface lSinkInterface, String pChannelName, StackInterface lStack){
+  private void saveStack(FileStackSinkInterface lSinkInterface,
+                         String pChannelName,
+                         StackInterface lStack)
+  {
     ElapsedTime.measureForceOutput(this + " stack saving",
-                                   () -> lSinkInterface.appendStack(
-                                       pChannelName,
-                                       lStack));
+                                   () -> lSinkInterface.appendStack(pChannelName,
+                                                                    lStack));
 
   }
 }

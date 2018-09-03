@@ -3,13 +3,14 @@ package clearcontrol.microscope.lightsheet.imaging;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
 public class SingleViewPlaneImager extends SingleViewStackImager
 {
 
-  public SingleViewPlaneImager(LightSheetMicroscope pLightSheetMicroscope, double pZ)
+  public SingleViewPlaneImager(LightSheetMicroscope pLightSheetMicroscope,
+                               double pZ)
   {
     super(pLightSheetMicroscope);
     mMinZ = pZ;

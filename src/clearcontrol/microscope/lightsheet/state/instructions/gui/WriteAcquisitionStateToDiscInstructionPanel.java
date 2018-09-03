@@ -9,14 +9,19 @@ import clearcontrol.microscope.lightsheet.state.instructions.WriteAcquisitionSta
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class WriteAcquisitionStateToDiscInstructionPanel extends CustomGridPane {
-    public WriteAcquisitionStateToDiscInstructionPanel(WriteAcquisitionStateToDiscInstruction pInstruction) {
-        StringVariableTextField lTextField = new StringVariableTextField(pInstruction.getFilename().getName(), pInstruction.getFilename());
-        add(lTextField.getLabel(), 0, 0);
-        add(lTextField.getTextField(), 1, 0);
+public class WriteAcquisitionStateToDiscInstructionPanel extends
+                                                         CustomGridPane
+{
+  public WriteAcquisitionStateToDiscInstructionPanel(WriteAcquisitionStateToDiscInstruction pInstruction)
+  {
+    StringVariableTextField lTextField =
+                                       new StringVariableTextField(pInstruction.getFilename()
+                                                                               .getName(),
+                                                                   pInstruction.getFilename());
+    add(lTextField.getLabel(), 0, 0);
+    add(lTextField.getTextField(), 1, 0);
 
-    }
+  }
 }

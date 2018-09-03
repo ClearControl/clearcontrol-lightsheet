@@ -11,7 +11,8 @@ import clearcontrol.core.log.LoggingFeature;
  * <p>
  * value = mat.get(x, y);
  *
- * This is a package private class. Don't use it, prefer ZernikePolynomialsDenseMatrix64F instead.
+ * This is a package private class. Don't use it, prefer
+ * ZernikePolynomialsDenseMatrix64F instead.
  *
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
@@ -30,7 +31,6 @@ class ZernikePolynomialMatrix implements LoggingFeature
 
   int width;
   int height;
-
 
   final static double tolerance = 0.0000001;
 
@@ -60,11 +60,10 @@ class ZernikePolynomialMatrix implements LoggingFeature
 
   public double get(int x, int y)
   {
-    double
-        radialDistanceSquared =
-        (Math.pow((double) x - centerX, 2) + Math.pow((double) y
-                                                      - centerY, 2))
-        / squaredMaximumRadius;
+    double radialDistanceSquared =
+                                 (Math.pow((double) x - centerX, 2)
+                                  + Math.pow((double) y - centerY, 2))
+                                   / squaredMaximumRadius;
 
     double t = 0;
     t = Math.atan((y - centerY) / (x - centerX));
@@ -76,12 +75,10 @@ class ZernikePolynomialMatrix implements LoggingFeature
 
     if (radialDistanceSquared <= 1)
     {
-      double
-          pol =
-          ZernikePolynomials.computeZnmr2t(n,
-                                           m,
-                                           radialDistanceSquared,
-                                           t);
+      double pol = ZernikePolynomials.computeZnmr2t(n,
+                                                    m,
+                                                    radialDistanceSquared,
+                                                    t);
       return pol;
     }
     return 0;
@@ -91,18 +88,23 @@ class ZernikePolynomialMatrix implements LoggingFeature
   {
     double[][] result = new double[width][height];
 
-    for (int x = 0; x < width; x++) {
-      for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++)
+    {
+      for (int y = 0; y < height; y++)
+      {
         result[x][y] = get(x, y);
       }
     }
     return result;
   }
 
-  public int getM() {
+  public int getM()
+  {
     return m;
   }
-  public int getN() {
+
+  public int getN()
+  {
     return n;
   }
 }
