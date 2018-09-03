@@ -15,3 +15,7 @@ hs_err_pid*
 /nbproject/private/
 settings.gradle
 /out/
+gradle/codeformat.eclipse.xml
+gradle/installGitHooks
+gradle/master.gradle
+gradle/spotless.gradle
