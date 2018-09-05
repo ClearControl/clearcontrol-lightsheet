@@ -598,7 +598,7 @@ public class SimulatedLightSheetMicroscope extends
 
     // Setup acquisition state IO
     addDevice( 0, new WriteAcquisitionStateToDiscInstruction(this));
-    addDevice( 0, new WriteAcquisitionStateToDiscInstruction(this));
+    addDevice( 0, new ReadAcquisitionStateFromDiscInstruction(this));
 
     // ------------------------------------------------------------------------
     // setup reades / simulated acquisition
