@@ -32,7 +32,7 @@ import clearcontrol.stack.metadata.MetaDataChannel;
  */
 public class SplitStackInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
 
-    private BoundedVariable<Integer> numberOfStacks = new BoundedVariable<Integer>("Number of stacks", 1, 1,Integer.MAX_VALUE);
+    private BoundedVariable<Integer> numberOfStacks = new BoundedVariable<Integer>("Number of stacks", 5, 1,Integer.MAX_VALUE);
 
     public SplitStackInstruction(LightSheetMicroscope microscope) {
         super("Post-processing: split stack", microscope);
