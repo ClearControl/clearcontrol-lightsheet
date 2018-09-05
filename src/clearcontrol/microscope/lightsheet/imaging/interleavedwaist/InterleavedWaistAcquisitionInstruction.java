@@ -47,7 +47,7 @@ public class InterleavedWaistAcquisitionInstruction extends
     {
         super("Acquisition: Interleaved waist CxL" + lightSheetIndex, pLightSheetMicroscope);
 
-        int numberOfPositions = 4;
+        int numberOfPositions = 5;
 
         lightSheetXPositions = new BoundedVariable[numberOfPositions];
         lightSheetYPositions = new BoundedVariable[numberOfPositions];
