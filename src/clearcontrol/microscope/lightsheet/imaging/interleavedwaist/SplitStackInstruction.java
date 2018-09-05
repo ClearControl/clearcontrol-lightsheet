@@ -73,7 +73,7 @@ public class SplitStackInstruction extends LightSheetMicroscopeInstructionBase i
 
             int numberOfStacks = getNumberOfStacks().get();
 
-            ClearCLImage[] splitImages = new ClearCLImage[numberOfStacks + 1];
+            ClearCLImage[] splitImages = new ClearCLImage[numberOfStacks];
             for (int l = 0; l < numberOfStacks; l++) {
                 splitImages[l] = clij.createCLImage(new long[]{
                         fullCLImage.getWidth(),
