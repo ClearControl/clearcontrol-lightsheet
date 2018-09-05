@@ -108,7 +108,7 @@ public class InterleavedWaistAcquisitionInstruction extends
                 queue.setI(lightSheetIndex.get(), true);
                 queue.setIX(lightSheetIndex.get(), lightSheetXPositions[l].get());
                 queue.setIY(lightSheetIndex.get(), lightSheetYPositions[l].get());
-                queue.setIZ(lightSheetIndex.get(), queue.getIZ(lightSheetIndex.get()) + lightSheetXPositions[l].get());
+                queue.setIZ(lightSheetIndex.get(), queue.getIZ(lightSheetIndex.get()) + lightSheetDeltaZPositions[l].get());
                 queue.addCurrentStateToQueue();
             }
         }
