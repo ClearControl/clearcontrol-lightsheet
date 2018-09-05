@@ -4,8 +4,10 @@ import clearcl.ClearCLImage;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused.HybridInterleavedOpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
@@ -30,7 +32,7 @@ import clearcontrol.stack.metadata.MetaDataChannel;
  * Author: @haesleinhuepf
  * September 2018
  */
-public class SplitStackInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature {
+public class SplitStackInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     private BoundedVariable<Integer> numberOfStacks = new BoundedVariable<Integer>("Number of stacks", 5, 1,Integer.MAX_VALUE);
 
@@ -46,7 +48,7 @@ public class SplitStackInstruction extends LightSheetMicroscopeInstructionBase i
     @Override
     public boolean enqueue(long pTimePoint) {
         DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
-        final HybridInterleavedOpticsPrefusedImageDataContainer
+        final StackInterfaceContainer
                 lContainer = lDataWarehouse.getOldestContainer(StackInterfaceContainer.class);
 
         SequentialImageDataContainer resultContainer = new SequentialImageDataContainer(getLightSheetMicroscope());
@@ -116,5 +118,10 @@ public class SplitStackInstruction extends LightSheetMicroscopeInstructionBase i
 
     public BoundedVariable<Integer> getNumberOfStacks() {
         return numberOfStacks;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{numberOfStacks};
     }
 }

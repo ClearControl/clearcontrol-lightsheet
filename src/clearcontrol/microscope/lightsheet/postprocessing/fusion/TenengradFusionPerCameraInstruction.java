@@ -5,7 +5,9 @@ import clearcl.enums.ImageChannelDataType;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
 import clearcl.imagej.utilities.ImageTypeConverter;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -28,7 +30,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * August 2018
  */
-public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeInstructionBase {
+public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface {
 
     private BoundedVariable<Double> blurWeightSigmaX = new BoundedVariable<Double>("Blur weights X sigma in pixels", 15.0, 0.0, Double.MAX_VALUE, 0.01);
     private BoundedVariable<Double> blurWeightSigmaY = new BoundedVariable<Double>("Blur weights Y sigma in pixels", 15.0, 0.0, Double.MAX_VALUE, 0.01);
@@ -131,5 +133,14 @@ public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeIns
 
     public BoundedVariable<Double> getBlurWeightSigmaZ() {
         return blurWeightSigmaZ;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getBlurWeightSigmaX(),
+                getBlurWeightSigmaY(),
+                getBlurWeightSigmaZ()
+        };
     }
 }

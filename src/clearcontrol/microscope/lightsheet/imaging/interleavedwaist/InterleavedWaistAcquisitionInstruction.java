@@ -1,8 +1,10 @@
 package clearcontrol.microscope.lightsheet.imaging.interleavedwaist;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionInstruction;
@@ -32,7 +34,8 @@ import java.util.concurrent.TimeoutException;
 public class InterleavedWaistAcquisitionInstruction extends
         AbstractAcquistionInstruction implements
         InstructionInterface,
-        LoggingFeature
+        LoggingFeature,
+        PropertyIOableInstructionInterface
 {
     BoundedVariable<Integer> lightSheetIndex = new BoundedVariable<Integer>("Light sheet index", 0, 0, Integer.MAX_VALUE);
 
@@ -200,6 +203,33 @@ public class InterleavedWaistAcquisitionInstruction extends
 
     public BoundedVariable<Integer> getLightSheetIndex() {
         return lightSheetIndex;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        Variable[] result = new Variable[lightSheetXPositions.length +
+                lightSheetYPositions.length +
+                lightSheetDeltaZPositions.length +
+                1 // lightsheetIndex
+                ];
+
+        int count = 0;
+        for (int i = 0; i < lightSheetXPositions.length; i++) {
+            result[count] = lightSheetXPositions[i];
+            count++;
+        }
+        for (int i = 0; i < lightSheetYPositions.length; i++) {
+            result[count] = lightSheetYPositions[i];
+            count++;
+        }
+        for (int i = 0; i < lightSheetDeltaZPositions.length; i++) {
+            result[count] = lightSheetDeltaZPositions[i];
+            count++;
+        }
+        result[count] = lightSheetIndex;
+        count++;
+
+        return result;
     }
 }
 

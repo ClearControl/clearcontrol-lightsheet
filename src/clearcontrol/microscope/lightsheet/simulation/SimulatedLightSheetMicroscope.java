@@ -69,19 +69,17 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.genet
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.sensorlessAO.SensorLessAOForSinglePlaneInstruction;
-import clearcontrol.microscope.lightsheet.state.instructions.WriteAcquisitionStateToDiscInstruction;
+import clearcontrol.microscope.lightsheet.state.instructions.*;
 import clearcontrol.microscope.lightsheet.state.spatial.FOVBoundingBox;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
-import clearcontrol.microscope.lightsheet.state.instructions.AcquisitionStateBackupRestoreInstruction;
-import clearcontrol.microscope.lightsheet.state.instructions.AcquisitionStateResetInstruction;
-import clearcontrol.microscope.lightsheet.state.instructions.InterpolatedAcquisitionStateLogInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.instructions.TimelapseStopInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteAllStacksAsRawToDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteSpecificStackToSpecificRawFolderInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropAllContainersOfTypeInstruction;
@@ -595,6 +593,9 @@ public class SimulatedLightSheetMicroscope extends
     // ------------------------------------------------------------------------
     // setup writers
     addDevice(0, new WriteSpecificStackToSpecificRawFolderInstruction("fused", "default", this));
+
+    addDevice(0, new WriteAllStacksAsRawToDiscInstruction(StackInterfaceContainer.class, this));
+
 
     // Setup acquisition state IO
     addDevice( 0, new WriteAcquisitionStateToDiscInstruction(this));
