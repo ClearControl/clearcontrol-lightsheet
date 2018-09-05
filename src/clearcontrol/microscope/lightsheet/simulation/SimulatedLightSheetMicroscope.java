@@ -44,6 +44,7 @@ import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefuse
 import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused.WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.*;
 import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.InterleavedWaistAcquisitionInstruction;
+import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.SplitStackInstruction;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.*;
 import clearcontrol.microscope.lightsheet.imaging.sequential.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.*;
@@ -626,6 +627,7 @@ public class SimulatedLightSheetMicroscope extends
 
     addDevice(0, new CropInstruction(getDataWarehouse(),0,0,256,256));
 
+    addDevice(0, new SplitStackInstruction(this));
 
     // ------------------------------------------------------------------------
     // setup projections
