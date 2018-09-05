@@ -36,6 +36,7 @@ public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeIns
     private BoundedVariable<Double> blurWeightSigmaY = new BoundedVariable<Double>("Blur weights Y sigma in pixels", 15.0, 0.0, Double.MAX_VALUE, 0.01);
     private BoundedVariable<Double> blurWeightSigmaZ = new BoundedVariable<Double>("Blur weights Z sigma in pixels", 5.0, 0.0, Double.MAX_VALUE, 0.01);
 
+    private BoundedVariable<Double> weightExponent = new BoundedVariable<Double>("Weight exponent", 1.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.001);
 
     /**
      * INstanciates a virtual device with a given name
@@ -96,7 +97,7 @@ public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeIns
             images.toArray(imagesIn);
 
             // fusion
-            Kernels.tenengradFusion(clij, fusionResult, weightBlurSigmas, imagesIn);
+            Kernels.tenengradFusion(clij, fusionResult, weightBlurSigmas, weightExponent.get().floatValue(), imagesIn);
 
             // Result conversion / storage
             Kernels.copy(clij, fusionResult, fusionResultAsUnsignedShort);
@@ -133,6 +134,10 @@ public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeIns
 
     public BoundedVariable<Double> getBlurWeightSigmaZ() {
         return blurWeightSigmaZ;
+    }
+
+    public BoundedVariable<Double> getWeightExponent() {
+        return weightExponent;
     }
 
     @Override

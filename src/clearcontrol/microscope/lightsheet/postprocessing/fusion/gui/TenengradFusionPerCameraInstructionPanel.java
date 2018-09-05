@@ -16,5 +16,6 @@ public class TenengradFusionPerCameraInstructionPanel extends CustomGridPane {
         addDoubleField(instruction.getBlurWeightSigmaX(), 0);
         addDoubleField(instruction.getBlurWeightSigmaY(), 1);
         addDoubleField(instruction.getBlurWeightSigmaZ(), 2);
+        addDoubleField(instruction.getWeightExponent(), 3);
     }
 }
