@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.imaging.interleavedgao;
+package clearcontrol.microscope.lightsheet.imaging.gafaso;
 
 import clearcontrol.ip.iqm.DCTS2D;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
@@ -12,21 +12,21 @@ import java.util.Iterator;
 import java.util.Random;
 
 /**
- * InterleavedGAOStateSolution
+ * AcquisitionStateSolution
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 09 2018
  */
-public class InterleavedGAOStateSolution implements SolutionInterface {
+public class AcquisitionStateSolution implements SolutionInterface {
 
     private final static Random random = new Random();
 
     HashMap<LightSheetDOF, Double> state = new HashMap<LightSheetDOF, Double>();
     HashMap<LightSheetDOF, Double> stepState = new HashMap<LightSheetDOF, Double>();
 
-    public InterleavedGAOStateSolution(HashMap<LightSheetDOF, Double> state, HashMap<LightSheetDOF, Double> stepState) {
+    public AcquisitionStateSolution(HashMap<LightSheetDOF, Double> state, HashMap<LightSheetDOF, Double> stepState) {
         for (LightSheetDOF key : state.keySet()) {
             this.state.put(key, state.get(key));
         }

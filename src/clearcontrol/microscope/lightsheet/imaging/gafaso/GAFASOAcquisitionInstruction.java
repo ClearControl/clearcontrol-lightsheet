@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.imaging.interleavedgao;
+package clearcontrol.microscope.lightsheet.imaging.gafaso;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
@@ -10,14 +10,12 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
-import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.InterleavedWaistAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.SplitStackInstruction;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.Population;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
-import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
@@ -31,14 +29,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * InterleavedGAOAcquisitionInstruction
+ * GAFASOAcquisitionInstruction
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 09 2018
  */
-public class InterleavedGAOAcquisitionInstruction  extends
+public class GAFASOAcquisitionInstruction extends
         AbstractAcquistionInstruction implements
         InstructionInterface,
         LoggingFeature,
@@ -50,14 +48,14 @@ public class InterleavedGAOAcquisitionInstruction  extends
     BoundedVariable<Integer> lightSheetIndex = new BoundedVariable<Integer>("Light sheet index", 0, 0, Integer.MAX_VALUE);
     BoundedVariable<Integer> detectionArmIndex = new BoundedVariable<Integer>("Detection arm index", 0, 0, Integer.MAX_VALUE);
 
-    Population<InterleavedGAOStateSolution> population;
+    Population<AcquisitionStateSolution> population;
 
     /**
      * INstanciates a virtual device with a given name
      */
-    public InterleavedGAOAcquisitionInstruction(int detectionArmIndex, int lightSheetIndex, LightSheetMicroscope pLightSheetMicroscope)
+    public GAFASOAcquisitionInstruction(int detectionArmIndex, int lightSheetIndex, LightSheetMicroscope pLightSheetMicroscope)
     {
-        super("Acquisition: Interleaved GAO C" + detectionArmIndex +  "L" + lightSheetIndex, pLightSheetMicroscope);
+        super("Acquisition: GAFASO C" + detectionArmIndex +  "L" + lightSheetIndex, pLightSheetMicroscope);
 
         this.lightSheetIndex.set(lightSheetIndex);
         this.detectionArmIndex.set(detectionArmIndex);
@@ -77,9 +75,9 @@ public class InterleavedGAOAcquisitionInstruction  extends
         stepStateMap.put(LightSheetDOF.IZ, 1.0);
         stepStateMap.put(LightSheetDOF.IX, 25.0);
 
-        InterleavedGAOStateSolution startSolution = new InterleavedGAOStateSolution(initialStateMap, stepStateMap);
+        AcquisitionStateSolution startSolution = new AcquisitionStateSolution(initialStateMap, stepStateMap);
 
-        population = new Population<InterleavedGAOStateSolution>(new InterleavedGAOStateSolutionFactory(startSolution), numberOfPositions, 1);
+        population = new Population<AcquisitionStateSolution>(new AcquisitionStateSolutionFactory(startSolution), numberOfPositions, 1);
 
         // mutate all but first
         for (int i = 1; i < numberOfPositions; i++) {
@@ -92,7 +90,7 @@ public class InterleavedGAOAcquisitionInstruction  extends
     @Override public boolean enqueue(long pTimePoint)
     {
         // debug
-        for (int i = 1; i < numberOfPositions; i++) {
+        for (int i = 0; i < numberOfPositions; i++) {
             info(population.getSolution(i).toString());
         }
 
@@ -139,7 +137,7 @@ public class InterleavedGAOAcquisitionInstruction  extends
 
                 // configure light sheets accordingly
                 queue.setI(lightSheetIndex.get(), true);
-                InterleavedGAOStateSolution solution = population.getSolution(l);
+                AcquisitionStateSolution solution = population.getSolution(l);
                 for (LightSheetDOF key : solution.state.keySet()) {
                     if (key == LightSheetDOF.IZ) {
                         queue.setIZ(lightSheetIndex.get(), queue.getIZ(lightSheetIndex.get()) + solution.state.get(key));
@@ -163,9 +161,9 @@ public class InterleavedGAOAcquisitionInstruction  extends
                 //queue.setIY(lightSheetIndex.get(), lightSheetYPositions[l].get());
                 //queue.setIZ(lightSheetIndex.get(), queue.getIZ(lightSheetIndex.get()) + lightSheetDeltaZPositions[l].get());
                 for (int k = 0; k < getLightSheetMicroscope().getNumberOfLightSheets(); k++) {
-                    System.out.println("on[" + k + "]: " + queue.getI(k));
+                    //System.out.println("on[" + k + "]: " + queue.getI(k));
                     queue.setI(k, k == lightSheetIndex.get());
-                    System.out.println("on[" + k + "]: " + queue.getI(k));
+                    //System.out.println("on[" + k + "]: " + queue.getI(k));
                 }
                 queue.addCurrentStateToQueue();
             }
@@ -255,8 +253,8 @@ public class InterleavedGAOAcquisitionInstruction  extends
     }
 
     @Override
-    public InterleavedWaistAcquisitionInstruction copy() {
-        return new InterleavedWaistAcquisitionInstruction(lightSheetIndex.get(), getLightSheetMicroscope());
+    public GAFASOAcquisitionInstruction copy() {
+        return new GAFASOAcquisitionInstruction(detectionArmIndex.get(), lightSheetIndex.get(), getLightSheetMicroscope());
     }
 
     public BoundedVariable<Integer> getLightSheetIndex() {

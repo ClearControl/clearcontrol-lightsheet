@@ -38,12 +38,12 @@ import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpti
 import clearcontrol.instructions.implementations.MeasureTimeInstruction;
 import clearcontrol.instructions.implementations.PauseInstruction;
 import clearcontrol.instructions.implementations.PauseUntilTimeAfterMeasuredTimeInstruction;
+import clearcontrol.microscope.lightsheet.imaging.gafaso.GAFASOAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused.HybridInterleavedOpticsPrefusedAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused.HybridInterleavedOpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused.HybridInterleavedOpticsPrefusedSplitImageDataInstruction;
 import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused.WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.*;
-import clearcontrol.microscope.lightsheet.imaging.interleavedgao.InterleavedGAOAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.InterleavedWaistAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.SplitStackInstruction;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.*;
@@ -557,7 +557,7 @@ public class SimulatedLightSheetMicroscope extends
         if (c == 0) {
           addDevice(0, new InterleavedWaistAcquisitionInstruction(l, this));
         }
-        addDevice(0, new InterleavedGAOAcquisitionInstruction(c, l,this));
+        addDevice(0, new GAFASOAcquisitionInstruction(c, l,this));
 
 
         ViewSingleLightSheetStackInstruction lViewSingleLightSheetStackScheduler = new ViewSingleLightSheetStackInstruction(c, l, this);
