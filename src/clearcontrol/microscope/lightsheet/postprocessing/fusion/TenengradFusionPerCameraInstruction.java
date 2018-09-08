@@ -5,6 +5,7 @@ import clearcl.enums.ImageChannelDataType;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
 import clearcl.imagej.utilities.ImageTypeConverter;
+import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * August 2018
  */
-public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface {
+public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
     private BoundedVariable<Double> blurWeightSigmaX = new BoundedVariable<Double>("Blur weights X sigma in pixels", 15.0, 0.0, Double.MAX_VALUE, 0.01);
     private BoundedVariable<Double> blurWeightSigmaY = new BoundedVariable<Double>("Blur weights Y sigma in pixels", 15.0, 0.0, Double.MAX_VALUE, 0.01);
@@ -66,6 +67,8 @@ public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeIns
 
         TenengradFusedStackInterfaceContainer containerOut = new TenengradFusedStackInterfaceContainer(pTimePoint);
 
+        info("Read container with " + containerIn.keySet());
+
         for (int c = 0; c < getLightSheetMicroscope().getNumberOfDetectionArms(); c++)
         {
             ArrayList<ClearCLImage> images = new ArrayList<ClearCLImage>();
@@ -87,6 +90,7 @@ public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeIns
 
             if (images.size() == 0) {
                 // no images from a given camera
+                warning("No images found for camera c" + c);
                 continue;
             }
 
@@ -95,6 +99,8 @@ public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeIns
 
             ClearCLImage[] imagesIn = new ClearCLImage[images.size()];
             images.toArray(imagesIn);
+
+            info("Fusing " + images.size() + " images");
 
             // fusion
             Kernels.tenengradFusion(clij, fusionResult, weightBlurSigmas, weightExponent.get().floatValue(), imagesIn);
@@ -145,7 +151,8 @@ public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeIns
         return new Variable[]{
                 getBlurWeightSigmaX(),
                 getBlurWeightSigmaY(),
-                getBlurWeightSigmaZ()
+                getBlurWeightSigmaZ(),
+                getWeightExponent()
         };
     }
 }

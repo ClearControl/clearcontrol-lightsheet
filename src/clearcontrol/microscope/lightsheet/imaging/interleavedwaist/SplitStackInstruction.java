@@ -34,7 +34,7 @@ import clearcontrol.stack.metadata.MetaDataChannel;
  */
 public class SplitStackInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
-    private BoundedVariable<Integer> numberOfStacks = new BoundedVariable<Integer>("Number of stacks", 5, 1,Integer.MAX_VALUE);
+    private BoundedVariable<Integer> numberOfStacks = new BoundedVariable<Integer>("Number of stacks", 9, 1,Integer.MAX_VALUE);
 
     public SplitStackInstruction(LightSheetMicroscope microscope) {
         super("Post-processing: split stack", microscope);
@@ -103,6 +103,8 @@ public class SplitStackInstruction extends LightSheetMicroscopeInstructionBase i
                 splitImages[l].close();
             }
         }
+
+        info("Put container with " + resultContainer.keySet());
 
         getLightSheetMicroscope().getDataWarehouse().put("split_" + pTimePoint, resultContainer);
 

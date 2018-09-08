@@ -37,6 +37,9 @@ public class InterleavedWaistAcquisitionInstruction extends
         LoggingFeature,
         PropertyIOableInstructionInterface
 {
+
+    private final static int numberOfPositions = 9;
+
     BoundedVariable<Integer> lightSheetIndex = new BoundedVariable<Integer>("Light sheet index", 0, 0, Integer.MAX_VALUE);
 
     BoundedVariable<Double>[] lightSheetXPositions;
@@ -50,7 +53,6 @@ public class InterleavedWaistAcquisitionInstruction extends
     {
         super("Acquisition: Interleaved waist CxL" + lightSheetIndex, pLightSheetMicroscope);
 
-        int numberOfPositions = 5;
 
         lightSheetXPositions = new BoundedVariable[numberOfPositions];
         lightSheetYPositions = new BoundedVariable[numberOfPositions];
@@ -60,6 +62,7 @@ public class InterleavedWaistAcquisitionInstruction extends
             lightSheetYPositions[i] = new BoundedVariable<Double>("Y" + i, 0.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.001);
             lightSheetDeltaZPositions[i] = new BoundedVariable<Double>("dZ" + i, 0.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.001);
         }
+        this.lightSheetIndex.set(lightSheetIndex);
 
         mChannelName.set("interleaved_waist");
     }
@@ -97,7 +100,9 @@ public class InterleavedWaistAcquisitionInstruction extends
         for (int lImageCounter = 0; lImageCounter
                 < numberOfImagesToTake; lImageCounter++)
         {
-            // acuqire an image per light sheet + one more
+            for (int l = 0; l < getLightSheetMicroscope().getNumberOfLightSheets(); l++) {
+                queue.setI(l, false);
+            }
             for (int l = 0; l
                     < lightSheetXPositions.length; l++)
             {
@@ -109,6 +114,11 @@ public class InterleavedWaistAcquisitionInstruction extends
                 queue.setIX(lightSheetIndex.get(), lightSheetXPositions[l].get());
                 queue.setIY(lightSheetIndex.get(), lightSheetYPositions[l].get());
                 queue.setIZ(lightSheetIndex.get(), queue.getIZ(lightSheetIndex.get()) + lightSheetDeltaZPositions[l].get());
+                for (int k = 0; k < getLightSheetMicroscope().getNumberOfLightSheets(); k++) {
+                    System.out.println("on[" + k + "]: " + queue.getI(k));
+                    queue.setI(k, k == lightSheetIndex.get());
+                    System.out.println("on[" + k + "]: " + queue.getI(k));
+                }
                 queue.addCurrentStateToQueue();
             }
         }
