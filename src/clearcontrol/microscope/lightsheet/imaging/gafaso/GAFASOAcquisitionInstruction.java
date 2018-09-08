@@ -42,11 +42,20 @@ public class GAFASOAcquisitionInstruction extends
         LoggingFeature,
         PropertyIOableInstructionInterface
 {
-
-    private final static int numberOfPositions = 9;
-
     BoundedVariable<Integer> lightSheetIndex = new BoundedVariable<Integer>("Light sheet index", 0, 0, Integer.MAX_VALUE);
     BoundedVariable<Integer> detectionArmIndex = new BoundedVariable<Integer>("Detection arm index", 0, 0, Integer.MAX_VALUE);
+
+    BoundedVariable<Integer> populationSize = new BoundedVariable<Integer>("Population size", 9, 2, 12);
+    private int numberOfPositions = populationSize.get();
+
+    BoundedVariable<Double> stepSizeZ = new BoundedVariable<Double>("Step size Z (in micron)", 1.0, 0.001, Double.MAX_VALUE, 0.001);
+    BoundedVariable<Double> stepSizeX = new BoundedVariable<Double>("Step size X (in micron)", 25.0, 0.001, Double.MAX_VALUE, 0.001);
+    BoundedVariable<Double> stepSizeAlpha = new BoundedVariable<Double>("Step size alpha (in degrees)", 1.0, 0.001, Double.MAX_VALUE, 0.001);
+
+    Variable<Boolean> optimizeZ = new Variable<Boolean>("Optimize Z", true);
+    Variable<Boolean> optimizeAlpha = new Variable<Boolean>("Optimize alpha", false);
+    Variable<Boolean> optimizeX = new Variable<Boolean>("Optimize X", true);
+
 
     Population<AcquisitionStateSolution> population;
 
@@ -68,14 +77,23 @@ public class GAFASOAcquisitionInstruction extends
         super.initialize();
 
         HashMap<LightSheetDOF, Double> initialStateMap = new HashMap<LightSheetDOF, Double>();
-        initialStateMap.put(LightSheetDOF.IZ, 0.0);
-        initialStateMap.put(LightSheetDOF.IX, 0.0);
-
         HashMap<LightSheetDOF, Double> stepStateMap = new HashMap<LightSheetDOF, Double>();
-        stepStateMap.put(LightSheetDOF.IZ, 1.0);
-        stepStateMap.put(LightSheetDOF.IX, 25.0);
 
+        if (optimizeZ.get()) {
+            stepStateMap.put(LightSheetDOF.IZ, stepSizeZ.get());
+            initialStateMap.put(LightSheetDOF.IZ, 0.0);
+        }
+        if (optimizeX.get()) {
+            stepStateMap.put(LightSheetDOF.IX, stepSizeX.get());
+            initialStateMap.put(LightSheetDOF.IX, 0.0);
+        }
+        if (optimizeAlpha.get()) {
+            stepStateMap.put(LightSheetDOF.IA, stepSizeAlpha.get());
+            initialStateMap.put(LightSheetDOF.IA, 0.0);
+        }
         AcquisitionStateSolution startSolution = new AcquisitionStateSolution(initialStateMap, stepStateMap);
+
+        numberOfPositions = populationSize.get();
 
         population = new Population<AcquisitionStateSolution>(new AcquisitionStateSolutionFactory(startSolution), numberOfPositions, 1);
 
@@ -266,12 +284,46 @@ public class GAFASOAcquisitionInstruction extends
         return detectionArmIndex;
     }
 
+    public BoundedVariable<Integer> getPopulationSize() {
+        return populationSize;
+    }
+
+    public BoundedVariable<Double> getStepSizeAlpha() {
+        return stepSizeAlpha;
+    }
+
+    public BoundedVariable<Double> getStepSizeX() {
+        return stepSizeX;
+    }
+
+    public BoundedVariable<Double> getStepSizeZ() {
+        return stepSizeZ;
+    }
+
+    public Variable<Boolean> getOptimizeAlpha() {
+        return optimizeAlpha;
+    }
+
+    public Variable<Boolean> getOptimizeX() {
+        return optimizeX;
+    }
+
+    public Variable<Boolean> getOptimizeZ() {
+        return optimizeZ;
+    }
+
     @Override
     public Variable[] getProperties() {
 
         return new Variable[]{
                 detectionArmIndex,
-                lightSheetIndex
+                lightSheetIndex,
+                stepSizeAlpha,
+                stepSizeX,
+                stepSizeZ,
+                optimizeAlpha,
+                optimizeX,
+                optimizeZ
         };
     }
 }
