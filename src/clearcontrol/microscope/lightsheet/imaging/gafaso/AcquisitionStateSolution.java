@@ -78,8 +78,24 @@ public class AcquisitionStateSolution implements SolutionInterface {
     }
 
     @Override
+    public boolean isSimilar(SolutionInterface s, double similarityTolerance) {
+        if (! (s instanceof AcquisitionStateSolution)) {
+            return false;
+        }
+
+        for (LightSheetDOF key : state.keySet()) {
+            if (Math.abs(state.get(key) - ((AcquisitionStateSolution) s).state.get(key)) > similarityTolerance) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
     public String toString() {
         String result = this.getClass().getSimpleName() + ": " + state;
         return result;
     }
+
 }

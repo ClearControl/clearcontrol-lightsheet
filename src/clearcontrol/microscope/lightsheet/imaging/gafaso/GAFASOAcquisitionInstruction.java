@@ -248,6 +248,7 @@ public class GAFASOAcquisitionInstruction extends
             population.getSolution(i).setStack(splitContainer.get("C" + detectionArmIndex.get() + "_" + i));
         }
         population.runEpoch();
+        population.removeDuplicates();
 
         return true;
     }

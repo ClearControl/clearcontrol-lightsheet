@@ -10,4 +10,6 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gene
 public interface SolutionInterface {
     double fitness();
     void mutate();
+
+    boolean isSimilar(SolutionInterface s, double similarityTolerance);
 }

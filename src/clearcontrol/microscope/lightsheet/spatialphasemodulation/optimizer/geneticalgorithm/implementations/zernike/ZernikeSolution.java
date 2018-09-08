@@ -83,6 +83,20 @@ public class ZernikeSolution implements SolutionInterface {
         mFactors[randomPosition] = randomValue;
     }
 
+    @Override
+    public boolean isSimilar(SolutionInterface s, double similarityTolerance) {
+        if (! (s instanceof ZernikeSolution)) {
+            return false;
+        }
+
+        for (int i = 0; i < mFactors.length; i++) {
+            if (Math.abs(mFactors[i] - ((ZernikeSolution) s).mFactors[i]) > similarityTolerance) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Initialize the list of Zernike modes which can be composed
      * @param pWidth

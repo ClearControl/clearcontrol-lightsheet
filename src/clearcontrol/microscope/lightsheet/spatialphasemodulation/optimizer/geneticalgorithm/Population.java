@@ -22,6 +22,8 @@ public class Population<S extends SolutionInterface> {
     ArrayList<S> mSolutionList;
     Random mRandom = new Random();
 
+    private final double similarityTolerance = 0.001;
+
     public Population(SolutionFactory<S> pFactory, int pPopulationSize, int pNumberOfMutations) {
         mFactory = pFactory;
         mSolutionList = new ArrayList<S>();
@@ -100,5 +102,41 @@ public class Population<S extends SolutionInterface> {
 
     public S getSolution(int index) {
         return mSolutionList.get(index);
+    }
+
+    public void removeDuplicates() {
+        int populationSize = mSolutionList.size();
+
+        boolean containedDuplicates = true;
+
+        while(containedDuplicates) {
+            containedDuplicates = false;
+            for (int i = 0; i < populationSize; i ++) {
+                for (int j = 0; j < populationSize; j ++) {
+                    if (i != j) {
+                        if (mSolutionList.get(i).isSimilar(mSolutionList.get(j), similarityTolerance)) {
+                            containedDuplicates = true;
+                            mSolutionList.remove(j);
+                            break;
+                        }
+                    }
+                }
+                if (containedDuplicates) {
+                    break;
+                }
+            }
+            if (containedDuplicates) {
+                // add a new individuum
+                S solution = mSolutionList.get(mRandom.nextInt(mSolutionList.size()));
+                solution.mutate();
+                mSolutionList.add(solution);
+            }
+
+            System.out.println("Removing S duplicates");
+            for (S s : mSolutionList) {
+                System.out.println("S: " + s.toString());
+            }
+        }
+
     }
 }
