@@ -43,6 +43,7 @@ import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefuse
 import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused.HybridInterleavedOpticsPrefusedSplitImageDataInstruction;
 import clearcontrol.microscope.lightsheet.imaging.hybridinterleavedopticsprefused.WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.*;
+import clearcontrol.microscope.lightsheet.imaging.interleavedgao.InterleavedGAOAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.InterleavedWaistAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.SplitStackInstruction;
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.*;
@@ -543,6 +544,7 @@ public class SimulatedLightSheetMicroscope extends
 
     String[] lOpticPrefusedStackKeys = new String[getNumberOfDetectionArms()];
     String[] lInterleavedStackKeys = new String[getNumberOfDetectionArms()];
+    String[] lInterleavedWaistStackKeys = new String[getNumberOfDetectionArms()];
     String[] lHybridInterleavedOpticsPrefusedStackKeys = new String[getNumberOfDetectionArms()];
     String[] lSequentialStackKeys = new String[getNumberOfDetectionArms() * getNumberOfLightSheets()];
 
@@ -555,6 +557,7 @@ public class SimulatedLightSheetMicroscope extends
         if (c == 0) {
           addDevice(0, new InterleavedWaistAcquisitionInstruction(l, this));
         }
+        addDevice(0, new InterleavedGAOAcquisitionInstruction(c, l,this));
 
 
         ViewSingleLightSheetStackInstruction lViewSingleLightSheetStackScheduler = new ViewSingleLightSheetStackInstruction(c, l, this);
@@ -582,6 +585,9 @@ public class SimulatedLightSheetMicroscope extends
       lOpticPrefusedStackKeys[c] = "C" + c + "opticsprefused";
       lInterleavedStackKeys[c] = "C" + c + "interleaved";
       lHybridInterleavedOpticsPrefusedStackKeys[c] = "hybrid_interleaved_opticsprefused";
+
+      lInterleavedWaistStackKeys[c] = "C" + c + "interleaved_waist";
+
 
       if (c == 0) {
         addDevice(0, new TenengradFusionPerCameraInstruction(this));
@@ -611,9 +617,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lSequentialStackKeys, this));
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lInterleavedStackKeys, this));
     addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lHybridInterleavedOpticsPrefusedStackKeys, this));
-
-
-
+    addDevice(0, new ReadStackInterfaceContainerFromDiscInstruction(lInterleavedWaistStackKeys, this));
 
     // ------------------------------------------------------------------------
     // setup processing

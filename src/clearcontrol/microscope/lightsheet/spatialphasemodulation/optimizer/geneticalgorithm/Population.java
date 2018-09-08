@@ -97,4 +97,8 @@ public class Population<S extends SolutionInterface> {
 
         return new Population<S>(mFactory, lNewSolutionList, mNumberOfMutations);
     }
+
+    public S getSolution(int index) {
+        return mSolutionList.get(index);
+    }
 }

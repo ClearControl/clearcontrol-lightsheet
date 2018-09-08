@@ -125,8 +125,8 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMi
             }
 
             lContainer.put(mDatasetNames[i], stack);
-            mReadTimePoint += mTimepointStepSize.get();
         }
+        mReadTimePoint += mTimepointStepSize.get();
         getLightSheetMicroscope().getDataWarehouse().put(lContainerWarehouseKey, lContainer);
 
         return false;
