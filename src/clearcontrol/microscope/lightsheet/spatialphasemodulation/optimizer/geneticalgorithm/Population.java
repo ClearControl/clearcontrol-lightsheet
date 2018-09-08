@@ -127,8 +127,7 @@ public class Population<S extends SolutionInterface> {
             }
             if (containedDuplicates) {
                 // add a new individuum
-                S solution = mSolutionList.get(mRandom.nextInt(mSolutionList.size()));
-                solution = mFactory.crossover(solution, solution);
+                S solution = mFactory.crossover(mSolutionList.get(mRandom.nextInt(mSolutionList.size())), mSolutionList.get(mRandom.nextInt(mSolutionList.size())));
                 solution.mutate();
                 mSolutionList.add(solution);
             }
