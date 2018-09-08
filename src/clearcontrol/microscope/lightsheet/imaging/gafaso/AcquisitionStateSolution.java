@@ -35,22 +35,15 @@ public class AcquisitionStateSolution implements SolutionInterface {
         }
     }
 
-    StackInterface stack;
 
-    public void setStack(StackInterface stack) {
-        this.stack = stack;
+    private double fitness = 0;
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
     }
 
     @Override
     public double fitness() {
-        if (stack == null) {
-            return 0;
-        }
-
-        DCTS2D dcts2D = new DCTS2D();
-        double[] quality = dcts2D.computeImageQualityMetric((OffHeapPlanarStack) stack);
-
-        return new Mean().evaluate(quality);
+        return fitness;
     }
 
     @Override
@@ -74,7 +67,7 @@ public class AcquisitionStateSolution implements SolutionInterface {
         }
         state.remove(key);
         state.put(key, value);
-        stack = null;
+        fitness = 0;
     }
 
     @Override
@@ -94,7 +87,7 @@ public class AcquisitionStateSolution implements SolutionInterface {
 
     @Override
     public String toString() {
-        String result = this.getClass().getSimpleName() + ": " + state;
+        String result = this.getClass().getSimpleName() + " (fit: " + fitness() + "): " + state;
         return result;
     }
 

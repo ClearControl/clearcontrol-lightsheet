@@ -1,5 +1,11 @@
 package clearcontrol.microscope.lightsheet.imaging.gafaso;
 
+import autopilot.image.DoubleArrayImage;
+import autopilot.measures.FocusMeasures;
+import clearcl.ClearCLImage;
+import clearcl.enums.ImageChannelDataType;
+import clearcl.imagej.ClearCLIJ;
+import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
@@ -22,6 +28,11 @@ import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.metadata.StackMetaData;
+import ij.IJ;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
+import net.imglib2.view.Views;
 
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -101,16 +112,14 @@ public class GAFASOAcquisitionInstruction extends
         for (int i = 1; i < numberOfPositions; i++) {
             population.getSolution(i).mutate();
         }
+        population.removeDuplicates();
+
 
         return true;
     }
 
     @Override public boolean enqueue(long pTimePoint)
     {
-        // debug
-        for (int i = 0; i < numberOfPositions; i++) {
-            info(population.getSolution(i).toString());
-        }
 
 
         mCurrentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
@@ -255,16 +264,43 @@ public class GAFASOAcquisitionInstruction extends
 
         getLightSheetMicroscope().getDataWarehouse().put("interleaved_waist_raw_" + pTimePoint, lContainer);
 
-        // Split stack
-        SplitStackInstruction splitter = new SplitStackInstruction(getLightSheetMicroscope());
-        splitter.initialize();
-        splitter.enqueue(pTimePoint);
+        ClearCLIJ clij = ClearCLIJ.getInstance();
+        ClearCLImage input = clij.converter(lStack).getClearCLImage();
+        ClearCLImage tenengradWeights = clij.createCLImage(input.getDimensions(), ImageChannelDataType.Float);
+        Kernels.tenengradWeightsSliceWise(clij, tenengradWeights, input);
 
-        // Measure quality, update population
-        StackInterfaceContainer splitContainer = (StackInterfaceContainer) getLightSheetMicroscope().getDataWarehouse().get("split_" + pTimePoint);
-        for (int i = 0; i < numberOfPositions; i ++) {
-            population.getSolution(i).setStack(splitContainer.get("C" + detectionArmIndex.get() + "_" + i));
+        ClearCLImage maxProjection = clij.createCLImage(new long[]{input.getWidth(), input.getHeight()}, ImageChannelDataType.UnsignedInt8);
+        ClearCLImage argMaxProjection = clij.createCLImage(new long[]{input.getWidth(), input.getHeight()}, ImageChannelDataType.UnsignedInt16);
+
+        Kernels.argMaxProjection(clij, tenengradWeights, maxProjection, argMaxProjection);
+
+        RandomAccessibleInterval<UnsignedShortType> argMaxImg = (RandomAccessibleInterval<UnsignedShortType>) clij.converter(argMaxProjection).getRandomAccessibleInterval();
+        Cursor<UnsignedShortType> cursor = Views.iterable(argMaxImg).cursor();
+
+        long[] argMaxHistogram = new long[numberOfPositions];
+        while(cursor.hasNext()) {
+            argMaxHistogram[cursor.next().get() % numberOfPositions]++;
         }
+
+        for (int i = 0; i < argMaxHistogram.length; i++) {
+            population.getSolution(i).setFitness(argMaxHistogram[i]);
+        }
+
+        //IJ.saveAsTiff(clij.converter(input).getImagePlus(), getLightSheetMicroscope().getTimelapse().getWorkingDirectory() + "input.tif");
+        //IJ.saveAsTiff(clij.converter(argMaxProjection).getImagePlus(), getLightSheetMicroscope().getTimelapse().getWorkingDirectory() + "argmax.tif");
+
+        input.close();
+        tenengradWeights.close();
+
+        maxProjection.close();
+        argMaxProjection.close();
+
+
+        // debug
+        for (int i = 0; i < numberOfPositions; i++) {
+            info(population.getSolution(i).toString());
+        }
+
         population.runEpoch();
         population.removeDuplicates();
 
