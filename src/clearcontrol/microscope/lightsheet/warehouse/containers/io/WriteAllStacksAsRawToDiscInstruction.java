@@ -5,21 +5,14 @@ import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
- * WriteAllStacksAsRawToDiscInstruction
- * <p>
- * <p>
- * <p>
- * Author: @haesleinhuepf 09 2018
+ * The WriteAllStacksAsRawToDiscInstruction gets the oldest container of a given
+ * class and stores all its image stacks to disc.
+ *
+ * Author: @haesleinhuepf September 2018
  */
 public class WriteAllStacksAsRawToDiscInstruction extends
                                                   WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
-  /**
-   * INstanciates a virtual device with a given name
-   *
-   * @param pContainerClass
-   * @param pLightSheetMicroscope
-   */
   public WriteAllStacksAsRawToDiscInstruction(Class pContainerClass,
                                               LightSheetMicroscope pLightSheetMicroscope)
   {

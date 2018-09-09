@@ -16,10 +16,9 @@ import ij.ImagePlus;
 import ij.measure.Calibration;
 
 /**
- * WriteStackInterfaceContainerAsTifToDiscInstruction
- * <p>
- * <p>
- * <p>
+ * The WriteStackInterfaceContainerAsTifToDiscInstruction writes a container to
+ * disc in TIF format.
+ *
  * Author: @haesleinhuepf 05 2018
  */
 public class WriteStackInterfaceContainerAsTifToDiscInstruction extends

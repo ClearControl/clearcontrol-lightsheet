@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * This DataContainer is used to store several image stack which belong together
  * because they were acquired together.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
- * (http://mpi-cbg.de) April 2018
+ * @author haesleinhuepf April 2018
  */
 public abstract class StackInterfaceContainer extends
                                               DataContainerBase

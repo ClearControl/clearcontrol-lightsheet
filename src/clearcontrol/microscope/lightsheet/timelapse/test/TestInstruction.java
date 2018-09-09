@@ -8,14 +8,12 @@ import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 
 /**
- * TestInstruction
- * <p>
- * <p>
- * <p>
- * Author: @haesleinhuepf 08 2018
+ * The TestInstruction just serves for ScheduleIOTest
+ *
+ * Author: @haesleinhuepf August 2018
  */
-public class TestInstruction extends InstructionBase implements
-                             PropertyIOableInstructionInterface
+class TestInstruction extends InstructionBase
+                      implements PropertyIOableInstructionInterface
 {
   public Variable<File> mFile =
                               new Variable<File>("File",

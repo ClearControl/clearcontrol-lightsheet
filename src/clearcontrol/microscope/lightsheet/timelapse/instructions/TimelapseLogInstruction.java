@@ -8,10 +8,9 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
 
 /**
- * TimelapseLogInstruction
- * <p>
- * <p>
- * <p>
+ * The TimelapseLogInstruction writes the current time lapse instruction list to
+ * disc.
+ *
  * Author: @haesleinhuepf 05 2018
  */
 public class TimelapseLogInstruction extends InstructionBase

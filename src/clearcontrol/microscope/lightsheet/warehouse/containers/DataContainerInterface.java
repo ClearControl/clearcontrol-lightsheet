@@ -6,14 +6,26 @@ package clearcontrol.microscope.lightsheet.warehouse.containers;
  * kind can be stored in the DataWarehouse and to ensure some systematic
  * interface to access stored objects.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
- * (http://mpi-cbg.de) April 2018
+ * @author haesleinhuepf April 2018
  */
 public interface DataContainerInterface
 {
+  /**
+   *
+   * @return the time point when the container was created
+   */
   public long getTimepoint();
 
+  /**
+   * Deprecated: This method was never really needed and will be removed soon.
+   * 
+   * @return true if the container is finished
+   */
+  @Deprecated
   public boolean isDataComplete();
 
+  /**
+   * Dispose the container and release memory if needed.
+   */
   public void dispose();
 }

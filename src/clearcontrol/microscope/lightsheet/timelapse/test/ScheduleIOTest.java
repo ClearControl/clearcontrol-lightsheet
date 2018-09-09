@@ -17,11 +17,10 @@ import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
 import org.junit.Test;
 
 /**
- * ScheduleIOTest
- * <p>
- * <p>
- * <p>
- * Author: @haesleinhuepf 08 2018
+ * The ScheduleIOTest tests if instruction lists can be written to and read from
+ * disc.
+ *
+ * Author: @haesleinhuepf August 2018
  */
 public class ScheduleIOTest
 {

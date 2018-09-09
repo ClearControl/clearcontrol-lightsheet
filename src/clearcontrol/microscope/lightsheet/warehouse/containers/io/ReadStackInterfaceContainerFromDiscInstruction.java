@@ -21,11 +21,11 @@ import clearcontrol.stack.sourcesink.source.RawFileStackSource;
 import coremem.recycling.RecyclerInterface;
 
 /**
- * ReadStackInterfaceContainerFromDiscInstruction
- * <p>
- * <p>
- * <p>
- * Author: @haesleinhuepf 05 2018
+ * The ReadStackInterfaceContainerFromDiscInstruction allows reading RAW images
+ * from disc. This allows simulation of workflows with data originally acquired
+ * by a microscope.
+ *
+ * Author: @haesleinhuepf May 2018
  */
 public class ReadStackInterfaceContainerFromDiscInstruction extends
                                                             LightSheetMicroscopeInstructionBase
@@ -54,10 +54,6 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends
 
   private long mReadTimePoint = 0;
 
-  /**
-   * INstanciates a virtual device with a given name
-   *
-   */
   public ReadStackInterfaceContainerFromDiscInstruction(String[] pDatasetNames,
                                                         LightSheetMicroscope pLightSheetMicroscope)
   {

@@ -4,20 +4,18 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 
 /**
- * MultipleExecutorInstruction
- * <p>
- * <p>
- * <p>
- * Author: @haesleinhuepf 05 2018
+ * The MultipleExecutorInstruction can execute a list of instructions.
+ *
+ * deprecated: Be careful: This code might be changed in the future. Try not to
+ * use this class!
+ *
+ * Author: @haesleinhuepf May 2018
  */
+@Deprecated
 public class MultipleExecutorInstruction extends InstructionBase
 {
   private final InstructionInterface[] schedulersToExecute;
 
-  /**
-   * INstanciates a virtual device with a given name
-   *
-   */
   public MultipleExecutorInstruction(InstructionInterface[] schedulersToExecute)
   {
     super("Smart: Execute several instructions "

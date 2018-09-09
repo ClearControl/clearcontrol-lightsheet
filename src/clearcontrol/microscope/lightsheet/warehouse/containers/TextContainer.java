@@ -3,7 +3,7 @@ package clearcontrol.microscope.lightsheet.warehouse.containers;
 /**
  * The TextContainer allows storing text in the data warehouse.
  *
- * Author: @haesleinhuepf 09 2018
+ * Author: @haesleinhuepf September 2018
  */
 public class TextContainer extends DataContainerBase
 {
