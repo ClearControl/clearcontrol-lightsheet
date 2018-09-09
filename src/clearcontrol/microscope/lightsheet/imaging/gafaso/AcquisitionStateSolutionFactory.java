@@ -6,10 +6,11 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.genet
 import java.util.Random;
 
 /**
- * AcquisitionStateSolutionFactory
- * <p>
- * <p>
- * <p>
+ * The AcquisitionStateSolutionFactory generates acquisition states. "Random" initialisation is
+ * not given. Initialisation happens by setting the whole population to default.
+ *
+ * This implementation is needed for a genetic algorithm
+ *
  * Author: @haesleinhuepf
  * 09 2018
  */

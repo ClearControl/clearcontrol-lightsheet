@@ -24,12 +24,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * InterleavedWaistAcquisitionInstruction
- * <p>
- * <p>
- * <p>
+ * The InterleavedWaistAcquisitionInstruction allows imaging with several waist positions (X/Y) and illumination arm
+ * defocus (Z) in order to optimize image quality. The resulting stacks might be very long. Consider splitting them
+ * using the SplitStackInstruction.
+ *
  * Author: @haesleinhuepf
- * 08 2018
+ * August 2018
  */
 public class InterleavedWaistAcquisitionInstruction extends
         AbstractAcquistionInstruction implements
@@ -46,9 +46,6 @@ public class InterleavedWaistAcquisitionInstruction extends
     BoundedVariable<Double>[] lightSheetYPositions;
     BoundedVariable<Double>[] lightSheetDeltaZPositions;
 
-    /**
-     * INstanciates a virtual device with a given name
-     */
     public InterleavedWaistAcquisitionInstruction(int lightSheetIndex, LightSheetMicroscope pLightSheetMicroscope)
     {
         super("Acquisition: Interleaved waist CxL" + lightSheetIndex, pLightSheetMicroscope);

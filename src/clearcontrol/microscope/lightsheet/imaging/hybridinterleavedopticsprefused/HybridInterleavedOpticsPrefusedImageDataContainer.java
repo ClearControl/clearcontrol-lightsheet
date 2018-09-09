@@ -5,10 +5,9 @@ import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
- * HybridInterleavedOpticsPrefusedImageDataContainer
- * <p>
- * <p>
- * <p>
+ * The HybridInterleavedOpticsPrefusedImageDataContainer stores raw imaging data
+ * acquired by HybridInterleavedOpticsPrefusedAcquisitionInstruction.
+ *
  * Author: @haesleinhuepf
  * 08 2018
  */

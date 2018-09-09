@@ -1,21 +1,16 @@
 package clearcontrol.microscope.lightsheet.imaging.gafaso;
 
-import clearcontrol.ip.iqm.DCTS2D;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.SolutionInterface;
-import clearcontrol.stack.OffHeapPlanarStack;
-import clearcontrol.stack.StackInterface;
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
 /**
- * AcquisitionStateSolution
- * <p>
- * <p>
- * <p>
+ * The AcquisitionStateSolution represents an acquisition state for optimization with a variable list of
+ * degrees of freedom.
+ *
  * Author: @haesleinhuepf
  * 09 2018
  */

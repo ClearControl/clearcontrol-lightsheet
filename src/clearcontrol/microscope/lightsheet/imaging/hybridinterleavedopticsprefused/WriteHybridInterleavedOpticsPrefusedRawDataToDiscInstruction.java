@@ -5,9 +5,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
 
 /**
  * WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction
- * <p>
- * <p>
- * <p>
+ *
  * Author: @haesleinhuepf
  * 08 2018
  */

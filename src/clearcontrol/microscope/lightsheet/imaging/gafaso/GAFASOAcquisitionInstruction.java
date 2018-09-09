@@ -42,12 +42,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * GAFASOAcquisitionInstruction
- * <p>
- * <p>
- * <p>
+ * Genetic Algorithm For Acquisition State Optimization (GAFASO)
+ *
+ * GAFASOAcquisitionInstruction implements a genetic algorithm to opitimize
+ * image quality over time. It acquires image stacks with a given list
+ * of acquisition states (a Population of type AcquisitionStateSolution).
+ * Afterwards, it removes the states from the population which resulted
+ * in worse image quality. The remaining states are recombined and
+ * mutated to make a new population with initial number of members.
+ *
  * Author: @haesleinhuepf
- * 09 2018
+ * September 2018
  */
 public class GAFASOAcquisitionInstruction extends
         AbstractAcquistionInstruction implements
@@ -55,29 +60,30 @@ public class GAFASOAcquisitionInstruction extends
         LoggingFeature,
         PropertyIOableInstructionInterface
 {
-    Variable<Boolean> debug = new Variable<Boolean>("Debug", true);
+    // debugging: todo: remove or set false per default
+    private final Variable<Boolean> debug = new Variable<Boolean>("Debug", true);
 
-    BoundedVariable<Integer> lightSheetIndex = new BoundedVariable<Integer>("Light sheet index", 0, 0, Integer.MAX_VALUE);
-    BoundedVariable<Integer> detectionArmIndex = new BoundedVariable<Integer>("Detection arm index", 0, 0, Integer.MAX_VALUE);
 
-    BoundedVariable<Integer> populationSize = new BoundedVariable<Integer>("Population size", 9, 2, 12);
+    private final BoundedVariable<Integer> lightSheetIndex = new BoundedVariable<Integer>("Light sheet index", 0, 0, Integer.MAX_VALUE);
+    private final BoundedVariable<Integer> detectionArmIndex = new BoundedVariable<Integer>("Detection arm index", 0, 0, Integer.MAX_VALUE);
+
+    private final BoundedVariable<Integer> populationSize = new BoundedVariable<Integer>("Population size", 9, 2, 12);
     private int numberOfPositions = populationSize.get();
 
-    BoundedVariable<Double> stepSizeZ = new BoundedVariable<Double>("Step size Z (in micron)", 1.0, 0.001, Double.MAX_VALUE, 0.001);
-    BoundedVariable<Double> stepSizeX = new BoundedVariable<Double>("Step size X (in micron)", 25.0, 0.001, Double.MAX_VALUE, 0.001);
-    BoundedVariable<Double> stepSizeAlpha = new BoundedVariable<Double>("Step size alpha (in degrees)", 1.0, 0.001, Double.MAX_VALUE, 0.001);
+    // step sizes
+    private final BoundedVariable<Double> stepSizeZ = new BoundedVariable<Double>("Step size Z (in micron)", 1.0, 0.001, Double.MAX_VALUE, 0.001);
+    private final BoundedVariable<Double> stepSizeX = new BoundedVariable<Double>("Step size X (in micron)", 25.0, 0.001, Double.MAX_VALUE, 0.001);
+    private final BoundedVariable<Double> stepSizeAlpha = new BoundedVariable<Double>("Step size alpha (in degrees)", 1.0, 0.001, Double.MAX_VALUE, 0.001);
 
-    Variable<Boolean> optimizeZ = new Variable<Boolean>("Optimize Z", true);
-    Variable<Boolean> optimizeAlpha = new Variable<Boolean>("Optimize alpha", false);
-    Variable<Boolean> optimizeX = new Variable<Boolean>("Optimize X", true);
-    Variable<Boolean> optimizeIndex = new Variable<Boolean>("Optimize light sheet index", true);
+    // Checkboxes to control what will be optimized
+    private final Variable<Boolean> optimizeZ = new Variable<Boolean>("Optimize Z", true);
+    private final Variable<Boolean> optimizeAlpha = new Variable<Boolean>("Optimize alpha", false);
+    private final Variable<Boolean> optimizeX = new Variable<Boolean>("Optimize X", true);
+    private final Variable<Boolean> optimizeIndex = new Variable<Boolean>("Optimize light sheet index", true);
 
 
     Population<AcquisitionStateSolution> population;
 
-    /**
-     * INstanciates a virtual device with a given name
-     */
     public GAFASOAcquisitionInstruction(int detectionArmIndex, int lightSheetIndex, LightSheetMicroscope pLightSheetMicroscope)
     {
         super("Acquisition: GAFASO C" + detectionArmIndex +  "L" + lightSheetIndex, pLightSheetMicroscope);
@@ -92,6 +98,7 @@ public class GAFASOAcquisitionInstruction extends
     public boolean initialize() {
         super.initialize();
 
+        // set an initial AcquisitionState and configure step sizes
         HashMap<LightSheetDOF, Double> initialStateMap = new HashMap<LightSheetDOF, Double>();
         HashMap<LightSheetDOF, Double> stepStateMap = new HashMap<LightSheetDOF, Double>();
 
@@ -117,21 +124,18 @@ public class GAFASOAcquisitionInstruction extends
 
         population = new Population<AcquisitionStateSolution>(new AcquisitionStateSolutionFactory(startSolution), numberOfPositions, 1);
 
-        // mutate all but first
+        // mutate all but first to get a variety of states to test
         for (int i = 1; i < numberOfPositions; i++) {
             population.getSolution(i).mutate();
         }
-        population.removeDuplicates();
-        fixLightSheetIndexOverflow();
 
+        fixLightSheetIndexOverflow();
 
         return true;
     }
 
     @Override public boolean enqueue(long pTimePoint)
     {
-
-
         mCurrentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
 
         int imageWidth = mCurrentState.getImageWidthVariable().get().intValue();
@@ -158,14 +162,15 @@ public class GAFASOAcquisitionInstruction extends
                 mCurrentState.getStackZLowVariable().get().doubleValue());
 
         // --------------------------------------------------------------------
-        // build a queue
-
+        // go along Z
         for (int lImageCounter = 0; lImageCounter
                 < numberOfImagesToTake; lImageCounter++)
         {
+            // set all light sheets off
             for (int l = 0; l < getLightSheetMicroscope().getNumberOfLightSheets(); l++) {
                 queue.setI(l, false);
             }
+            // configure all states; at each Z-plane, all states are imaged subsequently
             for (int l = 0; l
                     < numberOfPositions; l++)
             {
@@ -178,7 +183,7 @@ public class GAFASOAcquisitionInstruction extends
                 mCurrentState.applyAcquisitionStateAtStackPlane(queue,
                         lImageCounter);
 
-                // configure light sheets accordingly
+                // configure all optimized DOFs
                 queue.setI(chosenLightSheetIndex, true);
                 for (LightSheetDOF key : solution.state.keySet()) {
                     if (key == LightSheetDOF.IZ) {
@@ -199,13 +204,12 @@ public class GAFASOAcquisitionInstruction extends
                         queue.setIW(chosenLightSheetIndex, solution.state.get(key));
                     }
                 }
-                //queue.setIX(lightSheetIndex.get(), lightSheetXPositions[l].get());
-                //queue.setIY(lightSheetIndex.get(), lightSheetYPositions[l].get());
-                //queue.setIZ(lightSheetIndex.get(), queue.getIZ(lightSheetIndex.get()) + lightSheetDeltaZPositions[l].get());
+
+                // Workaround: turn light sheets of again (one method above might have
+                //             side effects) because sometimes light sheets are all on
+                //             Todo: Fix bug upstream
                 for (int k = 0; k < getLightSheetMicroscope().getNumberOfLightSheets(); k++) {
-                    //System.out.println("on[" + k + "]: " + queue.getI(k));
                     queue.setI(k, k == chosenLightSheetIndex);
-                    //System.out.println("on[" + k + "]: " + queue.getI(k));
                 }
                 queue.addCurrentStateToQueue();
             }
@@ -220,6 +224,7 @@ public class GAFASOAcquisitionInstruction extends
         queue.setTransitionTime(0.5);
         queue.setFinalisationTime(0.005);
 
+        // configure meta data
         StackMetaData
                 lMetaData =
                 queue.getCameraDeviceQueue(detectionArmIndex.get()).getMetaDataVariable().get();
@@ -279,6 +284,8 @@ public class GAFASOAcquisitionInstruction extends
 
         getLightSheetMicroscope().getDataWarehouse().put("interleaved_waist_raw_" + pTimePoint, lContainer);
 
+        // ---------------------------------------------------------------------
+        // postprocessing: analyse image quality and advance population
         ClearCLIJ clij = ClearCLIJ.getInstance();
         ClearCLImage input = clij.converter(lStack).getClearCLImage();
         ClearCLImage tenengradWeights = clij.createCLImage(input.getDimensions(), ImageChannelDataType.Float);
@@ -302,14 +309,17 @@ public class GAFASOAcquisitionInstruction extends
                 argMaxHistogram[cursor.next().get() % numberOfPositions]++;
             }
 
+            // debug
             IJ.saveAsTiff(clij.converter(argMaxProjection).getImagePlus(), getLightSheetMicroscope().getTimelapse().getWorkingDirectory() + "/argmax.tif");
         }
 
         for (int j = 0; j < argMaxHistogram.length; j++) {
             population.getSolution(j).setFitness(argMaxHistogram[j]);
         }
+        // debug
         IJ.saveAsTiff(clij.converter(input).getImagePlus(), getLightSheetMicroscope().getTimelapse().getWorkingDirectory() + "/input.tif");
 
+        // cleanup
         input.close();
         tenengradWeights.close();
         cropped.close();
@@ -330,7 +340,6 @@ public class GAFASOAcquisitionInstruction extends
         }
 
         population = population.runEpoch();
-        population.removeDuplicates();
 
         fixLightSheetIndexOverflow();
         return true;
@@ -413,7 +422,10 @@ public class GAFASOAcquisitionInstruction extends
                 stepSizeZ,
                 optimizeAlpha,
                 optimizeX,
-                optimizeZ
+                optimizeZ,
+                optimizeIndex,
+                debug,
+                populationSize
         };
     }
 }

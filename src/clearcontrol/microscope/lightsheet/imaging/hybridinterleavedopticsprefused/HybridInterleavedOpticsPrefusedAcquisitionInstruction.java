@@ -20,10 +20,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * HybridInterleavedOpticsPrefusedAcquisitionInstruction
- * <p>
- * <p>
- * <p>
+ * The HybridInterleavedOpticsPrefusedAcquisitionInstruction is an advanced imaging mode:
+ * Every plane is acquired n+1 times with n representing the number of lightsheets the
+ * microscope has. The additional image is taken with all light sheets on.
+ *
+ * The image stacks resulting from this mode might be quite long. Consider using the
+ * HybridInterleavedOpticsPrefusedSplitImageDataInstruction in order to
+ * get a SequentialImageDataContainer.
+ *
  * Author: @haesleinhuepf
  * 08 2018
  */
@@ -32,10 +36,6 @@ public class HybridInterleavedOpticsPrefusedAcquisitionInstruction  extends
         InstructionInterface,
         LoggingFeature
 {
-
-    /**
-     * INstanciates a virtual device with a given name
-     */
     public HybridInterleavedOpticsPrefusedAcquisitionInstruction(LightSheetMicroscope pLightSheetMicroscope)
     {
         super("Acquisition: Hybrid interleaved/optics-prefused", pLightSheetMicroscope);
