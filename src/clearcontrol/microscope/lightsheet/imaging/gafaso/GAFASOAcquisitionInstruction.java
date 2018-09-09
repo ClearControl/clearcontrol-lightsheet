@@ -122,6 +122,7 @@ public class GAFASOAcquisitionInstruction extends
             population.getSolution(i).mutate();
         }
         population.removeDuplicates();
+        fixLightSheetIndexOverflow();
 
 
         return true;
@@ -168,29 +169,34 @@ public class GAFASOAcquisitionInstruction extends
             for (int l = 0; l
                     < numberOfPositions; l++)
             {
+                AcquisitionStateSolution solution = population.getSolution(l);
+                int chosenLightSheetIndex = getLightSheetIndex().get();
+                if (optimizeIndex.get()) {
+                    chosenLightSheetIndex = solution.state.get(LightSheetDOF.II).intValue();
+                }
+
                 mCurrentState.applyAcquisitionStateAtStackPlane(queue,
                         lImageCounter);
 
                 // configure light sheets accordingly
-                queue.setI(lightSheetIndex.get(), true);
-                AcquisitionStateSolution solution = population.getSolution(l);
+                queue.setI(chosenLightSheetIndex, true);
                 for (LightSheetDOF key : solution.state.keySet()) {
                     if (key == LightSheetDOF.IZ) {
-                        queue.setIZ(lightSheetIndex.get(), queue.getIZ(lightSheetIndex.get()) + solution.state.get(key));
+                        queue.setIZ(chosenLightSheetIndex, queue.getIZ(lightSheetIndex.get()) + solution.state.get(key));
                     } else if (key == LightSheetDOF.IX){
-                        queue.setIX(lightSheetIndex.get(), solution.state.get(key));
+                        queue.setIX(chosenLightSheetIndex, solution.state.get(key));
                     } else if (key == LightSheetDOF.IY){
-                        queue.setIY(lightSheetIndex.get(), solution.state.get(key));
+                        queue.setIY(chosenLightSheetIndex, solution.state.get(key));
                     } else if (key == LightSheetDOF.IA){
-                        queue.setIA(lightSheetIndex.get(), solution.state.get(key));
+                        queue.setIA(chosenLightSheetIndex, solution.state.get(key));
                     } else if (key == LightSheetDOF.IB){
-                        queue.setIB(lightSheetIndex.get(), solution.state.get(key));
+                        queue.setIB(chosenLightSheetIndex, solution.state.get(key));
                     } else if (key == LightSheetDOF.IH){
-                        queue.setIH(lightSheetIndex.get(), solution.state.get(key));
+                        queue.setIH(chosenLightSheetIndex, solution.state.get(key));
                     } else if (key == LightSheetDOF.IP){
-                        queue.setIP(lightSheetIndex.get(), solution.state.get(key));
+                        queue.setIP(chosenLightSheetIndex, solution.state.get(key));
                     } else if (key == LightSheetDOF.IW){
-                        queue.setIW(lightSheetIndex.get(), solution.state.get(key));
+                        queue.setIW(chosenLightSheetIndex, solution.state.get(key));
                     }
                 }
                 //queue.setIX(lightSheetIndex.get(), lightSheetXPositions[l].get());
@@ -198,7 +204,7 @@ public class GAFASOAcquisitionInstruction extends
                 //queue.setIZ(lightSheetIndex.get(), queue.getIZ(lightSheetIndex.get()) + lightSheetDeltaZPositions[l].get());
                 for (int k = 0; k < getLightSheetMicroscope().getNumberOfLightSheets(); k++) {
                     //System.out.println("on[" + k + "]: " + queue.getI(k));
-                    queue.setI(k, k == lightSheetIndex.get());
+                    queue.setI(k, k == chosenLightSheetIndex);
                     //System.out.println("on[" + k + "]: " + queue.getI(k));
                 }
                 queue.addCurrentStateToQueue();
@@ -326,6 +332,11 @@ public class GAFASOAcquisitionInstruction extends
         population.runEpoch();
         population.removeDuplicates();
 
+        fixLightSheetIndexOverflow();
+        return true;
+    }
+
+    private void fixLightSheetIndexOverflow() {
         // fix illumination arm index overflow
         if (optimizeIndex.get()) {
             for (int i = 0; i < numberOfPositions; i++) {
@@ -340,7 +351,6 @@ public class GAFASOAcquisitionInstruction extends
                 }
             }
         }
-        return true;
     }
 
     @Override
