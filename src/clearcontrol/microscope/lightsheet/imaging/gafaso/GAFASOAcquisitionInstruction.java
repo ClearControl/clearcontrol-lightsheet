@@ -70,6 +70,7 @@ public class GAFASOAcquisitionInstruction extends
     Variable<Boolean> optimizeZ = new Variable<Boolean>("Optimize Z", true);
     Variable<Boolean> optimizeAlpha = new Variable<Boolean>("Optimize alpha", false);
     Variable<Boolean> optimizeX = new Variable<Boolean>("Optimize X", true);
+    Variable<Boolean> optimizeIndex = new Variable<Boolean>("Optimize light sheet index", true);
 
 
     Population<AcquisitionStateSolution> population;
@@ -105,6 +106,10 @@ public class GAFASOAcquisitionInstruction extends
         if (optimizeAlpha.get()) {
             stepStateMap.put(LightSheetDOF.IA, stepSizeAlpha.get());
             initialStateMap.put(LightSheetDOF.IA, 0.0);
+        }
+        if (optimizeIndex.get()) {
+            stepStateMap.put(LightSheetDOF.II, 1.0);
+            initialStateMap.put(LightSheetDOF.II, 0.0);
         }
         AcquisitionStateSolution startSolution = new AcquisitionStateSolution(initialStateMap, stepStateMap);
 
@@ -321,6 +326,20 @@ public class GAFASOAcquisitionInstruction extends
         population.runEpoch();
         population.removeDuplicates();
 
+        // fix illumination arm index overflow
+        if (optimizeIndex.get()) {
+            for (int i = 0; i < numberOfPositions; i++) {
+                AcquisitionStateSolution solution = population.getSolution(i);
+                if (solution.state.get(LightSheetDOF.II) < 0) {
+                    solution.state.remove(LightSheetDOF.II);
+                    solution.state.put(LightSheetDOF.II, (double)getLightSheetMicroscope().getNumberOfLightSheets() - 1);
+                }
+                if (solution.state.get(LightSheetDOF.II) >= getLightSheetMicroscope().getNumberOfLightSheets()) {
+                    solution.state.remove(LightSheetDOF.II);
+                    solution.state.put(LightSheetDOF.II, 0.0);
+                }
+            }
+        }
         return true;
     }
 
@@ -367,6 +386,10 @@ public class GAFASOAcquisitionInstruction extends
 
     public Variable<Boolean> getOptimizeZ() {
         return optimizeZ;
+    }
+
+    public Variable<Boolean> getOptimizeIndex() {
+        return optimizeIndex;
     }
 
     @Override

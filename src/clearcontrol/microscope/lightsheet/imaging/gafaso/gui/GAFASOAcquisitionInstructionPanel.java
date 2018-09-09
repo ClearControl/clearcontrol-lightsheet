@@ -17,6 +17,7 @@ public class GAFASOAcquisitionInstructionPanel extends CustomGridPane {
 
         addIntegerField(instruction.getDetectionArmIndex(),row++);
         addIntegerField(instruction.getLightSheetIndex(),row++);
+        addCheckbox(instruction.getOptimizeIndex(), row++);
 
         addIntegerField(instruction.getPopulationSize(), row++);
 

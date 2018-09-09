@@ -50,5 +50,10 @@ public enum LightSheetDOF
  /**
   * illumination power/intensity
   */
- IP
+ IP,
+
+ /**
+  * illumination arm index
+  */
+ II
 }
