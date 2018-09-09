@@ -144,7 +144,7 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
             ip.setColor(new Color(255, 255, 255));
 
             String comment = "";
-            ProjectionCommentContainer commentContainer = getLightSheetMicroscope().getDataWarehouse().getOldestContainer(ProjectionCommentContainer.class, 0);
+            ProjectionCommentContainer commentContainer = getLightSheetMicroscope().getDataWarehouse().getOldestContainer(ProjectionCommentContainer.class);
             if (commentContainer != null) {
                 comment = commentContainer.getText();
             }

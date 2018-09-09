@@ -10,6 +10,7 @@ import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.containers.ProjectionCommentContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
@@ -143,7 +144,7 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer> e
             ip.setColor(new Color(255, 255, 255));
 
             String comment = "";
-            ProjectionCommentContainer commentContainer = getLightSheetMicroscope().getDataWarehouse().getOldestContainer(ProjectionCommentContainer.class, 0);
+            ProjectionCommentContainer commentContainer = getLightSheetMicroscope().getDataWarehouse().getOldestContainer(ProjectionCommentContainer.class);
             if (commentContainer != null) {
                 comment = commentContainer.getText();
             }
