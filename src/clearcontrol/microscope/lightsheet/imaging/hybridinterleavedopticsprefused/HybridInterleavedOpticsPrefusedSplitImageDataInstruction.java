@@ -29,10 +29,6 @@ public class HybridInterleavedOpticsPrefusedSplitImageDataInstruction extends
                                                                       InstructionInterface,
                                                                       LoggingFeature
 {
-  /**
-   * INstanciates a virtual device with a given name
-   *
-   */
   public HybridInterleavedOpticsPrefusedSplitImageDataInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
     super("Post-processing: Split image data from hybrid interleaved/optics-prefused acquisition",
@@ -150,11 +146,6 @@ public class HybridInterleavedOpticsPrefusedSplitImageDataInstruction extends
                                                      + pTimePoint,
                                                      lOpticsPrefusedContainer);
 
-    // StackInterface lFusedStack = fuseStacks(lContainer, lInputImageKeys);
-    // if (lFusedStack == null) {
-    // return false;
-    // }
-    // storeFusedContainer(lFusedStack);
     return true;
   }
 

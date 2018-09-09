@@ -116,9 +116,11 @@ public class Population<S extends SolutionInterface>
       lNewSolutionList.add(lSolution);
     }
 
-    return new Population<S>(mFactory,
-                             lNewSolutionList,
-                             mNumberOfMutations);
+    Population result = new Population<S>(mFactory,
+                                          lNewSolutionList,
+                                          mNumberOfMutations);
+    result.removeDuplicates();
+    return result;
   }
 
   public S getSolution(int index)
@@ -126,7 +128,7 @@ public class Population<S extends SolutionInterface>
     return mSolutionList.get(index);
   }
 
-  public void removeDuplicates()
+  private void removeDuplicates()
   {
     int populationSize = mSolutionList.size();
 

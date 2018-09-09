@@ -24,11 +24,18 @@ import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.metadata.StackMetaData;
 
 /**
- * InterleavedWaistAcquisitionInstruction
+ * <<<<<<< HEAD InterleavedWaistAcquisitionInstruction
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf 08 2018
+ * Author: @haesleinhuepf 08 2018 ======= The
+ * InterleavedWaistAcquisitionInstruction allows imaging with several waist
+ * positions (X/Y) and illumination arm defocus (Z) in order to optimize image
+ * quality. The resulting stacks might be very long. Consider splitting them
+ * using the SplitStackInstruction.
+ *
+ * Author: @haesleinhuepf August 2018 >>>>>>>
+ * 83a0cb0ef1c0d22e5e67707f68df10fdedd832d6
  */
 public class InterleavedWaistAcquisitionInstruction extends
                                                     AbstractAcquistionInstruction
@@ -38,6 +45,7 @@ public class InterleavedWaistAcquisitionInstruction extends
                                                     PropertyIOableInstructionInterface
 {
 
+  <<<<<<<HEAD
   private final static int numberOfPositions = 9;
 
   BoundedVariable<Integer> lightSheetIndex =
@@ -64,6 +72,22 @@ public class InterleavedWaistAcquisitionInstruction extends
     lightSheetDeltaZPositions =
                               new BoundedVariable[numberOfPositions];
     for (int i = 0; i < lightSheetXPositions.length; i++)
+=======
+
+  private final static int numberOfPositions = 9;
+
+  BoundedVariable<Integer> lightSheetIndex =
+                                           new BoundedVariable<Integer>("Light sheet index",
+                                                                        0,
+                                                                        0,
+                                                                        Integer.MAX_VALUE);
+
+  BoundedVariable<Double>[] lightSheetXPositions;
+  BoundedVariable<Double>[] lightSheetYPositions;
+  BoundedVariable<Double>[] lightSheetDeltaZPositions;
+
+  public InterleavedWaistAcquisitionInstruction(int lightSheetIndex, LightSheetMicroscope pLightSheetMicroscope)
+>>>>>>> 83a0cb0ef1c0d22e5e67707f68df10fdedd832d6
     {
       lightSheetXPositions[i] = new BoundedVariable<Double>("X" + i,
                                                             0.0,

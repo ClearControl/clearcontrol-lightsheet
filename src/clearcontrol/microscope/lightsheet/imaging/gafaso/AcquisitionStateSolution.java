@@ -8,10 +8,9 @@ import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.SolutionInterface;
 
 /**
- * AcquisitionStateSolution
- * <p>
- * <p>
- * <p>
+ * The AcquisitionStateSolution represents an acquisition state for optimization
+ * with a variable list of degrees of freedom.
+ *
  * Author: @haesleinhuepf 09 2018
  */
 public class AcquisitionStateSolution implements SolutionInterface
