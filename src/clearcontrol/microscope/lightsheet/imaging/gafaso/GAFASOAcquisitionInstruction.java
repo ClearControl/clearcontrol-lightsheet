@@ -269,28 +269,35 @@ public class GAFASOAcquisitionInstruction extends
         ClearCLImage tenengradWeights = clij.createCLImage(input.getDimensions(), ImageChannelDataType.Float);
         Kernels.tenengradWeightsSliceWise(clij, tenengradWeights, input);
 
+        ClearCLImage cropped = clij.createCLImage(new long[]{input.getWidth(), input.getHeight(), numberOfPositions}, tenengradWeights.getChannelDataType());
+
         ClearCLImage maxProjection = clij.createCLImage(new long[]{input.getWidth(), input.getHeight()}, ImageChannelDataType.UnsignedInt8);
         ClearCLImage argMaxProjection = clij.createCLImage(new long[]{input.getWidth(), input.getHeight()}, ImageChannelDataType.UnsignedInt16);
 
-        Kernels.argMaxProjection(clij, tenengradWeights, maxProjection, argMaxProjection);
-
-        RandomAccessibleInterval<UnsignedShortType> argMaxImg = (RandomAccessibleInterval<UnsignedShortType>) clij.converter(argMaxProjection).getRandomAccessibleInterval();
-        Cursor<UnsignedShortType> cursor = Views.iterable(argMaxImg).cursor();
-
         long[] argMaxHistogram = new long[numberOfPositions];
-        while(cursor.hasNext()) {
-            argMaxHistogram[cursor.next().get() % numberOfPositions]++;
+        for (int i = 0; i < input.getDepth() / numberOfPositions; i ++) {
+            Kernels.crop(clij, tenengradWeights, cropped, 0, 0, (int)(input.getDepth() / numberOfPositions) * i);
+
+            Kernels.argMaxProjection(clij, tenengradWeights, maxProjection, argMaxProjection);
+
+            RandomAccessibleInterval<UnsignedShortType> argMaxImg = (RandomAccessibleInterval<UnsignedShortType>) clij.converter(argMaxProjection).getRandomAccessibleInterval();
+            Cursor<UnsignedShortType> cursor = Views.iterable(argMaxImg).cursor();
+
+            while (cursor.hasNext()) {
+                argMaxHistogram[cursor.next().get() % numberOfPositions]++;
+            }
+
+            IJ.saveAsTiff(clij.converter(argMaxProjection).getImagePlus(), getLightSheetMicroscope().getTimelapse().getWorkingDirectory() + "/argmax.tif");
         }
 
-        for (int i = 0; i < argMaxHistogram.length; i++) {
-            population.getSolution(i).setFitness(argMaxHistogram[i]);
+        for (int j = 0; j < argMaxHistogram.length; j++) {
+            population.getSolution(j).setFitness(argMaxHistogram[j]);
         }
-
-        //IJ.saveAsTiff(clij.converter(input).getImagePlus(), getLightSheetMicroscope().getTimelapse().getWorkingDirectory() + "input.tif");
-        //IJ.saveAsTiff(clij.converter(argMaxProjection).getImagePlus(), getLightSheetMicroscope().getTimelapse().getWorkingDirectory() + "argmax.tif");
+        IJ.saveAsTiff(clij.converter(input).getImagePlus(), getLightSheetMicroscope().getTimelapse().getWorkingDirectory() + "/input.tif");
 
         input.close();
         tenengradWeights.close();
+        cropped.close();
 
         maxProjection.close();
         argMaxProjection.close();
