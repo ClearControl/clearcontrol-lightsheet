@@ -60,6 +60,8 @@ public class InterpolationTables extends
                                                    new LinearInterpolationTable(mNumberOfLightSheetDevices);
     AbstractInterpolationTable lInterpolationTableIP =
                                                    new LinearInterpolationTable(mNumberOfLightSheetDevices);
+    AbstractInterpolationTable lInterpolationTableII =
+                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
 
     mInterpolationTableList.add(lInterpolationTableDZ);
     mInterpolationTableList.add(lInterpolationTableIX);
@@ -71,6 +73,7 @@ public class InterpolationTables extends
     mInterpolationTableList.add(lInterpolationTableIW);
     mInterpolationTableList.add(lInterpolationTableIH);
     mInterpolationTableList.add(lInterpolationTableIP);
+    mInterpolationTableList.add(lInterpolationTableII);
   }
 
   /**

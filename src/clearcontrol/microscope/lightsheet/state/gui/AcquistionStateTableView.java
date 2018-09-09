@@ -95,6 +95,9 @@ public class AcquistionStateTableView extends DoubleTableView
     for (int i = 0; i < lNumberOfIlluminationArms; i++)
       mNameToColumnMap.put("IP" + i, addColumn("IP" + i, true, true));
 
+    for (int i = 0; i < lNumberOfIlluminationArms; i++)
+      mNameToColumnMap.put("II" + i, addColumn("II" + i, true, true));
+
     updateTable(pAcquisitionState);
   }
 

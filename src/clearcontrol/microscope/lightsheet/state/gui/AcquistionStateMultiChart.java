@@ -54,6 +54,7 @@ public class AcquistionStateMultiChart extends MultiChart
       mNameToDataMap.put("IH" + i, addSeries("IH" + i));
       mNameToDataMap.put("IW" + i, addSeries("IW" + i));
       mNameToDataMap.put("IP" + i, addSeries("IP" + i));
+      mNameToDataMap.put("II" + i, addSeries("II" + i));
     }
 
     updateChart(pAcquisitionState);
