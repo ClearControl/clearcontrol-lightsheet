@@ -293,7 +293,7 @@ public class GAFASOAcquisitionInstruction extends
         for (int i = 0; i < input.getDepth() / numberOfPositions; i ++) {
             Kernels.crop(clij, tenengradWeights, cropped, 0, 0, (int)(input.getDepth() / numberOfPositions) * i);
 
-            Kernels.argMaxProjection(clij, tenengradWeights, maxProjection, argMaxProjection);
+            Kernels.argMaxProjection(clij, cropped, maxProjection, argMaxProjection);
 
             RandomAccessibleInterval<UnsignedShortType> argMaxImg = (RandomAccessibleInterval<UnsignedShortType>) clij.converter(argMaxProjection).getRandomAccessibleInterval();
             Cursor<UnsignedShortType> cursor = Views.iterable(argMaxImg).cursor();
