@@ -11,8 +11,13 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
+import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
+import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
+import clearcontrol.stack.metadata.MetaDataChannel;
+import clearcontrol.stack.metadata.StackMetaData;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 
@@ -73,10 +78,13 @@ public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeIns
         {
             ArrayList<ClearCLImage> images = new ArrayList<ClearCLImage>();
 
+
+            StackMetaData metaData = null;
             for (String key : containerIn.keySet()) {
                 if (key.toLowerCase().startsWith("c" + c)) {
                     // Get UnsignedShort stack from container
                     StackInterface stack = containerIn.get(key);
+                    metaData = stack.getMetaData().clone();
                     RandomAccessibleInterval<UnsignedShortType> rai = clij.converter(stack).getRandomAccessibleInterval();
 
                     // Convert it to a float CLImage
@@ -108,6 +116,11 @@ public class TenengradFusionPerCameraInstruction extends LightSheetMicroscopeIns
             // Result conversion / storage
             Kernels.copy(clij, fusionResult, fusionResultAsUnsignedShort);
             StackInterface result = clij.converter(fusionResultAsUnsignedShort).getStack();
+            result.setMetaData(metaData);
+            result.getMetaData().removeEntry(MetaDataChannel.Channel);
+            result.getMetaData().addEntry(MetaDataChannel.Channel, "tenengrad_fused");
+            result.getMetaData().removeEntry(MetaDataAcquisitionType.AcquisitionType);
+            result.getMetaData().addEntry(MetaDataAcquisitionType.AcquisitionType, AcquisitionType.TimelapseSequential);
 
             containerOut.put("C" + c + "_tenengrad_fused", result);
 

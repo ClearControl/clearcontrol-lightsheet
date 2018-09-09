@@ -93,7 +93,7 @@ public class SplitStackInstruction extends LightSheetMicroscopeInstructionBase i
                 resultStack.getMetaData().addEntry(MetaDataChannel.Channel, "sequential");
                 resultStack.getMetaData().removeEntry(MetaDataAcquisitionType.AcquisitionType);
                 resultStack.getMetaData().addEntry(MetaDataAcquisitionType.AcquisitionType, AcquisitionType.TimelapseSequential);
-                resultStack.getMetaData().addEntry(MetaDataView.LightSheet, l);
+
                 resultContainer.put("C" + d + "_" + l, resultStack);
             }
 
