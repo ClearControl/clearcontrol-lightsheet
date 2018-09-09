@@ -27,5 +27,6 @@ public class GAFASOAcquisitionInstructionPanel extends CustomGridPane {
         addCheckbox(instruction.getOptimizeZ(), row++);
         addDoubleField(instruction.getStepSizeZ(), row++);
 
+        addCheckbox(instruction.getDebug(), row++);
     }
 }

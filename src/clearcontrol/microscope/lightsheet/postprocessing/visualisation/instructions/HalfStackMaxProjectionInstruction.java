@@ -9,6 +9,7 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.containers.ProjectionCommentContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.TimeStampContainer;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
@@ -142,11 +143,16 @@ public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer
             ip.setFont(font);
             ip.setColor(new Color(255, 255, 255));
 
-            TimeStampContainer lStartTimeInNanoSecondsContainer = TimeStampContainer.getGlobalTimeSinceStart(getLightSheetMicroscope().getDataWarehouse(), pTimePoint, lStack);
+            String comment = "";
+            ProjectionCommentContainer commentContainer = getLightSheetMicroscope().getDataWarehouse().getOldestContainer(ProjectionCommentContainer.class, 0);
+            if (commentContainer != null) {
+                comment = commentContainer.getText();
+            }
 
+            TimeStampContainer lStartTimeInNanoSecondsContainer = TimeStampContainer.getGlobalTimeSinceStart(getLightSheetMicroscope().getDataWarehouse(), pTimePoint, lStack);
             Duration duration = Duration.ofNanos(lStack.getMetaData().getTimeStampInNanoseconds() - lStartTimeInNanoSecondsContainer.getTimeStampInNanoSeconds());
             long s = duration.getSeconds();
-            ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + (mPrintTimePointVariable.get()?" (tp " + pTimePoint + ")":"") + "\n" + (mPrintSequenceNameVariable.get()?key:""), 20, 30);
+            ip.drawString(String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)) + (mPrintTimePointVariable.get()?" (tp " + pTimePoint + ")":"") + "\n" + (mPrintSequenceNameVariable.get()?key:"") + "\n" + comment, 20, 30);
 
             lResultImagePlus.updateAndDraw();
 

@@ -17,11 +17,13 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.SplitStackInstruction;
+import clearcontrol.microscope.lightsheet.postprocessing.visualisation.containers.ProjectionCommentContainer;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.Population;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DropAllContainersOfTypeInstruction;
 import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
@@ -53,6 +55,8 @@ public class GAFASOAcquisitionInstruction extends
         LoggingFeature,
         PropertyIOableInstructionInterface
 {
+    Variable<Boolean> debug = new Variable<Boolean>("Debug", true);
+
     BoundedVariable<Integer> lightSheetIndex = new BoundedVariable<Integer>("Light sheet index", 0, 0, Integer.MAX_VALUE);
     BoundedVariable<Integer> detectionArmIndex = new BoundedVariable<Integer>("Detection arm index", 0, 0, Integer.MAX_VALUE);
 
@@ -304,8 +308,14 @@ public class GAFASOAcquisitionInstruction extends
 
 
         // debug
-        for (int i = 0; i < numberOfPositions; i++) {
-            info(population.getSolution(i).toString());
+        if (debug.get()) {
+            new DropAllContainersOfTypeInstruction(ProjectionCommentContainer.class, getLightSheetMicroscope().getDataWarehouse()).enqueue(pTimePoint);
+            String comment = "";
+            for (int i = 0; i < numberOfPositions; i++) {
+                comment = comment + population.getSolution(i).toString() + "\n";
+                info(population.getSolution(i).toString());
+            }
+            getLightSheetMicroscope().getDataWarehouse().put("comment_" + pTimePoint, new ProjectionCommentContainer(pTimePoint, comment));
         }
 
         population.runEpoch();
@@ -317,6 +327,10 @@ public class GAFASOAcquisitionInstruction extends
     @Override
     public GAFASOAcquisitionInstruction copy() {
         return new GAFASOAcquisitionInstruction(detectionArmIndex.get(), lightSheetIndex.get(), getLightSheetMicroscope());
+    }
+
+    public Variable<Boolean> getDebug() {
+        return debug;
     }
 
     public BoundedVariable<Integer> getLightSheetIndex() {
