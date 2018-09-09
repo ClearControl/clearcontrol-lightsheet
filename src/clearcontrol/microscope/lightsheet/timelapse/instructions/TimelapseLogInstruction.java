@@ -11,10 +11,8 @@ import clearcontrol.microscope.timelapse.TimelapseInterface;
 import java.io.File;
 
 /**
- * TimelapseLogInstruction
- * <p>
- * <p>
- * <p>
+ * The TimelapseLogInstruction writes the current time lapse instruction list to disc.
+ *
  * Author: @haesleinhuepf
  * 05 2018
  */

@@ -19,12 +19,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * ScheduleIOTest
- * <p>
- * <p>
- * <p>
+ * The ScheduleIOTest tests if instruction lists can be written to and read from disc.
+ *
  * Author: @haesleinhuepf
- * 08 2018
+ * August 2018
  */
 public class ScheduleIOTest {
     private static double tolerance = 0.0001;

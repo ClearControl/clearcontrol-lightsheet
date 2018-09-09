@@ -11,6 +11,10 @@ import java.io.*;
 import java.util.ArrayList;
 
 /**
+ * The ScheduleReader reads an instruction list from disc and puts it in the given ArrayList. This list might be the
+ * schedule from Timelapse.
+ *
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
  * April 2018
  */

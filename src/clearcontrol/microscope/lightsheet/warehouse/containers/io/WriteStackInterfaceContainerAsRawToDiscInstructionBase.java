@@ -12,10 +12,10 @@ import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.sourcesink.sink.FileStackSinkInterface;
 
 /**
- * This generalised IO Scheduler writes all images in a
+ * This generalised IO instruction writes all images in a
  * StackInterfaceContainer of a given Class to disc.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
+ * @author haesleinhuepf
  * April 2018
  */
 public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase extends

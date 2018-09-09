@@ -4,12 +4,12 @@ import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.MeasurementContainer;
 
 /**
- * InstructionDurationContainer
- * <p>
- * <p>
- * <p>
+ * The InstructionDurationContainer is used to store a time to the warehouse. The idea is doing statistics:
+ * After some instructions have been executed and their duration was saved, it might be possible to predict how
+ * long instructions might take in the future.
+ *
  * Author: @haesleinhuepf
- * 05 2018
+ * May 2018
  */
 public class InstructionDurationContainer extends MeasurementContainer {
     private final InstructionInterface mInstructionInterface;

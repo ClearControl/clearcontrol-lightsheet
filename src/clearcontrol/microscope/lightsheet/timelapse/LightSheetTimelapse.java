@@ -41,6 +41,7 @@ import clearcontrol.stack.metadata.StackMetaData;
  * Standard Timelapse implementation
  *
  * @author royer
+ * @author haesleinhuepf
  */
 public class LightSheetTimelapse extends TimelapseBase implements
                                  TimelapseInterface,

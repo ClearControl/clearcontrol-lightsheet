@@ -16,10 +16,8 @@ import ij.measure.Calibration;
 import java.io.File;
 
 /**
- * WriteStackInterfaceContainerAsTifToDiscInstruction
- * <p>
- * <p>
- * <p>
+ * The WriteStackInterfaceContainerAsTifToDiscInstruction writes a container to disc in TIF format.
+ *
  * Author: @haesleinhuepf
  * 05 2018
  */

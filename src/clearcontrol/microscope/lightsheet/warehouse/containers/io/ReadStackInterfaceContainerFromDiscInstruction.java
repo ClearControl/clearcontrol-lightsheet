@@ -21,12 +21,11 @@ import java.io.File;
 import java.util.Arrays;
 
 /**
- * ReadStackInterfaceContainerFromDiscInstruction
- * <p>
- * <p>
- * <p>
+ * The ReadStackInterfaceContainerFromDiscInstruction allows reading RAW images from disc. This allows simulation of
+ * workflows with data originally acquired by a microscope.
+ *
  * Author: @haesleinhuepf
- * 05 2018
+ * May 2018
  */
 public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
 
@@ -40,10 +39,6 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends LightSheetMi
 
     private long mReadTimePoint = 0;
 
-    /**
-     * INstanciates a virtual device with a given name
-     *
-     */
     public ReadStackInterfaceContainerFromDiscInstruction(String[] pDatasetNames, LightSheetMicroscope pLightSheetMicroscope) {
         super("IO: Read stacks from disc " + Arrays.toString(pDatasetNames), pLightSheetMicroscope);
         mDatasetNames = pDatasetNames;

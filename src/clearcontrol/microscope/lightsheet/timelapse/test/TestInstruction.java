@@ -8,14 +8,12 @@ import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import java.io.File;
 
 /**
- * TestInstruction
- * <p>
- * <p>
- * <p>
+ * The TestInstruction just serves for ScheduleIOTest
+ *
  * Author: @haesleinhuepf
- * 08 2018
+ * August 2018
  */
-public class TestInstruction extends InstructionBase implements PropertyIOableInstructionInterface {
+class TestInstruction extends InstructionBase implements PropertyIOableInstructionInterface {
     public Variable<File> mFile = new Variable<File>("File", new File("test.txt"));
     public Variable<String> mString = new Variable<String>("String", "test");
     public Variable<Integer> mInteger = new Variable<Integer>("Integer", 5);

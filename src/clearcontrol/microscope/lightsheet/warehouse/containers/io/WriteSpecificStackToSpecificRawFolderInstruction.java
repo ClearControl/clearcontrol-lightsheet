@@ -7,12 +7,11 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
- * WriteSpecificStackToSpecificRawFolderInstruction
- * <p>
- * <p>
- * <p>
+ * The WriteSpecificStackToSpecificRawFolderInstruction gets the oldest container of a given class from the warehouse
+ * and saves a specified stack from it to disc.
+ *
  * Author: @haesleinhuepf
- * 06 2018
+ * June 2018
  */
 public class WriteSpecificStackToSpecificRawFolderInstruction extends WriteStackInterfaceContainerAsRawToDiscInstructionBase implements PropertyIOableInstructionInterface {
 
@@ -20,9 +19,9 @@ public class WriteSpecificStackToSpecificRawFolderInstruction extends WriteStack
     Variable<String> mTargetRawFolderNameVariable = new Variable<String>("Foldername", "C0L0");
 
     /**
-     * INstanciates a virtual device with a given name
      *
-     * @param pTargetRawFolderName
+     * @param pSourceStackKey which stack should be saved
+     * @param pTargetRawFolderName under which name should the stack be saved
      * @param pLightSheetMicroscope
      */
     public WriteSpecificStackToSpecificRawFolderInstruction(String pSourceStackKey, String pTargetRawFolderName, LightSheetMicroscope pLightSheetMicroscope) {
