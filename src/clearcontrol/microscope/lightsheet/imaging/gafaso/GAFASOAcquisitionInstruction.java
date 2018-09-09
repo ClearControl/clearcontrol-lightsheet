@@ -329,7 +329,7 @@ public class GAFASOAcquisitionInstruction extends
             getLightSheetMicroscope().getDataWarehouse().put("comment_" + pTimePoint, new ProjectionCommentContainer(pTimePoint, comment));
         }
 
-        population.runEpoch();
+        population = population.runEpoch();
         population.removeDuplicates();
 
         fixLightSheetIndexOverflow();
