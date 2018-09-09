@@ -5,6 +5,8 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerBase;
+import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
 /**
@@ -41,7 +43,7 @@ public class DropAllContainersOfTypeInstruction extends
     {
         DataWarehouse lWarehouse = getDataWarehouse();
         while (true) {
-            StackInterfaceContainer lContainer = lWarehouse.getOldestContainer(mContainerClassToDrop);
+            DataContainerInterface lContainer = lWarehouse.getOldestContainer(mContainerClassToDrop);
             if (lContainer == null) {
                 break;
             }
