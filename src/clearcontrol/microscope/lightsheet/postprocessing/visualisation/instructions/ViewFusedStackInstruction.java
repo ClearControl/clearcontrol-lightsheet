@@ -11,43 +11,54 @@ import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
  * Deprecated: Use ViewStack2DInstruction instead
  */
 @Deprecated
-public class ViewFusedStackInstruction extends LightSheetMicroscopeInstructionBase implements
-        LoggingFeature
+public class ViewFusedStackInstruction extends
+                                       LightSheetMicroscopeInstructionBase
+                                       implements LoggingFeature
 {
 
-    /**
-     * INstanciates a virtual device with a given name
-     *
-     */
-    public ViewFusedStackInstruction(LightSheetMicroscope pLightSheetMicroscope) {
-        super("Visualisation: View fused stack", pLightSheetMicroscope);
+  /**
+   * INstanciates a virtual device with a given name
+   *
+   */
+  public ViewFusedStackInstruction(LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super("Visualisation: View fused stack", pLightSheetMicroscope);
+  }
+
+  @Override
+  public boolean initialize()
+  {
+    return true;
+  }
+
+  @Override
+  public boolean enqueue(long pTimePoint)
+  {
+    DataWarehouse lDataWarehouse =
+                                 getLightSheetMicroscope().getDataWarehouse();
+    FusedImageDataContainer lContainer =
+                                       lDataWarehouse.getOldestContainer(FusedImageDataContainer.class);
+    if (lContainer == null || !lContainer.isDataComplete())
+    {
+      return false;
     }
 
-    @Override
-    public boolean initialize() {
-        return true;
+    Stack3DDisplay lDisplay =
+                            (Stack3DDisplay) getLightSheetMicroscope().getDevice(Stack3DDisplay.class,
+                                                                                 0);
+    if (lDisplay == null)
+    {
+      return false;
     }
 
-    @Override
-    public boolean enqueue(long pTimePoint) {
-        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
-        FusedImageDataContainer lContainer = lDataWarehouse.getOldestContainer(FusedImageDataContainer.class);
-        if (lContainer == null || !lContainer.isDataComplete()) {
-            return false;
-        }
+    lDisplay.getInputStackVariable().set(lContainer.get("fused"));
 
-        Stack3DDisplay lDisplay = (Stack3DDisplay) getLightSheetMicroscope().getDevice(Stack3DDisplay.class, 0);
-        if (lDisplay == null) {
-            return false;
-        }
+    return true;
+  }
 
-        lDisplay.getInputStackVariable().set(lContainer.get("fused"));
-
-        return true;
-    }
-
-    @Override
-    public ViewFusedStackInstruction copy() {
-        return new ViewFusedStackInstruction(getLightSheetMicroscope());
-    }
+  @Override
+  public ViewFusedStackInstruction copy()
+  {
+    return new ViewFusedStackInstruction(getLightSheetMicroscope());
+  }
 }

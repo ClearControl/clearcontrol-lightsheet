@@ -8,13 +8,14 @@ import clearcontrol.microscope.lightsheet.postprocessing.processing.DownsampleIn
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class DownsampleInstructionPanel extends CustomGridPane {
-    public DownsampleInstructionPanel(DownsampleInstruction pInstruction) {
-        addDoubleField(pInstruction.getDownSampleFactorX(), 0 );
-        addDoubleField(pInstruction.getDownSampleFactorX(), 1 );
-        addDoubleField(pInstruction.getDownSampleFactorX(), 2 );
-    }
+public class DownsampleInstructionPanel extends CustomGridPane
+{
+  public DownsampleInstructionPanel(DownsampleInstruction pInstruction)
+  {
+    addDoubleField(pInstruction.getDownSampleFactorX(), 0);
+    addDoubleField(pInstruction.getDownSampleFactorX(), 1);
+    addDoubleField(pInstruction.getDownSampleFactorX(), 2);
+  }
 }

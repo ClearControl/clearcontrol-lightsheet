@@ -1,6 +1,5 @@
 package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
-import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstructionBase;
 
@@ -8,27 +7,34 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * This instructions writes the raw data from the oldest optics prefused
  * acquisition stored in the DataWarehouse to disc.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
 public class WriteOpticsPrefusedRawDataAsRawToDiscInstruction extends
-        WriteStackInterfaceContainerAsRawToDiscInstructionBase
+                                                              WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
   public WriteOpticsPrefusedRawDataAsRawToDiscInstruction(LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("IO: Write optics prefused raw data to disc", OpticsPrefusedImageDataContainer.class, listKeys(pLightSheetMicroscope.getNumberOfDetectionArms()), null, pLightSheetMicroscope);
+    super("IO: Write optics prefused raw data to disc",
+          OpticsPrefusedImageDataContainer.class,
+          listKeys(pLightSheetMicroscope.getNumberOfDetectionArms()),
+          null,
+          pLightSheetMicroscope);
   }
 
-  private static String[] listKeys(int pNumberOfDetectionArms) {
+  private static String[] listKeys(int pNumberOfDetectionArms)
+  {
     String[] result = new String[pNumberOfDetectionArms];
-    for (int d = 0; d < pNumberOfDetectionArms; d++) {
+    for (int d = 0; d < pNumberOfDetectionArms; d++)
+    {
       result[d] = "C" + d + "opticsprefused";
     }
     return result;
   }
 
   @Override
-  public WriteOpticsPrefusedRawDataAsRawToDiscInstruction copy() {
+  public WriteOpticsPrefusedRawDataAsRawToDiscInstruction copy()
+  {
     return new WriteOpticsPrefusedRawDataAsRawToDiscInstruction(getLightSheetMicroscope());
   }
 }

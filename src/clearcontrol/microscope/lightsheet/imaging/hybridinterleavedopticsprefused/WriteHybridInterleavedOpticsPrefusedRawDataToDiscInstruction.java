@@ -8,28 +8,33 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction  extends
-        WriteStackInterfaceContainerAsRawToDiscInstructionBase
+public class WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction extends
+                                                                          WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
-    public WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction(LightSheetMicroscope pLightSheetMicroscope)
+  public WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction(LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super("IO: Write hybrid interleaved/optics prefused raw data to disc",
+          HybridInterleavedOpticsPrefusedImageDataContainer.class,
+          listKeys(pLightSheetMicroscope.getNumberOfDetectionArms()),
+          null,
+          pLightSheetMicroscope);
+  }
+
+  private static String[] listKeys(int pNumberOfDetectionArms)
+  {
+    String[] result = new String[pNumberOfDetectionArms];
+    for (int d = 0; d < pNumberOfDetectionArms; d++)
     {
-        super("IO: Write hybrid interleaved/optics prefused raw data to disc", HybridInterleavedOpticsPrefusedImageDataContainer.class, listKeys(pLightSheetMicroscope.getNumberOfDetectionArms()), null, pLightSheetMicroscope);
+      result[d] = "C" + d + "hybrid_interleaved_opticsprefused";
     }
+    return result;
+  }
 
-    private static String[] listKeys(int pNumberOfDetectionArms) {
-        String[] result = new String[pNumberOfDetectionArms];
-        for (int d = 0; d < pNumberOfDetectionArms; d++) {
-            result[d] = "C" + d + "hybrid_interleaved_opticsprefused";
-        }
-        return result;
-    }
-
-    @Override
-    public WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction copy() {
-        return new WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction(getLightSheetMicroscope());
-    }
+  @Override
+  public WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction copy()
+  {
+    return new WriteHybridInterleavedOpticsPrefusedRawDataToDiscInstruction(getLightSheetMicroscope());
+  }
 }
-

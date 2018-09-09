@@ -8,12 +8,14 @@ import clearcontrol.microscope.lightsheet.imaging.sequential.AppendConsecutiveSe
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class AppendConsecutiveSequentialImagingInstructionPanel extends CustomGridPane {
-    public AppendConsecutiveSequentialImagingInstructionPanel(AppendConsecutiveSequentialImagingInstruction pInstruction) {
-        addIntegerField(pInstruction.getNumberOfImages(), 0);
-        addDoubleField(pInstruction.getIntervalInSeconds(), 1);
-    }
+public class AppendConsecutiveSequentialImagingInstructionPanel extends
+                                                                CustomGridPane
+{
+  public AppendConsecutiveSequentialImagingInstructionPanel(AppendConsecutiveSequentialImagingInstruction pInstruction)
+  {
+    addIntegerField(pInstruction.getNumberOfImages(), 0);
+    addDoubleField(pInstruction.getIntervalInSeconds(), 1);
+  }
 }

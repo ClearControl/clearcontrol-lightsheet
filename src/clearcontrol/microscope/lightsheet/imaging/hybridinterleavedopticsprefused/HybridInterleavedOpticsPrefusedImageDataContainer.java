@@ -9,28 +9,34 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
 public class HybridInterleavedOpticsPrefusedImageDataContainer extends
-        StackInterfaceContainer
+                                                               StackInterfaceContainer
 {
-    private final LightSheetMicroscope mLightSheetMicroscope;
+  private final LightSheetMicroscope mLightSheetMicroscope;
 
-    public HybridInterleavedOpticsPrefusedImageDataContainer(LightSheetMicroscope pLightSheetMicroscope) {
-        super(pLightSheetMicroscope.getDevice(
-                LightSheetTimelapse.class, 0).getTimePointCounterVariable().get());
-        mLightSheetMicroscope = pLightSheetMicroscope;
-    }
+  public HybridInterleavedOpticsPrefusedImageDataContainer(LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super(pLightSheetMicroscope.getDevice(LightSheetTimelapse.class,
+                                          0)
+                               .getTimePointCounterVariable()
+                               .get());
+    mLightSheetMicroscope = pLightSheetMicroscope;
+  }
 
-    @Override public boolean isDataComplete()
+  @Override
+  public boolean isDataComplete()
+  {
+    for (int d =
+               0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
     {
-        for (int d = 0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++) {
-            if (! super.containsKey("C" + d + "hybrid_interleaved_opticsprefused")) {
-                return false;
-            }
-        }
-        return true;
+      if (!super.containsKey("C" + d
+                             + "hybrid_interleaved_opticsprefused"))
+      {
+        return false;
+      }
     }
+    return true;
+  }
 }
-

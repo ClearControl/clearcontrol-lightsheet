@@ -4,11 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.LoadMirrorModesFromFolderInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.SequentialZernikesInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -43,6 +38,10 @@ import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpti
 import clearcontrol.microscope.lightsheet.gui.LightSheetMicroscopeGUI;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.simulation.LightSheetMicroscopeSimulationDevice;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.LoadMirrorModesFromFolderInstruction;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.SequentialZernikesInstruction;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
+import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -345,19 +344,24 @@ public class LightSheetMicroscopeDemo extends Application implements
                                     lAcquisitionState);
       }
 
-
-      ZernikeModeFactorBasedSpatialPhaseModulatorBase
-          lSpatialPhaseModulatorDeviceBase = new SpatialPhaseModulatorDeviceSimulator("Simulated Spatial Phase Modulator Device", 11, 1, 66);
-      lLightSheetMicroscope.addDevice(0, lSpatialPhaseModulatorDeviceBase);
-
+      ZernikeModeFactorBasedSpatialPhaseModulatorBase lSpatialPhaseModulatorDeviceBase =
+                                                                                       new SpatialPhaseModulatorDeviceSimulator("Simulated Spatial Phase Modulator Device",
+                                                                                                                                11,
+                                                                                                                                1,
+                                                                                                                                66);
+      lLightSheetMicroscope.addDevice(0,
+                                      lSpatialPhaseModulatorDeviceBase);
 
       LoadMirrorModesFromFolderInstruction lLoadMirrorModesFromFolderScheduler =
-          new LoadMirrorModesFromFolderInstruction(lSpatialPhaseModulatorDeviceBase, lLightSheetMicroscope);
-      lLightSheetMicroscope.addDevice(0, lLoadMirrorModesFromFolderScheduler);
+                                                                               new LoadMirrorModesFromFolderInstruction(lSpatialPhaseModulatorDeviceBase,
+                                                                                                                        lLightSheetMicroscope);
+      lLightSheetMicroscope.addDevice(0,
+                                      lLoadMirrorModesFromFolderScheduler);
 
       SequentialZernikesInstruction lSequentialZernikesScheduler =
-              new SequentialZernikesInstruction(lSpatialPhaseModulatorDeviceBase);
-      lLightSheetMicroscope.addDevice(0, lSequentialZernikesScheduler);
+                                                                 new SequentialZernikesInstruction(lSpatialPhaseModulatorDeviceBase);
+      lLightSheetMicroscope.addDevice(0,
+                                      lSequentialZernikesScheduler);
 
       // Adding calibrator:
 
@@ -371,7 +375,6 @@ public class LightSheetMicroscopeDemo extends Application implements
                                     lLightSheetMicroscope.addTimelapse();
 
       lTimelapse.addFileStackSinkType(RawFileStackSink.class);
-
 
       // Now that the microscope has been setup, we can connect the simulator to
       // it:

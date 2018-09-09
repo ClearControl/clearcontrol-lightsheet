@@ -8,26 +8,27 @@ import clearcontrol.microscope.lightsheet.imaging.gafaso.GAFASOAcquisitionInstru
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 09 2018
+ * Author: @haesleinhuepf 09 2018
  */
-public class GAFASOAcquisitionInstructionPanel extends CustomGridPane {
-    public GAFASOAcquisitionInstructionPanel(GAFASOAcquisitionInstruction instruction) {
-        int row = 0;
+public class GAFASOAcquisitionInstructionPanel extends CustomGridPane
+{
+  public GAFASOAcquisitionInstructionPanel(GAFASOAcquisitionInstruction instruction)
+  {
+    int row = 0;
 
-        addIntegerField(instruction.getDetectionArmIndex(),row++);
-        addIntegerField(instruction.getLightSheetIndex(),row++);
-        addCheckbox(instruction.getOptimizeIndex(), row++);
+    addIntegerField(instruction.getDetectionArmIndex(), row++);
+    addIntegerField(instruction.getLightSheetIndex(), row++);
+    addCheckbox(instruction.getOptimizeIndex(), row++);
 
-        addIntegerField(instruction.getPopulationSize(), row++);
+    addIntegerField(instruction.getPopulationSize(), row++);
 
-        addCheckbox(instruction.getOptimizeAlpha(), row++);
-        addDoubleField(instruction.getStepSizeAlpha(), row++);
-        addCheckbox(instruction.getOptimizeX(), row++);
-        addDoubleField(instruction.getStepSizeX(), row++);
-        addCheckbox(instruction.getOptimizeZ(), row++);
-        addDoubleField(instruction.getStepSizeZ(), row++);
+    addCheckbox(instruction.getOptimizeAlpha(), row++);
+    addDoubleField(instruction.getStepSizeAlpha(), row++);
+    addCheckbox(instruction.getOptimizeX(), row++);
+    addDoubleField(instruction.getStepSizeX(), row++);
+    addCheckbox(instruction.getOptimizeZ(), row++);
+    addDoubleField(instruction.getStepSizeZ(), row++);
 
-        addCheckbox(instruction.getDebug(), row++);
-    }
+    addCheckbox(instruction.getDebug(), row++);
+  }
 }

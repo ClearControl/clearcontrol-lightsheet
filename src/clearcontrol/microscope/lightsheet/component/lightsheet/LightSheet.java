@@ -150,7 +150,7 @@ public class LightSheet extends
 
     getHeightVariable().set(getHeightVariable().getMax());
     // todo: uncomment this line as soon as the arduino/iris works as planned
-    //getWidthVariable().set(getWidthVariable().getMax());
+    // getWidthVariable().set(getWidthVariable().getMax());
 
     notifyListeners(this);
   }
@@ -461,6 +461,5 @@ public class LightSheet extends
     // Nothing to play here
     return null;
   }
-
 
 }

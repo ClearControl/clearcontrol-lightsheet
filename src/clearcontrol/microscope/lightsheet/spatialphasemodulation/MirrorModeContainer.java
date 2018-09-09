@@ -1,8 +1,7 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation;
 
-import ch.qos.logback.core.joran.spi.DefaultNestedComponentRegistry;
-import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerBase;
+
 import org.ejml.data.DenseMatrix64F;
 
 /**
@@ -10,31 +9,36 @@ import org.ejml.data.DenseMatrix64F;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class MirrorModeContainer extends DataContainerBase {
-    DenseMatrix64F mMirrorMode = null;
+public class MirrorModeContainer extends DataContainerBase
+{
+  DenseMatrix64F mMirrorMode = null;
 
-    public MirrorModeContainer(long pTimePoint) {
-        super(pTimePoint);
-    }
+  public MirrorModeContainer(long pTimePoint)
+  {
+    super(pTimePoint);
+  }
 
-    @Override
-    public boolean isDataComplete() {
-        return mMirrorMode != null;
-    }
+  @Override
+  public boolean isDataComplete()
+  {
+    return mMirrorMode != null;
+  }
 
-    @Override
-    public void dispose() {
-        mMirrorMode = null;
-    }
+  @Override
+  public void dispose()
+  {
+    mMirrorMode = null;
+  }
 
-    public void setMirrorMode(DenseMatrix64F pMatrix) {
-        mMirrorMode = pMatrix;
-    }
+  public void setMirrorMode(DenseMatrix64F pMatrix)
+  {
+    mMirrorMode = pMatrix;
+  }
 
-    public DenseMatrix64F getMirrorMode() {
-        return mMirrorMode;
-    }
+  public DenseMatrix64F getMirrorMode()
+  {
+    return mMirrorMode;
+  }
 }

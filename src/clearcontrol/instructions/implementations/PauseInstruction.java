@@ -5,39 +5,47 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * February 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) February 2018
  */
-public class PauseInstruction extends InstructionBase implements
-        InstructionInterface
+public class PauseInstruction extends InstructionBase
+                              implements InstructionInterface
 {
-  BoundedVariable<Integer> mPauseTimeInMilliseconds = new BoundedVariable<>("Pause in ms", 0, 0, Integer.MAX_VALUE);
+  BoundedVariable<Integer> mPauseTimeInMilliseconds =
+                                                    new BoundedVariable<>("Pause in ms",
+                                                                          0,
+                                                                          0,
+                                                                          Integer.MAX_VALUE);
+
   /**
    * INstanciates a virtual device with a given name
    *
    */
-  public PauseInstruction() {
+  public PauseInstruction()
+  {
     this(0);
   }
 
   public PauseInstruction(int pPauseTimeInMilliseconds)
   {
-    super("Timing: Pause " + Utilities.humanReadableTime(pPauseTimeInMilliseconds));
+    super("Timing: Pause "
+          + Utilities.humanReadableTime(pPauseTimeInMilliseconds));
     mPauseTimeInMilliseconds.set(pPauseTimeInMilliseconds);
   }
 
-  PauseInstruction(String pName) {
+  PauseInstruction(String pName)
+  {
     super(pName);
   }
 
-
-
-  @Override public boolean initialize()
+  @Override
+  public boolean initialize()
   {
     return true;
   }
 
-  @Override public boolean enqueue(long pTimePoint)
+  @Override
+  public boolean enqueue(long pTimePoint)
   {
     try
     {
@@ -51,21 +59,26 @@ public class PauseInstruction extends InstructionBase implements
   }
 
   @Override
-  public PauseInstruction copy() {
+  public PauseInstruction copy()
+  {
     return new PauseInstruction(mPauseTimeInMilliseconds.get());
   }
 
   @Override
-  public String toString() {
-    return "Timing: Pause " + Utilities.humanReadableTime(mPauseTimeInMilliseconds.get());
+  public String toString()
+  {
+    return "Timing: Pause "
+           + Utilities.humanReadableTime(mPauseTimeInMilliseconds.get());
   }
 
   @Override
-  public String getName() {
+  public String getName()
+  {
     return toString();
   }
 
-  public BoundedVariable<Integer> getPauseTimeInMilliseconds() {
+  public BoundedVariable<Integer> getPauseTimeInMilliseconds()
+  {
     return mPauseTimeInMilliseconds;
   }
 }

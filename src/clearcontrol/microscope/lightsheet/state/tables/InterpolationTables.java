@@ -21,7 +21,7 @@ public class InterpolationTables extends
   private int mNumberOfLightSheetDevices;
   private int mNumberOfDetectionArmDevices;
   private ArrayList<AbstractInterpolationTable> mInterpolationTableList =
-                                                                      new ArrayList<AbstractInterpolationTable>();
+                                                                        new ArrayList<AbstractInterpolationTable>();
 
   /**
    * Instanciates an interpolation table given a number of detection arms and
@@ -41,27 +41,27 @@ public class InterpolationTables extends
     mNumberOfLightSheetDevices = pNumberOfLightSheetDevices;
 
     AbstractInterpolationTable lInterpolationTableDZ =
-                                                   new LinearInterpolationTable(mNumberOfDetectionArmDevices);
+                                                     new LinearInterpolationTable(mNumberOfDetectionArmDevices);
 
     AbstractInterpolationTable lInterpolationTableIX =
-                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+                                                     new LinearInterpolationTable(mNumberOfLightSheetDevices);
     AbstractInterpolationTable lInterpolationTableIY =
-                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+                                                     new LinearInterpolationTable(mNumberOfLightSheetDevices);
     AbstractInterpolationTable lInterpolationTableIZ =
-                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+                                                     new LinearInterpolationTable(mNumberOfLightSheetDevices);
 
     AbstractInterpolationTable lInterpolationTableIA =
-                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+                                                     new LinearInterpolationTable(mNumberOfLightSheetDevices);
     AbstractInterpolationTable lInterpolationTableIB =
-                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+                                                     new LinearInterpolationTable(mNumberOfLightSheetDevices);
     AbstractInterpolationTable lInterpolationTableIW =
-                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+                                                     new LinearInterpolationTable(mNumberOfLightSheetDevices);
     AbstractInterpolationTable lInterpolationTableIH =
-                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+                                                     new LinearInterpolationTable(mNumberOfLightSheetDevices);
     AbstractInterpolationTable lInterpolationTableIP =
-                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+                                                     new LinearInterpolationTable(mNumberOfLightSheetDevices);
     AbstractInterpolationTable lInterpolationTableII =
-                                                   new LinearInterpolationTable(mNumberOfLightSheetDevices);
+                                                     new LinearInterpolationTable(mNumberOfLightSheetDevices);
 
     mInterpolationTableList.add(lInterpolationTableDZ);
     mInterpolationTableList.add(lInterpolationTableIX);
@@ -110,16 +110,16 @@ public class InterpolationTables extends
 
     mInterpolationTableList = new ArrayList<>();
 
-
-
     for (AbstractInterpolationTable lSplineInterpolationTable : pInterpolationTable.mInterpolationTableList)
     {
       // I would explain the following 6 lines if I could. Sorry, Robert
       if (lSplineInterpolationTable instanceof LinearInterpolationTable)
       {
-        mInterpolationTableList.add(((LinearInterpolationTable)lSplineInterpolationTable).clone());
-      } else if (lSplineInterpolationTable instanceof SplineInterpolationTable) {
-        mInterpolationTableList.add(((SplineInterpolationTable)lSplineInterpolationTable).clone());
+        mInterpolationTableList.add(((LinearInterpolationTable) lSplineInterpolationTable).clone());
+      }
+      else if (lSplineInterpolationTable instanceof SplineInterpolationTable)
+      {
+        mInterpolationTableList.add(((SplineInterpolationTable) lSplineInterpolationTable).clone());
       }
     }
   }
@@ -154,9 +154,9 @@ public class InterpolationTables extends
     for (int j = 0; j < lNumberOfTables; j++)
     {
       AbstractInterpolationTable lSplineInterpolationTable =
-                                                         mInterpolationTableList.get(j);
+                                                           mInterpolationTableList.get(j);
       AbstractInterpolationTable lOtherSplineInterpolationTable =
-                                                              pInterpolationTables.mInterpolationTableList.get(j);
+                                                                pInterpolationTables.mInterpolationTableList.get(j);
 
       Row lRow = lSplineInterpolationTable.addRow(pZ);
 

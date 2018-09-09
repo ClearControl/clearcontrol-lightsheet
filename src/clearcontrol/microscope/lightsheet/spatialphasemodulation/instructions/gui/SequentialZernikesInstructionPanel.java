@@ -8,18 +8,20 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.Se
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 06 2018
+ * Author: @haesleinhuepf 06 2018
  */
-public class SequentialZernikesInstructionPanel extends CustomGridPane {
-    public SequentialZernikesInstructionPanel(SequentialZernikesInstruction pInstruction)
-    {
-        addDoubleField(pInstruction.getMinimumZernikeCoefficientVariable(), 0 );
-        addDoubleField(pInstruction.getMaximumZernikeCoefficientVariable(), 1 );
-        addDoubleField(pInstruction.getStepperVariable(), 2 );
-        addDoubleField(pInstruction.getInitialValueVariable(), 3 );
+public class SequentialZernikesInstructionPanel extends CustomGridPane
+{
+  public SequentialZernikesInstructionPanel(SequentialZernikesInstruction pInstruction)
+  {
+    addDoubleField(pInstruction.getMinimumZernikeCoefficientVariable(),
+                   0);
+    addDoubleField(pInstruction.getMaximumZernikeCoefficientVariable(),
+                   1);
+    addDoubleField(pInstruction.getStepperVariable(), 2);
+    addDoubleField(pInstruction.getInitialValueVariable(), 3);
 
-        addIntegerField(pInstruction.getStartingModeVariable(), 4 );
-        addIntegerField(pInstruction.getEndingModeVariable(), 5 );
-        }
+    addIntegerField(pInstruction.getStartingModeVariable(), 4);
+    addIntegerField(pInstruction.getEndingModeVariable(), 5);
+  }
 }

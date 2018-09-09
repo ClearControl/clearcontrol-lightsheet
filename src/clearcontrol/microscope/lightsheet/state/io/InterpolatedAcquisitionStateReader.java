@@ -1,30 +1,34 @@
 package clearcontrol.microscope.lightsheet.state.io;
 
+import java.io.File;
+import java.io.IOException;
+
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import java.io.File;
-import java.io.IOException;
-
 /**
  * This class allows reading acquisition states from disc
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
 public class InterpolatedAcquisitionStateReader
 {
   private final File mSourceFile;
   private final InterpolatedAcquisitionState mTargetState;
 
-  public InterpolatedAcquisitionStateReader(File pSourceFile, InterpolatedAcquisitionState pTargetState) {
+  public InterpolatedAcquisitionStateReader(File pSourceFile,
+                                            InterpolatedAcquisitionState pTargetState)
+  {
     mSourceFile = pSourceFile;
     mTargetState = pTargetState;
   }
 
-  public boolean read(){
+  public boolean read()
+  {
     InterpolatedAcquisitionStateData lData;
 
     ObjectMapper lObjectMapper = new ObjectMapper();
@@ -34,7 +38,9 @@ public class InterpolatedAcquisitionStateReader
 
     try
     {
-      lData = lObjectMapper.readValue(mSourceFile, InterpolatedAcquisitionStateData.class);
+      lData =
+            lObjectMapper.readValue(mSourceFile,
+                                    InterpolatedAcquisitionStateData.class);
     }
     catch (IOException e)
     {

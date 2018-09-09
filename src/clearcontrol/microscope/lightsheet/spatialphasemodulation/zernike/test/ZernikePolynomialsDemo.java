@@ -40,18 +40,19 @@ public class ZernikePolynomialsDemo
     int lHeight = 101;
 
     ZernikePolynomialsDenseMatrix64F lZernikePolynomialsDenseMatrix64F =
-                                                     new ZernikePolynomialsDenseMatrix64F(lWidth,
-                                                                                 lHeight,
-                                                                                 m,
-                                                                                 n);
+                                                                       new ZernikePolynomialsDenseMatrix64F(lWidth,
+                                                                                                            lHeight,
+                                                                                                            m,
+                                                                                                            n);
 
-    ImagePlus lImagePlus = NewImage.createByteImage("Z " + m
-                                             + " "
-                                             + n,
-                                             (int) lWidth,
-                                             (int) lHeight,
-                                             1,
-                                             NewImage.FILL_BLACK);
+    ImagePlus lImagePlus =
+                         NewImage.createByteImage("Z " + m
+                                                  + " "
+                                                  + n,
+                                                  (int) lWidth,
+                                                  (int) lHeight,
+                                                  1,
+                                                  NewImage.FILL_BLACK);
     ImageProcessor lImageProcessor = lImagePlus.getProcessor();
 
     for (int x = 0; x < lWidth; x++)
@@ -59,9 +60,11 @@ public class ZernikePolynomialsDemo
       for (int y = 0; y < lHeight; y++)
       {
         lImageProcessor.set((int) x,
-               (int) y,
-               (int) ((lZernikePolynomialsDenseMatrix64F.get(x, y) + 1)
-                      * 127));
+                            (int) y,
+                            (int) ((lZernikePolynomialsDenseMatrix64F.get(x,
+                                                                          y)
+                                    + 1)
+                                   * 127));
       }
     }
     lImagePlus.show();

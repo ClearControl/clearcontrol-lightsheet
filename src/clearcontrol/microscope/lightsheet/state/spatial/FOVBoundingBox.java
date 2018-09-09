@@ -6,17 +6,18 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 /**
  * FOVBoundingBox
  *
- * Todo: The FOV bonuding box should be available via DataWarehouse as a kind of persistent container which cannot
- * be recycled.
+ * Todo: The FOV bonuding box should be available via DataWarehouse as a kind of
+ * persistent container which cannot be recycled.
  *
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class FOVBoundingBox extends SpaceTravelInstruction {
+public class FOVBoundingBox extends SpaceTravelInstruction
+{
 
-    public FOVBoundingBox(LightSheetMicroscope pLightSheetMicroscope) {
-        super("FOV", pLightSheetMicroscope);
-        initialize();
-    }
+  public FOVBoundingBox(LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super("FOV", pLightSheetMicroscope);
+    initialize();
+  }
 
 }

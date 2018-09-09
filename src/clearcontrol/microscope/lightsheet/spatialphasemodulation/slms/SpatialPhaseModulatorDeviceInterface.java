@@ -43,6 +43,7 @@ public interface SpatialPhaseModulatorDeviceInterface extends
   long getRelaxationTimeInMilliseconds();
 
   double[] getZernikeFactors();
+
   boolean setZernikeFactors(double[] pZernikeFactors);
 
 }

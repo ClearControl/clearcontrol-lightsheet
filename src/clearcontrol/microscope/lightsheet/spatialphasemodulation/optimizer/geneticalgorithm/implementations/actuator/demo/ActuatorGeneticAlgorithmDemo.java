@@ -5,43 +5,67 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.genet
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 
 /**
- * The ActuatorGeneticAlgorithmDemo sets a certain combination of Zernike modes as ground truth and asks a genetic
- * algorithm to find the same comination with random combinations as starting point.
+ * The ActuatorGeneticAlgorithmDemo sets a certain combination of Zernike modes
+ * as ground truth and asks a genetic algorithm to find the same comination with
+ * random combinations as starting point.
  *
- * Author: @haesleinhuepf
- * 04 2018
+ * Author: @haesleinhuepf 04 2018
  */
-public class ActuatorGeneticAlgorithmDemo {
-    public static void main(String... args) {
+public class ActuatorGeneticAlgorithmDemo
+{
+  public static void main(String... args)
+  {
 
-        // we need a deformable mirror simulator just to tell the deserved matrix size to the SolutionFactory
-        SpatialPhaseModulatorDeviceSimulator lDMSimulator = new SpatialPhaseModulatorDeviceSimulator("dm", 11, 11, 66);
+    // we need a deformable mirror simulator just to tell the deserved matrix
+    // size to the SolutionFactory
+    SpatialPhaseModulatorDeviceSimulator lDMSimulator =
+                                                      new SpatialPhaseModulatorDeviceSimulator("dm",
+                                                                                               11,
+                                                                                               11,
+                                                                                               66);
 
-        // We want to find this solution by running the optimization algorithm
-        double[] lReferenceFactors = {0, 0.1, 0.1, 0, 0, 0};
-        ZernikeSolution lReferenceSolution = new ZernikeSolution(lReferenceFactors, null, lDMSimulator, 160);
-        //ActuatorDemoSolution lReferenceSolution = new ActuatorDemoSolution(lReferenceMatrix, null, lDMSimulator, 160, null);
-        //mReferenceSolution.mReference = mReferenceSolution;
-        //System.out.println("Test: " + mReferenceSolution.fitness());
-        //if (true) return;
+    // We want to find this solution by running the optimization algorithm
+    double[] lReferenceFactors =
+    { 0, 0.1, 0.1, 0, 0, 0 };
+    ZernikeSolution lReferenceSolution =
+                                       new ZernikeSolution(lReferenceFactors,
+                                                           null,
+                                                           lDMSimulator,
+                                                           160);
+    // ActuatorDemoSolution lReferenceSolution = new
+    // ActuatorDemoSolution(lReferenceMatrix, null, lDMSimulator, 160, null);
+    // mReferenceSolution.mReference = mReferenceSolution;
+    // System.out.println("Test: " + mReferenceSolution.fitness());
+    // if (true) return;
 
-        ActuatorDemoSolutionFactory lSolutionFactory = new ActuatorDemoSolutionFactory(null, lDMSimulator, 160, lReferenceSolution.getMatrix());
+    ActuatorDemoSolutionFactory lSolutionFactory =
+                                                 new ActuatorDemoSolutionFactory(null,
+                                                                                 lDMSimulator,
+                                                                                 160,
+                                                                                 lReferenceSolution.getMatrix());
 
-        Population<ActuatorDemoSolution> lInitialPopulation = new Population<ActuatorDemoSolution>(lSolutionFactory, 100, 10);
+    Population<ActuatorDemoSolution> lInitialPopulation =
+                                                        new Population<ActuatorDemoSolution>(lSolutionFactory,
+                                                                                             100,
+                                                                                             10);
 
-        System.out.println("Initial fitness: " + lInitialPopulation.fitness());
+    System.out.println("Initial fitness: "
+                       + lInitialPopulation.fitness());
 
-        Population<ActuatorDemoSolution> lPopulation = lInitialPopulation;
+    Population<ActuatorDemoSolution> lPopulation = lInitialPopulation;
 
-        for (int i = 0; i < 2000; i ++) {
-            lPopulation = lPopulation.runEpoch();
-        }
-        //System.out.println("Population [" + i + "] fitness: " + lPopulation.fitness());
-        ActuatorDemoSolution lSolution = lPopulation.best();
-        System.out.println("Best solution fitness: " + lSolution.fitness());
-        System.out.println("Best solution: "  + lSolution.getMatrix());
-        System.out.println("Ground truth:  "  + lReferenceSolution.getMatrix());
-
-
+    for (int i = 0; i < 2000; i++)
+    {
+      lPopulation = lPopulation.runEpoch();
     }
+    // System.out.println("Population [" + i + "] fitness: " +
+    // lPopulation.fitness());
+    ActuatorDemoSolution lSolution = lPopulation.best();
+    System.out.println("Best solution fitness: "
+                       + lSolution.fitness());
+    System.out.println("Best solution: " + lSolution.getMatrix());
+    System.out.println("Ground truth:  "
+                       + lReferenceSolution.getMatrix());
+
+  }
 }

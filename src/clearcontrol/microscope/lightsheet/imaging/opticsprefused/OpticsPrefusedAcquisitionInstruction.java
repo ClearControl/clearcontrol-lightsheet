@@ -1,9 +1,13 @@
 package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
-import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.imaging.AbstractAcquistionInstruction;
 import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
@@ -15,23 +19,20 @@ import clearcontrol.stack.metadata.MetaDataChannel;
 import clearcontrol.stack.metadata.MetaDataOrdinals;
 import clearcontrol.stack.metadata.StackMetaData;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 /**
- * This instructions acquires an image stack per camera where all light
- * sheets are on. The image stacks are stored in the DataWarehouse in
- * an OpticsPrefusedImageDataContainer with keys like CXopticsprefused
- * with X representing the camera number.
+ * This instructions acquires an image stack per camera where all light sheets
+ * are on. The image stacks are stored in the DataWarehouse in an
+ * OpticsPrefusedImageDataContainer with keys like CXopticsprefused with X
+ * representing the camera number.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * February 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) February 2018
  */
 public class OpticsPrefusedAcquisitionInstruction extends
-        AbstractAcquistionInstruction implements
-        InstructionInterface,
-                                                                                       LoggingFeature
+                                                  AbstractAcquistionInstruction
+                                                  implements
+                                                  InstructionInterface,
+                                                  LoggingFeature
 {
   /**
    * INstanciates a virtual device with a given name
@@ -43,20 +44,32 @@ public class OpticsPrefusedAcquisitionInstruction extends
     mChannelName.set("opticsprefused");
   }
 
-  @Override public boolean enqueue(long pTimePoint)
+  @Override
+  public boolean enqueue(long pTimePoint)
   {
-    mCurrentState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager().getCurrentState();
+    mCurrentState =
+                  (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager()
+                                                                          .getCurrentState();
 
-    int lImageWidth = mCurrentState.getImageWidthVariable().get().intValue();
-    int lImageHeight = mCurrentState.getImageHeightVariable().get().intValue();
-    double lExposureTimeInSeconds = mCurrentState.getExposureInSecondsVariable().get().doubleValue();
+    int lImageWidth = mCurrentState.getImageWidthVariable()
+                                   .get()
+                                   .intValue();
+    int lImageHeight = mCurrentState.getImageHeightVariable()
+                                    .get()
+                                    .intValue();
+    double lExposureTimeInSeconds =
+                                  mCurrentState.getExposureInSecondsVariable()
+                                               .get()
+                                               .doubleValue();
 
-    int lNumberOfImagesToTake = mCurrentState.getNumberOfZPlanesVariable().get().intValue();
+    int lNumberOfImagesToTake =
+                              mCurrentState.getNumberOfZPlanesVariable()
+                                           .get()
+                                           .intValue();
 
     // build a queue
-    LightSheetMicroscopeQueue
-        lQueue =
-        getLightSheetMicroscope().requestQueue();
+    LightSheetMicroscopeQueue lQueue =
+                                     getLightSheetMicroscope().requestQueue();
 
     // initialize queue
     lQueue.clearQueue();
@@ -67,21 +80,25 @@ public class OpticsPrefusedAcquisitionInstruction extends
     // initial position
     goToInitialPosition(getLightSheetMicroscope(),
                         lQueue,
-                        mCurrentState.getStackZLowVariable().get().doubleValue(),
-                        mCurrentState.getStackZLowVariable().get().doubleValue());
+                        mCurrentState.getStackZLowVariable()
+                                     .get()
+                                     .doubleValue(),
+                        mCurrentState.getStackZLowVariable()
+                                     .get()
+                                     .doubleValue());
 
     // --------------------------------------------------------------------
     // build a queue
 
-    for (int lImageCounter = 0; lImageCounter
-                                < lNumberOfImagesToTake; lImageCounter++)
+    for (int lImageCounter =
+                           0; lImageCounter < lNumberOfImagesToTake; lImageCounter++)
     {
       // acuqire an image with all light sheets on
       mCurrentState.applyAcquisitionStateAtStackPlane(lQueue,
                                                       lImageCounter);
 
-      for (int k = 0; k
-                      < getLightSheetMicroscope().getNumberOfLightSheets(); k++)
+      for (int k =
+                 0; k < getLightSheetMicroscope().getNumberOfLightSheets(); k++)
       {
 
         lQueue.setI(k, true);
@@ -93,17 +110,22 @@ public class OpticsPrefusedAcquisitionInstruction extends
     // back to initial position
     goToInitialPosition(getLightSheetMicroscope(),
                         lQueue,
-                        mCurrentState.getStackZLowVariable().get().doubleValue(),
-                        mCurrentState.getStackZLowVariable().get().doubleValue());
+                        mCurrentState.getStackZLowVariable()
+                                     .get()
+                                     .doubleValue(),
+                        mCurrentState.getStackZLowVariable()
+                                     .get()
+                                     .doubleValue());
 
     lQueue.setTransitionTime(0.5);
     lQueue.setFinalisationTime(0.005);
 
-    for (int c = 0; c < getLightSheetMicroscope().getNumberOfDetectionArms(); c++)
+    for (int c =
+               0; c < getLightSheetMicroscope().getNumberOfDetectionArms(); c++)
     {
-      StackMetaData
-          lMetaData =
-          lQueue.getCameraDeviceQueue(c).getMetaDataVariable().get();
+      StackMetaData lMetaData = lQueue.getCameraDeviceQueue(c)
+                                      .getMetaDataVariable()
+                                      .get();
 
       lMetaData.addEntry(MetaDataAcquisitionType.AcquisitionType,
                          AcquisitionType.TimeLapseOpticallyCameraFused);
@@ -113,9 +135,11 @@ public class OpticsPrefusedAcquisitionInstruction extends
 
       lMetaData.addEntry(MetaDataChannel.Channel, "opticsprefused");
     }
-    lQueue.addVoxelDimMetaData(getLightSheetMicroscope(), mCurrentState.getStackZStepVariable().get().doubleValue());
-    lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
-                            pTimePoint);
+    lQueue.addVoxelDimMetaData(getLightSheetMicroscope(),
+                               mCurrentState.getStackZStepVariable()
+                                            .get()
+                                            .doubleValue());
+    lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint, pTimePoint);
 
     lQueue.finalizeQueue();
 
@@ -124,10 +148,10 @@ public class OpticsPrefusedAcquisitionInstruction extends
     try
     {
       mTimeStampBeforeImaging = System.nanoTime();
-      lPlayQueueAndWait = getLightSheetMicroscope().playQueueAndWait(lQueue,
-                                                                          100 + lQueue
-                                                                              .getQueueLength(),
-                                                                          TimeUnit.SECONDS);
+      lPlayQueueAndWait =
+                        getLightSheetMicroscope().playQueueAndWait(lQueue,
+                                                                   100 + lQueue.getQueueLength(),
+                                                                   TimeUnit.SECONDS);
     }
     catch (InterruptedException e)
     {
@@ -149,21 +173,29 @@ public class OpticsPrefusedAcquisitionInstruction extends
     }
 
     // store resulting stacks in the DataWarehouse
-    OpticsPrefusedImageDataContainer
-        lContainer = new OpticsPrefusedImageDataContainer(getLightSheetMicroscope());
-    for (int d = 0 ; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++)
+    OpticsPrefusedImageDataContainer lContainer =
+                                                new OpticsPrefusedImageDataContainer(getLightSheetMicroscope());
+    for (int d =
+               0; d < getLightSheetMicroscope().getNumberOfDetectionArms(); d++)
     {
-      StackInterface lStack = getLightSheetMicroscope().getCameraStackVariable(
-          d).get();
-      putStackInContainer("C" + d + "opticsprefused", lStack, lContainer);
+      StackInterface lStack =
+                            getLightSheetMicroscope().getCameraStackVariable(d)
+                                                     .get();
+      putStackInContainer("C" + d
+                          + "opticsprefused",
+                          lStack,
+                          lContainer);
     }
-    getLightSheetMicroscope().getDataWarehouse().put("opticsprefused_raw_" + pTimePoint, lContainer);
+    getLightSheetMicroscope().getDataWarehouse()
+                             .put("opticsprefused_raw_" + pTimePoint,
+                                  lContainer);
 
     return true;
   }
 
   @Override
-  public OpticsPrefusedAcquisitionInstruction copy() {
+  public OpticsPrefusedAcquisitionInstruction copy()
+  {
     return new OpticsPrefusedAcquisitionInstruction(getLightSheetMicroscope());
   }
 }

@@ -1,7 +1,6 @@
 package clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.zernike.ZernikePolynomials;
 
@@ -92,41 +91,43 @@ public class ZernikePolynomialsTests
   }
 
   @Test
-  public void testJNoll() {
+  public void testJNoll()
+  {
 
-    assertEquals(1, ZernikePolynomials.jNoll(0,0));
-    assertEquals(2, ZernikePolynomials.jNoll(1,1));
-    assertEquals(3, ZernikePolynomials.jNoll(1,-1));
-    assertEquals(4, ZernikePolynomials.jNoll(2,0));
-    assertEquals(5, ZernikePolynomials.jNoll(2,-2));
-    assertEquals(6, ZernikePolynomials.jNoll(2,2));
-    assertEquals(7, ZernikePolynomials.jNoll(3,-1));
-    assertEquals(8, ZernikePolynomials.jNoll(3,1));
-    assertEquals(9, ZernikePolynomials.jNoll(3,-3));
-    assertEquals(10, ZernikePolynomials.jNoll(3,3));
+    assertEquals(1, ZernikePolynomials.jNoll(0, 0));
+    assertEquals(2, ZernikePolynomials.jNoll(1, 1));
+    assertEquals(3, ZernikePolynomials.jNoll(1, -1));
+    assertEquals(4, ZernikePolynomials.jNoll(2, 0));
+    assertEquals(5, ZernikePolynomials.jNoll(2, -2));
+    assertEquals(6, ZernikePolynomials.jNoll(2, 2));
+    assertEquals(7, ZernikePolynomials.jNoll(3, -1));
+    assertEquals(8, ZernikePolynomials.jNoll(3, 1));
+    assertEquals(9, ZernikePolynomials.jNoll(3, -3));
+    assertEquals(10, ZernikePolynomials.jNoll(3, 3));
 
-
-    assertEquals(11, ZernikePolynomials.jNoll(4,0));
-    assertEquals(12, ZernikePolynomials.jNoll(4,2));
-    assertEquals(13, ZernikePolynomials.jNoll(4,-2));
-    assertEquals(14, ZernikePolynomials.jNoll(4,4));
-    assertEquals(15, ZernikePolynomials.jNoll(4,-4));
-    assertEquals(16, ZernikePolynomials.jNoll(5,1));
-    assertEquals(17, ZernikePolynomials.jNoll(5,-1));
-    assertEquals(18, ZernikePolynomials.jNoll(5,3));
-    assertEquals(19, ZernikePolynomials.jNoll(5,-3));
-    assertEquals(20, ZernikePolynomials.jNoll(5,5));
-
-
+    assertEquals(11, ZernikePolynomials.jNoll(4, 0));
+    assertEquals(12, ZernikePolynomials.jNoll(4, 2));
+    assertEquals(13, ZernikePolynomials.jNoll(4, -2));
+    assertEquals(14, ZernikePolynomials.jNoll(4, 4));
+    assertEquals(15, ZernikePolynomials.jNoll(4, -4));
+    assertEquals(16, ZernikePolynomials.jNoll(5, 1));
+    assertEquals(17, ZernikePolynomials.jNoll(5, -1));
+    assertEquals(18, ZernikePolynomials.jNoll(5, 3));
+    assertEquals(19, ZernikePolynomials.jNoll(5, -3));
+    assertEquals(20, ZernikePolynomials.jNoll(5, 5));
 
   }
 
   @Test
-  public void testZernikeModeNames() {
+  public void testZernikeModeNames()
+  {
     assertEquals("Defocus", ZernikePolynomials.getZernikeModeName(4));
-    assertEquals("Defocus", ZernikePolynomials.getZernikeModeNameFromNollIndex(4));
-    assertEquals("Vertical astigmatism", ZernikePolynomials.getZernikeModeName(5));
-    assertEquals("Vertical astigmatism", ZernikePolynomials.getZernikeModeNameFromNollIndex(6));
+    assertEquals("Defocus",
+                 ZernikePolynomials.getZernikeModeNameFromNollIndex(4));
+    assertEquals("Vertical astigmatism",
+                 ZernikePolynomials.getZernikeModeName(5));
+    assertEquals("Vertical astigmatism",
+                 ZernikePolynomials.getZernikeModeNameFromNollIndex(6));
   }
 
 }

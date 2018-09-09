@@ -8,14 +8,16 @@ import clearcontrol.microscope.lightsheet.postprocessing.fusion.TenengradFusionP
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class TenengradFusionPerCameraInstructionPanel extends CustomGridPane {
-    public TenengradFusionPerCameraInstructionPanel(TenengradFusionPerCameraInstruction instruction) {
-        addDoubleField(instruction.getBlurWeightSigmaX(), 0);
-        addDoubleField(instruction.getBlurWeightSigmaY(), 1);
-        addDoubleField(instruction.getBlurWeightSigmaZ(), 2);
-        addDoubleField(instruction.getWeightExponent(), 3);
-    }
+public class TenengradFusionPerCameraInstructionPanel extends
+                                                      CustomGridPane
+{
+  public TenengradFusionPerCameraInstructionPanel(TenengradFusionPerCameraInstruction instruction)
+  {
+    addDoubleField(instruction.getBlurWeightSigmaX(), 0);
+    addDoubleField(instruction.getBlurWeightSigmaY(), 1);
+    addDoubleField(instruction.getBlurWeightSigmaZ(), 2);
+    addDoubleField(instruction.getWeightExponent(), 3);
+  }
 }

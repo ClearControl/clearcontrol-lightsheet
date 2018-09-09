@@ -7,24 +7,38 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
 /**
  *
  *
- * Deprecated: Use WriteStackInterfaceContainerAsTifToDiscInstruction directly instead
+ * Deprecated: Use WriteStackInterfaceContainerAsTifToDiscInstruction directly
+ * instead
  */
 @Deprecated
 public class WriteSingleLightSheetImageAsTifToDiscInstruction extends
-        WriteStackInterfaceContainerAsTifToDiscInstruction
+                                                              WriteStackInterfaceContainerAsTifToDiscInstruction
 {
-    private int mDetectionArmIndex;
-    private int mLightSheetIndex;
+  private int mDetectionArmIndex;
+  private int mLightSheetIndex;
 
-    public WriteSingleLightSheetImageAsTifToDiscInstruction(int pDetectionArmIndex, int pLightSheetIndex, LightSheetMicroscope pLightSheetMicroscope)
-    {
-        super("IO: Write C" + pDetectionArmIndex + "L" + pLightSheetIndex + " tif to disc", StackInterfaceContainer.class, new String[] {"C" + pDetectionArmIndex + "L" + pLightSheetIndex}, null, pLightSheetMicroscope);
-        mDetectionArmIndex = pDetectionArmIndex;
-        mLightSheetIndex = pLightSheetIndex;
-    }
+  public WriteSingleLightSheetImageAsTifToDiscInstruction(int pDetectionArmIndex,
+                                                          int pLightSheetIndex,
+                                                          LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super("IO: Write C" + pDetectionArmIndex
+          + "L"
+          + pLightSheetIndex
+          + " tif to disc",
+          StackInterfaceContainer.class,
+          new String[]
+    { "C" + pDetectionArmIndex + "L" + pLightSheetIndex },
+          null,
+          pLightSheetMicroscope);
+    mDetectionArmIndex = pDetectionArmIndex;
+    mLightSheetIndex = pLightSheetIndex;
+  }
 
-    @Override
-    public WriteSingleLightSheetImageAsTifToDiscInstruction copy() {
-        return new WriteSingleLightSheetImageAsTifToDiscInstruction(mDetectionArmIndex, mLightSheetIndex, getLightSheetMicroscope());
-    }
+  @Override
+  public WriteSingleLightSheetImageAsTifToDiscInstruction copy()
+  {
+    return new WriteSingleLightSheetImageAsTifToDiscInstruction(mDetectionArmIndex,
+                                                                mLightSheetIndex,
+                                                                getLightSheetMicroscope());
+  }
 }

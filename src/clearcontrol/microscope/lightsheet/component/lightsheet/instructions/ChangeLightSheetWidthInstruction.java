@@ -8,50 +8,68 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 
 /**
- * ChangeLightSheetWidthInstruction allows controlling the irises in the illumination arms
+ * ChangeLightSheetWidthInstruction allows controlling the irises in the
+ * illumination arms
  *
  * Todo: allow to control independent light sheets individually
  *
- * XWing specific:
- * * All irises are controlled together
- * * Value 0 corresponds to an open iris
- * * Value 0.45 corresponds to an almost closed iris
+ * XWing specific: * All irises are controlled together * Value 0 corresponds to
+ * an open iris * Value 0.45 corresponds to an almost closed iris
  *
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class ChangeLightSheetWidthInstruction extends LightSheetMicroscopeInstructionBase {
+public class ChangeLightSheetWidthInstruction extends
+                                              LightSheetMicroscopeInstructionBase
+{
 
+  private final BoundedVariable<Double> mLightSheetWidth =
+                                                         new BoundedVariable<Double>("Light sheet width",
+                                                                                     0.0,
+                                                                                     -Double.MAX_VALUE,
+                                                                                     Double.MAX_VALUE,
+                                                                                     0.01);
 
-    private final BoundedVariable<Double> mLightSheetWidth = new BoundedVariable<Double>("Light sheet width", 0.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.01);
+  public ChangeLightSheetWidthInstruction(LightSheetMicroscope pLightSheetMicroscope,
+                                          double pLightSheetWidth)
+  {
+    super("Adaptation: Change light sheet width to "
+          + pLightSheetWidth, pLightSheetMicroscope);
+    mLightSheetWidth.set(pLightSheetWidth);
+  }
 
-    public ChangeLightSheetWidthInstruction(LightSheetMicroscope pLightSheetMicroscope, double pLightSheetWidth) {
-        super("Adaptation: Change light sheet width to " + pLightSheetWidth, pLightSheetMicroscope);
-        mLightSheetWidth.set(pLightSheetWidth);
+  @Override
+  public boolean initialize()
+  {
+    return true;
+  }
+
+  @Override
+  public boolean enqueue(long pTimePoint)
+  {
+    InterpolatedAcquisitionState lState =
+                                        (InterpolatedAcquisitionState) getLightSheetMicroscope().getDevice(AcquisitionStateManager.class,
+                                                                                                           0)
+                                                                                                .getCurrentState();
+    for (int cpi = 0; cpi < lState.getNumberOfControlPlanes(); cpi++)
+    {
+      for (int l = 0; l < lState.getNumberOfLightSheets(); l++)
+      {
+        lState.getInterpolationTables()
+              .set(LightSheetDOF.IW, cpi, l, mLightSheetWidth.get());
+      }
     }
+    return true;
+  }
 
-    @Override
-    public boolean initialize() {
-        return true;
-    }
+  @Override
+  public ChangeLightSheetWidthInstruction copy()
+  {
+    return new ChangeLightSheetWidthInstruction(getLightSheetMicroscope(),
+                                                mLightSheetWidth.get());
+  }
 
-    @Override
-    public boolean enqueue(long pTimePoint) {
-        InterpolatedAcquisitionState lState = (InterpolatedAcquisitionState) getLightSheetMicroscope().getDevice(AcquisitionStateManager.class, 0).getCurrentState();
-        for (int cpi = 0; cpi < lState.getNumberOfControlPlanes(); cpi++) {
-            for (int l = 0; l < lState.getNumberOfLightSheets(); l++) {
-                lState.getInterpolationTables().set(LightSheetDOF.IW, cpi, l, mLightSheetWidth.get());
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public ChangeLightSheetWidthInstruction copy() {
-        return new ChangeLightSheetWidthInstruction(getLightSheetMicroscope(), mLightSheetWidth.get());
-    }
-
-    public BoundedVariable<Double> getLightSheetWidth() {
-        return mLightSheetWidth;
-    }
+  public BoundedVariable<Double> getLightSheetWidth()
+  {
+    return mLightSheetWidth;
+  }
 }

@@ -7,19 +7,26 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * This instructions writes a fused image to disc. Depending on how the images
  * was fused, it might be stored in different folders.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
 public class WriteFusedImageAsRawToDiscInstruction extends
-        WriteStackInterfaceContainerAsRawToDiscInstructionBase
+                                                   WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
-  public WriteFusedImageAsRawToDiscInstruction(String pChannelName, LightSheetMicroscope pLightSheetMicroscope)
+  public WriteFusedImageAsRawToDiscInstruction(String pChannelName,
+                                               LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("IO: Write " + pChannelName + " fused stack to disc", FusedImageDataContainer.class, new String[]{"fused"}, pChannelName, pLightSheetMicroscope);
+    super("IO: Write " + pChannelName
+          + " fused stack to disc",
+          FusedImageDataContainer.class,
+          new String[]
+    { "fused" }, pChannelName, pLightSheetMicroscope);
   }
 
   @Override
-  public WriteFusedImageAsRawToDiscInstruction copy() {
-    return new WriteFusedImageAsRawToDiscInstruction(mChannelName, getLightSheetMicroscope());
+  public WriteFusedImageAsRawToDiscInstruction copy()
+  {
+    return new WriteFusedImageAsRawToDiscInstruction(mChannelName,
+                                                     getLightSheetMicroscope());
   }
 }

@@ -1,40 +1,42 @@
 package clearcontrol.devices.stages.kcube.impl;
 
-import aptj.APTJDeviceFactory;
-import aptj.APTJDeviceType;
-import aptj.APTJExeption;
-import aptj.bindings.APTLibrary;
-import clearcontrol.core.device.VirtualDevice;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import aptj.APTJDeviceFactory;
+import aptj.APTJDeviceType;
+import aptj.APTJExeption;
+import aptj.bindings.APTLibrary;
+import clearcontrol.core.device.VirtualDevice;
+
 /**
- * This factory allows to produce K-Cube devices representing Thorlabs
- * Kinesis KST101 step motor control units.
+ * This factory allows to produce K-Cube devices representing Thorlabs Kinesis
+ * KST101 step motor control units.
  *
- * IMPORTANT: The factory device must be closed properly! Otherwise
- * your application may crash at next startup. It is recommended to
- * add the device to the microscope device list. Then it will be
- * closed properly as soon as the app closes.
+ * IMPORTANT: The factory device must be closed properly! Otherwise your
+ * application may crash at next startup. It is recommended to add the device to
+ * the microscope device list. Then it will be closed properly as soon as the
+ * app closes.
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * January 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) January 2018
  */
 public class KCubeDeviceFactory extends VirtualDevice
 {
   private static KCubeDeviceFactory sKCubeDeviceFactory = null;
 
   protected APTJDeviceFactory mAPTJLibrary;
-  protected ArrayList<KCubeDevice> mDeviceList = new ArrayList<KCubeDevice>();
+  protected ArrayList<KCubeDevice> mDeviceList =
+                                               new ArrayList<KCubeDevice>();
 
   public static boolean sDebugToLogFile = true;
   public static boolean sDebugToStdOut = true;
 
-  private KCubeDeviceFactory() {
+  private KCubeDeviceFactory()
+  {
     super("KCubeDeviceFactory");
     log("Trying to cleanup Thorlabs Kinesis");
     APTLibrary.APTCleanUp();
@@ -43,7 +45,6 @@ public class KCubeDeviceFactory extends VirtualDevice
     log("Configure Kinesis");
     APTLibrary.EnableEventDlg(0);
     log("Trying to connect to Thorlabs Kinesis KCube factory ");
-
 
     try
     {
@@ -56,18 +57,23 @@ public class KCubeDeviceFactory extends VirtualDevice
     log("Thorlabs Kinesis initialisation finished.");
   }
 
-  public static KCubeDeviceFactory getInstance() {
-    if (sKCubeDeviceFactory == null) {
+  public static KCubeDeviceFactory getInstance()
+  {
+    if (sKCubeDeviceFactory == null)
+    {
       sKCubeDeviceFactory = new KCubeDeviceFactory();
     }
     return sKCubeDeviceFactory;
   }
 
-  public KCubeDevice createKCubeDevice(long pSerialID, String pName) {
+  public KCubeDevice createKCubeDevice(long pSerialID, String pName)
+  {
     log("Trying to connect to KCube " + pName + " " + pSerialID);
     try
     {
-      KCubeDevice lDevice = new KCubeDevice(mAPTJLibrary.createDeviceFromSerialNumber(pSerialID), pName);
+      KCubeDevice lDevice =
+                          new KCubeDevice(mAPTJLibrary.createDeviceFromSerialNumber(pSerialID),
+                                          pName);
       mDeviceList.add(lDevice);
       return lDevice;
     }
@@ -79,8 +85,8 @@ public class KCubeDeviceFactory extends VirtualDevice
     return null;
   }
 
-
-  private void log(String pLog) {
+  private void log(String pLog)
+  {
     if (sDebugToStdOut)
     {
       System.out.println(pLog);
@@ -90,7 +96,8 @@ public class KCubeDeviceFactory extends VirtualDevice
       File lLogFile = new File("log.txt");
       try
       {
-        FileOutputStream lStream = new FileOutputStream(lLogFile, true);
+        FileOutputStream lStream =
+                                 new FileOutputStream(lLogFile, true);
         lStream.write(pLog.getBytes());
         lStream.close();
       }
@@ -104,7 +111,6 @@ public class KCubeDeviceFactory extends VirtualDevice
       }
     }
   }
-
 
   @Override
   public boolean open()
@@ -132,11 +138,9 @@ public class KCubeDeviceFactory extends VirtualDevice
     log("Closing APT lib connection");
     APTLibrary.APTCleanUp();
 
-
-
-    //mAPTJLibrary.createDeviceFromIndex()
+    // mAPTJLibrary.createDeviceFromIndex()
     /*for (KCubeDevice lDevice : mDeviceList) {
-
+    
     }*/
     return true;
   }

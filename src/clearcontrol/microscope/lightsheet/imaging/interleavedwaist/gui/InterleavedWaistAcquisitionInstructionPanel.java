@@ -8,21 +8,26 @@ import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.InterleavedWa
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class InterleavedWaistAcquisitionInstructionPanel extends CustomGridPane {
-    public InterleavedWaistAcquisitionInstructionPanel(InterleavedWaistAcquisitionInstruction instruction) {
-        int row = 0;
-        addIntegerField(instruction.getLightSheetIndex(), row++);
-        row++;
-        for (int i = 0; i < instruction.getLightSheetXPositions().length; i++) {
-            addDoubleField(instruction.getLightSheetXPositions()[i], row);
-            row++;
-            addDoubleField(instruction.getLightSheetYPositions()[i], row);
-            row++;
-            addDoubleField(instruction.getLightSheetDeltaZPositions()[i], row);
-            row++;
-        }
+public class InterleavedWaistAcquisitionInstructionPanel extends
+                                                         CustomGridPane
+{
+  public InterleavedWaistAcquisitionInstructionPanel(InterleavedWaistAcquisitionInstruction instruction)
+  {
+    int row = 0;
+    addIntegerField(instruction.getLightSheetIndex(), row++);
+    row++;
+    for (int i =
+               0; i < instruction.getLightSheetXPositions().length; i++)
+    {
+      addDoubleField(instruction.getLightSheetXPositions()[i], row);
+      row++;
+      addDoubleField(instruction.getLightSheetYPositions()[i], row);
+      row++;
+      addDoubleField(instruction.getLightSheetDeltaZPositions()[i],
+                     row);
+      row++;
     }
+  }
 }

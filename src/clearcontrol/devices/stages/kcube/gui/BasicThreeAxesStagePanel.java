@@ -1,37 +1,36 @@
 package clearcontrol.devices.stages.kcube.gui;
 
-import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
-import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
+import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.devices.stages.BasicThreeAxesStageInterface;
+import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
+import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
+
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * January 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) January 2018
  */
 public class BasicThreeAxesStagePanel extends CustomGridPane
 {
   private BasicThreeAxesStageInterface mBasicThreeAxesStageInterface;
 
-  private BoundedVariable<Double>
-      mSlowSpeed =
-      new BoundedVariable<Double>("slow speed",
-                                  0.02,
-                                  0.0,
-                                  Double.MAX_VALUE,
-                                  0.001);
-  private BoundedVariable<Double>
-      mFastSpeed =
-      new BoundedVariable<Double>("fast speed",
-                                  0.1,
-                                  0.0,
-                                  Double.MAX_VALUE,
-                                  0.001);
+  private BoundedVariable<Double> mSlowSpeed =
+                                             new BoundedVariable<Double>("slow speed",
+                                                                         0.02,
+                                                                         0.0,
+                                                                         Double.MAX_VALUE,
+                                                                         0.001);
+  private BoundedVariable<Double> mFastSpeed =
+                                             new BoundedVariable<Double>("fast speed",
+                                                                         0.1,
+                                                                         0.0,
+                                                                         Double.MAX_VALUE,
+                                                                         0.001);
 
   public BasicThreeAxesStagePanel(BasicThreeAxesStageInterface pBasicThreeAxesStageInterface)
   {
@@ -41,17 +40,19 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
     // X
     {
       Label lLabel = new Label("X/Y");
-      add(lLabel, 2,2);
+      add(lLabel, 2, 2);
     }
     {
       Button lButton = new Button("<<");
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveXBy(-mFastSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveXBy(-mFastSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
@@ -63,10 +64,12 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveXBy(-mSlowSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveXBy(-mSlowSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
@@ -78,10 +81,12 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveXBy(mSlowSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveXBy(mSlowSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
@@ -92,27 +97,31 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveXBy(mFastSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveXBy(mFastSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
       add(lButton, 4, 2);
     }
 
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
     // Y
     {
       Button lButton = new Button("^\n^");
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveYBy(-mFastSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveYBy(-mFastSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
@@ -123,10 +132,12 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveYBy(-mSlowSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveYBy(-mSlowSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
@@ -138,10 +149,12 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveYBy(mSlowSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveYBy(mSlowSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
@@ -153,31 +166,35 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveYBy(mFastSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveYBy(mFastSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
       add(lButton, 2, 4);
     }
 
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
     // Z
     {
       Label lLabel = new Label("Z");
-      add(lLabel, 5,2);
+      add(lLabel, 5, 2);
     }
     {
       Button lButton = new Button("^\n^");
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveZBy(-mFastSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveZBy(-mFastSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
@@ -189,10 +206,12 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveZBy(-mSlowSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveZBy(-mSlowSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
@@ -204,10 +223,12 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveZBy(mSlowSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveZBy(mSlowSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
@@ -218,10 +239,12 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
       styleButton(lButton);
       lButton.setOnAction(new EventHandler<ActionEvent>()
       {
-        @Override public void handle(ActionEvent event)
+        @Override
+        public void handle(ActionEvent event)
         {
           enableAllButtons(false);
-          mBasicThreeAxesStageInterface.moveZBy(mFastSpeed.get(), true);
+          mBasicThreeAxesStageInterface.moveZBy(mFastSpeed.get(),
+                                                true);
           enableAllButtons(true);
         }
       });
@@ -234,30 +257,36 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
     {
       Label lLabel = new Label("X position (mm, read-only):");
       add(lLabel, lDescriptionColumn, lRow);
-      NumberVariableTextField<Double>
-          lTextField =
-          new NumberVariableTextField<Double>("", mBasicThreeAxesStageInterface
-              .getXPositionVariable(), Double.MIN_VALUE, Double.MAX_VALUE, 0.0000001);
+      NumberVariableTextField<Double> lTextField =
+                                                 new NumberVariableTextField<Double>("",
+                                                                                     mBasicThreeAxesStageInterface.getXPositionVariable(),
+                                                                                     Double.MIN_VALUE,
+                                                                                     Double.MAX_VALUE,
+                                                                                     0.0000001);
       add(lTextField, lFieldColumn, lRow);
       lRow++;
     }
     {
       Label lLabel = new Label("Y position (mm, read-only):");
       add(lLabel, lDescriptionColumn, lRow);
-      NumberVariableTextField<Double>
-          lTextField =
-          new NumberVariableTextField<Double>("", mBasicThreeAxesStageInterface
-              .getYPositionVariable(), Double.MIN_VALUE, Double.MAX_VALUE, 0.0000001);
+      NumberVariableTextField<Double> lTextField =
+                                                 new NumberVariableTextField<Double>("",
+                                                                                     mBasicThreeAxesStageInterface.getYPositionVariable(),
+                                                                                     Double.MIN_VALUE,
+                                                                                     Double.MAX_VALUE,
+                                                                                     0.0000001);
       add(lTextField, lFieldColumn, lRow);
       lRow++;
     }
     {
       Label lLabel = new Label("Z position (mm, read-only):");
       add(lLabel, lDescriptionColumn, lRow);
-      NumberVariableTextField<Double>
-          lTextField =
-          new NumberVariableTextField<Double>("", mBasicThreeAxesStageInterface
-              .getZPositionVariable(), Double.MIN_VALUE, Double.MAX_VALUE, 0.0000001);
+      NumberVariableTextField<Double> lTextField =
+                                                 new NumberVariableTextField<Double>("",
+                                                                                     mBasicThreeAxesStageInterface.getZPositionVariable(),
+                                                                                     Double.MIN_VALUE,
+                                                                                     Double.MAX_VALUE,
+                                                                                     0.0000001);
       add(lTextField, lFieldColumn, lRow);
       lRow++;
     }
@@ -265,9 +294,9 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
     {
       Label lLabel = new Label("Quick motion by (mm):");
       add(lLabel, lDescriptionColumn, lRow);
-      NumberVariableTextField<Double>
-          lTextField =
-          new NumberVariableTextField<Double>("", mFastSpeed);
+      NumberVariableTextField<Double> lTextField =
+                                                 new NumberVariableTextField<Double>("",
+                                                                                     mFastSpeed);
       add(lTextField, lFieldColumn, lRow);
       lRow++;
     }
@@ -275,9 +304,9 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
     {
       Label lLabel = new Label("Slow motion by (mm):");
       add(lLabel, lDescriptionColumn, lRow);
-      NumberVariableTextField<Double>
-          lTextField =
-          new NumberVariableTextField<Double>("", mSlowSpeed);
+      NumberVariableTextField<Double> lTextField =
+                                                 new NumberVariableTextField<Double>("",
+                                                                                     mSlowSpeed);
       add(lTextField, lFieldColumn, lRow);
       lRow++;
     }
@@ -291,7 +320,8 @@ public class BasicThreeAxesStagePanel extends CustomGridPane
     }
   }
 
-  private void styleButton(Button pButton) {
+  private void styleButton(Button pButton)
+  {
     pButton.setMinHeight(35);
     pButton.setMinWidth(35);
     pButton.setMaxHeight(35);

@@ -7,12 +7,14 @@ import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructi
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class ViewStack2DInstructionPanel extends ViewStackInstructionBasePanel {
-    public ViewStack2DInstructionPanel(ViewStack2DInstruction pInstruction) {
-        super(pInstruction);
-        addIntegerField(pInstruction.getViewerIndexVariable(), 1);
-    }
+public class ViewStack2DInstructionPanel extends
+                                         ViewStackInstructionBasePanel
+{
+  public ViewStack2DInstructionPanel(ViewStack2DInstruction pInstruction)
+  {
+    super(pInstruction);
+    addIntegerField(pInstruction.getViewerIndexVariable(), 1);
+  }
 }

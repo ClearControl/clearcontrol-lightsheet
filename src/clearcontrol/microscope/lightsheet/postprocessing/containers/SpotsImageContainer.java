@@ -7,16 +7,18 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class SpotsImageContainer extends StackInterfaceContainer {
-    public SpotsImageContainer(long pTimePoint) {
-        super(pTimePoint);
-    }
+public class SpotsImageContainer extends StackInterfaceContainer
+{
+  public SpotsImageContainer(long pTimePoint)
+  {
+    super(pTimePoint);
+  }
 
-    @Override
-    public boolean isDataComplete() {
-        return keySet().contains("spots");
-    }
+  @Override
+  public boolean isDataComplete()
+  {
+    return keySet().contains("spots");
+  }
 }

@@ -77,7 +77,6 @@ public class LightSheetFastFusionProcessor extends
                                                                        new Variable<Boolean>("BackgroundSubtractionSwitch",
                                                                                              false);
 
-
   /**
    * Instantiates a lightsheet stack processor
    *
@@ -96,27 +95,30 @@ public class LightSheetFastFusionProcessor extends
     mLightSheetMicroscope = pLightSheetMicroscope;
   }
 
-  public void initializeEngine() {
+  public void initializeEngine()
+  {
     if (mEngine == null)
     {
       mEngine =
-          new LightSheetFastFusionEngine(getContext(),
-                                         (VisualConsoleInterface) this,
-                                         mLightSheetMicroscope.getNumberOfLightSheets(),
-                                         mLightSheetMicroscope.getNumberOfDetectionArms());
+              new LightSheetFastFusionEngine(getContext(),
+                                             (VisualConsoleInterface) this,
+                                             mLightSheetMicroscope.getNumberOfLightSheets(),
+                                             mLightSheetMicroscope.getNumberOfDetectionArms());
     }
   }
 
-  public void reInitializeEngine() {
+  public void reInitializeEngine()
+  {
     mEngine.setSubtractingBackground(mBackgroundSubtractionSwitchVariable.get());
     mEngine.setup(mLightSheetMicroscope.getNumberOfLightSheets(),
                   mLightSheetMicroscope.getNumberOfDetectionArms());
   }
 
   public synchronized StackInterface process(StackInterface pStack,
-                                RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
+                                             RecyclerInterface<StackInterface, StackRequest> pStackRecycler)
   {
-    info("forwarding " + pStack.getMetaData().getValue(MetaDataChannel.Channel));
+    info("forwarding "
+         + pStack.getMetaData().getValue(MetaDataChannel.Channel));
     boolean lEngineNeedsInitialisation = false;
     if (mEngine == null)
     {
@@ -145,16 +147,20 @@ public class LightSheetFastFusionProcessor extends
     else
     {
       info("Received stack for processing: %s", pStack);
-      info("mets: " +pStack.getMetaData().toString());
+      info("mets: " + pStack.getMetaData().toString());
     }
 
     if (mEngine.isDownscale())
     {
-      if (pStack != null && pStack.getMetaData() != null && pStack.getMetaData().getVoxelDimX() != null && pStack.getMetaData().getVoxelDimY() != null)
+      if (pStack != null && pStack.getMetaData() != null
+          && pStack.getMetaData().getVoxelDimX() != null
+          && pStack.getMetaData().getVoxelDimY() != null)
       {
         System.out.println("pStack" + pStack);
-        System.out.println("pStack.getMetaData()" + pStack.getMetaData());
-        System.out.println("pStack.getMetaData().getVoxelDimX()" + pStack.getMetaData().getVoxelDimX());
+        System.out.println("pStack.getMetaData()"
+                           + pStack.getMetaData());
+        System.out.println("pStack.getMetaData().getVoxelDimX()"
+                           + pStack.getMetaData().getVoxelDimX());
         double lVoxelDimX = pStack.getMetaData().getVoxelDimX();
         double lVoxelDimY = pStack.getMetaData().getVoxelDimY();
 
@@ -163,7 +169,8 @@ public class LightSheetFastFusionProcessor extends
       }
     }
 
-    info("Passing " + MetaDataView.getCxLyString(pStack.getMetaData()));
+    info("Passing "
+         + MetaDataView.getCxLyString(pStack.getMetaData()));
     mEngine.passStack(true, pStack);
 
     if (mEngine.getRegistrationTask() != null)
@@ -219,7 +226,8 @@ public class LightSheetFastFusionProcessor extends
         info("executed %d fusion tasks", lNumberOfTasksExecuted);
       });
 
-      for (String key : mEngine.getAvailableImagesSlotKeys()) {
+      for (String key : mEngine.getAvailableImagesSlotKeys())
+      {
         info("Available: " + key);
       }
     }
@@ -261,9 +269,9 @@ public class LightSheetFastFusionProcessor extends
       ClearCLImage lFusedImage = mEngine.getImage("fused");
 
       return copyFusedStack(pStackRecycler,
-                                                   lFusedImage,
-                                                   mEngine.getFusedMetaData(),
-                                                   null);
+                            lFusedImage,
+                            mEngine.getFusedMetaData(),
+                            null);
 
       /*
       StackInterface lReturnStack = copyFusedStack(pStackRecycler,
@@ -278,9 +286,10 @@ public class LightSheetFastFusionProcessor extends
   }
 
   /**
-   * This function has been marked as deprecated, because it does a
-   * lot more things than its name suggests. Stack saving has been
-   * moved to a new class, SaveImageStackTask
+   * This function has been marked as deprecated, because it does a lot more
+   * things than its name suggests. Stack saving has been moved to a new class,
+   * SaveImageStackTask
+   * 
    * @param pStackRecycler
    * @param lFusedImage
    * @param pStackMetaData

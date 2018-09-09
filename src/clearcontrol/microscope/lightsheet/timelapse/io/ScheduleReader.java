@@ -1,5 +1,8 @@
 package clearcontrol.microscope.lightsheet.timelapse.io;
 
+import java.io.*;
+import java.util.ArrayList;
+
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionBase;
@@ -7,12 +10,9 @@ import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 
-import java.io.*;
-import java.util.ArrayList;
-
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
 public class ScheduleReader implements LoggingFeature
 {
@@ -20,7 +20,10 @@ public class ScheduleReader implements LoggingFeature
   private final LightSheetMicroscope mLightSheetMicroscope;
   private final File mSourceFile;
 
-  public ScheduleReader(ArrayList<InstructionInterface> pSchedulerList, LightSheetMicroscope pLightSheetMicroscope, File pSourceFile) {
+  public ScheduleReader(ArrayList<InstructionInterface> pSchedulerList,
+                        LightSheetMicroscope pLightSheetMicroscope,
+                        File pSourceFile)
+  {
     mSchedulerList = pSchedulerList;
     mLightSheetMicroscope = pLightSheetMicroscope;
     mSourceFile = pSourceFile;
@@ -39,10 +42,12 @@ public class ScheduleReader implements LoggingFeature
       e.printStackTrace();
       return false;
     }
-    try {
+    try
+    {
       String line = br.readLine();
 
-      while (line != null) {
+      while (line != null)
+      {
         sb.append(line);
         sb.append(System.lineSeparator());
         line = br.readLine();
@@ -53,7 +58,8 @@ public class ScheduleReader implements LoggingFeature
       e.printStackTrace();
       return false;
     }
-    finally {
+    finally
+    {
       try
       {
         br.close();
@@ -65,32 +71,43 @@ public class ScheduleReader implements LoggingFeature
       }
     }
 
-
     String[] lInstructionNames = sb.toString().split("\n");
-    for (String lInstructionName : lInstructionNames) {
+    for (String lInstructionName : lInstructionNames)
+    {
       System.out.println(lInstructionName);
-      String lSearchForName = lInstructionName.split(":")[0] + ":" + lInstructionName.split(":")[1].replace("\r", "");
+      String lSearchForName = lInstructionName.split(":")[0] + ":"
+                              + lInstructionName.split(":")[1].replace("\r",
+                                                                       "");
 
-      InstructionInterface lInstruction = mLightSheetMicroscope.getSchedulerDevice(lSearchForName);
-      if (lInstruction != null) {
+      InstructionInterface lInstruction =
+                                        mLightSheetMicroscope.getSchedulerDevice(lSearchForName);
+      if (lInstruction != null)
+      {
         lInstruction = lInstruction.copy();
         parseParameters(lInstruction, lInstructionName);
         mSchedulerList.add(lInstruction);
-      } else {
-        mSchedulerList.add(new InstructionBase("UNKNOWN INSTRUCTION: " + lInstructionName) {
+      }
+      else
+      {
+        mSchedulerList.add(new InstructionBase("UNKNOWN INSTRUCTION: "
+                                               + lInstructionName)
+        {
 
           @Override
-          public boolean initialize() {
+          public boolean initialize()
+          {
             return false;
           }
 
           @Override
-          public boolean enqueue(long pTimePoint) {
+          public boolean enqueue(long pTimePoint)
+          {
             return false;
           }
 
           @Override
-          public InstructionInterface copy() {
+          public InstructionInterface copy()
+          {
             return null;
           }
         });
@@ -100,31 +117,51 @@ public class ScheduleReader implements LoggingFeature
     return true;
   }
 
-  private void parseParameters(InstructionInterface lInstruction, String lInstructionName) {
-    if (lInstruction instanceof PropertyIOableInstructionInterface) {
+  private void parseParameters(InstructionInterface lInstruction,
+                               String lInstructionName)
+  {
+    if (lInstruction instanceof PropertyIOableInstructionInterface)
+    {
       String[] temp = lInstructionName.split("::");
-      if (temp.length > 1) {
+      if (temp.length > 1)
+      {
         String[] properties = temp[1].split("] ");
-        for (String property : properties) {
+        for (String property : properties)
+        {
           temp = property.split("=");
           String name = temp[0];
-          if (temp.length > 1) {
+          if (temp.length > 1)
+          {
             String value = temp[1].replace("[", "");
 
-            for (Variable variable : ((PropertyIOableInstructionInterface) lInstruction).getProperties()) {
-              if (ScheduleWriter.variableNameToString(variable).compareTo(name) == 0) {
+            for (Variable variable : ((PropertyIOableInstructionInterface) lInstruction).getProperties())
+            {
+              if (ScheduleWriter.variableNameToString(variable)
+                                .compareTo(name) == 0)
+              {
                 Object object = variable.get();
-                if (object instanceof String) {
+                if (object instanceof String)
+                {
                   variable.set(value);
-                } else if (object instanceof Double){
+                }
+                else if (object instanceof Double)
+                {
                   variable.set(Double.parseDouble(value));
-                } else if (object instanceof Integer){
+                }
+                else if (object instanceof Integer)
+                {
                   variable.set(Integer.parseInt(value));
-                } else if (object instanceof Boolean){
+                }
+                else if (object instanceof Boolean)
+                {
                   variable.set(Boolean.parseBoolean(value));
-                } else if (object instanceof File){
+                }
+                else if (object instanceof File)
+                {
                   variable.set(new File(value));
-                } else {
+                }
+                else
+                {
                   warning("Couldn't read parameter " + name);
                 }
                 break;

@@ -7,11 +7,13 @@ import clearcontrol.microscope.lightsheet.postprocessing.visualisation.instructi
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class ViewStack3DInstructionPanel extends ViewStackInstructionBasePanel {
-    public ViewStack3DInstructionPanel(ViewStack2DInstruction pInstruction) {
-        super(pInstruction);
-    }
+public class ViewStack3DInstructionPanel extends
+                                         ViewStackInstructionBasePanel
+{
+  public ViewStack3DInstructionPanel(ViewStack2DInstruction pInstruction)
+  {
+    super(pInstruction);
+  }
 }

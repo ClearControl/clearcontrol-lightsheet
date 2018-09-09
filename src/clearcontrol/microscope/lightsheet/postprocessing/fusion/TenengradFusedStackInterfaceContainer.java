@@ -7,17 +7,20 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class TenengradFusedStackInterfaceContainer extends StackInterfaceContainer {
+public class TenengradFusedStackInterfaceContainer extends
+                                                   StackInterfaceContainer
+{
 
-    public TenengradFusedStackInterfaceContainer(long pTimePoint) {
-        super(pTimePoint);
-    }
+  public TenengradFusedStackInterfaceContainer(long pTimePoint)
+  {
+    super(pTimePoint);
+  }
 
-    @Override
-    public boolean isDataComplete() {
-        return true;
-    }
+  @Override
+  public boolean isDataComplete()
+  {
+    return true;
+  }
 }

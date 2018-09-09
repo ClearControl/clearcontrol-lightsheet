@@ -8,13 +8,14 @@ import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defoc
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 07 2018
+ * Author: @haesleinhuepf 07 2018
  */
-public class DefocusDiversityInstructionPanel extends CustomGridPane {
-    public DefocusDiversityInstructionPanel(DefocusDiversityInstruction pInstruction) {
-        addDoubleField(pInstruction.getStepSize(), 0);
-        addIntegerField(pInstruction.getDetectionArmIndex(), 1);
-        addIntegerField(pInstruction.getLightsheetIndex(), 2);
-    }
+public class DefocusDiversityInstructionPanel extends CustomGridPane
+{
+  public DefocusDiversityInstructionPanel(DefocusDiversityInstruction pInstruction)
+  {
+    addDoubleField(pInstruction.getStepSize(), 0);
+    addIntegerField(pInstruction.getDetectionArmIndex(), 1);
+    addIntegerField(pInstruction.getLightsheetIndex(), 2);
+  }
 }

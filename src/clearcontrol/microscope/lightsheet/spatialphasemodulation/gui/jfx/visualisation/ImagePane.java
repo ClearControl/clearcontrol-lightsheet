@@ -8,8 +8,8 @@ import javafx.scene.layout.Pane;
 /**
  * Deprecated: This class should move to clearcontrol.gui...
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * January 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) January 2018
  */
 public class ImagePane extends Pane
 {
@@ -17,15 +17,18 @@ public class ImagePane extends Pane
   int mWidth;
   int mHeight;
 
-  public ImagePane(int pWidth, int pHeight) {
+  public ImagePane(int pWidth, int pHeight)
+  {
     super(new Canvas(pWidth, pHeight));
     mWidth = pWidth;
     mHeight = pHeight;
 
-    mGraphicsContext = ((Canvas)this.getChildren().get(0)).getGraphicsContext2D();
+    mGraphicsContext = ((Canvas) this.getChildren()
+                                     .get(0)).getGraphicsContext2D();
   }
 
-  public ImagePane(int pWidth, int pHeight, Image pImage) {
+  public ImagePane(int pWidth, int pHeight, Image pImage)
+  {
     this(pWidth, pHeight);
     setImage(pImage);
   }
@@ -36,7 +39,8 @@ public class ImagePane extends Pane
   }
   */
 
-  public void setImage(Image pImage){
+  public void setImage(Image pImage)
+  {
     mGraphicsContext.drawImage(pImage, 0, 0, mWidth, mHeight);
   }
 }

@@ -8,11 +8,13 @@ import clearcontrol.microscope.lightsheet.state.instructions.ChangeExposureTimeI
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 06 2018
+ * Author: @haesleinhuepf 06 2018
  */
-public class ChangeExposureTimeInstructionPanel extends CustomGridPane {
-    public ChangeExposureTimeInstructionPanel(ChangeExposureTimeInstruction pInstruction) {
-        addDoubleField(pInstruction.getExposureTimeInSecondsVariable(), 0);
-    }
+public class ChangeExposureTimeInstructionPanel extends CustomGridPane
+{
+  public ChangeExposureTimeInstructionPanel(ChangeExposureTimeInstruction pInstruction)
+  {
+    addDoubleField(pInstruction.getExposureTimeInSecondsVariable(),
+                   0);
+  }
 }

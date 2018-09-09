@@ -1,12 +1,13 @@
 package clearcontrol.devices.imagej;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * February 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) February 2018
  */
 public interface ImageJFeature
 {
-  default void showImageJ() {
+  default void showImageJ()
+  {
     ImageJSingleton.getInstance().showImageJ();
   }
 }

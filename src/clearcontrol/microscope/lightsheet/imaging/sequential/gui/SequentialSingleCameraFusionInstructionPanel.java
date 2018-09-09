@@ -8,11 +8,13 @@ import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialSingleCam
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class SequentialSingleCameraFusionInstructionPanel extends CustomGridPane {
-    public SequentialSingleCameraFusionInstructionPanel(SequentialSingleCameraFusionInstruction pInstruction) {
-        addIntegerField(pInstruction.getCameraIndex(), 0);
-    }
+public class SequentialSingleCameraFusionInstructionPanel extends
+                                                          CustomGridPane
+{
+  public SequentialSingleCameraFusionInstructionPanel(SequentialSingleCameraFusionInstruction pInstruction)
+  {
+    addIntegerField(pInstruction.getCameraIndex(), 0);
+  }
 }

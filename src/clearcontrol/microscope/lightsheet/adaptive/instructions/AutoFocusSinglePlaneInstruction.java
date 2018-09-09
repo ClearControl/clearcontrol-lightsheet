@@ -16,90 +16,126 @@ import clearcontrol.microscope.lightsheet.state.tables.InterpolationTables;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public class AutoFocusSinglePlaneInstruction  extends LightSheetMicroscopeInstructionBase implements LoggingFeature, PropertyIOableInstructionInterface {
+public class AutoFocusSinglePlaneInstruction extends
+                                             LightSheetMicroscopeInstructionBase
+                                             implements
+                                             LoggingFeature,
+                                             PropertyIOableInstructionInterface
+{
 
-    private BoundedVariable<Integer> mControlPlaneIndex = new BoundedVariable<Integer>("Control plane index", 5, 0, Integer.MAX_VALUE);
-    private BoundedVariable<Integer> mDetectionArmIndex = new BoundedVariable<Integer>("Detection arm index", 0, 0, Integer.MAX_VALUE);
+  private BoundedVariable<Integer> mControlPlaneIndex =
+                                                      new BoundedVariable<Integer>("Control plane index",
+                                                                                   5,
+                                                                                   0,
+                                                                                   Integer.MAX_VALUE);
+  private BoundedVariable<Integer> mDetectionArmIndex =
+                                                      new BoundedVariable<Integer>("Detection arm index",
+                                                                                   0,
+                                                                                   0,
+                                                                                   Integer.MAX_VALUE);
 
-    public AutoFocusSinglePlaneInstruction(LightSheetMicroscope pLightSheetMicroscope) {
-        super("Smart: Rapid autofocus (single plane) for Z and alpha", pLightSheetMicroscope);
+  public AutoFocusSinglePlaneInstruction(LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super("Smart: Rapid autofocus (single plane) for Z and alpha",
+          pLightSheetMicroscope);
 
-        InterpolatedAcquisitionState
-                lAcquisitionState =
-                (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager()
-                        .getCurrentState();
+    InterpolatedAcquisitionState lAcquisitionState =
+                                                   (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager()
+                                                                                                           .getCurrentState();
 
-        mControlPlaneIndex.set((int)(lAcquisitionState.getNumberOfControlPlanes() * 0.75));
+    mControlPlaneIndex.set((int) (lAcquisitionState.getNumberOfControlPlanes()
+                                  * 0.75));
+  }
+
+  @Override
+  public boolean initialize()
+  {
+    return true;
+  }
+
+  @Override
+  public boolean enqueue(long pTimePoint)
+  {
+    InterpolatedAcquisitionState lAcquisitionState =
+                                                   (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager()
+                                                                                                           .getCurrentState();
+
+    if (mControlPlaneIndex.get() >= lAcquisitionState.getNumberOfControlPlanes())
+    {
+      warning("Error: control plane " + mControlPlaneIndex
+              + " does not exist.");
+      return false;
     }
 
-    @Override
-    public boolean initialize() {
-        return true;
+    ControlPlaneFocusFinderZInstruction lFocusScheduler =
+                                                        new ControlPlaneFocusFinderZInstruction(mDetectionArmIndex.get(),
+                                                                                                mControlPlaneIndex.get(),
+                                                                                                getLightSheetMicroscope());
+    ControlPlaneFocusFinderAlphaByVariationInstruction lAlphaScheduler =
+                                                                       new ControlPlaneFocusFinderAlphaByVariationInstruction(mDetectionArmIndex.get(),
+                                                                                                                              mControlPlaneIndex.get(),
+                                                                                                                              getLightSheetMicroscope());
+
+    InstructionInterface[] lSchedulers = new InstructionInterface[]
+    { lAlphaScheduler, lFocusScheduler, };
+
+    for (InstructionInterface lScheduler : lSchedulers)
+    {
+      lScheduler.initialize();
+      lScheduler.enqueue(pTimePoint);
     }
 
-    @Override
-    public boolean enqueue(long pTimePoint) {
-        InterpolatedAcquisitionState
-                lAcquisitionState =
-                (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager()
-                        .getCurrentState();
+    // Copy configuration to other control planes
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++)
+    {
+      for (int cpi =
+                   0; cpi < lAcquisitionState.getNumberOfControlPlanes(); cpi++)
+      {
+        InterpolationTables it =
+                               lAcquisitionState.getInterpolationTables();
 
-        if (mControlPlaneIndex.get() >= lAcquisitionState.getNumberOfControlPlanes()) {
-            warning("Error: control plane " + mControlPlaneIndex + " does not exist.");
-            return false;
+        for (LightSheetDOF lDOF : new LightSheetDOF[]
+        { LightSheetDOF.IZ, LightSheetDOF.IA })
+        {
+          it.set(lDOF,
+                 cpi,
+                 lLightSheetIndex,
+                 it.get(lDOF,
+                        mControlPlaneIndex.get(),
+                        lLightSheetIndex));
         }
-
-        ControlPlaneFocusFinderZInstruction lFocusScheduler = new ControlPlaneFocusFinderZInstruction(mDetectionArmIndex.get(), mControlPlaneIndex.get(), getLightSheetMicroscope());
-        ControlPlaneFocusFinderAlphaByVariationInstruction lAlphaScheduler = new ControlPlaneFocusFinderAlphaByVariationInstruction(mDetectionArmIndex.get(), mControlPlaneIndex.get(), getLightSheetMicroscope());
-
-        InstructionInterface[] lSchedulers = new InstructionInterface[]{
-                lAlphaScheduler,
-                lFocusScheduler,
-        };
-
-        for (InstructionInterface lScheduler : lSchedulers) {
-            lScheduler.initialize();
-            lScheduler.enqueue(pTimePoint);
-        }
-
-        // Copy configuration to other control planes
-        for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++) {
-            for (int cpi = 0; cpi < lAcquisitionState.getNumberOfControlPlanes(); cpi++) {
-                InterpolationTables it = lAcquisitionState.getInterpolationTables();
-
-                for (LightSheetDOF lDOF : new LightSheetDOF[]{LightSheetDOF.IZ, LightSheetDOF.IA}) {
-                    it.set(lDOF, cpi, lLightSheetIndex, it.get(lDOF, mControlPlaneIndex.get(), lLightSheetIndex));
-                }
-            }
-        }
-
-        return true;
+      }
     }
 
-    @Override
-    public AutoFocusSinglePlaneInstruction copy() {
-        AutoFocusSinglePlaneInstruction copied = new AutoFocusSinglePlaneInstruction(getLightSheetMicroscope());
-        copied.mControlPlaneIndex.set(mControlPlaneIndex.get());
-        return copied;
-    }
+    return true;
+  }
 
-    public BoundedVariable<Integer> getControlPlaneIndex() {
-        return mControlPlaneIndex;
-    }
+  @Override
+  public AutoFocusSinglePlaneInstruction copy()
+  {
+    AutoFocusSinglePlaneInstruction copied =
+                                           new AutoFocusSinglePlaneInstruction(getLightSheetMicroscope());
+    copied.mControlPlaneIndex.set(mControlPlaneIndex.get());
+    return copied;
+  }
 
-    public BoundedVariable<Integer> getDetectionArmIndex() {
-        return mDetectionArmIndex;
-    }
+  public BoundedVariable<Integer> getControlPlaneIndex()
+  {
+    return mControlPlaneIndex;
+  }
 
-    @Override
-    public Variable[] getProperties() {
-        return new Variable[]{
-                getControlPlaneIndex(),
-                getDetectionArmIndex()
-        };
-    }
+  public BoundedVariable<Integer> getDetectionArmIndex()
+  {
+    return mDetectionArmIndex;
+  }
+
+  @Override
+  public Variable[] getProperties()
+  {
+    return new Variable[]
+    { getControlPlaneIndex(), getDetectionArmIndex() };
+  }
 }
-

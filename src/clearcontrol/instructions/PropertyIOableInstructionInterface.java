@@ -7,9 +7,9 @@ import clearcontrol.core.variable.Variable;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 08 2018
+ * Author: @haesleinhuepf 08 2018
  */
-public interface PropertyIOableInstructionInterface {
-    Variable[] getProperties();
+public interface PropertyIOableInstructionInterface
+{
+  Variable[] getProperties();
 }

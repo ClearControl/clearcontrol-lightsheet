@@ -7,50 +7,65 @@ import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstr
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 
 /**
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
-public class ControlPlaneFocusFinderAlphaByVariationInstruction extends LightSheetMicroscopeInstructionBase implements
-        InstructionInterface,
-                                                               LoggingFeature
+public class ControlPlaneFocusFinderAlphaByVariationInstruction extends
+                                                                LightSheetMicroscopeInstructionBase
+                                                                implements
+                                                                InstructionInterface,
+                                                                LoggingFeature
 {
   private final int mControlPlaneIndex;
   private final int mDetectionArmIndex;
 
-  public ControlPlaneFocusFinderAlphaByVariationInstruction(int pDetectionArmIndex, int pControlPlaneIndex, LightSheetMicroscope pLightSheetMicroscope)
+  public ControlPlaneFocusFinderAlphaByVariationInstruction(int pDetectionArmIndex,
+                                                            int pControlPlaneIndex,
+                                                            LightSheetMicroscope pLightSheetMicroscope)
   {
-    super("Adaptation: Focus finder alpha for C" + pDetectionArmIndex + "LxCPI" + pControlPlaneIndex, pLightSheetMicroscope);
+    super("Adaptation: Focus finder alpha for C" + pDetectionArmIndex
+          + "LxCPI"
+          + pControlPlaneIndex,
+          pLightSheetMicroscope);
     mDetectionArmIndex = pDetectionArmIndex;
     mControlPlaneIndex = pControlPlaneIndex;
   }
 
-  @Override public boolean initialize()
+  @Override
+  public boolean initialize()
   {
     return true;
   }
 
-  @Override public boolean enqueue(long pTimePoint)
+  @Override
+  public boolean enqueue(long pTimePoint)
   {
 
-    int
-        lNumberOfControlPlanes =
-        ((InterpolatedAcquisitionState) (getLightSheetMicroscope().getAcquisitionStateManager()
-                                                              .getCurrentState()))
-            .getNumberOfControlPlanes();
+    int lNumberOfControlPlanes =
+                               ((InterpolatedAcquisitionState) (getLightSheetMicroscope().getAcquisitionStateManager()
+                                                                                         .getCurrentState())).getNumberOfControlPlanes();
 
-    for (int lLightSheetIndex = 0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++)
+    for (int lLightSheetIndex =
+                              0; lLightSheetIndex < getLightSheetMicroscope().getNumberOfLightSheets(); lLightSheetIndex++)
     {
-      FocusFinderAlphaByVariationInstruction
-          lFocusFinder = new FocusFinderAlphaByVariationInstruction(lLightSheetIndex, mDetectionArmIndex, mControlPlaneIndex, getLightSheetMicroscope());
+      FocusFinderAlphaByVariationInstruction lFocusFinder =
+                                                          new FocusFinderAlphaByVariationInstruction(lLightSheetIndex,
+                                                                                                     mDetectionArmIndex,
+                                                                                                     mControlPlaneIndex,
+                                                                                                     getLightSheetMicroscope());
       lFocusFinder.initialize();
-      lFocusFinder.enqueue(pTimePoint); // this method returns success; we ignore it and continue focussing
+      lFocusFinder.enqueue(pTimePoint); // this method returns success; we
+                                        // ignore it and continue focussing
     }
 
     return true;
-   }
+  }
 
-   @Override
-   public ControlPlaneFocusFinderAlphaByVariationInstruction copy() {
-     return new ControlPlaneFocusFinderAlphaByVariationInstruction(mDetectionArmIndex, mControlPlaneIndex, getLightSheetMicroscope());
-   }
+  @Override
+  public ControlPlaneFocusFinderAlphaByVariationInstruction copy()
+  {
+    return new ControlPlaneFocusFinderAlphaByVariationInstruction(mDetectionArmIndex,
+                                                                  mControlPlaneIndex,
+                                                                  getLightSheetMicroscope());
+  }
 }

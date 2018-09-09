@@ -11,49 +11,71 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  * Deprecated because replacable with ViewStack3DInstruction
  */
 @Deprecated
-public class ViewSingleLightSheetStackInstruction extends LightSheetMicroscopeInstructionBase implements
-        LoggingFeature
+public class ViewSingleLightSheetStackInstruction extends
+                                                  LightSheetMicroscopeInstructionBase
+                                                  implements
+                                                  LoggingFeature
 {
 
-    private final int mDetectionArmIndex;
-    private final int mLightSheetIndex;
+  private final int mDetectionArmIndex;
+  private final int mLightSheetIndex;
 
-    /**
-     * INstanciates a virtual device with a given name
-     *
-     */
-    public ViewSingleLightSheetStackInstruction(int pDetectionArmIndex, int pLightSheetIndex, LightSheetMicroscope pLightSheetMicroscope) {
-        super("Visualisation: View C" + pDetectionArmIndex + "L" + pLightSheetIndex + " stack", pLightSheetMicroscope);
-        mDetectionArmIndex = pDetectionArmIndex;
-        mLightSheetIndex = pLightSheetIndex;
+  /**
+   * INstanciates a virtual device with a given name
+   *
+   */
+  public ViewSingleLightSheetStackInstruction(int pDetectionArmIndex,
+                                              int pLightSheetIndex,
+                                              LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super("Visualisation: View C" + pDetectionArmIndex
+          + "L"
+          + pLightSheetIndex
+          + " stack",
+          pLightSheetMicroscope);
+    mDetectionArmIndex = pDetectionArmIndex;
+    mLightSheetIndex = pLightSheetIndex;
+  }
+
+  @Override
+  public boolean initialize()
+  {
+    return true;
+  }
+
+  @Override
+  public boolean enqueue(long pTimePoint)
+  {
+    DataWarehouse lDataWarehouse =
+                                 getLightSheetMicroscope().getDataWarehouse();
+    StackInterfaceContainer lContainer =
+                                       lDataWarehouse.getOldestContainer(StackInterfaceContainer.class);
+    if (lContainer == null || !lContainer.isDataComplete())
+    {
+      return false;
     }
 
-    @Override
-    public boolean initialize() {
-        return true;
+    Stack3DDisplay lDisplay =
+                            (Stack3DDisplay) getLightSheetMicroscope().getDevice(Stack3DDisplay.class,
+                                                                                 0);
+    if (lDisplay == null)
+    {
+      return false;
     }
 
-    @Override
-    public boolean enqueue(long pTimePoint) {
-        DataWarehouse lDataWarehouse = getLightSheetMicroscope().getDataWarehouse();
-        StackInterfaceContainer lContainer = lDataWarehouse.getOldestContainer(StackInterfaceContainer.class);
-        if (lContainer == null || !lContainer.isDataComplete()) {
-            return false;
-        }
+    lDisplay.getInputStackVariable()
+            .set(lContainer.get("C" + mDetectionArmIndex
+                                + "L"
+                                + mLightSheetIndex));
 
-        Stack3DDisplay lDisplay = (Stack3DDisplay) getLightSheetMicroscope().getDevice(Stack3DDisplay.class, 0);
-        if (lDisplay == null) {
-            return false;
-        }
+    return true;
+  }
 
-        lDisplay.getInputStackVariable().set(lContainer.get("C" + mDetectionArmIndex + "L" + mLightSheetIndex));
-
-        return true;
-    }
-
-    @Override
-    public ViewSingleLightSheetStackInstruction copy() {
-        return new ViewSingleLightSheetStackInstruction(mDetectionArmIndex, mLightSheetIndex, getLightSheetMicroscope());
-    }
+  @Override
+  public ViewSingleLightSheetStackInstruction copy()
+  {
+    return new ViewSingleLightSheetStackInstruction(mDetectionArmIndex,
+                                                    mLightSheetIndex,
+                                                    getLightSheetMicroscope());
+  }
 }
-

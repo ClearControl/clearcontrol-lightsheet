@@ -6,30 +6,36 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
 
 /**
  * This container contains the raw images resulting from interleaved
- * acquisition. For example for a microscope with two cameras, the
- * stack have these keys:
+ * acquisition. For example for a microscope with two cameras, the stack have
+ * these keys:
  *
- * C0interleaved
- * C1interleaved
+ * C0interleaved C1interleaved
  *
- * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG (http://mpi-cbg.de)
- * April 2018
+ * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
+ * (http://mpi-cbg.de) April 2018
  */
 public class InterleavedImageDataContainer extends
                                            StackInterfaceContainer
 {
   private final LightSheetMicroscope mLightSheetMicroscope;
 
-  public InterleavedImageDataContainer(LightSheetMicroscope pLightSheetMicroscope) {
-    super(pLightSheetMicroscope.getDevice(
-            LightSheetTimelapse.class, 0).getTimePointCounterVariable().get());
+  public InterleavedImageDataContainer(LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super(pLightSheetMicroscope.getDevice(LightSheetTimelapse.class,
+                                          0)
+                               .getTimePointCounterVariable()
+                               .get());
     mLightSheetMicroscope = pLightSheetMicroscope;
   }
 
-  @Override public boolean isDataComplete()
+  @Override
+  public boolean isDataComplete()
   {
-    for (int d = 0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++) {
-      if (! super.containsKey("C" + d + "interleaved")) {
+    for (int d =
+               0; d < mLightSheetMicroscope.getNumberOfDetectionArms(); d++)
+    {
+      if (!super.containsKey("C" + d + "interleaved"))
+      {
         return false;
       }
     }

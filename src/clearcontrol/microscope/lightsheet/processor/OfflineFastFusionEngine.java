@@ -26,7 +26,8 @@ import coremem.recycling.BasicRecycler;
 import fastfuse.tasks.*;
 
 /**
- * Deprecated: We won't need that engine anymore as fusion can be achieved by making a schedule containing loading and fusing
+ * Deprecated: We won't need that engine anymore as fusion can be achieved by
+ * making a schedule containing loading and fusing
  *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) November 2017

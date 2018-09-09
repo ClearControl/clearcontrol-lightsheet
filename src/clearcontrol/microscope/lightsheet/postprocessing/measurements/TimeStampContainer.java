@@ -9,39 +9,53 @@ import clearcontrol.stack.StackInterface;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 05 2018
+ * Author: @haesleinhuepf 05 2018
  */
-public class TimeStampContainer extends DataContainerBase {
+public class TimeStampContainer extends DataContainerBase
+{
 
-    private final long mTimeStampInNanoSeconds;
+  private final long mTimeStampInNanoSeconds;
 
-    public TimeStampContainer(long pTimepoint, long pTimeStampInNanoSeconds) {
-        super(pTimepoint);
+  public TimeStampContainer(long pTimepoint,
+                            long pTimeStampInNanoSeconds)
+  {
+    super(pTimepoint);
 
-        mTimeStampInNanoSeconds = pTimeStampInNanoSeconds;
+    mTimeStampInNanoSeconds = pTimeStampInNanoSeconds;
+  }
+
+  @Override
+  public boolean isDataComplete()
+  {
+    return true;
+  }
+
+  @Override
+  public void dispose()
+  {
+
+  }
+
+  public long getTimeStampInNanoSeconds()
+  {
+    return mTimeStampInNanoSeconds;
+  }
+
+  public static TimeStampContainer getGlobalTimeSinceStart(DataWarehouse pDataWarehouse,
+                                                           long pTimePoint,
+                                                           StackInterface pStack)
+  {
+    TimeStampContainer lStartTimeInNanoSecondsContainer =
+                                                        pDataWarehouse.getOldestContainer(TimeStampContainer.class);
+    if (lStartTimeInNanoSecondsContainer == null)
+    {
+      lStartTimeInNanoSecondsContainer =
+                                       new TimeStampContainer(pTimePoint,
+                                                              pStack.getMetaData()
+                                                                    .getTimeStampInNanoseconds());
+      pDataWarehouse.put("timestamp" + pTimePoint,
+                         lStartTimeInNanoSecondsContainer);
     }
-
-    @Override
-    public boolean isDataComplete() {
-        return true;
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-    public long getTimeStampInNanoSeconds() {
-        return mTimeStampInNanoSeconds;
-    }
-
-    public static TimeStampContainer getGlobalTimeSinceStart(DataWarehouse pDataWarehouse, long pTimePoint, StackInterface pStack) {
-        TimeStampContainer lStartTimeInNanoSecondsContainer = pDataWarehouse.getOldestContainer(TimeStampContainer.class);
-        if (lStartTimeInNanoSecondsContainer == null) {
-            lStartTimeInNanoSecondsContainer = new TimeStampContainer(pTimePoint, pStack.getMetaData().getTimeStampInNanoseconds());
-            pDataWarehouse.put("timestamp" + pTimePoint, lStartTimeInNanoSecondsContainer);
-        }
-        return lStartTimeInNanoSecondsContainer;
-    }
+    return lStartTimeInNanoSecondsContainer;
+  }
 }

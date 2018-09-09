@@ -3,9 +3,12 @@ package clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.grad
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerInstruction;
 
-public class GradientBasedZernikeModeOptimizerInstructionPanel extends CustomGridPane {
-    public GradientBasedZernikeModeOptimizerInstructionPanel(GradientBasedZernikeModeOptimizerInstruction pInstruction) {
-        addDoubleField(pInstruction.getStepSize(), 0 );
-        addDoubleField(pInstruction.getPositionZ(), 1);
-    }
+public class GradientBasedZernikeModeOptimizerInstructionPanel extends
+                                                               CustomGridPane
+{
+  public GradientBasedZernikeModeOptimizerInstructionPanel(GradientBasedZernikeModeOptimizerInstruction pInstruction)
+  {
+    addDoubleField(pInstruction.getStepSize(), 0);
+    addDoubleField(pInstruction.getPositionZ(), 1);
+  }
 }

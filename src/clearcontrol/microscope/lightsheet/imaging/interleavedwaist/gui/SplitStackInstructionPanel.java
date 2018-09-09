@@ -8,11 +8,12 @@ import clearcontrol.microscope.lightsheet.imaging.interleavedwaist.SplitStackIns
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 09 2018
+ * Author: @haesleinhuepf 09 2018
  */
-public class SplitStackInstructionPanel extends CustomGridPane {
-    public SplitStackInstructionPanel(SplitStackInstruction instruction) {
-        addIntegerField(instruction.getNumberOfStacks(), 0);
-    }
+public class SplitStackInstructionPanel extends CustomGridPane
+{
+  public SplitStackInstructionPanel(SplitStackInstruction instruction)
+  {
+    addIntegerField(instruction.getNumberOfStacks(), 0);
+  }
 }
