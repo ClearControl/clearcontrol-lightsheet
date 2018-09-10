@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.warehouse.instructions;
 
 import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
@@ -14,7 +15,7 @@ import java.util.ArrayList;
  * Author: @haesleinhuepf
  * September 2018
  */
-public class FilterStacksInStackInterfaceContainerInstruction extends DataWarehouseInstructionBase {
+public class FilterStacksInStackInterfaceContainerInstruction extends DataWarehouseInstructionBase implements PropertyIOableInstructionInterface {
 
     private Variable<String> filter = new Variable<String>("Filter (must contain one of the comma-separated)");
 
@@ -62,5 +63,10 @@ public class FilterStacksInStackInterfaceContainerInstruction extends DataWareho
 
     public Variable<String> getFilter() {
         return filter;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[] {getFilter()};
     }
 }
