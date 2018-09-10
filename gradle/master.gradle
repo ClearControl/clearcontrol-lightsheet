@@ -40,7 +40,7 @@ ext {
   versionsMap['fastfuse']                = "0.6.5"  // depends directly on symbryo
   
   // Level 4
-  versionsMap['clearclij']               = "0.3.10"  // depends directly FastFuse and indirectly to ClearCL
+  versionsMap['clearclij']               = "0.3.10"  // depends directly FastFuse and indirectly to ClearCL        
   
   // Level 5:
   versionsMap['clearcontrol']            = "0.16.8" // depends directly on halcyon, clearvolume, fastfuse, and _all_ devices adapters
@@ -52,7 +52,7 @@ ext {
   // Loads locale file: ~/.gradle/local.gradle
   // You can override versions locally for example:
   // 
-  //  versionsMap['symbrio']             = "1.0.1-LR"
+  //  ext/versionsMap['symbrio']         = "1.0.1-LR"
   // 
   
   localfilename = project.gradle.gradleUserHomeDir.getAbsolutePath()+'/local.gradle'

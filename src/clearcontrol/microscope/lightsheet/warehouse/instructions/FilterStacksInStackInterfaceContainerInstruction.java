@@ -1,72 +1,89 @@
 package clearcontrol.microscope.lightsheet.warehouse.instructions;
 
+import java.util.ArrayList;
+
 import clearcontrol.core.variable.Variable;
-import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 
-import java.util.ArrayList;
-
 /**
- * The FilterStacksInStackInterfaceContainerInstruction allows removing stacks from a StackInterfaceContainer which
- * don't match a certain pattern.
+ * The FilterStacksInStackInterfaceContainerInstruction allows removing stacks
+ * from a StackInterfaceContainer which don't match a certain pattern.
  *
- * Author: @haesleinhuepf
- * September 2018
+ * Author: @haesleinhuepf September 2018
  */
-public class FilterStacksInStackInterfaceContainerInstruction extends DataWarehouseInstructionBase implements PropertyIOableInstructionInterface {
+public class FilterStacksInStackInterfaceContainerInstruction extends
+                                                              DataWarehouseInstructionBase
+                                                              implements
+                                                              PropertyIOableInstructionInterface
+{
 
-    private Variable<String> filter = new Variable<String>("Filter (must contain one of the comma-separated)");
+  private Variable<String> filter =
+                                  new Variable<String>("Filter (must contain one of the comma-separated)");
 
-    public FilterStacksInStackInterfaceContainerInstruction(DataWarehouse pDataWarehouse) {
-        super("Memory: Filter stacks in container", pDataWarehouse);
-    }
+  public FilterStacksInStackInterfaceContainerInstruction(DataWarehouse pDataWarehouse)
+  {
+    super("Memory: Filter stacks in container", pDataWarehouse);
+  }
 
-    @Override
-    public boolean initialize() {
-        return true;
-    }
+  @Override
+  public boolean initialize()
+  {
+    return true;
+  }
 
-    @Override
-    public boolean enqueue(long pTimePoint) {
-        StackInterfaceContainer container = getDataWarehouse().getOldestContainer(StackInterfaceContainer.class);
-        ArrayList<String> listKeysToRemove = new ArrayList<String>();
+  @Override
+  public boolean enqueue(long pTimePoint)
+  {
+    StackInterfaceContainer container =
+                                      getDataWarehouse().getOldestContainer(StackInterfaceContainer.class);
+    ArrayList<String> listKeysToRemove = new ArrayList<String>();
 
-        String[] filters = filter.get().split(",");
-        for (String key : container.keySet()) {
-            boolean containsAny = false;
-            for (String mustContain : filters) {
-                if (key.contains(mustContain)) {
-                    containsAny = true;
-                    break;
-                }
-            }
-            if (!containsAny) {
-                listKeysToRemove.add(key);
-            }
+    String[] filters = filter.get().split(",");
+    for (String key : container.keySet())
+    {
+      boolean containsAny = false;
+      for (String mustContain : filters)
+      {
+        if (key.contains(mustContain))
+        {
+          containsAny = true;
+          break;
         }
-
-        for (String keyToRemove : listKeysToRemove) {
-            container.remove(keyToRemove);
-        }
-
-        return false;
+      }
+      if (!containsAny)
+      {
+        listKeysToRemove.add(key);
+      }
     }
 
-    @Override
-    public FilterStacksInStackInterfaceContainerInstruction copy() {
-        FilterStacksInStackInterfaceContainerInstruction copied = new FilterStacksInStackInterfaceContainerInstruction(getDataWarehouse());
-        copied.filter.set(filter.get());
-        return copied;
+    for (String keyToRemove : listKeysToRemove)
+    {
+      container.remove(keyToRemove);
     }
 
-    public Variable<String> getFilter() {
-        return filter;
-    }
+    return false;
+  }
 
-    @Override
-    public Variable[] getProperties() {
-        return new Variable[] {getFilter()};
-    }
+  @Override
+  public FilterStacksInStackInterfaceContainerInstruction copy()
+  {
+    FilterStacksInStackInterfaceContainerInstruction copied =
+                                                            new FilterStacksInStackInterfaceContainerInstruction(getDataWarehouse());
+    copied.filter.set(filter.get());
+    return copied;
+  }
+
+  public Variable<String> getFilter()
+  {
+    return filter;
+  }
+
+  @Override
+  public Variable[] getProperties()
+  {
+    return new Variable[]
+    { getFilter() };
+  }
 }
