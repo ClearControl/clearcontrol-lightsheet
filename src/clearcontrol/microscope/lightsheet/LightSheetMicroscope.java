@@ -38,6 +38,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
 import clearcontrol.microscope.lightsheet.warehouse.instructions.*;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseLogInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.gui.FilterStacksInStackInterfaceContainerInstructionPanel;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 
 /**
@@ -85,6 +86,7 @@ public class LightSheetMicroscope extends
 
     addDevice(0,
               new DataWarehouseResetInstruction(getDataWarehouse()));
+    addDevice(0, new FilterStacksInStackInterfaceContainerInstruction(getDataWarehouse()));
     addDevice(0, new DataWarehouseLogInstruction(this));
 
     for (Class lContainerType : new Class[]
