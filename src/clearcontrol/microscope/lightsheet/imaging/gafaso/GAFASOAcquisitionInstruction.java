@@ -100,6 +100,13 @@ public class GAFASOAcquisitionInstruction extends
                                                                                   Double.MAX_VALUE,
                                                                                   0.001);
 
+  private final BoundedVariable<Double> tenengradBlurSigma =
+                                                           new BoundedVariable<Double>("Blur Tenengrad weights sigma (in pixels)",
+                                                                                       0.0,
+                                                                                       0.0,
+                                                                                       Double.MAX_VALUE,
+                                                                                       0.001);
+
   // Checkboxes to control what will be optimized
   private final Variable<Boolean> optimizeZ =
                                             new Variable<Boolean>("Optimize Z",
@@ -404,6 +411,20 @@ public class GAFASOAcquisitionInstruction extends
                                                      ImageChannelDataType.Float);
     Kernels.tenengradWeightsSliceWise(clij, tenengradWeights, input);
 
+    if (tenengradBlurSigma.get() > 0.001)
+    {
+      ClearCLImage temp = clij.createCLImage(input);
+      Kernels.copy(clij, input, temp);
+      Kernels.blurSlicewise(clij,
+                            temp,
+                            input,
+                            (int) (tenengradBlurSigma.get() * 2),
+                            (int) (tenengradBlurSigma.get() * 2),
+                            tenengradBlurSigma.get().floatValue(),
+                            tenengradBlurSigma.get().floatValue());
+      temp.close();
+    }
+
     ClearCLImage cropped = clij.createCLImage(new long[]
     { input.getWidth(),
       input.getHeight(),
@@ -416,9 +437,11 @@ public class GAFASOAcquisitionInstruction extends
     { input.getWidth(),
       input.getHeight() }, ImageChannelDataType.UnsignedInt16);
 
-    if (debug.get()) {
+    if (debug.get())
+    {
       new File(getLightSheetMicroscope().getTimelapse()
-              .getWorkingDirectory() + "/stacks/gafaso_debug/").mkdirs();
+                                        .getWorkingDirectory()
+               + "/stacks/gafaso_debug/").mkdirs();
     }
 
     long[] argMaxHistogram = new long[numberOfPositions];
@@ -448,10 +471,17 @@ public class GAFASOAcquisitionInstruction extends
       }
 
       // debug
-      if (debug.get()) {
-        IJ.saveAsTiff(clij.converter(argMaxProjection).getImagePlus(),
-                getLightSheetMicroscope().getTimelapse()
-                        .getWorkingDirectory() + "/stacks/gafaso_debug/argmax_" + pTimePoint + "_" + i + ".tif");
+      if (debug.get())
+      {
+        IJ.saveAsTiff(clij.converter(argMaxProjection)
+                          .getImagePlus(),
+                      getLightSheetMicroscope().getTimelapse()
+                                               .getWorkingDirectory()
+                                           + "/stacks/gafaso_debug/argmax_"
+                                           + pTimePoint
+                                           + "_"
+                                           + i
+                                           + ".tif");
       }
     }
 
@@ -579,6 +609,11 @@ public class GAFASOAcquisitionInstruction extends
     return optimizeIndex;
   }
 
+  public BoundedVariable<Double> getTenengradBlurSigma()
+  {
+    return tenengradBlurSigma;
+  }
+
   @Override
   public Variable[] getProperties()
   {
@@ -594,6 +629,7 @@ public class GAFASOAcquisitionInstruction extends
       optimizeZ,
       optimizeIndex,
       debug,
-      populationSize };
+      populationSize,
+      tenengradBlurSigma };
   }
 }
