@@ -1,5 +1,6 @@
 package clearcontrol.microscope.lightsheet.imaging.gafaso;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -415,6 +416,11 @@ public class GAFASOAcquisitionInstruction extends
     { input.getWidth(),
       input.getHeight() }, ImageChannelDataType.UnsignedInt16);
 
+    if (debug.get()) {
+      new File(getLightSheetMicroscope().getTimelapse()
+              .getWorkingDirectory() + "/stacks/gafaso_debug/").mkdirs();
+    }
+
     long[] argMaxHistogram = new long[numberOfPositions];
     for (int i = 0; i < input.getDepth() / numberOfPositions; i++)
     {
@@ -442,21 +448,17 @@ public class GAFASOAcquisitionInstruction extends
       }
 
       // debug
-      IJ.saveAsTiff(clij.converter(argMaxProjection).getImagePlus(),
-                    getLightSheetMicroscope().getTimelapse()
-                                             .getWorkingDirectory() + "/argmax.tif");
+      if (debug.get()) {
+        IJ.saveAsTiff(clij.converter(argMaxProjection).getImagePlus(),
+                getLightSheetMicroscope().getTimelapse()
+                        .getWorkingDirectory() + "/stacks/gafaso_debug/argmax_" + pTimePoint + "_" + i + ".tif");
+      }
     }
 
     for (int j = 0; j < argMaxHistogram.length; j++)
     {
       population.getSolution(j).setFitness(argMaxHistogram[j]);
     }
-    // debug
-    IJ.saveAsTiff(clij.converter(input)
-                      .getImagePlus(),
-                  getLightSheetMicroscope().getTimelapse()
-                                           .getWorkingDirectory()
-                                       + "/input.tif");
 
     // cleanup
     input.close();
