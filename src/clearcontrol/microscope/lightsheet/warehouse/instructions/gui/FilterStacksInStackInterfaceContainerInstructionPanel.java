@@ -8,11 +8,13 @@ import clearcontrol.microscope.lightsheet.warehouse.instructions.FilterStacksInS
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 09 2018
+ * Author: @haesleinhuepf 09 2018
  */
-public class FilterStacksInStackInterfaceContainerInstructionPanel extends CustomGridPane {
-    public FilterStacksInStackInterfaceContainerInstructionPanel(FilterStacksInStackInterfaceContainerInstruction instruction) {
-        addStringField(instruction.getFilter(), 0);
-    }
+public class FilterStacksInStackInterfaceContainerInstructionPanel extends
+                                                                   CustomGridPane
+{
+  public FilterStacksInStackInterfaceContainerInstructionPanel(FilterStacksInStackInterfaceContainerInstruction instruction)
+  {
+    addStringField(instruction.getFilter(), 0);
+  }
 }
