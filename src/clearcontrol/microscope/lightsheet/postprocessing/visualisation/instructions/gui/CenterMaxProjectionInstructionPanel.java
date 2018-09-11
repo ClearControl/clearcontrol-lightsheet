@@ -15,14 +15,21 @@ public class CenterMaxProjectionInstructionPanel extends
 {
   public CenterMaxProjectionInstructionPanel(CenterMaxProjectionInstruction pInstruction)
   {
-    addStringField(pInstruction.getMustContainStringVariable(), 0);
-    addIntegerField(pInstruction.getFontSizeVariable(), 1);
-    addIntegerField(pInstruction.getStartZPlaneIndex(), 2);
-    addIntegerField(pInstruction.getEndZPlaneIndex(), 3);
+    int row = 0;
+    addStringField(pInstruction.getMustContainStringVariable(), row++);
+    addIntegerField(pInstruction.getFontSizeVariable(), row++);
+    addIntegerField(pInstruction.getStartZPlaneIndex(), row++);
+    addIntegerField(pInstruction.getEndZPlaneIndex(), row++);
 
-    addCheckbox(pInstruction.getPrintSequenceNameVariable(), 4);
-    addCheckbox(pInstruction.getPrintTimePointVariable(), 5);
-    addDoubleField(pInstruction.getScalingVariable(), 6);
+    addCheckbox(pInstruction.getPrintSequenceNameVariable(), row++);
+    addCheckbox(pInstruction.getPrintTimePointVariable(), row++);
+    addDoubleField(pInstruction.getScalingVariable(), row++);
+
+    addCheckbox(pInstruction.getAutoContrast(), row++);
+    addCheckbox(pInstruction.getColorProjection(), row++);
+    addCheckbox(pInstruction.getCameraOffsetCorrection(), row++);
+    addCheckbox(pInstruction.getUnevenIlluminationCorrectionBeforeProjection(), row++);
+    addCheckbox(pInstruction.getUnevenIlluminationCorrectionAfterProjection(), row++);
 
   }
 }

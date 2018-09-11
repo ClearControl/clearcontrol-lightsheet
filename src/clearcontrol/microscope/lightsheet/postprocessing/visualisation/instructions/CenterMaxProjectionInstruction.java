@@ -64,7 +64,7 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer>
   private BoundedVariable<Integer> mEndZPlaneIndex =
                                                    new BoundedVariable<Integer>("End Z plane index",
                                                                                 0,
-                                                                                0,
+                                                                                Integer.MAX_VALUE,
                                                                                 Integer.MAX_VALUE);
   private BoundedVariable<Double> mScalingFactorVariable =
                                                          new BoundedVariable<Double>("Scaling factor",
@@ -72,6 +72,13 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer>
                                                                                      0.0001,
                                                                                      Double.MAX_VALUE,
                                                                                      0.0001);
+
+  private Variable<Boolean> unevenIlluminationCorrectionBeforeProjection = new Variable<Boolean>("Uneven illumination correction before projection", HalfStackProjectionPlugin.unevenIlluminationCorrectionBeforeProjection);
+  private Variable<Boolean> unevenIlluminationCorrectionAfterProjection = new Variable<Boolean>("Uneven illumination correction after projection", HalfStackProjectionPlugin.unevenIlluminationCorrectionAfterProjection);
+  private Variable<Boolean> autoContrast = new Variable<Boolean>("Auto contrast", HalfStackProjectionPlugin.autoContrast);
+  private Variable<Boolean> colorProjection = new Variable<Boolean>("Z color coded projection", HalfStackProjectionPlugin.colorProjection);
+  private Variable<Boolean> cameraOffsetCorrection = new Variable<Boolean>("Camera offset correction", HalfStackProjectionPlugin.cameraOffsetCorrection);
+
 
   /**
    * INstanciates a virtual device with a given name
@@ -148,19 +155,28 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer>
                                                      .getVoxelDimZ();
     }
 
-    HalfStackProjectionPlugin halfStackProjectionPlugin =
+    HalfStackProjectionPlugin projectionPlugin =
                                                         new HalfStackProjectionPlugin();
-    halfStackProjectionPlugin.setInputImage(lImagePlus);
-    halfStackProjectionPlugin.minSlice = mStartZPlaneIndex.get(); // (int)(lImagePlus.getNSlices()
-                                                                  // * 0.25);
-    halfStackProjectionPlugin.maxSlice = mEndZPlaneIndex.get(); // (int)(lImagePlus.getNSlices()
-                                                                // * 0.75);
+    projectionPlugin.setInputImage(lImagePlus);
+    projectionPlugin.minSlice = mStartZPlaneIndex.get();
+    if (projectionPlugin.minSlice < 0 || projectionPlugin.minSlice >= lImagePlus.getNSlices()) {
+      projectionPlugin.minSlice = 0;
+    }
+    projectionPlugin.maxSlice = mEndZPlaneIndex.get();
+    if (projectionPlugin.maxSlice >= lImagePlus.getNSlices()){
+      projectionPlugin.maxSlice = lImagePlus.getNSlices() - 1;
+    }
+    projectionPlugin.unevenIlluminationCorrectionAfterProjection = unevenIlluminationCorrectionAfterProjection.get();
+    projectionPlugin.unevenIlluminationCorrectionBeforeProjection = unevenIlluminationCorrectionBeforeProjection.get();
+    projectionPlugin.cameraOffsetCorrection = cameraOffsetCorrection.get();
+    projectionPlugin.colorProjection = colorProjection.get();
+    projectionPlugin.autoContrast = autoContrast.get();
 
-    halfStackProjectionPlugin.setSilent(true);
-    halfStackProjectionPlugin.setShowResult(false);
-    halfStackProjectionPlugin.run();
+    projectionPlugin.setSilent(true);
+    projectionPlugin.setShowResult(false);
+    projectionPlugin.run();
     ImagePlus lResultImagePlus =
-                               halfStackProjectionPlugin.getOutputImage();
+                               projectionPlugin.getOutputImage();
 
     // downsample the image if scaling is set != 1.0
     if (Math.abs(mScalingFactorVariable.get() - 1.0) > 0.0001)
@@ -334,6 +350,26 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer>
     return mScalingFactorVariable;
   }
 
+  public Variable<Boolean> getAutoContrast() {
+    return autoContrast;
+  }
+
+  public Variable<Boolean> getColorProjection() {
+    return colorProjection;
+  }
+
+  public Variable<Boolean> getCameraOffsetCorrection() {
+    return cameraOffsetCorrection;
+  }
+
+  public Variable<Boolean> getUnevenIlluminationCorrectionAfterProjection() {
+    return unevenIlluminationCorrectionAfterProjection;
+  }
+
+  public Variable<Boolean> getUnevenIlluminationCorrectionBeforeProjection() {
+    return unevenIlluminationCorrectionBeforeProjection;
+  }
+
   @Override
   public Variable[] getProperties()
   {
@@ -344,6 +380,12 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer>
       getPrintSequenceNameVariable(),
       getPrintTimePointVariable(),
       getStartZPlaneIndex(),
-      getEndZPlaneIndex() };
+      getEndZPlaneIndex(),
+      getAutoContrast(),
+      getCameraOffsetCorrection(),
+      getColorProjection(),
+      getUnevenIlluminationCorrectionAfterProjection(),
+      getUnevenIlluminationCorrectionBeforeProjection()
+    };
   }
 }

@@ -27,11 +27,12 @@ import ij.process.ImageProcessor;
 
 /**
  * HalfStackMaxProjectionInstruction
- * <p>
- * <p>
- * <p>
+ *
+ * Deprecated: Use CenterMaxProjectionInstruction
+ *
  * Author: @haesleinhuepf 05 2018
  */
+@Deprecated
 public class HalfStackMaxProjectionInstruction<T extends StackInterfaceContainer>
                                               extends
                                               LightSheetMicroscopeInstructionBase
