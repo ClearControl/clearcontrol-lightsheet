@@ -63,8 +63,8 @@ public class CenterMaxProjectionInstruction<T extends StackInterfaceContainer>
                                                                                   Integer.MAX_VALUE);
   private BoundedVariable<Integer> mEndZPlaneIndex =
                                                    new BoundedVariable<Integer>("End Z plane index",
+                                                           Integer.MAX_VALUE,
                                                                                 0,
-                                                                                Integer.MAX_VALUE,
                                                                                 Integer.MAX_VALUE);
   private BoundedVariable<Double> mScalingFactorVariable =
                                                          new BoundedVariable<Double>("Scaling factor",
