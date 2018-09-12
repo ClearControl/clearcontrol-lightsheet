@@ -6,7 +6,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import clearcontrol.ip.iqm.DCTS2D;
+import clearcontrol.stack.OffHeapPlanarStack;
 import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.Views;
@@ -121,6 +124,8 @@ public class GAFASOAcquisitionInstruction extends
                                                 new Variable<Boolean>("Optimize light sheet index",
                                                                       true);
 
+  private final Variable<Boolean> qualityDCTS2Dbased = new Variable<Boolean>("Use DCTS2D to rate quality", true);
+
   Population<AcquisitionStateSolution> population;
 
   public GAFASOAcquisitionInstruction(int detectionArmIndex,
@@ -192,31 +197,30 @@ public class GAFASOAcquisitionInstruction extends
   }
 
   @Override
-  public boolean enqueue(long pTimePoint)
-  {
+  public boolean enqueue(long pTimePoint) {
     mCurrentState =
-                  (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager()
-                                                                          .getCurrentState();
+            (InterpolatedAcquisitionState) getLightSheetMicroscope().getAcquisitionStateManager()
+                    .getCurrentState();
 
     int imageWidth = mCurrentState.getImageWidthVariable()
-                                  .get()
-                                  .intValue();
+            .get()
+            .intValue();
     int imageHeight = mCurrentState.getImageHeightVariable()
-                                   .get()
-                                   .intValue();
+            .get()
+            .intValue();
     double exposureTimeInSeconds =
-                                 mCurrentState.getExposureInSecondsVariable()
-                                              .get()
-                                              .doubleValue();
+            mCurrentState.getExposureInSecondsVariable()
+                    .get()
+                    .doubleValue();
 
     int numberOfImagesToTake =
-                             mCurrentState.getNumberOfZPlanesVariable()
-                                          .get()
-                                          .intValue();
+            mCurrentState.getNumberOfZPlanesVariable()
+                    .get()
+                    .intValue();
 
     // build a queue
     LightSheetMicroscopeQueue queue =
-                                    getLightSheetMicroscope().requestQueue();
+            getLightSheetMicroscope().requestQueue();
 
     // initialize queue
     queue.clearQueue();
@@ -226,84 +230,64 @@ public class GAFASOAcquisitionInstruction extends
 
     // initial position
     goToInitialPosition(getLightSheetMicroscope(),
-                        queue,
-                        mCurrentState.getStackZLowVariable()
-                                     .get()
-                                     .doubleValue(),
-                        mCurrentState.getStackZLowVariable()
-                                     .get()
-                                     .doubleValue());
+            queue,
+            mCurrentState.getStackZLowVariable()
+                    .get()
+                    .doubleValue(),
+            mCurrentState.getStackZLowVariable()
+                    .get()
+                    .doubleValue());
 
     // --------------------------------------------------------------------
     // go along Z
     for (int lImageCounter =
-                           0; lImageCounter < numberOfImagesToTake; lImageCounter++)
-    {
+         0; lImageCounter < numberOfImagesToTake; lImageCounter++) {
       // set all light sheets off
       for (int l =
-                 0; l < getLightSheetMicroscope().getNumberOfLightSheets(); l++)
-      {
+           0; l < getLightSheetMicroscope().getNumberOfLightSheets(); l++) {
         queue.setI(l, false);
       }
       // configure all states; at each Z-plane, all states are imaged
       // subsequently
-      for (int l = 0; l < numberOfPositions; l++)
-      {
+      for (int l = 0; l < numberOfPositions; l++) {
         AcquisitionStateSolution solution = population.getSolution(l);
         int chosenLightSheetIndex = getLightSheetIndex().get();
-        if (optimizeIndex.get())
-        {
+        if (optimizeIndex.get()) {
           chosenLightSheetIndex = solution.state.get(LightSheetDOF.II)
-                                                .intValue();
+                  .intValue();
         }
 
         mCurrentState.applyAcquisitionStateAtStackPlane(queue,
-                                                        lImageCounter);
+                lImageCounter);
 
         // configure all optimized DOFs
         queue.setI(chosenLightSheetIndex, true);
-        for (LightSheetDOF key : solution.state.keySet())
-        {
-          if (key == LightSheetDOF.IZ)
-          {
+        for (LightSheetDOF key : solution.state.keySet()) {
+          if (key == LightSheetDOF.IZ) {
             queue.setIZ(chosenLightSheetIndex,
-                        queue.getIZ(lightSheetIndex.get())
-                                               + solution.state.get(key));
-          }
-          else if (key == LightSheetDOF.IX)
-          {
+                    queue.getIZ(lightSheetIndex.get())
+                            + solution.state.get(key));
+          } else if (key == LightSheetDOF.IX) {
             queue.setIX(chosenLightSheetIndex,
-                        solution.state.get(key));
-          }
-          else if (key == LightSheetDOF.IY)
-          {
+                    solution.state.get(key));
+          } else if (key == LightSheetDOF.IY) {
             queue.setIY(chosenLightSheetIndex,
-                        solution.state.get(key));
-          }
-          else if (key == LightSheetDOF.IA)
-          {
+                    solution.state.get(key));
+          } else if (key == LightSheetDOF.IA) {
             queue.setIA(chosenLightSheetIndex,
-                        solution.state.get(key));
-          }
-          else if (key == LightSheetDOF.IB)
-          {
+                    solution.state.get(key));
+          } else if (key == LightSheetDOF.IB) {
             queue.setIB(chosenLightSheetIndex,
-                        solution.state.get(key));
-          }
-          else if (key == LightSheetDOF.IH)
-          {
+                    solution.state.get(key));
+          } else if (key == LightSheetDOF.IH) {
             queue.setIH(chosenLightSheetIndex,
-                        solution.state.get(key));
-          }
-          else if (key == LightSheetDOF.IP)
-          {
+                    solution.state.get(key));
+          } else if (key == LightSheetDOF.IP) {
             queue.setIP(chosenLightSheetIndex,
-                        solution.state.get(key));
-          }
-          else if (key == LightSheetDOF.IW)
-          {
+                    solution.state.get(key));
+          } else if (key == LightSheetDOF.IW) {
             queue.setIW(chosenLightSheetIndex,
-                        solution.state.get(key));
+                    solution.state.get(key));
           }
         }
 
@@ -311,8 +295,7 @@ public class GAFASOAcquisitionInstruction extends
         // side effects) because sometimes light sheets are all on
         // Todo: Fix bug upstream
         for (int k =
-                   0; k < getLightSheetMicroscope().getNumberOfLightSheets(); k++)
-        {
+             0; k < getLightSheetMicroscope().getNumberOfLightSheets(); k++) {
           queue.setI(k, k == chosenLightSheetIndex);
         }
         queue.addCurrentStateToQueue();
@@ -321,25 +304,25 @@ public class GAFASOAcquisitionInstruction extends
 
     // back to initial position
     goToInitialPosition(getLightSheetMicroscope(),
-                        queue,
-                        mCurrentState.getStackZLowVariable()
-                                     .get()
-                                     .doubleValue(),
-                        mCurrentState.getStackZLowVariable()
-                                     .get()
-                                     .doubleValue());
+            queue,
+            mCurrentState.getStackZLowVariable()
+                    .get()
+                    .doubleValue(),
+            mCurrentState.getStackZLowVariable()
+                    .get()
+                    .doubleValue());
 
     queue.setTransitionTime(0.5);
     queue.setFinalisationTime(0.005);
 
     // configure meta data
     StackMetaData lMetaData =
-                            queue.getCameraDeviceQueue(detectionArmIndex.get())
-                                 .getMetaDataVariable()
-                                 .get();
+            queue.getCameraDeviceQueue(detectionArmIndex.get())
+                    .getMetaDataVariable()
+                    .get();
 
     lMetaData.addEntry(MetaDataAcquisitionType.AcquisitionType,
-                       AcquisitionType.TimeLapseInterleaved);
+            AcquisitionType.TimeLapseInterleaved);
     lMetaData.addEntry(MetaDataView.Camera, detectionArmIndex.get());
 
     lMetaData.addEntry(MetaDataFusion.RequestFullFusion, true);
@@ -347,162 +330,171 @@ public class GAFASOAcquisitionInstruction extends
     lMetaData.addEntry(MetaDataChannel.Channel, "interleaved");
 
     queue.addVoxelDimMetaData(getLightSheetMicroscope(),
-                              mCurrentState.getStackZStepVariable()
-                                           .get()
-                                           .doubleValue());
+            mCurrentState.getStackZStepVariable()
+                    .get()
+                    .doubleValue());
     queue.addMetaDataEntry(MetaDataOrdinals.TimePoint, pTimePoint);
 
     queue.finalizeQueue();
 
     // acquire!
     boolean lPlayQueueAndWait = false;
-    try
-    {
+    try {
       mTimeStampBeforeImaging = System.nanoTime();
       lPlayQueueAndWait =
-                        getLightSheetMicroscope().playQueueAndWait(queue,
-                                                                   100 + queue.getQueueLength(),
-                                                                   TimeUnit.SECONDS);
+              getLightSheetMicroscope().playQueueAndWait(queue,
+                      100 + queue.getQueueLength(),
+                      TimeUnit.SECONDS);
 
-    }
-    catch (InterruptedException e)
-    {
+    } catch (InterruptedException e) {
       e.printStackTrace();
-    }
-    catch (ExecutionException e)
-    {
+    } catch (ExecutionException e) {
       e.printStackTrace();
-    }
-    catch (TimeoutException e)
-    {
+    } catch (TimeoutException e) {
       e.printStackTrace();
     }
 
-    if (!lPlayQueueAndWait)
-    {
+    if (!lPlayQueueAndWait) {
       System.out.print("Error while imaging");
       return false;
     }
 
     // Store results in the DataWarehouse
     InterleavedImageDataContainer lContainer =
-                                             new InterleavedImageDataContainer(getLightSheetMicroscope());
+            new InterleavedImageDataContainer(getLightSheetMicroscope());
 
     int d = detectionArmIndex.get();
     StackInterface lStack =
-                          getLightSheetMicroscope().getCameraStackVariable(d)
-                                                   .get();
+            getLightSheetMicroscope().getCameraStackVariable(d)
+                    .get();
 
     putStackInContainer("C" + d
-                        + "interleaved_waist",
-                        lStack,
-                        lContainer);
+                    + "interleaved_waist",
+            lStack,
+            lContainer);
 
     getLightSheetMicroscope().getDataWarehouse()
-                             .put("interleaved_waist_raw_"
-                                  + pTimePoint, lContainer);
+            .put("interleaved_waist_raw_"
+                    + pTimePoint, lContainer);
 
     // ---------------------------------------------------------------------
     // postprocessing: analyse image quality and advance population
-    ClearCLIJ clij = ClearCLIJ.getInstance();
-    ClearCLImage input = clij.converter(lStack).getClearCLImage();
-    ClearCLImage tenengradWeights =
-                                  clij.createCLImage(input.getDimensions(),
-                                                     ImageChannelDataType.Float);
-    Kernels.tenengradWeightsSliceWise(clij, tenengradWeights, input);
+    if (qualityDCTS2Dbased.get()) {
+      double[] qualityByPlane = new DCTS2D().computeImageQualityMetric((OffHeapPlanarStack) lStack);
+      double[] summedQualityPerAcquisitionStateSolution = new double[numberOfPositions];
 
-    if (tenengradBlurSigma.get() > 0.001)
-    {
-      ClearCLImage temp = clij.createCLImage(input);
-      Kernels.copy(clij, input, temp);
-      Kernels.blurSlicewise(clij,
-                            temp,
-                            input,
-                            (int) (tenengradBlurSigma.get() * 2),
-                            (int) (tenengradBlurSigma.get() * 2),
-                            tenengradBlurSigma.get().floatValue(),
-                            tenengradBlurSigma.get().floatValue());
-      temp.close();
-    }
-
-    ClearCLImage cropped = clij.createCLImage(new long[]
-    { input.getWidth(),
-      input.getHeight(),
-      numberOfPositions }, tenengradWeights.getChannelDataType());
-
-    ClearCLImage maxProjection = clij.createCLImage(new long[]
-    { input.getWidth(),
-      input.getHeight() }, ImageChannelDataType.UnsignedInt8);
-    ClearCLImage argMaxProjection = clij.createCLImage(new long[]
-    { input.getWidth(),
-      input.getHeight() }, ImageChannelDataType.UnsignedInt16);
-
-    if (debug.get())
-    {
-      new File(getLightSheetMicroscope().getTimelapse()
-                                        .getWorkingDirectory()
-               + "/stacks/gafaso_debug/").mkdirs();
-    }
-
-    long[] argMaxHistogram = new long[numberOfPositions];
-    for (int i = 0; i < input.getDepth() / numberOfPositions; i++)
-    {
-      Kernels.crop(clij,
-                   tenengradWeights,
-                   cropped,
-                   0,
-                   0,
-                   (int) (input.getDepth() / numberOfPositions) * i);
-
-      Kernels.argMaxProjection(clij,
-                               cropped,
-                               maxProjection,
-                               argMaxProjection);
-
-      RandomAccessibleInterval<UnsignedShortType> argMaxImg =
-                                                            (RandomAccessibleInterval<UnsignedShortType>) clij.converter(argMaxProjection)
-                                                                                                              .getRandomAccessibleInterval();
-      Cursor<UnsignedShortType> cursor = Views.iterable(argMaxImg)
-                                              .cursor();
-
-      while (cursor.hasNext())
-      {
-        argMaxHistogram[cursor.next().get() % numberOfPositions]++;
+      for (int i = 0; i < qualityByPlane.length; i++) {
+        summedQualityPerAcquisitionStateSolution[i % numberOfPositions] += qualityByPlane[i];
       }
 
-      // debug
-      if (debug.get())
-      {
-        IJ.saveAsTiff(clij.converter(argMaxProjection)
+      for (int i = 0; i < numberOfPositions; i++) {
+        population.getSolution(i).setFitness(summedQualityPerAcquisitionStateSolution[i]);
+      }
+
+    } else {
+      ClearCLIJ clij = ClearCLIJ.getInstance();
+      ClearCLImage input = clij.converter(lStack).getClearCLImage();
+      ClearCLImage tenengradWeights =
+              clij.createCLImage(input.getDimensions(),
+                      ImageChannelDataType.Float);
+      Kernels.tenengradWeightsSliceWise(clij, tenengradWeights, input);
+
+      if (tenengradBlurSigma.get() > 0.001) {
+        ClearCLImage temp = clij.createCLImage(input);
+        Kernels.copy(clij, input, temp);
+        Kernels.blurSlicewise(clij,
+                temp,
+                input,
+                (int) (tenengradBlurSigma.get() * 2),
+                (int) (tenengradBlurSigma.get() * 2),
+                tenengradBlurSigma.get().floatValue(),
+                tenengradBlurSigma.get().floatValue());
+        temp.close();
+      }
+
+      ClearCLImage cropped = clij.createCLImage(new long[]
+              {input.getWidth(),
+                      input.getHeight(),
+                      numberOfPositions}, tenengradWeights.getChannelDataType());
+
+      ClearCLImage maxProjection = clij.createCLImage(new long[]
+              {input.getWidth(),
+                      input.getHeight()}, ImageChannelDataType.UnsignedInt16);
+      ClearCLImage argMaxProjection = clij.createCLImage(new long[]
+              {input.getWidth(),
+                      input.getHeight()}, ImageChannelDataType.UnsignedInt16);
+
+      if (debug.get()) {
+        new File(getLightSheetMicroscope().getTimelapse()
+                .getWorkingDirectory()
+                + "/stacks/gafaso_debug/").mkdirs();
+      }
+
+      long[] argMaxFrequencyTimesQuality = new long[numberOfPositions];
+      for (int i = 0; i < input.getDepth() / numberOfPositions; i++) {
+        Kernels.crop(clij,
+                tenengradWeights,
+                cropped,
+                0,
+                0,
+                (int) (input.getDepth() / numberOfPositions) * i);
+
+        Kernels.argMaxProjection(clij,
+                cropped,
+                maxProjection,
+                argMaxProjection);
+
+        RandomAccessibleInterval<UnsignedShortType> maxImg = (RandomAccessibleInterval<UnsignedShortType>) clij.converter(maxProjection)
+                .getRandomAccessibleInterval();
+
+
+        RandomAccessibleInterval<UnsignedShortType> argMaxImg =
+                (RandomAccessibleInterval<UnsignedShortType>) clij.converter(argMaxProjection)
+                        .getRandomAccessibleInterval();
+
+        RandomAccess<UnsignedShortType> randomAccess = maxImg.randomAccess();
+
+        Cursor<UnsignedShortType> cursor = Views.iterable(argMaxImg)
+                .localizingCursor();
+
+        while (cursor.hasNext()) {
+          UnsignedShortType value = cursor.next();
+          randomAccess.setPosition(cursor);
+          argMaxFrequencyTimesQuality[value.get() % numberOfPositions] += randomAccess.get().get();
+        }
+
+        // debug
+        if (debug.get()) {
+          IJ.saveAsTiff(clij.converter(argMaxProjection)
                           .getImagePlus(),
-                      getLightSheetMicroscope().getTimelapse()
-                                               .getWorkingDirectory()
-                                           + "/stacks/gafaso_debug/argmax_"
-                                           + pTimePoint
-                                           + "_"
-                                           + i
-                                           + ".tif");
+                  getLightSheetMicroscope().getTimelapse()
+                          .getWorkingDirectory()
+                          + "/stacks/gafaso_debug/argmax_"
+                          + pTimePoint
+                          + "_"
+                          + i
+                          + ".tif");
+        }
       }
+
+      for (int j = 0; j < argMaxFrequencyTimesQuality.length; j++) {
+        population.getSolution(j).setFitness(argMaxFrequencyTimesQuality[j]);
+      }
+
+      // cleanup
+      input.close();
+      tenengradWeights.close();
+      cropped.close();
+
+      maxProjection.close();
+      argMaxProjection.close();
     }
-
-    for (int j = 0; j < argMaxHistogram.length; j++)
-    {
-      population.getSolution(j).setFitness(argMaxHistogram[j]);
-    }
-
-    // cleanup
-    input.close();
-    tenengradWeights.close();
-    cropped.close();
-
-    maxProjection.close();
-    argMaxProjection.close();
 
     // debug
     if (debug.get())
     {
       new DropAllContainersOfTypeInstruction(ProjectionCommentContainer.class,
-                                             getLightSheetMicroscope().getDataWarehouse()).enqueue(pTimePoint);
+              getLightSheetMicroscope().getDataWarehouse()).enqueue(pTimePoint);
       String comment = "";
       for (int i = 0; i < numberOfPositions; i++)
       {
@@ -511,14 +503,14 @@ public class GAFASOAcquisitionInstruction extends
         info(population.getSolution(i).toString());
       }
       getLightSheetMicroscope().getDataWarehouse()
-                               .put("comment_" + pTimePoint,
-                                    new ProjectionCommentContainer(pTimePoint,
-                                                                   comment));
+              .put("comment_" + pTimePoint,
+                      new ProjectionCommentContainer(pTimePoint,
+                              comment));
     }
 
     population = population.runEpoch();
-
     fixLightSheetIndexOverflow();
+
     return true;
   }
 
@@ -614,6 +606,10 @@ public class GAFASOAcquisitionInstruction extends
     return tenengradBlurSigma;
   }
 
+  public Variable<Boolean> getQualityDCTS2Dbased() {
+    return qualityDCTS2Dbased;
+  }
+
   @Override
   public Variable[] getProperties()
   {
@@ -630,6 +626,8 @@ public class GAFASOAcquisitionInstruction extends
       optimizeIndex,
       debug,
       populationSize,
-      tenengradBlurSigma };
+      tenengradBlurSigma,
+      qualityDCTS2Dbased
+    };
   }
 }
