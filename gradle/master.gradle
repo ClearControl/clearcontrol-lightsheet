@@ -40,7 +40,7 @@ ext {
   versionsMap['fastfuse']                = "0.6.5"  // depends directly on symbryo
   
   // Level 4
-  versionsMap['clearclij']               = "0.3.10"  // depends directly FastFuse and indirectly to ClearCL
+  versionsMap['clearclij']               = "0.3.14"  // depends directly FastFuse and indirectly to ClearCL
   
   // Level 5:
   versionsMap['clearcontrol']            = "0.16.8" // depends directly on halcyon, clearvolume, fastfuse, and _all_ devices adapters
