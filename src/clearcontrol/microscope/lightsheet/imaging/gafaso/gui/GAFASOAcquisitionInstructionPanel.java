@@ -21,9 +21,6 @@ public class GAFASOAcquisitionInstructionPanel extends CustomGridPane
     addCheckbox(instruction.getOptimizeIndex(), row++);
 
     addIntegerField(instruction.getPopulationSize(), row++);
-    addDoubleField(instruction.getTenengradBlurSigma(), row++);
-    addCheckbox(instruction.getQualityDCTS2Dbased(), row++);
-    addCheckbox(instruction.getQualitySpotDetectionBased(), row++);
 
     addCheckbox(instruction.getOptimizeAlpha(), row++);
     addDoubleField(instruction.getStepSizeAlpha(), row++);

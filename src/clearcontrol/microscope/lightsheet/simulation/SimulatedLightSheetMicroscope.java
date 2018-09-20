@@ -2,6 +2,9 @@ package clearcontrol.microscope.lightsheet.simulation;
 
 import java.util.ArrayList;
 
+import clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation.DCTS2DBasedAdaptationInstruction;
+import clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation.HighTenengradAreaBasedAdaptationInstruction;
+import clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation.SpotDetectionBasedAdaptationInstruction;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import clearcl.ClearCLContext;
 import clearcontrol.core.variable.Variable;
@@ -654,7 +657,6 @@ public class SimulatedLightSheetMicroscope extends
                     new InterleavedWaistAcquisitionInstruction(l,
                                                                this));
         }
-        addDevice(0, new GAFASOAcquisitionInstruction(c, l, this));
 
         ViewSingleLightSheetStackInstruction lViewSingleLightSheetStackScheduler =
                                                                                  new ViewSingleLightSheetStackInstruction(c,
@@ -717,6 +719,14 @@ public class SimulatedLightSheetMicroscope extends
       addDevice(0,
                 new SequentialSingleCameraFusionInstruction(c, this));
     }
+
+    // ------------------------------------------------------------------------
+    // setup smart instructions
+    addDevice(0, new GAFASOAcquisitionInstruction(0, 0, this));
+    addDevice( 0, new DCTS2DBasedAdaptationInstruction(this));
+    addDevice( 0, new HighTenengradAreaBasedAdaptationInstruction(this));
+    addDevice( 0, new SpotDetectionBasedAdaptationInstruction(this));
+
 
     // ------------------------------------------------------------------------
     // setup writers
