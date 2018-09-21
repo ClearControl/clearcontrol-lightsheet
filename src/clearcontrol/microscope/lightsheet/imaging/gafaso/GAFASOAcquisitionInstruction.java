@@ -473,4 +473,8 @@ public class GAFASOAcquisitionInstruction extends
     public Population<AcquisitionStateSolution> getPopulation() {
         return population;
     }
+
+  public void setPopulation(Population<AcquisitionStateSolution> population) {
+    this.population = population;
+  }
 }

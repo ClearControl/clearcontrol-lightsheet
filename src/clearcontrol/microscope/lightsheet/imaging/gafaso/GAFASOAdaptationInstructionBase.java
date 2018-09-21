@@ -76,6 +76,7 @@ public abstract class GAFASOAdaptationInstructionBase extends LightSheetMicrosco
 
         population = population.runEpoch();
         fixLightSheetIndexOverflow(population, numberOfPositions);
+        gafasoAcquisitionInstruction.setPopulation(population);
 
 
         return true;
