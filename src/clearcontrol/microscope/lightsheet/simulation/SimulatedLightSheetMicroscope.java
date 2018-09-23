@@ -3,6 +3,8 @@ package clearcontrol.microscope.lightsheet.simulation;
 import java.util.ArrayList;
 
 import autopilot.measures.FocusMeasures;
+import clearcontrol.devices.lasers.instructions.ChangeLaserPowerInstruction;
+import clearcontrol.devices.lasers.instructions.SwitchLaserOnOffInstruction;
 import clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation.*;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import clearcl.ClearCLContext;
@@ -176,6 +178,10 @@ public class SimulatedLightSheetMicroscope extends
 
         addDevice(0, new LaserOnOffInstruction(lLaser, true));
         addDevice(0, new LaserOnOffInstruction(lLaser, false));
+
+        addDevice(0, new SwitchLaserOnOffInstruction(lLaser, true));
+        addDevice(0, new SwitchLaserOnOffInstruction(lLaser, false));
+        addDevice(0, new ChangeLaserPowerInstruction(lLaser));
 
       }
     }

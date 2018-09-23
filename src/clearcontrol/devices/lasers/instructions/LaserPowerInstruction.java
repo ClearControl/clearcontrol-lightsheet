@@ -6,9 +6,12 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 
 /**
+ * Deprecated: Use ChangeLaserPowerInstruction
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) March 2018
  */
+@Deprecated
 public class LaserPowerInstruction extends InstructionBase implements
                                    InstructionInterface,
                                    LoggingFeature

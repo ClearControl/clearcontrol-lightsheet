@@ -7,9 +7,12 @@ import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 
 /**
+ * Deprecated: Use SwitchLaserOnOffInstruction or SwitchLaserPowerOnOffInstruction
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) April 2018
  */
+@Deprecated
 public class LaserOnOffInstruction extends InstructionBase implements
                                    InstructionInterface,
                                    LoggingFeature
