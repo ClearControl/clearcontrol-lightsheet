@@ -3,8 +3,7 @@ package clearcontrol.microscope.lightsheet.simulation;
 import java.util.ArrayList;
 
 import autopilot.measures.FocusMeasures;
-import clearcontrol.devices.lasers.instructions.ChangeLaserPowerInstruction;
-import clearcontrol.devices.lasers.instructions.SwitchLaserOnOffInstruction;
+import clearcontrol.devices.lasers.instructions.*;
 import clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation.*;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import clearcl.ClearCLContext;
@@ -15,8 +14,6 @@ import clearcontrol.devices.cameras.devices.sim.providers.FractalStackProvider;
 import clearcontrol.devices.filterwheel.instructions.FilterWheelInstruction;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
 import clearcontrol.devices.lasers.devices.sim.LaserDeviceSimulator;
-import clearcontrol.devices.lasers.instructions.LaserOnOffInstruction;
-import clearcontrol.devices.lasers.instructions.LaserPowerInstruction;
 import clearcontrol.devices.optomech.filterwheels.FilterWheelDeviceInterface;
 import clearcontrol.devices.optomech.filterwheels.devices.sim.FilterWheelDeviceSimulator;
 import clearcontrol.devices.signalamp.ScalingAmplifierDeviceInterface;
@@ -181,6 +178,8 @@ public class SimulatedLightSheetMicroscope extends
 
         addDevice(0, new SwitchLaserOnOffInstruction(lLaser, true));
         addDevice(0, new SwitchLaserOnOffInstruction(lLaser, false));
+        addDevice(0, new SwitchLaserPowerOnOffInstruction(lLaser, true));
+        addDevice(0, new SwitchLaserPowerOnOffInstruction(lLaser, false));
         addDevice(0, new ChangeLaserPowerInstruction(lLaser));
 
       }
@@ -858,7 +857,6 @@ public class SimulatedLightSheetMicroscope extends
 
     // -------------------------------------------------------------------------
     // Setup pauses
-    addDevice(0, new PauseInstruction());
     int[] pauseTimes =
     { 1000, // 1 s
       10000, // 10 s
