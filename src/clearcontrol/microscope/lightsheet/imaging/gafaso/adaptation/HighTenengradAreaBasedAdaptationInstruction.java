@@ -27,9 +27,12 @@ import java.io.File;
  * acquired by the GAFASOAcquisition instruction and decides which solutions can
  * stay for the next iteration
  *
+ * Deprecated: Use FocusMeasureAreaBasedAdaptationInstruction instead
+ *
  * Author: @haesleinhuepf
  * September 2018
  */
+@Deprecated
 public class HighTenengradAreaBasedAdaptationInstruction extends GAFASOAdaptationInstructionBase {
 
     private final BoundedVariable<Double> tenengradBlurSigma =

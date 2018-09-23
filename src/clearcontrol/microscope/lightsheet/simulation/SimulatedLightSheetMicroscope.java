@@ -2,10 +2,8 @@ package clearcontrol.microscope.lightsheet.simulation;
 
 import java.util.ArrayList;
 
-import clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation.DCTS2DBasedAdaptationInstruction;
-import clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation.HighDCTS2DAreaBasedAdaptationInstruction;
-import clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation.HighTenengradAreaBasedAdaptationInstruction;
-import clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation.SpotDetectionBasedAdaptationInstruction;
+import autopilot.measures.FocusMeasures;
+import clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation.*;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import clearcl.ClearCLContext;
 import clearcontrol.core.variable.Variable;
@@ -727,8 +725,10 @@ public class SimulatedLightSheetMicroscope extends
     addDevice( 0, new DCTS2DBasedAdaptationInstruction(this));
     addDevice( 0, new HighTenengradAreaBasedAdaptationInstruction(this));
     addDevice( 0, new SpotDetectionBasedAdaptationInstruction(this));
-    addDevice( 0, new HighDCTS2DAreaBasedAdaptationInstruction(this));
-
+    for (FocusMeasures.FocusMeasure focusMeasure : FocusMeasures.getFocusMeasuresArray()) {
+      addDevice(0, new FocusMeasureBasedAdaptationInstruction(focusMeasure, this));
+      addDevice(0, new FocusMeasureAreaBasedAdaptationInstruction(focusMeasure, this));
+    }
 
     // ------------------------------------------------------------------------
     // setup writers

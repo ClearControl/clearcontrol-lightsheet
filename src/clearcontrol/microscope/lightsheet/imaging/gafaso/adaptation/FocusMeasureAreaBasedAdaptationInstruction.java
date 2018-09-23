@@ -5,7 +5,6 @@ import clearcl.ClearCLImage;
 import clearcl.enums.ImageChannelDataType;
 import clearcl.imagej.ClearCLIJ;
 import clearcl.imagej.kernels.Kernels;
-import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.gafaso.AcquisitionStateSolution;
 import clearcontrol.microscope.lightsheet.imaging.gafaso.GAFASOAcquisitionInstruction;
@@ -15,29 +14,30 @@ import clearcontrol.stack.StackInterface;
 import de.mpicbg.rhaase.spimcat.postprocessing.fijiplugins.imageanalysis.quality.MeasureQualityInTilesPlugin;
 import ij.ImagePlus;
 import net.imglib2.Cursor;
-import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
 /**
- * HighDCTS2DAreaBasedAdaptationInstruction
+ * FocusMeasureAreaBasedAdaptationInstruction
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 09 2018
  */
-public class HighDCTS2DAreaBasedAdaptationInstruction extends GAFASOAdaptationInstructionBase {
+public class FocusMeasureAreaBasedAdaptationInstruction extends GAFASOAdaptationInstructionBase {
 
+    FocusMeasures.FocusMeasure focusMeasure;
 
     /**
      *
+     * @param focusMeasure
      * @param pLightSheetMicroscope
      */
-    public HighDCTS2DAreaBasedAdaptationInstruction(LightSheetMicroscope pLightSheetMicroscope) {
-        super("Adaptation: GAFASO high DCTS area based adaptation", pLightSheetMicroscope);
+    public FocusMeasureAreaBasedAdaptationInstruction(FocusMeasures.FocusMeasure focusMeasure, LightSheetMicroscope pLightSheetMicroscope) {
+        super("Adaptation: GAFASO " + focusMeasure.name() + " area based adaptation", pLightSheetMicroscope);
+        this.focusMeasure = focusMeasure;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class HighDCTS2DAreaBasedAdaptationInstruction extends GAFASOAdaptationIn
         MeasureQualityInTilesPlugin mqt = new MeasureQualityInTilesPlugin(input, input.getWidth() / tileSize, input.getHeight() / tileSize);
         mqt.setSilent(true);
         mqt.setShowResult(false);
-        ImagePlus qualityImage = mqt.analyseFocusMeasure(FocusMeasures.FocusMeasure.SpectralNormDCTEntropyShannon);
+        ImagePlus qualityImage = mqt.analyseFocusMeasure(focusMeasure);
         ClearCLImage qualityCLImage = clij.converter(qualityImage).getClearCLImage();
 
 
@@ -83,10 +83,6 @@ public class HighDCTS2DAreaBasedAdaptationInstruction extends GAFASOAdaptationIn
                     maxProjection,
                     argMaxProjection);
 
-            //clij.show(cropped, "cropped");
-            //clij.show(maxProjection, "max");
-            //clij.show(argMaxProjection, "argmax");
-
             RandomAccessibleInterval<FloatType> maxImg = (RandomAccessibleInterval<FloatType>) clij.converter(maxProjection)
                     .getRandomAccessibleInterval();
 
@@ -94,8 +90,6 @@ public class HighDCTS2DAreaBasedAdaptationInstruction extends GAFASOAdaptationIn
             RandomAccessibleInterval<FloatType> argMaxImg =
                     (RandomAccessibleInterval<FloatType>) clij.converter(argMaxProjection)
                             .getRandomAccessibleInterval();
-
-            //RandomAccess<FloatType> randomAccess = maxImg.randomAccess();
 
             Cursor<FloatType> cursor = Views.iterable(argMaxImg)
                     .localizingCursor();
@@ -122,7 +116,7 @@ public class HighDCTS2DAreaBasedAdaptationInstruction extends GAFASOAdaptationIn
     }
 
     @Override
-    public HighDCTS2DAreaBasedAdaptationInstruction copy() {
-        return new HighDCTS2DAreaBasedAdaptationInstruction(getLightSheetMicroscope());
+    public FocusMeasureAreaBasedAdaptationInstruction copy() {
+        return new FocusMeasureAreaBasedAdaptationInstruction(focusMeasure, getLightSheetMicroscope());
     }
 }

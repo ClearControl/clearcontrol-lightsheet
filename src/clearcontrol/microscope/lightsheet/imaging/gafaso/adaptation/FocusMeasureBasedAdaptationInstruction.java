@@ -1,40 +1,46 @@
 package clearcontrol.microscope.lightsheet.imaging.gafaso.adaptation;
 
-import clearcontrol.instructions.InstructionInterface;
-import clearcontrol.ip.iqm.DCTS2D;
+import autopilot.measures.FocusMeasures;
+import clearcl.imagej.ClearCLIJ;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.imaging.gafaso.AcquisitionStateSolution;
 import clearcontrol.microscope.lightsheet.imaging.gafaso.GAFASOAcquisitionInstruction;
 import clearcontrol.microscope.lightsheet.imaging.gafaso.GAFASOAdaptationInstructionBase;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.Population;
-import clearcontrol.stack.OffHeapPlanarStack;
 import clearcontrol.stack.StackInterface;
+import de.mpicbg.rhaase.spimcat.postprocessing.fijiplugins.imageanalysis.quality.MeasureQualityPerSlicePlugin;
+import ij.ImagePlus;
 
 /**
- * The DCTS2DBasedAdaptationInstruction measures DCTS2D slice by slice in a stack
- * acquired by the GAFASOAcquisition instruction and decides which solutions can
- * stay for the next iteration
- *
- * Depreacted: use FocusMeasureBasedAdaptationInstruction
- *
+ * FocusMeasureBasedAdaptationInstruction
+ * <p>
+ * <p>
+ * <p>
  * Author: @haesleinhuepf
- * September 2018
+ * 09 2018
  */
-public class DCTS2DBasedAdaptationInstruction extends GAFASOAdaptationInstructionBase {
+public class FocusMeasureBasedAdaptationInstruction extends GAFASOAdaptationInstructionBase {
+
+    FocusMeasures.FocusMeasure focusMeasure;
+
     /**
-     * INstanciates a virtual device with a given name
      *
+     * @param focusMeasure
      * @param pLightSheetMicroscope
      */
-    public DCTS2DBasedAdaptationInstruction(LightSheetMicroscope pLightSheetMicroscope) {
-        super("Adaptation: GAFASO DCTS2D based adaptation", pLightSheetMicroscope);
+    public FocusMeasureBasedAdaptationInstruction(FocusMeasures.FocusMeasure focusMeasure, LightSheetMicroscope pLightSheetMicroscope) {
+        super("Adaptation: GAFASO " + focusMeasure.name() + " based adaptation", pLightSheetMicroscope);
+        this.focusMeasure = focusMeasure;
     }
 
     @Override
     protected boolean determineFitnessOfSolutions(GAFASOAcquisitionInstruction gafasoAcquisitionInstruction, StackInterface stack, int numberOfPositions) {
+        ClearCLIJ clij = ClearCLIJ.getInstance();
+        ImagePlus input = clij.converter(stack).getImagePlus();
         Population<AcquisitionStateSolution> population = gafasoAcquisitionInstruction.getPopulation();
 
-        double[] qualityByPlane = new DCTS2D().computeImageQualityMetric((OffHeapPlanarStack) stack);
+        // measure focus
+        double[] qualityByPlane = new MeasureQualityPerSlicePlugin(input).analyseFocusMeasure(focusMeasure);
         double[] summedQualityPerAcquisitionStateSolution = new double[numberOfPositions];
 
         for (int i = 0; i < qualityByPlane.length; i++) {
@@ -45,11 +51,11 @@ public class DCTS2DBasedAdaptationInstruction extends GAFASOAdaptationInstructio
             population.getSolution(i).setFitness(summedQualityPerAcquisitionStateSolution[i]);
         }
 
-        return true;
+        return false;
     }
 
     @Override
-    public DCTS2DBasedAdaptationInstruction copy() {
-        return new DCTS2DBasedAdaptationInstruction(getLightSheetMicroscope());
+    public FocusMeasureAreaBasedAdaptationInstruction copy() {
+        return new FocusMeasureAreaBasedAdaptationInstruction(focusMeasure, getLightSheetMicroscope());
     }
 }
