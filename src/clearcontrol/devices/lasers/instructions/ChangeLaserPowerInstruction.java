@@ -1,10 +1,12 @@
 package clearcontrol.devices.lasers.instructions;
 
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 
 /**
  * The ChangeLaserPowerInstruction allows changing laser power of a given device during a time lapse
@@ -14,7 +16,8 @@ import clearcontrol.instructions.InstructionInterface;
  */
 public class ChangeLaserPowerInstruction  extends InstructionBase implements
         InstructionInterface,
-        LoggingFeature
+        LoggingFeature,
+        PropertyIOableInstructionInterface
 {
     private final LaserDeviceInterface laserDevice;
     private final BoundedVariable<Double> laserPowerInMilliwatt = new BoundedVariable<Double>("Laser power in milliwatt", 0.0, 0.0, Double.MAX_VALUE, 0.1);
@@ -54,5 +57,12 @@ public class ChangeLaserPowerInstruction  extends InstructionBase implements
 
     public BoundedVariable<Double> getLaserPowerInMilliwatt() {
         return laserPowerInMilliwatt;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[] {
+                getLaserPowerInMilliwatt()
+        };
     }
 }

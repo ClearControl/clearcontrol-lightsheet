@@ -1,7 +1,9 @@
 package clearcontrol.microscope.lightsheet.adaptive.instructions;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -14,7 +16,7 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
  * Author: @haesleinhuepf
  * 09 2018
  */
-public class ChangeZRangeInstruction extends LightSheetMicroscopeInstructionBase {
+public class ChangeZRangeInstruction extends LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface {
 
     private BoundedVariable<Double> minZ = new BoundedVariable<Double>("Start Z in microns",0.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.001);
     private BoundedVariable<Double> maxZ = new BoundedVariable<Double>("End Z in microns",320.0, -Double.MAX_VALUE, Double.MAX_VALUE, 0.001);
@@ -63,5 +65,13 @@ public class ChangeZRangeInstruction extends LightSheetMicroscopeInstructionBase
 
     public BoundedVariable<Double> getStepZ() {
         return stepZ;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[]{
+                getMinZ(),
+                getMaxZ(),
+                getStepZ()};
     }
 }

@@ -1,7 +1,9 @@
 package clearcontrol.microscope.lightsheet.adaptive.instructions;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
@@ -14,10 +16,10 @@ import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
  * Author: @haesleinhuepf
  * 09 2018
  */
-public class ChangeImageSizeInstruction extends LightSheetMicroscopeInstructionBase {
+public class ChangeImageSizeInstruction extends LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface {
 
-    public BoundedVariable<Integer> imageWidth = new BoundedVariable<Integer>("Width in pixels", 1024, 1, Integer.MAX_VALUE);
-    public BoundedVariable<Integer> imageHeight = new BoundedVariable<Integer>("Height in pixels", 2048, 1, Integer.MAX_VALUE);
+    private BoundedVariable<Integer> imageWidth = new BoundedVariable<Integer>("Width in pixels", 1024, 1, Integer.MAX_VALUE);
+    private BoundedVariable<Integer> imageHeight = new BoundedVariable<Integer>("Height in pixels", 2048, 1, Integer.MAX_VALUE);
 
     /**
      * INstanciates a virtual device with a given name
@@ -55,5 +57,13 @@ public class ChangeImageSizeInstruction extends LightSheetMicroscopeInstructionB
 
     public BoundedVariable<Integer> getImageHeight() {
         return imageHeight;
+    }
+
+    @Override
+    public Variable[] getProperties() {
+        return new Variable[] {
+                getImageWidth(),
+                getImageHeight()
+        };
     }
 }
