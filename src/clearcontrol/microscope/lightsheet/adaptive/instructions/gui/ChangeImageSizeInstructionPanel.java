@@ -14,6 +14,6 @@ import clearcontrol.microscope.lightsheet.adaptive.instructions.ChangeImageSizeI
 public class ChangeImageSizeInstructionPanel extends CustomGridPane {
     public ChangeImageSizeInstructionPanel(ChangeImageSizeInstruction instruction) {
         addIntegerField(instruction.imageWidth, 0);
-        addIntegerField(instruction.imageHeight, 0);
+        addIntegerField(instruction.imageHeight, 1);
     }
 }
