@@ -8,37 +8,24 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import clearcontrol.core.concurrent.timing.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
-import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.LightSheetMicroscopeQueue;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
-import clearcontrol.microscope.lightsheet.processor.MetaDataFusion;
-import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.lightsheet.timelapse.containers.InstructionDurationContainer;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
-import clearcontrol.microscope.stacks.metadata.MetaDataAcquisitionType;
 import clearcontrol.microscope.state.AcquisitionStateManager;
-import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.microscope.timelapse.TimelapseBase;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
-import clearcontrol.stack.metadata.MetaDataChannel;
-import clearcontrol.stack.metadata.MetaDataOrdinals;
-import clearcontrol.stack.metadata.StackMetaData;
 
 /**
- * Standard Timelapse implementation
+ * A LightSheetTimelapse is a list of instructions, which are executed one by one as long as the timelapse is running.
  *
  * @author royer
  * @author haesleinhuepf
@@ -55,33 +42,14 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
   private final LightSheetMicroscope mLightSheetMicroscope;
 
-  private final Variable<Boolean> mFuseStacksVariable =
-                                                      new Variable<Boolean>("FuseStacks",
-                                                                            true);
-
-  private final Variable<Boolean> mFuseStacksPerCameraVariable =
-                                                               new Variable<Boolean>("FuseStacksPerCamera",
-                                                                                     false);
-
-  private final Variable<Boolean> mInterleavedAcquisitionVariable =
-                                                                  new Variable<Boolean>("InterleavedAcquisition",
-                                                                                        false);
-
-  private final Variable<Boolean> mExtendedDepthOfFieldAcquisitionVariable =
-                                                                           new Variable<Boolean>("ExtendedDepthOfFieldAcquisition",
-                                                                                                 false);
-  private Variable<Boolean> mLegacyTimelapseAcquisitionVariable =
-                                                                new Variable<Boolean>("LegacyTimelapseAcquisition",
-                                                                                      false);
-
-  private ArrayList<InstructionInterface> mListOfActivatedSchedulers =
+  private ArrayList<InstructionInterface> mCurrentProgram =
                                                                      new ArrayList<InstructionInterface>();
 
-  private Variable<Integer> mLastExecutedSchedulerIndexVariable =
+  private Variable<Integer> mLastExecutedInstructionIndexVariable =
                                                                 new Variable<Integer>("Last executed instructions index",
                                                                                       -1);
 
-  ArrayList<InstructionInterface> mInitializedSchedulerList;
+  ArrayList<InstructionInterface> mInitializedInstructionsList;
 
   private BufferedWriter mLogFileWriter;
 
@@ -95,39 +63,6 @@ public class LightSheetTimelapse extends TimelapseBase implements
     mLightSheetMicroscope = pLightSheetMicroscope;
 
     this.getMaxNumberOfTimePointsVariable().set(999999L);
-
-    mExtendedDepthOfFieldAcquisitionVariable.addSetListener(new VariableSetListener<Boolean>()
-    {
-      @Override
-      public void setEvent(Boolean pCurrentValue, Boolean pNewValue)
-      {
-        if (pNewValue)
-        {
-          mFuseStacksVariable.set(false);
-        }
-      }
-    });
-
-    mFuseStacksVariable.addSetListener(new VariableSetListener<Boolean>()
-    {
-      @Override
-      public void setEvent(Boolean pCurrentValue, Boolean pNewValue)
-      {
-        if (pNewValue)
-        {
-          mExtendedDepthOfFieldAcquisitionVariable.set(false);
-        }
-      }
-    });
-
-    /*
-    boolean lFuseStacks = getFuseStacksVariable().get()
-                          && n.getMetaData()
-                              .hasValue(MetaDataFusion.Fused);
-    
-    
-    /**/
-
   }
 
   @Override
@@ -188,7 +123,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
                                                     .size()
                              + "\n");
         mLogFileWriter.write("Schedule items      "
-                             + mListOfActivatedSchedulers.size()
+                             + mCurrentProgram.size()
                              + "\n");
 
         mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())
@@ -206,11 +141,11 @@ public class LightSheetTimelapse extends TimelapseBase implements
       File lProgramFile = new File(getWorkingDirectory(),
                                    "program.txt");
       ScheduleWriter writer =
-                            new ScheduleWriter(mListOfActivatedSchedulers,
+                            new ScheduleWriter(mCurrentProgram,
                                                lProgramFile);
       writer.write();
 
-      mInitializedSchedulerList =
+      mInitializedInstructionsList =
                                 new ArrayList<InstructionInterface>();
 
       LightSheetFastFusionProcessor lLightSheetFastFusionProcessor =
@@ -222,7 +157,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
       {
         lLightSheetFastFusionEngine.reset(true);
       }
-      mLastExecutedSchedulerIndexVariable.set(-1);
+      mLastExecutedInstructionIndexVariable.set(-1);
     }
 
     if (getStopSignalVariable().get())
@@ -235,37 +170,6 @@ public class LightSheetTimelapse extends TimelapseBase implements
       LightSheetFastFusionProcessor lLightSheetFastFusionProcessor =
                                                                    mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class,
                                                                                                    0);
-      LightSheetFastFusionEngine lLightSheetFastFusionEngine =
-                                                             lLightSheetFastFusionProcessor.getEngine();
-
-      /*
-      if (lLightSheetFastFusionEngine != null) {
-        while(lLightSheetFastFusionEngine.getAvailableImagesSlotKeys().size() > 0) {
-          if (mLogFileWriter != null) {
-            mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())+ " (time point " + getTimePointCounterVariable().get() + ") " + "Waiting for fastfuse to finish....\r\n");
-            if (lLightSheetFastFusionEngine != null)
-            {
-              mLogFileWriter.write("FastFuse knows about " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys() + "\r\n");
-            }
-            mLogFileWriter.flush();
-          }
-      
-      
-          info("Waiting because fastfuse is still working... " + lLightSheetFastFusionEngine.getAvailableImagesSlotKeys());
-          try
-          {
-            Thread.sleep(1000);
-            if (getStopSignalVariable().get()) {
-              return;
-            }
-          }
-          catch (InterruptedException e)
-          {
-            e.printStackTrace();
-          }
-        }
-      }*/
-
       info("Executing timepoint: "
            + getTimePointCounterVariable().get()
            + " data warehouse holds "
@@ -277,42 +181,24 @@ public class LightSheetTimelapse extends TimelapseBase implements
                                         cMaximumNumberOfAvailableStacks,
                                         cMaximumNumberOfLiveStacks);
 
-      @SuppressWarnings("unchecked")
-      AcquisitionStateManager<LightSheetAcquisitionStateInterface<?>> lAcquisitionStateManager =
-                                                                                               mLightSheetMicroscope.getDevice(AcquisitionStateManager.class,
-                                                                                                                               0);
 
-      LightSheetAcquisitionStateInterface<?> lCurrentState =
-                                                           lAcquisitionStateManager.getCurrentState();
-
-      // deprecated: this code block will be removed as soon as
-      // timelapse became an own Scheduler
-      if (getLegacyTimelapseAcquisitionVariable().get())
-      {
-        if (getInterleavedAcquisitionVariable().get())
-          interleavedAcquisition(lCurrentState);
-        else
-          sequentialAcquisition(lCurrentState);
-      }
-
-      // Run the next scheduled item
-
-      mLastExecutedSchedulerIndexVariable.set(mLastExecutedSchedulerIndexVariable.get()
+      // Determine the next instruction
+      mLastExecutedInstructionIndexVariable.set(mLastExecutedInstructionIndexVariable.get()
                                               + 1);
-      if (mLastExecutedSchedulerIndexVariable.get() > mListOfActivatedSchedulers.size()
+      if (mLastExecutedInstructionIndexVariable.get() > mCurrentProgram.size()
                                                       - 1)
       {
-        mLastExecutedSchedulerIndexVariable.set(0);
+        mLastExecutedInstructionIndexVariable.set(0);
       }
 
       InstructionInterface lNextSchedulerToRun =
-                                               mListOfActivatedSchedulers.get(mLastExecutedSchedulerIndexVariable.get());
+                                               mCurrentProgram.get(mLastExecutedInstructionIndexVariable.get());
 
-      if (!mInitializedSchedulerList.contains(lNextSchedulerToRun))
+      // if the instruction wasn't initialized yet, initialize it now!
+      if (!mInitializedInstructionsList.contains(lNextSchedulerToRun))
       {
-        // log( "Initializing " + lNextSchedulerToRun);
         lNextSchedulerToRun.initialize();
-        mInitializedSchedulerList.add(lNextSchedulerToRun);
+        mInitializedInstructionsList.add(lNextSchedulerToRun);
       }
 
       log("Starting " + lNextSchedulerToRun);
@@ -331,19 +217,6 @@ public class LightSheetTimelapse extends TimelapseBase implements
                            .put("duration_"
                                 + getTimePointCounterVariable().get(),
                                 lContainer);
-
-      /*
-      ArrayList<InstructionInterface>
-          lSchedulerInterfaceList = getMicroscope().getDevices(InstructionInterface.class);
-      for (InstructionInterface lSchedulerInterface : lSchedulerInterfaceList)
-      {
-        if (lSchedulerInterface.getActiveVariable().get()) {
-          lSchedulerInterface.setMicroscope(getMicroscope());
-          lSchedulerInterface.enqueue(getTimePointCounterVariable().get());
-        }
-      }
-      */
-
     }
     catch (Throwable e)
     {
@@ -373,199 +246,28 @@ public class LightSheetTimelapse extends TimelapseBase implements
     }
   }
 
-  @Deprecated
-  private void interleavedAcquisition(LightSheetAcquisitionStateInterface<?> pCurrentState)
-  {
-    // TODO not supported for now
-
-  }
-
-  /**
-   * This function will be deleted as soon as the
-   * SequentialAcquisitionInstruction proved to be functional and results in
-   * equal images
-   * 
-   * @param pCurrentState
-   * @throws InterruptedException
-   * @throws ExecutionException
-   * @throws TimeoutException
-   */
-  @Deprecated
-  private void sequentialAcquisition(LightSheetAcquisitionStateInterface<?> pCurrentState) throws InterruptedException,
-                                                                                           ExecutionException,
-                                                                                           TimeoutException
-  {
-
-    int lNumberOfDetectionArms =
-                               mLightSheetMicroscope.getNumberOfDetectionArms();
-
-    int lNumberOfLightSheets =
-                             mLightSheetMicroscope.getNumberOfLightSheets();
-
-    HashMap<Integer, LightSheetMicroscopeQueue> lViewToQueueMap =
-                                                                new HashMap<>();
-
-    // preparing queues:
-    for (int l = 0; l < lNumberOfLightSheets; l++)
-      if (pCurrentState.getLightSheetOnOffVariable(l).get())
-      {
-        LightSheetMicroscopeQueue lQueueForView =
-                                                getQueueForSingleLightSheet(pCurrentState,
-                                                                            l);
-
-        lViewToQueueMap.put(l, lQueueForView);
-      }
-
-    // playing the queues in sequence:
-
-    for (int l = 0; l < lNumberOfLightSheets; l++)
-    {
-      if (pCurrentState.getLightSheetOnOffVariable(l).get())
-      {
-        LightSheetMicroscopeQueue lQueueForView =
-                                                lViewToQueueMap.get(l);
-
-        for (int c = 0; c < lNumberOfDetectionArms; c++)
-          if (pCurrentState.getCameraOnOffVariable(c).get())
-          {
-
-            StackMetaData lMetaData =
-                                    lQueueForView.getCameraDeviceQueue(c)
-                                                 .getMetaDataVariable()
-                                                 .get();
-
-            lMetaData.addEntry(MetaDataAcquisitionType.AcquisitionType,
-                               AcquisitionType.TimeLapse);
-            lMetaData.addEntry(MetaDataView.Camera, c);
-            lMetaData.addEntry(MetaDataView.LightSheet, l);
-
-            if (getFuseStacksVariable().get())
-            {
-              if (getFuseStacksPerCameraVariable().get())
-                lMetaData.addEntry(MetaDataFusion.RequestPerCameraFusion,
-                                   true);
-              else
-                lMetaData.addEntry(MetaDataFusion.RequestFullFusion,
-                                   true);
-
-            }
-            else
-            {
-              String lCxLyString =
-                                 MetaDataView.getCxLyString(lMetaData);
-              lMetaData.addEntry(MetaDataChannel.Channel,
-                                 lCxLyString);
-            }
-          }
-
-        mLightSheetMicroscope.playQueueAndWait(lQueueForView,
-                                               cTimeOut,
-                                               TimeUnit.SECONDS);
-
-      }
-    }
-
-  }
-
-  /**
-   * This function will be removed. see SequentialAcquisitionInstruction
-   * 
-   * @param pCurrentState
-   * @param pLightSheetIndex
-   * @return
-   */
-  @Deprecated
-  protected LightSheetMicroscopeQueue getQueueForSingleLightSheet(LightSheetAcquisitionStateInterface<?> pCurrentState,
-                                                                  int pLightSheetIndex)
-  {
-    int lNumberOfDetectionArms =
-                               mLightSheetMicroscope.getNumberOfDetectionArms();
-
-    @SuppressWarnings("unused")
-    int lNumberOfLightSheets =
-                             mLightSheetMicroscope.getNumberOfLightSheets();
-
-    int lNumberOfLaserLines =
-                            mLightSheetMicroscope.getNumberOfLaserLines();
-
-    int lNumberOfEDFSlices =
-                           mExtendedDepthOfFieldAcquisitionVariable.get() ? 10
-                                                                          : 0;
-
-    LightSheetMicroscopeQueue lQueue =
-                                     pCurrentState.getQueue(0,
-                                                            lNumberOfDetectionArms,
-                                                            pLightSheetIndex,
-                                                            pLightSheetIndex + 1,
-                                                            0,
-                                                            lNumberOfLaserLines,
-                                                            lNumberOfEDFSlices);
-
-    /*for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
-    {
-      info("Light sheet " + l + " W: " + lQueue.getIW(l));
-    }
-    for (int l = 0; l < mLightSheetMicroscope.getNumberOfLightSheets(); l++)
-    {
-      info("Light sheet " + l + " H: " + lQueue.getIH(l));
-    }*/
-
-    lQueue.addMetaDataEntry(MetaDataOrdinals.TimePoint,
-                            getTimePointCounterVariable().get());
-
-    return lQueue;
-  }
-
-  /**
-   * Returns the variable holding the flag interleaved-acquisition
-   * 
-   * @return variable holding the flag interleaved-acquisition
-   */
-  public Variable<Boolean> getInterleavedAcquisitionVariable()
-  {
-    return mInterleavedAcquisitionVariable;
-  }
-
-  /**
-   * Returns the variable holding the boolean flag that decides whether stacks
-   * should or should not be fused.
-   * 
-   * @return fuse stacks variable
-   */
-  public Variable<Boolean> getFuseStacksVariable()
-  {
-    return mFuseStacksVariable;
-  }
-
-  public Variable<Boolean> getExtendedDepthOfFieldAcquisitionVariable()
-  {
-    return mExtendedDepthOfFieldAcquisitionVariable;
-  }
-
-  public Variable<Boolean> getLegacyTimelapseAcquisitionVariable()
-  {
-    return mLegacyTimelapseAcquisitionVariable;
-  }
-
-  /**
-   * Returns the variable holding the boolean flag that decides whether stacks
-   * should or should not be fused.
-   * 
-   * @return fuse stacks variable
-   */
-  public Variable<Boolean> getFuseStacksPerCameraVariable()
-  {
-    return mFuseStacksPerCameraVariable;
-  }
 
   public long getTimeOut()
   {
     return cTimeOut;
   }
 
-  public ArrayList<InstructionInterface> getListOfActivatedSchedulers()
+  /**
+   * Deprecated: use getCurrentProgram() instead
+   * @return current program as list of instructions
+   */
+  @Deprecated
+  public ArrayList<InstructionInterface> getListOfActivatedSchedulers() {
+    return getCurrentProgram();
+  }
+
+  /**
+   *
+   * @return current program as list of instructions
+   */
+  public ArrayList<InstructionInterface> getCurrentProgram()
   {
-    return mListOfActivatedSchedulers;
+    return mCurrentProgram;
   }
 
   public ArrayList<InstructionInterface> getListOfAvailableSchedulers(String... pMustContainStrings)
@@ -606,7 +308,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
   public Variable<Integer> getLastExecutedSchedulerIndexVariable()
   {
-    return mLastExecutedSchedulerIndexVariable;
+    return mLastExecutedInstructionIndexVariable;
   }
 
 }

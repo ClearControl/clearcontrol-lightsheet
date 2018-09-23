@@ -69,7 +69,7 @@ public class AppendConsecutiveSequentialImagingInstruction extends
     LightSheetTimelapse lTimelapse =
                                    getLightSheetMicroscope().getTimelapse();
     ArrayList<InstructionInterface> schedule =
-                                             lTimelapse.getListOfActivatedSchedulers();
+                                             lTimelapse.getCurrentProgram();
 
     int index =
               (int) lTimelapse.getLastExecutedSchedulerIndexVariable()

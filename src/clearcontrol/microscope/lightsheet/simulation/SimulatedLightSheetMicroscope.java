@@ -53,7 +53,6 @@ import clearcontrol.microscope.lightsheet.imaging.opticsprefused.*;
 import clearcontrol.microscope.lightsheet.imaging.sequential.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.*;
 import clearcontrol.microscope.lightsheet.imaging.singleview.AppendConsecutiveSingleViewImagingInstruction;
-import clearcontrol.microscope.lightsheet.imaging.singleview.ViewSingleLightSheetStackInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.fusion.TenengradFusionPerCameraInstruction;
 import clearcontrol.microscope.lightsheet.postprocessing.measurements.instructions.*;
 import clearcontrol.microscope.lightsheet.postprocessing.processing.CropInstruction;
@@ -69,7 +68,6 @@ import clearcontrol.microscope.lightsheet.smart.sampleselection.DrosophilaSelect
 import clearcontrol.microscope.lightsheet.smart.sampleselection.RestartTimelapseWhileNoSampleChosenInstruction;
 import clearcontrol.microscope.lightsheet.smart.sampleselection.SelectBestQualitySampleInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.*;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.defocusdiversity.DefocusDiversityInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.geneticalgorithm.instructions.GeneticAlgorithmMirrorModeOptimizeInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.gradientbased.GradientBasedZernikeModeOptimizerInstruction;
 import clearcontrol.microscope.lightsheet.spatialphasemodulation.optimizer.sensorlessAO.SensorLessAOForSinglePlaneInstruction;
@@ -440,7 +438,7 @@ public class SimulatedLightSheetMicroscope extends
       return;
     }
 
-    ArrayList<InstructionInterface> program = lTimelapse.getListOfActivatedSchedulers();
+    ArrayList<InstructionInterface> program = lTimelapse.getCurrentProgram();
     program.clear();
 
     // laser configuration

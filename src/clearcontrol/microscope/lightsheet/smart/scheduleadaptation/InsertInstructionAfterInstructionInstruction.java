@@ -50,7 +50,7 @@ public class InsertInstructionAfterInstructionInstruction<T extends InstructionI
     // add myself to the instructions so that I'll be asked again after next
     // imaging sequence
     ArrayList<InstructionInterface> schedule =
-                                             lTimelapse.getListOfActivatedSchedulers();
+                                             lTimelapse.getCurrentProgram();
     for (int i = (int) pTimePoint; i < schedule.size() - 1; i++)
     {
       InstructionInterface lInstruction = schedule.get(i);

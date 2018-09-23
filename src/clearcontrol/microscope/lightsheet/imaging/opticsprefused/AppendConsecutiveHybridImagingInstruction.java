@@ -77,7 +77,7 @@ public class AppendConsecutiveHybridImagingInstruction extends
     LightSheetTimelapse lTimelapse =
                                    getLightSheetMicroscope().getTimelapse();
     ArrayList<InstructionInterface> schedule =
-                                             lTimelapse.getListOfActivatedSchedulers();
+                                             lTimelapse.getCurrentProgram();
 
     int numberOfImagesFirstHalf = mNumberOfImages.get() / 2;
     int numberOfImagesSecondHalf = mNumberOfImages.get()

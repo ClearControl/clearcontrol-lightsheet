@@ -71,7 +71,7 @@ public class ImagingPlanningInstruction extends
     // add myself to the instructions so that I'll be asked again after next
     // imaging sequence
     ArrayList<InstructionInterface> schedule =
-                                             lTimelapse.getListOfActivatedSchedulers();
+                                             lTimelapse.getCurrentProgram();
     schedule.add((int) pTimePoint + 1, this);
 
     // add another imaging sequence
@@ -121,7 +121,7 @@ public class ImagingPlanningInstruction extends
     // add myself to the instructions so that I'll be asked again after next
     // imaging sequence
     ArrayList<InstructionInterface> schedule =
-                                             lTimelapse.getListOfActivatedSchedulers();
+                                             lTimelapse.getCurrentProgram();
     for (int i = (int) pTimePoint; i < schedule.size() - 1; i++)
     {
       InstructionInterface lScheduler = schedule.get(i);

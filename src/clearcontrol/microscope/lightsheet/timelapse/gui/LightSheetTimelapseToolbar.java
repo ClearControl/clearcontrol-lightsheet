@@ -85,38 +85,9 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
     }
 
     {
-
-      VariableCheckBox lLegacyTimelapseAcquisitionCheckBox =
-                                                           new VariableCheckBox("Legacy timelapse acquisition",
-                                                                                pLightSheetTimelapse.getLegacyTimelapseAcquisitionVariable());
-
-      GridPane.setHalignment(lLegacyTimelapseAcquisitionCheckBox.getCheckBox(),
-                             HPos.RIGHT);
-      GridPane.setColumnSpan(lLegacyTimelapseAcquisitionCheckBox.getLabel(),
-                             1);
-      GridPane.setColumnSpan(lLegacyTimelapseAcquisitionCheckBox.getCheckBox(),
-                             1);
-
-      GridPane.setColumnSpan(lLegacyTimelapseAcquisitionCheckBox.getLabel(),
-                             3);
-      add(lLegacyTimelapseAcquisitionCheckBox.getCheckBox(), 0, mRow);
-      add(lLegacyTimelapseAcquisitionCheckBox.getLabel(), 1, mRow);
-
-      mRow++;
-    }
-
-    {
       int lRow = 0;
       CustomGridPane lSchedulerChecklistGridPane =
                                                  new CustomGridPane();
-      /*lPercent = new int[]
-              { 45, 5, 45, 5};
-      for (int i = 0; i < lPercent.length; i++)
-      {
-        ColumnConstraints lColumnConstraints = new ColumnConstraints();
-        lColumnConstraints.setPercentWidth(lPercent[i]);
-        lSchedulerChecklistGridPane.getColumnConstraints().add(lColumnConstraints);
-      }*/
 
       TitledPane lTitledPane =
                              new TitledPane("Schedule",
@@ -134,15 +105,12 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       }
 
       ArrayList<InstructionInterface> lSchedulerList =
-                                                     pLightSheetTimelapse.getListOfActivatedSchedulers();
+                                                     pLightSheetTimelapse.getCurrentProgram();
       mCurrentProgramScheduleListView =
                                       new ListView<InstructionInterface>();
       mCurrentProgramScheduleListView.setItems(FXCollections.observableArrayList(lSchedulerList));
       refreshPropertiesScrollPane();
-      // mCurrentProgramScheduleListView.setPrefWidth(Double.MAX_VALUE);
-      // mCurrentProgramScheduleListView.setMaxWidth(Double.MAX_VALUE);
       mCurrentProgramScheduleListView.setMinHeight(300);
-      // mCurrentProgramScheduleListView.setMaxHeight(Double.MAX_VALUE);
       mCurrentProgramScheduleListView.setMinWidth(450);
 
       mCurrentProgramScheduleListView.setOnMouseClicked(new EventHandler<MouseEvent>()
@@ -278,26 +246,6 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         lRow++;
       }
 
-      /*
-      {
-        Button lLinkButton = new Button("->");
-        lLinkButton.setTooltip(new Tooltip("Link (experimental)"));
-        lLinkButton.setMinWidth(35);
-        lLinkButton.setMinHeight(35);
-        lLinkButton.setOnAction((e) -> {
-          int lSelectedIndex = mCurrentProgramScheduleListView.getSelectionModel().getSelectedIndex();
-          if (lSelectedIndex > -1) {
-            lSchedulerList.add(lSelectedIndex, lSchedulerList.get(lSelectedIndex));
-          }
-          mCurrentProgramScheduleListView.setItems(FXCollections.observableArrayList(
-                  lSchedulerList));
-          refreshPropertiesScrollPane();
-        });
-        GridPane.setValignment(lLinkButton, VPos.BOTTOM);
-        lSchedulerChecklistGridPane.add(lLinkButton, 1, lRow);
-        lRow++;
-      }
-      */
 
       lRow = 10;
       {
@@ -315,7 +263,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
           lLoadScheduleTemplateBytton.setOnAction((e) -> {
             try
             {
-              mLightSheetTimelapse.getListOfActivatedSchedulers()
+              mLightSheetTimelapse.getCurrentProgram()
                                   .clear();
               new ScheduleReader(lSchedulerList,
                                  (LightSheetMicroscope) mLightSheetTimelapse.getMicroscope(),
@@ -358,13 +306,13 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
                                           0,
                                           lRow);
 
-          Button lSaveScheduleButton = new Button("Save");
-          lSaveScheduleButton.setAlignment(Pos.CENTER);
-          lSaveScheduleButton.setMaxWidth(Double.MAX_VALUE);
-          lSaveScheduleButton.setOnAction((e) -> {
+          Button lSaveProgramButton = new Button("Save");
+          lSaveProgramButton.setAlignment(Pos.CENTER);
+          lSaveProgramButton.setMaxWidth(Double.MAX_VALUE);
+          lSaveProgramButton.setOnAction((e) -> {
             try
             {
-              new ScheduleWriter(mLightSheetTimelapse.getListOfActivatedSchedulers(),
+              new ScheduleWriter(mLightSheetTimelapse.getCurrentProgram(),
                                  getFile(lFileNameVariable.get())).write();
               lExistingScheduleTemplates.setItems(listExistingSchedulerTemplateFiles());
             }
@@ -373,8 +321,8 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
               e1.printStackTrace();
             }
           });
-          GridPane.setColumnSpan(lSaveScheduleButton, 1);
-          lSchedulerChecklistGridPane.add(lSaveScheduleButton,
+          GridPane.setColumnSpan(lSaveProgramButton, 1);
+          lSchedulerChecklistGridPane.add(lSaveProgramButton,
                                           1,
                                           lRow,
                                           2,
@@ -518,180 +466,14 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
 
       }
 
-      // Todo: remove following two blocks
-      // lRow += 2;
-      // {
-      // Label lLabel = new Label("Add instruction (legacy UI)");
-      // lSchedulerChecklistGridPane.add(lLabel, 0, lRow, 2, 1);
-      // lRow++;
-      // }
-      //
-      //
-      // ArrayList<InstructionInterface> lAvailableSchedulersList =
-      // pLightSheetTimelapse.getListOfAvailableSchedulers();
-      // if (lAvailableSchedulersList.size() > 0) {
-      // ComboBox<InstructionInterface> lAvailableSchedulers = new ComboBox<>();
-      // lAvailableSchedulers.setItems(FXCollections.observableArrayList(lAvailableSchedulersList));
-      // lAvailableSchedulers.getSelectionModel().select(0);
-      // lAvailableSchedulers.setMaxWidth(Double.MAX_VALUE);
-      // lAvailableSchedulers.setMinHeight(35);
-      // lAvailableSchedulers.setMinWidth(300);
-      // lSchedulerChecklistGridPane.add(lAvailableSchedulers, 0, lRow);
-      //
-      // Button lPlusButton = new Button("+");
-      // lPlusButton.setMinWidth(35);
-      // lPlusButton.setMinHeight(35);
-      // lPlusButton.setOnAction((e) -> {
-      // int lSelectedIndexInMainList =
-      // mCurrentProgramScheduleListView.getSelectionModel().getSelectedIndex();
-      // if (lSelectedIndexInMainList < 0) lSelectedIndexInMainList =
-      // lSchedulerList.size();
-      // int lSelectedIndexInAddList =
-      // lAvailableSchedulers.getSelectionModel().getSelectedIndex();
-      // lSchedulerList.add(lSelectedIndexInMainList,
-      // lAvailableSchedulersList.get(lSelectedIndexInAddList));
-      // mCurrentProgramScheduleListView.setItems(FXCollections.observableArrayList(
-      // lSchedulerList));
-      // refreshPropertiesScrollPane();
-      // });
-      // lSchedulerChecklistGridPane.add(lPlusButton, 1, lRow);
-      // lRow++;
-      // }
-
     }
 
-    /*
-    {
-      CustomGridPane lSchedulerChecklistGridPane = new CustomGridPane();
-    
-      TitledPane lTitledPane =
-          new TitledPane("Legacy schedule",
-                         lSchedulerChecklistGridPane);
-      lTitledPane.setAnimated(false);
-      lTitledPane.setExpanded(true);
-      GridPane.setColumnSpan(lTitledPane, 4);
-      add(lTitledPane, 0, mRow);
-      mRow++;
-    
-    
-    
-      ArrayList<InstructionInterface>
-          lSchedulerInterfaceList = pLightSheetTimelapse.getMicroscope().getDevices(InstructionInterface.class);
-    
-      int lRow = 0;
-      for (InstructionInterface lSchedulerInterface : lSchedulerInterfaceList) {
-        VariableCheckBox lSchedulerActiveCheckBox =
-            new VariableCheckBox("", lSchedulerInterface.getActiveVariable());
-    
-        Label lSchedulerTitleLabel =
-            new Label(lSchedulerInterface.getName());
-    
-        GridPane.setHalignment(lSchedulerActiveCheckBox.getCheckBox(),
-                               HPos.RIGHT);
-        GridPane.setColumnSpan(lSchedulerActiveCheckBox.getCheckBox(),
-                               1);
-        GridPane.setColumnSpan(lSchedulerTitleLabel, 3);
-    
-        lSchedulerChecklistGridPane.add(lSchedulerActiveCheckBox.getCheckBox(), 0, lRow);
-        lSchedulerChecklistGridPane.add(lSchedulerTitleLabel, 1, lRow);
-        lRow++;
-      }
-    
-    
-    
-    
-    
-    }*/
-
-    /*
-    {
-      VariableCheckBox lInterleavedAcquisition =
-                                               new VariableCheckBox("",
-                                                                    pLightSheetTimelapse.getInterleavedAcquisitionVariable());
-    
-      Label lInterleavedAcquisitionLabel =
-                                         new Label("Interleaved acquisition");
-    
-      GridPane.setHalignment(lInterleavedAcquisition.getCheckBox(),
-                             HPos.RIGHT);
-      GridPane.setColumnSpan(lInterleavedAcquisition.getCheckBox(),
-                             1);
-      GridPane.setColumnSpan(lInterleavedAcquisitionLabel, 3);
-    
-      add(lInterleavedAcquisition.getCheckBox(), 0, mRow);
-      add(lInterleavedAcquisitionLabel, 1, mRow);
-      mRow++;
-    }*/
 
     CustomGridPane lAdvancedOptionsGridPane =
                                             buildAdvancedOptionsGripPane();
     lAdvancedOptionsGridPane.addSeparator();
     int lRow = lAdvancedOptionsGridPane.getLastUsedRow();
 
-    {
-
-      VariableCheckBox lEDFImagingCheckBox =
-                                           new VariableCheckBox("-> Extended depth of field (EDF)",
-                                                                pLightSheetTimelapse.getExtendedDepthOfFieldAcquisitionVariable());
-
-      GridPane.setHalignment(lEDFImagingCheckBox.getCheckBox(),
-                             HPos.RIGHT);
-      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 1);
-      GridPane.setColumnSpan(lEDFImagingCheckBox.getCheckBox(), 1);
-
-      GridPane.setColumnSpan(lEDFImagingCheckBox.getLabel(), 3);
-      lAdvancedOptionsGridPane.add(lEDFImagingCheckBox.getCheckBox(),
-                                   0,
-                                   lRow);
-      lAdvancedOptionsGridPane.add(lEDFImagingCheckBox.getLabel(),
-                                   1,
-                                   lRow);
-
-      lRow++;
-    }
-
-    {
-      VariableCheckBox lFuseStacksCheckBox =
-                                           new VariableCheckBox("Fuse stacks",
-                                                                pLightSheetTimelapse.getFuseStacksVariable());
-
-      GridPane.setHalignment(lFuseStacksCheckBox.getCheckBox(),
-                             HPos.RIGHT);
-      GridPane.setColumnSpan(lFuseStacksCheckBox.getLabel(), 1);
-      GridPane.setColumnSpan(lFuseStacksCheckBox.getCheckBox(), 1);
-
-      GridPane.setColumnSpan(lFuseStacksCheckBox.getLabel(), 3);
-      lAdvancedOptionsGridPane.add(lFuseStacksCheckBox.getCheckBox(),
-                                   0,
-                                   lRow);
-      lAdvancedOptionsGridPane.add(lFuseStacksCheckBox.getLabel(),
-                                   1,
-                                   lRow);
-
-      lRow++;
-    }
-
-    /*
-    {
-      VariableCheckBox lFuseStacksPerCameraOnlyCheckBox =
-                                                        new VariableCheckBox("Fuse stacks per camera only",
-                                                                             pLightSheetTimelapse.getFuseStacksPerCameraVariable());
-    
-      GridPane.setHalignment(lFuseStacksPerCameraOnlyCheckBox.getCheckBox(),
-                             HPos.RIGHT);
-      GridPane.setColumnSpan(lFuseStacksPerCameraOnlyCheckBox.getLabel(),
-                             1);
-      GridPane.setColumnSpan(lFuseStacksPerCameraOnlyCheckBox.getCheckBox(),
-                             1);
-    
-      GridPane.setColumnSpan(lFuseStacksPerCameraOnlyCheckBox.getLabel(),
-                             3);
-      add(lFuseStacksPerCameraOnlyCheckBox.getCheckBox(), 0, mRow);
-      add(lFuseStacksPerCameraOnlyCheckBox.getLabel(), 1, mRow);
-    
-      mRow++;
-    }
-    */
 
     {
       MicroscopeInterface lMicroscopeInterface =
@@ -729,7 +511,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
   private void refreshPropertiesScrollPane()
   {
     ArrayList<InstructionInterface> lSchedulerList =
-                                                   mLightSheetTimelapse.getListOfActivatedSchedulers();
+                                                   mLightSheetTimelapse.getCurrentProgram();
     if (mCurrentProgramScheduleListView.getSelectionModel()
                                        .getSelectedIndex() > -1)
     {
