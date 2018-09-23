@@ -36,7 +36,7 @@ public class FocusMeasureAreaBasedAdaptationInstruction extends GAFASOAdaptation
      * @param pLightSheetMicroscope
      */
     public FocusMeasureAreaBasedAdaptationInstruction(FocusMeasures.FocusMeasure focusMeasure, LightSheetMicroscope pLightSheetMicroscope) {
-        super("Adaptation: GAFASO " + focusMeasure.name() + " area based adaptation", pLightSheetMicroscope);
+        super("Adaptation: GAFASO area of high " + focusMeasure.name() + " based adaptation", pLightSheetMicroscope);
         this.focusMeasure = focusMeasure;
     }
 
