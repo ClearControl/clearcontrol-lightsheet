@@ -55,7 +55,7 @@ public class FocusMeasureBasedAdaptationInstruction extends GAFASOAdaptationInst
     }
 
     @Override
-    public FocusMeasureAreaBasedAdaptationInstruction copy() {
-        return new FocusMeasureAreaBasedAdaptationInstruction(focusMeasure, getLightSheetMicroscope());
+    public FocusMeasureBasedAdaptationInstruction copy() {
+        return new FocusMeasureBasedAdaptationInstruction(focusMeasure, getLightSheetMicroscope());
     }
 }
