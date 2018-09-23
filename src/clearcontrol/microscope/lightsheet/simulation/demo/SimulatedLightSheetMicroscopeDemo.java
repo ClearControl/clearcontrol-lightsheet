@@ -104,20 +104,6 @@ public class SimulatedLightSheetMicroscopeDemo extends Application
 
       lMicroscope.addStandardDevices(lNumberOfControlPlanes);
 
-      LightSheetTimelapse lLightSheetTimelapse =
-                                               lMicroscope.getDevice(LightSheetTimelapse.class,
-                                                                     0);
-      LaserDeviceInterface lLaser =
-                                  lMicroscope.getDevice(LaserDeviceInterface.class,
-                                                        0);
-      lLightSheetTimelapse.getListOfActivatedSchedulers()
-                          .add(0,
-                               new LaserOnOffInstruction(lLaser,
-                                                         true));
-      lLightSheetTimelapse.getListOfActivatedSchedulers()
-                          .add(0,
-                               new LaserPowerInstruction(lLaser, 10));
-
       InterpolatedAcquisitionState lState =
                                           (InterpolatedAcquisitionState) lMicroscope.getAcquisitionStateManager()
                                                                                     .getCurrentState();
