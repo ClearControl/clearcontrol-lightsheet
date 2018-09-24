@@ -839,6 +839,8 @@ public class SimulatedLightSheetMicroscope extends
       }
     }
 
+    // --------------------------------------------------------------------
+    // setup focus finders
     int lNumberOfControlPlanes =
                                ((InterpolatedAcquisitionState) (getAcquisitionStateManager().getCurrentState())).getNumberOfControlPlanes();
     for (int cpi = 0; cpi < lNumberOfControlPlanes; cpi++)
@@ -852,26 +854,6 @@ public class SimulatedLightSheetMicroscope extends
                                                                   d,
                                                                   cpi,
                                                                   this));
-
-          if (d == 0)
-          {
-            addDevice(0,
-                      new ChangeLightSheetHeightInstruction(this,
-                                                            l,
-                                                            0.0));
-            addDevice(0, new ChangeLightSheetHeightInstruction(this,
-                                                               l,
-                                                               100.0));
-            addDevice(0, new ChangeLightSheetHeightInstruction(this,
-                                                               l,
-                                                               500.0));
-
-            addDevice(0,
-                      new ChangeLightSheetXInstruction(this, l, 0.0));
-            addDevice(0,
-                      new ChangeLightSheetYInstruction(this, l, 0.0));
-          }
-
         }
         addDevice(0,
                   new ControlPlaneFocusFinderAlphaByVariationInstruction(d,
@@ -886,10 +868,18 @@ public class SimulatedLightSheetMicroscope extends
 
     // -------------------------------------------------------------------------
     // setup configuration instructions
+
+
+    addDevice(0,
+            new ChangeLightSheetXInstruction(this, 0, 0.0));
+    addDevice(0,
+            new ChangeLightSheetYInstruction(this, 0, 0.0));
+
     addDevice(0, new ChangeLightSheetWidthInstruction(this, 0));
-    addDevice(0, new ChangeLightSheetWidthInstruction(this, 0.15));
-    addDevice(0, new ChangeLightSheetWidthInstruction(this, 0.3));
-    addDevice(0, new ChangeLightSheetWidthInstruction(this, 0.45));
+
+    addDevice(0,
+            new ChangeLightSheetHeightInstruction(this,
+                    0, 0.0));
 
     addDevice(0, new ChangeImageSizeInstruction(this));
     addDevice(0, new ChangeZRangeInstruction(this));
