@@ -31,7 +31,7 @@ public class ChangeLaserPowerInstruction  extends InstructionBase implements
     {
         super("Laser: Change laser power of " + pLaser.getName());
         laserDevice = pLaser;
-        laserPowerInMilliwatt.setMinMax(0, pLaser.getMaxPowerInMilliWatt());
+        //laserPowerInMilliwatt.setMinMax(0, pLaser.getMaxPowerInMilliWatt());
     }
 
     @Override
