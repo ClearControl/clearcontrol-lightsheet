@@ -20,6 +20,7 @@ public class FilterStacksInStackInterfaceContainerInstruction extends
 {
 
   private Variable<String> filter =
+
                                   new Variable<String>("Filter (must contain one of the comma-separated)",
                                                        "");
 
