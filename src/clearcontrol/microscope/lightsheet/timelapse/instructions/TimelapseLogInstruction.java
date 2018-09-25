@@ -33,7 +33,7 @@ public class TimelapseLogInstruction extends InstructionBase
   @Override
   public boolean enqueue(long pTimePoint)
   {
-    new ScheduleWriter(mTimelapse.getListOfActivatedSchedulers(),
+    new ScheduleWriter(mTimelapse.getCurrentProgram(),
                        new File(mTimelapse.getWorkingDirectory(),
                                 "program" + mTimelapse.getTimePointCounterVariable()
                                                       .get()

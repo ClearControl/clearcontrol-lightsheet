@@ -134,28 +134,37 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends
     for (int i = 0; i < mDatasetNames.length; i++)
     {
       info("getting " + mDatasetNames[i] + " tp " + mReadTimePoint);
-      StackInterface stack =
-                           rawFileStackSource.getStack(mDatasetNames[i],
-                                                       mReadTimePoint);
-      if (stack == null && mRestartFromBeginningWhenReachingEnd.get())
+      try
       {
-        mReadTimePoint = mTimepointOffset.get();
-        stack = rawFileStackSource.getStack(mDatasetNames[i],
-                                            mReadTimePoint);
-      }
+        StackInterface stack =
+                             rawFileStackSource.getStack(mDatasetNames[i],
+                                                         mReadTimePoint);
+        if (stack == null
+            && mRestartFromBeginningWhenReachingEnd.get())
+        {
+          mReadTimePoint = mTimepointOffset.get();
+          stack = rawFileStackSource.getStack(mDatasetNames[i],
+                                              mReadTimePoint);
+        }
 
-      if (stack == null)
+        if (stack == null)
+        {
+          warning("Error: could not load file " + lRootFolder
+                  + " "
+                  + lDatasetname
+                  + " "
+                  + mDatasetNames[i]
+                  + "!");
+          continue;
+        }
+
+        lContainer.put(mDatasetNames[i], stack);
+      }
+      catch (NullPointerException e)
       {
-        warning("Error: could not load file " + lRootFolder
-                + " "
-                + lDatasetname
-                + " "
-                + mDatasetNames[i]
-                + "!");
-        return false;
+        e.printStackTrace();
+        continue;
       }
-
-      lContainer.put(mDatasetNames[i], stack);
     }
     mReadTimePoint += mTimepointStepSize.get();
     getLightSheetMicroscope().getDataWarehouse()

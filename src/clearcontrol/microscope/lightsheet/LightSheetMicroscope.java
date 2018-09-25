@@ -19,15 +19,11 @@ import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDa
 import clearcontrol.microscope.lightsheet.imaging.opticsprefused.OpticsPrefusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
 import clearcontrol.microscope.lightsheet.interactive.InteractiveAcquisition;
-import clearcontrol.microscope.lightsheet.livestatistics.LiveStatisticsProcessor;
-import clearcontrol.microscope.lightsheet.postprocessing.containers.DCTS2DContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.MeasurementContainer;
 import clearcontrol.microscope.lightsheet.postprocessing.containers.MeasurementInSpaceContainer;
-import clearcontrol.microscope.lightsheet.postprocessing.containers.SpotCountContainer;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.processor.OfflineFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.MirrorModeContainer;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.instructions.ChangeExposureTimeInstruction;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
@@ -51,7 +47,6 @@ public class LightSheetMicroscope extends
                                   LightSheetMicroscopeInterface
 {
   private LightSheetFastFusionProcessor mStackFusionProcessor;
-  private LiveStatisticsProcessor mLiveStatisticsProcessor;
   private DataWarehouse mDataWarehouse;
 
   /**
@@ -97,11 +92,8 @@ public class LightSheetMicroscope extends
       SequentialImageDataContainer.class,
       MeasurementInSpaceContainer.class,
       MeasurementContainer.class,
-      DCTS2DContainer.class,
-      SpotCountContainer.class,
       InstructionDurationContainer.class,
-      DataContainerInterface.class,
-      MirrorModeContainer.class })
+      DataContainerInterface.class })
     {
       addDevice(0,
                 new DropOldestStackInterfaceContainerInstruction(lContainerType,

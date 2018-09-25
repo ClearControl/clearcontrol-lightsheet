@@ -7,10 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import clearcl.imagej.ClearCLIJ;
-import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.simulation.SimulatedLightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleReader;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
 
@@ -37,7 +35,6 @@ public class ScheduleIOTest
                                                                                32,
                                                                                32);
     microscope.addDevice(0, new TestInstruction());
-    microscope.addDevice(0, new SpaceTravelInstruction(microscope));
 
     ArrayList<InstructionInterface> list =
                                          new ArrayList<InstructionInterface>();
@@ -52,15 +49,6 @@ public class ScheduleIOTest
     instruction.mString.set("Hello world");
 
     list.add(instruction);
-
-    SpaceTravelInstruction spaceTravelInstruction =
-                                                  new SpaceTravelInstruction(microscope);
-    spaceTravelInstruction.getTravelPathList()
-                          .add(new Position(1, 2, 3));
-    spaceTravelInstruction.getTravelPathList()
-                          .add(new Position(4, 5, 6));
-
-    list.add(spaceTravelInstruction);
 
     File file = new File("temp.txt");
 
@@ -93,32 +81,6 @@ public class ScheduleIOTest
                                     .compareTo(readInstruction.mString.get()));
 
     InstructionInterface instructionInterface = readList.get(1);
-    SpaceTravelInstruction readSpaceTravelInstruction =
-                                                      (SpaceTravelInstruction) instructionInterface;
-    assertEquals(1,
-                 readSpaceTravelInstruction.getTravelPathList()
-                                           .get(0).mX,
-                 tolerance);
-    assertEquals(2,
-                 readSpaceTravelInstruction.getTravelPathList()
-                                           .get(0).mY,
-                 tolerance);
-    assertEquals(3,
-                 readSpaceTravelInstruction.getTravelPathList()
-                                           .get(0).mZ,
-                 tolerance);
-    assertEquals(4,
-                 readSpaceTravelInstruction.getTravelPathList()
-                                           .get(1).mX,
-                 tolerance);
-    assertEquals(5,
-                 readSpaceTravelInstruction.getTravelPathList()
-                                           .get(1).mY,
-                 tolerance);
-    assertEquals(6,
-                 readSpaceTravelInstruction.getTravelPathList()
-                                           .get(1).mZ,
-                 tolerance);
 
   }
 }

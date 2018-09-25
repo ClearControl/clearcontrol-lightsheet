@@ -1,6 +1,8 @@
 package clearcontrol.microscope.lightsheet.component.lightsheet.instructions;
 
+import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetDOF;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
@@ -20,6 +22,8 @@ import clearcontrol.microscope.state.AcquisitionStateManager;
  */
 public class ChangeLightSheetWidthInstruction extends
                                               LightSheetMicroscopeInstructionBase
+                                              implements
+                                              PropertyIOableInstructionInterface
 {
 
   private final BoundedVariable<Double> mLightSheetWidth =
@@ -32,8 +36,8 @@ public class ChangeLightSheetWidthInstruction extends
   public ChangeLightSheetWidthInstruction(LightSheetMicroscope pLightSheetMicroscope,
                                           double pLightSheetWidth)
   {
-    super("Adaptation: Change light sheet width to "
-          + pLightSheetWidth, pLightSheetMicroscope);
+    super("Adaptation: Change light sheet width",
+          pLightSheetMicroscope);
     mLightSheetWidth.set(pLightSheetWidth);
   }
 
@@ -71,5 +75,12 @@ public class ChangeLightSheetWidthInstruction extends
   public BoundedVariable<Double> getLightSheetWidth()
   {
     return mLightSheetWidth;
+  }
+
+  @Override
+  public Variable[] getProperties()
+  {
+    return new Variable[]
+    { getLightSheetWidth() };
   }
 }

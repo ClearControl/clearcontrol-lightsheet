@@ -13,15 +13,11 @@ import clearcl.backend.ClearCLBackends;
 import clearcontrol.core.concurrent.executors.AsynchronousExecutorFeature;
 import clearcontrol.core.concurrent.thread.ThreadSleep;
 import clearcontrol.core.configuration.MachineConfiguration;
-import clearcontrol.devices.lasers.LaserDeviceInterface;
-import clearcontrol.devices.lasers.instructions.LaserOnOffInstruction;
-import clearcontrol.devices.lasers.instructions.LaserPowerInstruction;
 import clearcontrol.microscope.lightsheet.gui.LightSheetMicroscopeGUI;
 import clearcontrol.microscope.lightsheet.simulation.LightSheetMicroscopeSimulationDevice;
 import clearcontrol.microscope.lightsheet.simulation.SimulatedLightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.simulation.SimulationUtils;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 
 /**
  * Simulated lightsheet microscope demo
@@ -103,20 +99,6 @@ public class SimulatedLightSheetMicroscopeDemo extends Application
                                       lSimulatorDevice);
 
       lMicroscope.addStandardDevices(lNumberOfControlPlanes);
-
-      LightSheetTimelapse lLightSheetTimelapse =
-                                               lMicroscope.getDevice(LightSheetTimelapse.class,
-                                                                     0);
-      LaserDeviceInterface lLaser =
-                                  lMicroscope.getDevice(LaserDeviceInterface.class,
-                                                        0);
-      lLightSheetTimelapse.getListOfActivatedSchedulers()
-                          .add(0,
-                               new LaserOnOffInstruction(lLaser,
-                                                         true));
-      lLightSheetTimelapse.getListOfActivatedSchedulers()
-                          .add(0,
-                               new LaserPowerInstruction(lLaser, 10));
 
       InterpolatedAcquisitionState lState =
                                           (InterpolatedAcquisitionState) lMicroscope.getAcquisitionStateManager()

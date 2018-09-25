@@ -16,5 +16,6 @@ public class FilterStacksInStackInterfaceContainerInstructionPanel extends
   public FilterStacksInStackInterfaceContainerInstructionPanel(FilterStacksInStackInterfaceContainerInstruction instruction)
   {
     addStringField(instruction.getFilter(), 0);
+    addCheckbox(instruction.getMatchExactly(), 1);
   }
 }
