@@ -134,17 +134,21 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends
     for (int i = 0; i < mDatasetNames.length; i++)
     {
       info("getting " + mDatasetNames[i] + " tp " + mReadTimePoint);
-      try {
+      try
+      {
         StackInterface stack =
-                rawFileStackSource.getStack(mDatasetNames[i],
-                        mReadTimePoint);
-        if (stack == null && mRestartFromBeginningWhenReachingEnd.get()) {
+                             rawFileStackSource.getStack(mDatasetNames[i],
+                                                         mReadTimePoint);
+        if (stack == null
+            && mRestartFromBeginningWhenReachingEnd.get())
+        {
           mReadTimePoint = mTimepointOffset.get();
           stack = rawFileStackSource.getStack(mDatasetNames[i],
-                  mReadTimePoint);
+                                              mReadTimePoint);
         }
 
-        if (stack == null) {
+        if (stack == null)
+        {
           warning("Error: could not load file " + lRootFolder
                   + " "
                   + lDatasetname
@@ -155,7 +159,9 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends
         }
 
         lContainer.put(mDatasetNames[i], stack);
-      } catch (NullPointerException e) {
+      }
+      catch (NullPointerException e)
+      {
         e.printStackTrace();
         continue;
       }

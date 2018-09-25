@@ -8,12 +8,13 @@ import clearcontrol.microscope.lightsheet.adaptive.instructions.ChangeImageSizeI
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 09 2018
+ * Author: @haesleinhuepf 09 2018
  */
-public class ChangeImageSizeInstructionPanel extends CustomGridPane {
-    public ChangeImageSizeInstructionPanel(ChangeImageSizeInstruction instruction) {
-        addIntegerField(instruction.getImageWidth(), 0);
-        addIntegerField(instruction.getImageHeight(), 1);
-    }
+public class ChangeImageSizeInstructionPanel extends CustomGridPane
+{
+  public ChangeImageSizeInstructionPanel(ChangeImageSizeInstruction instruction)
+  {
+    addIntegerField(instruction.getImageWidth(), 0);
+    addIntegerField(instruction.getImageHeight(), 1);
+  }
 }

@@ -21,7 +21,9 @@ import clearcontrol.microscope.state.AcquisitionStateManager;
  * Author: @haesleinhuepf 05 2018
  */
 public class ChangeLightSheetWidthInstruction extends
-                                              LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface
+                                              LightSheetMicroscopeInstructionBase
+                                              implements
+                                              PropertyIOableInstructionInterface
 {
 
   private final BoundedVariable<Double> mLightSheetWidth =
@@ -34,7 +36,8 @@ public class ChangeLightSheetWidthInstruction extends
   public ChangeLightSheetWidthInstruction(LightSheetMicroscope pLightSheetMicroscope,
                                           double pLightSheetWidth)
   {
-    super("Adaptation: Change light sheet width", pLightSheetMicroscope);
+    super("Adaptation: Change light sheet width",
+          pLightSheetMicroscope);
     mLightSheetWidth.set(pLightSheetWidth);
   }
 
@@ -75,9 +78,9 @@ public class ChangeLightSheetWidthInstruction extends
   }
 
   @Override
-  public Variable[] getProperties() {
-    return new Variable[] {
-            getLightSheetWidth()
-    };
+  public Variable[] getProperties()
+  {
+    return new Variable[]
+    { getLightSheetWidth() };
   }
 }

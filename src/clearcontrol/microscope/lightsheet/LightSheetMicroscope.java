@@ -93,7 +93,7 @@ public class LightSheetMicroscope extends
       MeasurementInSpaceContainer.class,
       MeasurementContainer.class,
       InstructionDurationContainer.class,
-      DataContainerInterface.class})
+      DataContainerInterface.class })
     {
       addDevice(0,
                 new DropOldestStackInterfaceContainerInstruction(lContainerType,

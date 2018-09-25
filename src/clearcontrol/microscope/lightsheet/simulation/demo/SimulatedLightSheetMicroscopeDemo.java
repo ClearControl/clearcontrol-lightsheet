@@ -13,13 +13,11 @@ import clearcl.backend.ClearCLBackends;
 import clearcontrol.core.concurrent.executors.AsynchronousExecutorFeature;
 import clearcontrol.core.concurrent.thread.ThreadSleep;
 import clearcontrol.core.configuration.MachineConfiguration;
-import clearcontrol.devices.lasers.LaserDeviceInterface;
 import clearcontrol.microscope.lightsheet.gui.LightSheetMicroscopeGUI;
 import clearcontrol.microscope.lightsheet.simulation.LightSheetMicroscopeSimulationDevice;
 import clearcontrol.microscope.lightsheet.simulation.SimulatedLightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.simulation.SimulationUtils;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 
 /**
  * Simulated lightsheet microscope demo

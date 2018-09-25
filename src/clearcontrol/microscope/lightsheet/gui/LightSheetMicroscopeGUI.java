@@ -112,7 +112,6 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
                          LightSheetFastFusionProcessorPanel.class,
                          MicroscopeNodeType.Other);
 
-
     ArrayList<Stack2DDisplay> lDisplayDeviceList =
                                                  get2DDisplayDeviceList();
     for (Stack2DDisplay lDisplay : pLightSheetMicroscope.getDevices(Stack2DDisplay.class))

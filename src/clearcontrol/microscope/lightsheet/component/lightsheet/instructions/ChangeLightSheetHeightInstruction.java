@@ -16,7 +16,9 @@ import clearcontrol.microscope.state.AcquisitionStateManager;
  * Author: @haesleinhuepf July 2018
  */
 public class ChangeLightSheetHeightInstruction extends
-                                               LightSheetMicroscopeInstructionBase implements PropertyIOableInstructionInterface
+                                               LightSheetMicroscopeInstructionBase
+                                               implements
+                                               PropertyIOableInstructionInterface
 {
 
   private final BoundedVariable<Integer> mLightSheetIndex;
@@ -31,7 +33,8 @@ public class ChangeLightSheetHeightInstruction extends
                                            int pLightSheetIndex,
                                            double pLightSheetHeight)
   {
-    super("Adaptation: Change light sheet height", pLightSheetMicroscope);
+    super("Adaptation: Change light sheet height",
+          pLightSheetMicroscope);
     mLightSheetHeight.set(pLightSheetHeight);
     mLightSheetIndex =
                      new BoundedVariable<Integer>("Light sheet index",
@@ -83,10 +86,9 @@ public class ChangeLightSheetHeightInstruction extends
   }
 
   @Override
-  public Variable[] getProperties() {
-    return new Variable[] {
-            getLightSheetHeight(),
-            getLightSheetIndex()
-    };
+  public Variable[] getProperties()
+  {
+    return new Variable[]
+    { getLightSheetHeight(), getLightSheetIndex() };
   }
 }

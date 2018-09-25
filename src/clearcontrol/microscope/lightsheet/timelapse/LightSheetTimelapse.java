@@ -17,15 +17,14 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
-import clearcontrol.microscope.lightsheet.state.LightSheetAcquisitionStateInterface;
 import clearcontrol.microscope.lightsheet.timelapse.containers.InstructionDurationContainer;
 import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
-import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseBase;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 
 /**
- * A LightSheetTimelapse is a list of instructions, which are executed one by one as long as the timelapse is running.
+ * A LightSheetTimelapse is a list of instructions, which are executed one by
+ * one as long as the timelapse is running.
  *
  * @author royer
  * @author haesleinhuepf
@@ -43,11 +42,11 @@ public class LightSheetTimelapse extends TimelapseBase implements
   private final LightSheetMicroscope mLightSheetMicroscope;
 
   private ArrayList<InstructionInterface> mCurrentProgram =
-                                                                     new ArrayList<InstructionInterface>();
+                                                          new ArrayList<InstructionInterface>();
 
   private Variable<Integer> mLastExecutedInstructionIndexVariable =
-                                                                new Variable<Integer>("Last executed instructions index",
-                                                                                      -1);
+                                                                  new Variable<Integer>("Last executed instructions index",
+                                                                                        -1);
 
   ArrayList<InstructionInterface> mInitializedInstructionsList;
 
@@ -123,8 +122,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
                                                     .size()
                              + "\n");
         mLogFileWriter.write("Schedule items      "
-                             + mCurrentProgram.size()
-                             + "\n");
+                             + mCurrentProgram.size() + "\n");
 
         mLogFileWriter.write(new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())
                              + " (time point "
@@ -140,13 +138,12 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
       File lProgramFile = new File(getWorkingDirectory(),
                                    "program.txt");
-      ScheduleWriter writer =
-                            new ScheduleWriter(mCurrentProgram,
-                                               lProgramFile);
+      ScheduleWriter writer = new ScheduleWriter(mCurrentProgram,
+                                                 lProgramFile);
       writer.write();
 
       mInitializedInstructionsList =
-                                new ArrayList<InstructionInterface>();
+                                   new ArrayList<InstructionInterface>();
 
       LightSheetFastFusionProcessor lLightSheetFastFusionProcessor =
                                                                    mLightSheetMicroscope.getDevice(LightSheetFastFusionProcessor.class,
@@ -181,12 +178,11 @@ public class LightSheetTimelapse extends TimelapseBase implements
                                         cMaximumNumberOfAvailableStacks,
                                         cMaximumNumberOfLiveStacks);
 
-
       // Determine the next instruction
       mLastExecutedInstructionIndexVariable.set(mLastExecutedInstructionIndexVariable.get()
-                                              + 1);
+                                                + 1);
       if (mLastExecutedInstructionIndexVariable.get() > mCurrentProgram.size()
-                                                      - 1)
+                                                        - 1)
       {
         mLastExecutedInstructionIndexVariable.set(0);
       }
@@ -246,7 +242,6 @@ public class LightSheetTimelapse extends TimelapseBase implements
     }
   }
 
-
   public long getTimeOut()
   {
     return cTimeOut;
@@ -254,10 +249,12 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
   /**
    * Deprecated: use getCurrentProgram() instead
+   * 
    * @return current program as list of instructions
    */
   @Deprecated
-  public ArrayList<InstructionInterface> getListOfActivatedSchedulers() {
+  public ArrayList<InstructionInterface> getListOfActivatedSchedulers()
+  {
     return getCurrentProgram();
   }
 

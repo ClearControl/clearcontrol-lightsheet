@@ -20,9 +20,12 @@ public class FilterStacksInStackInterfaceContainerInstruction extends
 {
 
   private Variable<String> filter =
-                                  new Variable<String>("Filter (must contain one of the comma-separated)", "");
+                                  new Variable<String>("Filter (must contain one of the comma-separated)",
+                                                       "");
 
-  private Variable<Boolean> matchExactly = new Variable<Boolean>("Match exactly", true);
+  private Variable<Boolean> matchExactly =
+                                         new Variable<Boolean>("Match exactly",
+                                                               true);
 
   public FilterStacksInStackInterfaceContainerInstruction(DataWarehouse pDataWarehouse)
   {
@@ -48,8 +51,8 @@ public class FilterStacksInStackInterfaceContainerInstruction extends
       boolean containsAny = false;
       for (String mustContain : filters)
       {
-        if ((matchExactly.get() && key.compareTo(mustContain) == 0) ||
-                ((!matchExactly.get()) && key.contains(mustContain)))
+        if ((matchExactly.get() && key.compareTo(mustContain) == 0)
+            || ((!matchExactly.get()) && key.contains(mustContain)))
         {
           containsAny = true;
           break;
@@ -83,8 +86,9 @@ public class FilterStacksInStackInterfaceContainerInstruction extends
     return filter;
   }
 
-  public Variable<Boolean> getMatchExactly() {
-      return matchExactly;
+  public Variable<Boolean> getMatchExactly()
+  {
+    return matchExactly;
   }
 
   @Override

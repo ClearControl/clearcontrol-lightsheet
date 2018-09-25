@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
@@ -21,7 +20,6 @@ import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
-import clearcontrol.gui.jfx.var.checkbox.VariableCheckBox;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.MicroscopeInterface;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
@@ -246,7 +244,6 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         lRow++;
       }
 
-
       lRow = 10;
       {
         ComboBox lExistingScheduleTemplates;
@@ -263,8 +260,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
           lLoadScheduleTemplateBytton.setOnAction((e) -> {
             try
             {
-              mLightSheetTimelapse.getCurrentProgram()
-                                  .clear();
+              mLightSheetTimelapse.getCurrentProgram().clear();
               new ScheduleReader(lSchedulerList,
                                  (LightSheetMicroscope) mLightSheetTimelapse.getMicroscope(),
                                  getFile(lExistingScheduleTemplates.getValue()
@@ -468,12 +464,10 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
 
     }
 
-
     CustomGridPane lAdvancedOptionsGridPane =
                                             buildAdvancedOptionsGripPane();
     lAdvancedOptionsGridPane.addSeparator();
     int lRow = lAdvancedOptionsGridPane.getLastUsedRow();
-
 
     {
       MicroscopeInterface lMicroscopeInterface =

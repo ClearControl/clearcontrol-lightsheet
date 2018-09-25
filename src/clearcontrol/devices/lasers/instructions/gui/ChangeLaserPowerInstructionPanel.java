@@ -8,11 +8,12 @@ import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 09 2018
+ * Author: @haesleinhuepf 09 2018
  */
-public class ChangeLaserPowerInstructionPanel extends CustomGridPane {
-    public ChangeLaserPowerInstructionPanel(ChangeLaserPowerInstruction instruction) {
-        addDoubleField(instruction.getLaserPowerInMilliwatt(), 0);
-    }
+public class ChangeLaserPowerInstructionPanel extends CustomGridPane
+{
+  public ChangeLaserPowerInstructionPanel(ChangeLaserPowerInstruction instruction)
+  {
+    addDoubleField(instruction.getLaserPowerInMilliwatt(), 0);
+  }
 }

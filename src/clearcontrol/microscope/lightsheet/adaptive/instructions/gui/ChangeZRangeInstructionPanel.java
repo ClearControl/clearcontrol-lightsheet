@@ -8,13 +8,14 @@ import clearcontrol.microscope.lightsheet.adaptive.instructions.ChangeZRangeInst
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
- * 09 2018
+ * Author: @haesleinhuepf 09 2018
  */
-public class ChangeZRangeInstructionPanel extends CustomGridPane {
-    public ChangeZRangeInstructionPanel(ChangeZRangeInstruction instruction) {
-        addDoubleField(instruction.getMinZ(), 0);
-        addDoubleField(instruction.getMaxZ(), 1);
-        addDoubleField(instruction.getStepZ(), 2);
-    }
+public class ChangeZRangeInstructionPanel extends CustomGridPane
+{
+  public ChangeZRangeInstructionPanel(ChangeZRangeInstruction instruction)
+  {
+    addDoubleField(instruction.getMinZ(), 0);
+    addDoubleField(instruction.getMaxZ(), 1);
+    addDoubleField(instruction.getStepZ(), 2);
+  }
 }
