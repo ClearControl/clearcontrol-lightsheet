@@ -46,7 +46,7 @@ ext {
     versionsMap['clearcontrol']            = "0.16.13" // depends directly on halcyon, clearvolume, fastfuse, and _all_ devices adapters
 
     // Level 6:
-    versionsMap['clearcontrol-lightsheet'] = "1.28.1" // depends directly on clearcontrol, only
+    versionsMap['clearcontrol-lightsheet'] = "1.29.0" // depends directly on clearcontrol, only
 
 
     // Loads locale file: ~/.gradle/local.gradle

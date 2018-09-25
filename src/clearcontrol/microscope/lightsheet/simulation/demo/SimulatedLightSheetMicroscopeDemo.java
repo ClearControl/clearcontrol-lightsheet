@@ -14,8 +14,6 @@ import clearcontrol.core.concurrent.executors.AsynchronousExecutorFeature;
 import clearcontrol.core.concurrent.thread.ThreadSleep;
 import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
-import clearcontrol.devices.lasers.instructions.LaserOnOffInstruction;
-import clearcontrol.devices.lasers.instructions.LaserPowerInstruction;
 import clearcontrol.microscope.lightsheet.gui.LightSheetMicroscopeGUI;
 import clearcontrol.microscope.lightsheet.simulation.LightSheetMicroscopeSimulationDevice;
 import clearcontrol.microscope.lightsheet.simulation.SimulatedLightSheetMicroscope;

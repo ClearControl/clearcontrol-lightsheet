@@ -38,10 +38,6 @@ import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpti
 import clearcontrol.microscope.lightsheet.gui.LightSheetMicroscopeGUI;
 import clearcontrol.microscope.lightsheet.signalgen.LightSheetSignalGeneratorDevice;
 import clearcontrol.microscope.lightsheet.simulation.LightSheetMicroscopeSimulationDevice;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.LoadMirrorModesFromFolderInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.instructions.SequentialZernikesInstruction;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.ZernikeModeFactorBasedSpatialPhaseModulatorBase;
-import clearcontrol.microscope.lightsheet.spatialphasemodulation.slms.devices.sim.SpatialPhaseModulatorDeviceSimulator;
 import clearcontrol.microscope.lightsheet.state.ControlPlaneLayout;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.state.AcquisitionStateManager;
@@ -344,25 +340,6 @@ public class LightSheetMicroscopeDemo extends Application implements
                                     lAcquisitionState);
       }
 
-      ZernikeModeFactorBasedSpatialPhaseModulatorBase lSpatialPhaseModulatorDeviceBase =
-                                                                                       new SpatialPhaseModulatorDeviceSimulator("Simulated Spatial Phase Modulator Device",
-                                                                                                                                11,
-                                                                                                                                1,
-                                                                                                                                66);
-      lLightSheetMicroscope.addDevice(0,
-                                      lSpatialPhaseModulatorDeviceBase);
-
-      LoadMirrorModesFromFolderInstruction lLoadMirrorModesFromFolderScheduler =
-                                                                               new LoadMirrorModesFromFolderInstruction(lSpatialPhaseModulatorDeviceBase,
-                                                                                                                        lLightSheetMicroscope);
-      lLightSheetMicroscope.addDevice(0,
-                                      lLoadMirrorModesFromFolderScheduler);
-
-      SequentialZernikesInstruction lSequentialZernikesScheduler =
-                                                                 new SequentialZernikesInstruction(lSpatialPhaseModulatorDeviceBase);
-      lLightSheetMicroscope.addDevice(0,
-                                      lSequentialZernikesScheduler);
-
       // Adding calibrator:
 
       CalibrationEngine lCalibrator =
@@ -423,30 +400,6 @@ public class LightSheetMicroscopeDemo extends Application implements
       lMicroscopeGUI.waitForVisible(false, null, null);
 
       lMicroscopeGUI.disconnectGUI();
-
-      /*
-      if (false)
-      {
-        System.out.println("Start building queue");
-      
-        for (int i = 0; i < 128; i++)
-          lLightSheetMicroscope.addCurrentStateToQueue();
-        lLightSheetMicroscope.finalizeQueue();
-        System.out.println("finished building queue");
-      
-        while (lVisualizer.isVisible())
-        {
-          System.out.println("playQueue!");
-          final FutureBooleanList lPlayQueue = lLightSheetMicroscope.playQueue();
-      
-          System.out.print("waiting...");
-          final Boolean lBoolean = lPlayQueue.get();
-          System.out.print(" ...done!");
-          // System.out.println(lBoolean);
-          // Thread.sleep(4000);
-        }
-      }
-      else/**/
 
       assertTrue(lLightSheetMicroscope.close());
       if (lMicroscopeGUI != null)
