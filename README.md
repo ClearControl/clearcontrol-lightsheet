@@ -2,7 +2,13 @@
 
 ### ClearControl-lightsheet ###
 
-### How to build the project? ###
+### How to develop the project? ###
+Open pom.xml as project in your IDE
+
+To deploy it to your local maven repository, run
+
+mvn deploy
+
 
 ### Author(s) ###
 
