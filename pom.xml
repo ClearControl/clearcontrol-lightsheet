@@ -8,13 +8,13 @@
 	<parent>
 		<groupId>net.clearcontrol</groupId>
 		<artifactId>ClearParentPom</artifactId>
-		<version>0.6.8</version>
+		<version>0.6.15</version>
 		<relativePath />
 	</parent>
 
 	<groupId>net.clearcontrol</groupId>
 	<artifactId>clearcontrol-lightsheet</artifactId>
-	<version>1.30.2-m</version>
+	<version>1.30.5-m</version>
 
 	<name>clearcontrol-lightsheet</name>
 	<description>clearcontrol-lightsheet</description>
@@ -136,6 +136,22 @@
 
 	</dependencies>
 
+    <repositories>
+        <repository>
+            <id>hslh</id>
+            <url>http://dl.bintray.com/haesleinhuepf/snapshots</url>
+        </repository>
+    </repositories>
+
+	<distributionManagement>
+
+		<repository>
+			<id>bintray-haesleinhuepf-snapshots</id>
+			<name>bintray-snapshots</name>
+			<url>https://api.bintray.com/maven/haesleinhuepf/snapshots/clearcontrol-lightsheet/;publish=1</url>
+		</repository>
+
+	</distributionManagement>
 
 
 </project>
