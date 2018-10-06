@@ -12,13 +12,15 @@ import java.util.Date;
 import clearcontrol.core.concurrent.timing.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.instructions.ExecutableInstructionList;
+import clearcontrol.instructions.HasInstructions;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionEngine;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.containers.InstructionDurationContainer;
-import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
+import clearcontrol.instructions.io.ScheduleWriter;
 import clearcontrol.microscope.timelapse.TimelapseBase;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 
@@ -29,7 +31,7 @@ import clearcontrol.microscope.timelapse.TimelapseInterface;
  * @author royer
  * @author haesleinhuepf
  */
-public class LightSheetTimelapse extends TimelapseBase implements
+public class LightSheetTimelapse<M extends HasInstructions> extends TimelapseBase implements
                                  TimelapseInterface,
                                  LoggingFeature
 {
@@ -41,8 +43,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
 
   private final LightSheetMicroscope mLightSheetMicroscope;
 
-  private ArrayList<InstructionInterface> mCurrentProgram =
-                                                          new ArrayList<InstructionInterface>();
+  private ExecutableInstructionList<M> mCurrentProgram;
 
   private Variable<Integer> mLastExecutedInstructionIndexVariable =
                                                                   new Variable<Integer>("Last executed instructions index",
@@ -59,6 +60,7 @@ public class LightSheetTimelapse extends TimelapseBase implements
   public LightSheetTimelapse(LightSheetMicroscope pLightSheetMicroscope)
   {
     super(pLightSheetMicroscope);
+    mCurrentProgram = new ExecutableInstructionList<M>((M)pLightSheetMicroscope);
     mLightSheetMicroscope = pLightSheetMicroscope;
 
     this.getMaxNumberOfTimePointsVariable().set(999999L);
@@ -262,11 +264,17 @@ public class LightSheetTimelapse extends TimelapseBase implements
    *
    * @return current program as list of instructions
    */
-  public ArrayList<InstructionInterface> getCurrentProgram()
+  public ExecutableInstructionList<M> getCurrentProgram()
   {
     return mCurrentProgram;
   }
 
+  /**
+   * Use microscope.getInstructions()
+   * @param pMustContainStrings
+   * @return
+   */
+  @Deprecated
   public ArrayList<InstructionInterface> getListOfAvailableSchedulers(String... pMustContainStrings)
   {
     ArrayList<InstructionInterface> lListOfAvailabeSchedulers =
