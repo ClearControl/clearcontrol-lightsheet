@@ -339,8 +339,9 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         "Laser:",
         "Memory:",
         "Post-processing:",
-        "Smart:",
+        "Remote:",
 
+        "Smart:",
         "Timing:",
         "Visualisation:" };
 
@@ -357,6 +358,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         MicroscopeNodeType.Scripting.getIcon(),
         MicroscopeNodeType.Scripting.getIcon(),
 
+        MicroscopeNodeType.Scripting.getIcon(),
         MicroscopeNodeType.Scripting.getIcon(),
         MicroscopeNodeType.StackDisplay3D.getIcon() };
 
