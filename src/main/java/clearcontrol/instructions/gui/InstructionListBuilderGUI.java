@@ -46,7 +46,8 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
     ExecutableInstructionList<M> managedProgram;
 
     public InstructionListBuilderGUI(ExecutableInstructionList<M> instructionList) {
-        CustomGridPane lSchedulerChecklistGridPane = this;
+        CustomGridPane lSchedulerChecklistGridPane = new CustomGridPane();
+
         managedProgram = instructionList;
 
     TitledPane lTitledPane =

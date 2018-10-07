@@ -69,6 +69,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       ExecutableInstructionList<LightSheetMicroscope> list = pLightSheetTimelapse.getCurrentProgram();
       CustomGridPane lSchedulerChecklistGridPane = new InstructionListBuilderGUI<LightSheetMicroscope>(list);
 
+      add(lSchedulerChecklistGridPane, 0, mRow, 4, 1);
 
     }
 

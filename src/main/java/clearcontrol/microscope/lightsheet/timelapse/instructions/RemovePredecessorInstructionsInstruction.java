@@ -33,7 +33,7 @@ public class RemovePredecessorInstructionsInstruction extends LightSheetMicrosco
     public boolean initialize() {
         ArrayList<InstructionInterface> program = getLightSheetMicroscope().getTimelapse().getCurrentProgram();
 
-        int i = getLightSheetMicroscope().getTimelapse().getLastExecutedSchedulerIndexVariable().get();
+        int i = (int) getLightSheetMicroscope().getTimelapse().getLastExecutedSchedulerIndexVariable().get();
         if (removeMyselfAsWell.get()) {
             program.remove(i);
         }
