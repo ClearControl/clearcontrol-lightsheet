@@ -1,6 +1,9 @@
 package clearcontrol.microscope.lightsheet.gui;
 
 import java.util.ArrayList;
+
+import clearcontrol.microscope.lightsheet.timelapse.instructionlist.InstructionList;
+import clearcontrol.microscope.lightsheet.timelapse.instructionlist.gui.InstructionListGUI;
 import javafx.stage.Stage;
 
 import clearcontrol.gui.video.video2d.Stack2DDisplay;
@@ -111,6 +114,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
     addPanelMappingEntry(LightSheetFastFusionProcessor.class,
                          LightSheetFastFusionProcessorPanel.class,
                          MicroscopeNodeType.Other);
+
+    addPanelMappingEntry(InstructionList.class,
+            InstructionListGUI.class,
+            MicroscopeNodeType.Other);
 
     ArrayList<Stack2DDisplay> lDisplayDeviceList =
                                                  get2DDisplayDeviceList();
