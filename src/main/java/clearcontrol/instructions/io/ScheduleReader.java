@@ -1,13 +1,15 @@
-package clearcontrol.microscope.lightsheet.timelapse.io;
+package clearcontrol.instructions.io;
 
 import java.io.*;
 import java.util.ArrayList;
 
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.instructions.HasInstructions;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
+import clearcontrol.microscope.MicroscopeBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 
 /**
@@ -18,14 +20,14 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) April 2018
  */
-public class ScheduleReader implements LoggingFeature
+public class ScheduleReader<M extends HasInstructions>  implements LoggingFeature
 {
   private final ArrayList<InstructionInterface> mSchedulerList;
-  private final LightSheetMicroscope mLightSheetMicroscope;
+  private final M mLightSheetMicroscope;
   private final File mSourceFile;
 
   public ScheduleReader(ArrayList<InstructionInterface> pSchedulerList,
-                        LightSheetMicroscope pLightSheetMicroscope,
+                        M pLightSheetMicroscope,
                         File pSourceFile)
   {
     mSchedulerList = pSchedulerList;
@@ -84,7 +86,7 @@ public class ScheduleReader implements LoggingFeature
                                                                        "");
 
       InstructionInterface lInstruction =
-                                        mLightSheetMicroscope.getSchedulerDevice(lSearchForName);
+                                        mLightSheetMicroscope.getInstruction(lSearchForName);
       if (lInstruction != null)
       {
         lInstruction = lInstruction.copy();

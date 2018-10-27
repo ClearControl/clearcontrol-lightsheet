@@ -1,4 +1,4 @@
-package clearcontrol.microscope.lightsheet.timelapse.io;
+package clearcontrol.instructions.io;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
+import clearcontrol.microscope.MicroscopeBase;
 
 /**
  * The SchedulerWriter writes a given list of instructions to disc.

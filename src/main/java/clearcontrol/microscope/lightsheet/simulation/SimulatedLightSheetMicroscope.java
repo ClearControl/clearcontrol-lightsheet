@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.simulation;
 
 import java.util.ArrayList;
 
+import clearcontrol.microscope.lightsheet.timelapse.instructionlist.InstructionList;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import clearcl.ClearCLContext;
@@ -729,6 +730,8 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new ChangeZRangeInstruction(this));
 
     addDevice(0, new TimelapseStopInstruction(this));
+
+    addDevice(0, new InstructionList(this));
 
     addDefaultProgram();
   }

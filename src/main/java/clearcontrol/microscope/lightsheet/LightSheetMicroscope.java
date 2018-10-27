@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import clearcl.ClearCLContext;
 import clearcontrol.core.concurrent.future.FutureBooleanList;
@@ -8,6 +9,7 @@ import clearcontrol.core.device.switches.SwitchingDeviceInterface;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.devices.cameras.StackCameraDeviceInterface;
 import clearcontrol.devices.lasers.LaserDeviceInterface;
+import clearcontrol.instructions.HasInstructions;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.MicroscopeBase;
 import clearcontrol.microscope.adaptive.AdaptiveEngine;
@@ -44,7 +46,8 @@ import clearcontrol.microscope.timelapse.TimelapseInterface;
 public class LightSheetMicroscope extends
                                   MicroscopeBase<LightSheetMicroscope, LightSheetMicroscopeQueue>
                                   implements
-                                  LightSheetMicroscopeInterface
+                                  LightSheetMicroscopeInterface,
+                                  HasInstructions
 {
   private LightSheetFastFusionProcessor mStackFusionProcessor;
   private DataWarehouse mDataWarehouse;
@@ -215,7 +218,7 @@ public class LightSheetMicroscope extends
   public TimelapseInterface addTimelapse()
   {
     TimelapseInterface lTimelapseInterface =
-                                           new LightSheetTimelapse(this);
+                                           new LightSheetTimelapse<LightSheetMicroscope>(this);
     addDevice(0, lTimelapseInterface);
     return lTimelapseInterface;
   }
@@ -412,11 +415,53 @@ public class LightSheetMicroscope extends
     return mDataWarehouse;
   }
 
+
   public InstructionInterface getSchedulerDevice(String... pMustContainStrings)
+  {
+    return getInstruction(pMustContainStrings);
+  }
+
+  public InstructionInterface getInstruction(String... pMustContainStrings)
   {
     return getDevice(InstructionInterface.class,
                      0,
                      pMustContainStrings);
+  }
+
+  public ArrayList<InstructionInterface> getInstructions(String... pMustContainStrings)
+  {
+    ArrayList<InstructionInterface> lListOfAvailabeSchedulers =
+            new ArrayList<>();
+    for (InstructionInterface lScheduler : getDevices(InstructionInterface.class))
+    {
+      boolean lNamePatternMatches = true;
+      for (String part : pMustContainStrings)
+      {
+        if (!lScheduler.toString()
+                .toLowerCase()
+                .contains(part.toLowerCase()))
+        {
+          lNamePatternMatches = false;
+          break;
+        }
+      }
+      if (lNamePatternMatches)
+      {
+        lListOfAvailabeSchedulers.add(lScheduler);
+      }
+    }
+
+    lListOfAvailabeSchedulers.sort(new Comparator<InstructionInterface>()
+    {
+      @Override
+      public int compare(InstructionInterface o1,
+                         InstructionInterface o2)
+      {
+        return o1.getName().compareTo(o2.getName());
+      }
+    });
+
+    return lListOfAvailabeSchedulers;
   }
 
   public <O extends Object> O getDevice(Class<O> pClass,

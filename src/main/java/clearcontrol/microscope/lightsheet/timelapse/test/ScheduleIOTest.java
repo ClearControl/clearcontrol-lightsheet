@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import clearcl.imagej.ClearCLIJ;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.simulation.SimulatedLightSheetMicroscope;
-import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleReader;
-import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
+import clearcontrol.instructions.io.ScheduleReader;
+import clearcontrol.instructions.io.ScheduleWriter;
 
 import org.junit.Test;
 

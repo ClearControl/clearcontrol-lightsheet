@@ -5,7 +5,7 @@ import java.io.File;
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
-import clearcontrol.microscope.lightsheet.timelapse.io.ScheduleWriter;
+import clearcontrol.instructions.io.ScheduleWriter;
 
 /**
  * The TimelapseLogInstruction writes the current time lapse instruction list to
