@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import coremem.ContiguousMemoryInterface;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import clearcontrol.core.log.LoggingFeature;
@@ -21,7 +22,7 @@ import clearcontrol.stack.imglib2.StackToImgConverter;
  * (http://mpi-cbg.de) February 2018
  */
 public abstract class ImagerBase implements
-                                 ImagerInterface,
+        LightSheetImagerInterface,
                                  LoggingFeature
 {
   // input
@@ -42,8 +43,8 @@ public abstract class ImagerBase implements
 
   protected double mExposureTimeInSeconds = 0.05;
 
-  private int mImageWidth = 512;
-  private int mImageHeight = 512;
+  private long mImageWidth = 512;
+  private long mImageHeight = 512;
 
   // output
   StackInterface mResultImage = null;
@@ -71,7 +72,7 @@ public abstract class ImagerBase implements
     }
 
     lQueue.setFullROI();
-    lQueue.setCenteredROI(mImageWidth, mImageHeight);
+    lQueue.setCenteredROI((int)mImageWidth, (int)mImageHeight);
 
     lQueue.setExp(mExposureTimeInSeconds);
 
@@ -148,7 +149,23 @@ public abstract class ImagerBase implements
     return true;
   }
 
-  public StackInterface acquire()
+  private ContiguousMemoryInterface memoryInterface;
+  public void setMemoryInterface(ContiguousMemoryInterface memoryInterface) {
+    this.memoryInterface = memoryInterface;
+  }
+
+  public boolean acquire() {
+    StackInterface stackInterface = acquireStack();
+    setMemoryInterface(stackInterface.getContiguousMemory());
+    return true;
+  }
+
+  /**
+   * Deprecated: use setMemoryInterface() and acquire() instead
+   * @return
+   */
+  @Deprecated
+  public StackInterface acquireStack()
   {
     image();
     return mResultImage;
@@ -227,12 +244,12 @@ public abstract class ImagerBase implements
     this.mDetectionArmIndex = pDetectionArmIndex;
   }
 
-  public void setImageHeight(int pImageHeight)
+  public void setImageHeight(long pImageHeight)
   {
     this.mImageHeight = pImageHeight;
   }
 
-  public void setImageWidth(int pImageWidth)
+  public void setImageWidth(long pImageWidth)
   {
     this.mImageWidth = pImageWidth;
   }
@@ -258,4 +275,19 @@ public abstract class ImagerBase implements
     mExposureTimeInSeconds = pExposureTimeInSeconds;
   }
 
+  public boolean connect() {
+    return true;
+  }
+
+  public boolean disconnect() {
+    return true;
+  }
+
+  public void setBinning(int binning) {
+
+  }
+
+  public double getPixelSizeInMicrons() {
+    return getLightSheetMicroscope().getDetectionArm(0).getPixelSizeInMicrometerVariable().get();
+  }
 }

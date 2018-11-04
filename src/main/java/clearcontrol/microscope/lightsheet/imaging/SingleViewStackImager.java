@@ -7,13 +7,14 @@ import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcesso
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
+import coremem.ContiguousMemoryInterface;
 
 /**
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) April 2018
  */
 public class SingleViewStackImager implements
-                                   ImagerInterface,
+        LightSheetImagerInterface,
                                    LoggingFeature
 {
   private LightSheetMicroscope mLightSheetMicroscope;
@@ -24,8 +25,8 @@ public class SingleViewStackImager implements
   protected double mMaxZ = 0;
   private double mSliceDistance = 2.0;
   private double mExposureTimeInSeconds = 0.01;
-  private int mImageHeight;
-  private int mImageWidth;
+  private long mImageHeight;
+  private long mImageWidth;
 
   private int mLightSheetIndex = 0;
   private int mDetectionArmIndex = 0;
@@ -46,7 +47,24 @@ public class SingleViewStackImager implements
 
   }
 
-  public StackInterface acquire()
+
+  private ContiguousMemoryInterface memoryInterface;
+  public void setMemoryInterface(ContiguousMemoryInterface memoryInterface) {
+    this.memoryInterface = memoryInterface;
+  }
+
+  public boolean acquire() {
+    StackInterface stackInterface = acquireStack();
+    setMemoryInterface(stackInterface.getContiguousMemory());
+    return true;
+  }
+
+  /**
+   * Deprecated: use setMemoryInterface() and acquire() instead
+   * @return
+   */
+  @Deprecated
+  public StackInterface acquireStack()
   {
 
     InterpolatedAcquisitionState lCurrentState =
@@ -119,12 +137,12 @@ public class SingleViewStackImager implements
     this.mExposureTimeInSeconds = pExposureTimeInSeconds;
   }
 
-  public void setImageHeight(int pImageHeight)
+  public void setImageHeight(long pImageHeight)
   {
     this.mImageHeight = pImageHeight;
   }
 
-  public void setImageWidth(int pImageWidth)
+  public void setImageWidth(long pImageWidth)
   {
     this.mImageWidth = pImageWidth;
   }
@@ -137,5 +155,22 @@ public class SingleViewStackImager implements
   public void setDetectionArmIndex(int mDetectionArmIndex)
   {
     this.mDetectionArmIndex = mDetectionArmIndex;
+  }
+
+
+  public boolean connect() {
+    return true;
+  }
+
+  public boolean disconnect() {
+    return true;
+  }
+
+  public void setBinning(int binning) {
+
+  }
+
+  public double getPixelSizeInMicrons() {
+    return getLightSheetMicroscope().getDetectionArm(0).getPixelSizeInMicrometerVariable().get();
   }
 }

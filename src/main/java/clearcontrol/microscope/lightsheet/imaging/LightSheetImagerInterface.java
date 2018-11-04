@@ -11,15 +11,15 @@ import clearcontrol.stack.StackInterface;
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) March 2018
  */
-public interface ImagerInterface
+public interface LightSheetImagerInterface extends clearcontrol.devices.cameras.ImagerInterface
 {
-  void setExposureTimeInSeconds(double pExposureTimeInSeconds);
-
   LightSheetMicroscope getLightSheetMicroscope();
 
-  void setImageWidth(int pImageWidth);
 
-  void setImageHeight(int pImageHeight);
-
-  StackInterface acquire();
+  /**
+   * Deprecated: use setMemoryInterface() and acquire() instead
+   * @return
+   */
+  @Deprecated
+  StackInterface acquireStack();
 }

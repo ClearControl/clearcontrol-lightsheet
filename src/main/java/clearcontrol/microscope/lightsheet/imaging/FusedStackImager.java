@@ -14,6 +14,7 @@ import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.state.AcquisitionType;
 import clearcontrol.stack.StackInterface;
+import coremem.ContiguousMemoryInterface;
 
 /**
  * The fused imager is a sychronous imager. After calling its acquire method, it
@@ -24,7 +25,7 @@ import clearcontrol.stack.StackInterface;
  * (http://mpi-cbg.de) March 2018
  */
 public class FusedStackImager implements
-                              ImagerInterface,
+        LightSheetImagerInterface,
                               LoggingFeature
 {
   private LightSheetMicroscope mLightSheetMicroscope;
@@ -35,8 +36,8 @@ public class FusedStackImager implements
   private double mMaxZ = 0;
   private double mSliceDistance = 2.0;
   private double mExposureTimeInSeconds = 0.01;
-  private int mImageHeight;
-  private int mImageWidth;
+  private long mImageHeight;
+  private long mImageWidth;
 
   public FusedStackImager(LightSheetMicroscope pLightSheetMicroscope)
   {
@@ -54,7 +55,24 @@ public class FusedStackImager implements
 
   }
 
-  public StackInterface acquire()
+
+  private ContiguousMemoryInterface memoryInterface;
+  public void setMemoryInterface(ContiguousMemoryInterface memoryInterface) {
+    this.memoryInterface = memoryInterface;
+  }
+
+  public boolean acquire() {
+    StackInterface stackInterface = acquireStack();
+    setMemoryInterface(stackInterface.getContiguousMemory());
+    return true;
+  }
+
+  /**
+   * Deprecated: use setMemoryInterface() and acquire() instead
+   * @return
+   */
+  @Deprecated
+  public StackInterface acquireStack()
   {
 
     // set the imaging state
@@ -157,13 +175,30 @@ public class FusedStackImager implements
     this.mExposureTimeInSeconds = pExposureTimeInSeconds;
   }
 
-  public void setImageHeight(int pImageHeight)
+  public void setImageHeight(long pImageHeight)
   {
     this.mImageHeight = pImageHeight;
   }
 
-  public void setImageWidth(int pImageWidth)
+  public void setImageWidth(long pImageWidth)
   {
     this.mImageWidth = pImageWidth;
+  }
+
+
+  public boolean connect() {
+    return true;
+  }
+
+  public boolean disconnect() {
+    return true;
+  }
+
+  public void setBinning(int binning) {
+
+  }
+
+  public double getPixelSizeInMicrons() {
+    return getLightSheetMicroscope().getDetectionArm(0).getPixelSizeInMicrometerVariable().get();
   }
 }
