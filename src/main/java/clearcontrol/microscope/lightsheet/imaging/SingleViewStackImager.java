@@ -55,7 +55,9 @@ public class SingleViewStackImager implements
 
   public boolean acquire() {
     StackInterface stackInterface = acquireStack();
-    setMemoryInterface(stackInterface.getContiguousMemory());
+    memoryInterface.copyFrom(stackInterface.getContiguousMemory());
+    stackInterface.release();
+
     return true;
   }
 

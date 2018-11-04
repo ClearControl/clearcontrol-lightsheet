@@ -8,13 +8,13 @@
 	<parent>
 		<groupId>net.clearcontrol</groupId>
 		<artifactId>ClearParentPom</artifactId>
-		<version>0.6.23</version>
+		<version>0.6.24</version>
 		<relativePath />
 	</parent>
 
 	<groupId>net.clearcontrol</groupId>
 	<artifactId>clearcontrol-lightsheet</artifactId>
-	<version>1.32.0-m</version>
+	<version>1.32.1-m</version>
 
 	<name>clearcontrol-lightsheet</name>
 	<description>clearcontrol-lightsheet</description>
