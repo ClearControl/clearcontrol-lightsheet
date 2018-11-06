@@ -33,4 +33,11 @@ class ImageJSingleton
       sImageJ.setVisible(true);
   }
 
+  private static net.imagej.ImageJ sImageJ2 = null;
+  public net.imagej.ImageJ getImageJ2Instance() {
+    if (sImageJ2 == null)
+      sImageJ2 = new net.imagej.ImageJ();
+    return sImageJ2;
+  }
+
 }
