@@ -70,7 +70,7 @@ public class FilterStacksInStackInterfaceContainerInstruction extends
       container.remove(keyToRemove);
     }
 
-    return false;
+    return true;
   }
 
   @Override
