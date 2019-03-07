@@ -2,13 +2,13 @@ package clearcontrol.microscope.lightsheet.postprocessing.fusion;
 
 import java.util.ArrayList;
 
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
+import net.haesleinhuepf.clij.clearcl.ClearCLImage;
+import net.haesleinhuepf.clij.clearcl.enums.ImageChannelDataType;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
-import clearcl.ClearCLImage;
-import clearcl.enums.ImageChannelDataType;
-import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
-import clearcl.imagej.utilities.ImageTypeConverter;
+
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
@@ -87,7 +87,7 @@ public class TenengradFusionPerCameraInstruction extends
   @Override
   public boolean enqueue(long pTimePoint)
   {
-    ClearCLIJ clij = ClearCLIJ.getInstance();
+    CLIJ clij = CLIJ.getInstance();
 
     StackInterfaceContainer containerIn =
                                         getLightSheetMicroscope().getDataWarehouse()
@@ -116,16 +116,19 @@ public class TenengradFusionPerCameraInstruction extends
           // Get UnsignedShort stack from container
           StackInterface stack = containerIn.get(key);
           metaData = stack.getMetaData().clone();
-          RandomAccessibleInterval<UnsignedShortType> rai =
-                                                          clij.converter(stack)
-                                                              .getRandomAccessibleInterval();
+          ClearCLImage imageOfAnyType = clij.convert(stack, ClearCLImage.class);
 
           // Convert it to a float CLImage
           ClearCLImage clImage =
                                clij.createCLImage(stack.getDimensions(),
                                                   ImageChannelDataType.Float);
-          ImageTypeConverter.copyRandomAccessibleIntervalToClearCLImage(rai,
-                                                                        clImage);
+
+          //ImageTypeConverter.copyRandomAccessibleIntervalToClearCLImage(rai,
+          //                                                              clImage);
+
+          clij.op().copy(imageOfAnyType, clImage);
+
+          imageOfAnyType.close();
 
           // store the float image in the list;
           images.add(clImage);
@@ -153,17 +156,15 @@ public class TenengradFusionPerCameraInstruction extends
       info("Fusing " + images.size() + " images");
 
       // fusion
-      Kernels.tenengradFusion(clij,
-                              fusionResult,
+      clij.op().tenengradFusion(fusionResult,
                               weightBlurSigmas,
                               weightExponent.get().floatValue(),
                               imagesIn);
 
       // Result conversion / storage
-      Kernels.copy(clij, fusionResult, fusionResultAsUnsignedShort);
+      clij.op().copy(fusionResult, fusionResultAsUnsignedShort);
       StackInterface result =
-                            clij.converter(fusionResultAsUnsignedShort)
-                                .getStack();
+                            clij.convert(fusionResultAsUnsignedShort, StackInterface.class);
       result.setMetaData(metaData);
       result.getMetaData().removeEntry(MetaDataChannel.Channel);
       result.getMetaData().addEntry(MetaDataChannel.Channel,

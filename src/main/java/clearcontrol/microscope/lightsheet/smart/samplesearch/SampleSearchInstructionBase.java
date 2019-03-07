@@ -2,9 +2,6 @@ package clearcontrol.microscope.lightsheet.smart.samplesearch;
 
 import java.util.ArrayList;
 
-import clearcl.ClearCLImage;
-import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.devices.stages.kcube.instructions.SpaceTravelInstruction;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -13,6 +10,8 @@ import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstr
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.state.spatial.Position;
 import clearcontrol.stack.StackInterface;
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLImage;
 
 /**
  * The SampleSearchInstructionBase serves as base for all instructions
@@ -88,10 +87,10 @@ public abstract class SampleSearchInstructionBase extends
                                              .doubleValue());
       StackInterface lStack = lImager.acquireStack();
 
-      ClearCLIJ clij = ClearCLIJ.getInstance();
+      CLIJ clij = CLIJ.getInstance();
       ClearCLImage clImage =
-                            clij.converter(lStack).getClearCLImage();
-      double sum = Kernels.sumPixels(clij, clImage);
+                            clij.convert(lStack, ClearCLImage.class);
+      double sum = clij.op().sumPixels(clImage);
       clImage.close();
       double average = sum / (acquisitionState.getImageWidthVariable()
                                     .get()

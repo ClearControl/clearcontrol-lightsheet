@@ -1,8 +1,5 @@
 package clearcontrol.microscope.lightsheet.imaging.sequential;
 
-import clearcl.ClearCLImage;
-import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
@@ -12,6 +9,9 @@ import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstr
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.stacks.MetaDataView;
 import clearcontrol.stack.StackInterface;
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLImage;
+import net.haesleinhuepf.clij.utilities.CLKernelExecutor;
 
 /**
  * SequentialSingleCameraFusionInstruction
@@ -74,7 +74,7 @@ public class SequentialSingleCameraFusionInstruction extends
   @Override
   public boolean enqueue(long pTimePoint)
   {
-    ClearCLIJ clij = ClearCLIJ.getInstance();
+    CLIJ clij = CLIJ.getInstance();
 
     SequentialImageDataContainer container =
                                            getLightSheetMicroscope().getDataWarehouse()
@@ -89,7 +89,7 @@ public class SequentialSingleCameraFusionInstruction extends
     for (int l = 0; l < numberOfLightSheets; l++)
     {
       stack = container.get("C" + cameraIndex.get() + "L" + l);
-      inputImages[l] = clij.converter(stack).getClearCLImage();
+      inputImages[l] = clij.convert(stack, ClearCLImage.class);
     }
 
     float[] sigmas = new float[]
@@ -99,9 +99,9 @@ public class SequentialSingleCameraFusionInstruction extends
 
     ClearCLImage outputImage = clij.createCLImage(inputImages[0]);
 
-    Kernels.tenengradFusion(clij, outputImage, sigmas, inputImages);
+    clij.op().tenengradFusion(outputImage, sigmas, inputImages);
 
-    StackInterface result = clij.converter(outputImage).getStack();
+    StackInterface result = clij.convert(outputImage, StackInterface.class);
     if (stack != null)
     {
       result.setMetaData(stack.getMetaData().clone());

@@ -2,7 +2,6 @@ package clearcontrol.microscope.lightsheet.warehouse.containers.io;
 
 import java.io.File;
 
-import clearcl.imagej.ClearCLIJ;
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
@@ -14,6 +13,7 @@ import clearcontrol.stack.StackInterface;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Calibration;
+import net.haesleinhuepf.clij.CLIJ;
 
 /**
  * The WriteStackInterfaceContainerAsTifToDiscInstruction writes a container to
@@ -134,9 +134,8 @@ public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
 
       int lDigits = 6;
 
-      ImagePlus lConvertedImp = ClearCLIJ.getInstance()
-                                         .converter(lStack)
-                                         .getImagePlus();
+      ImagePlus lConvertedImp = CLIJ.getInstance()
+                                         .convert(lStack, ImagePlus.class);
       if (lStack.getMetaData() != null)
       {
         Calibration lCalibration = lConvertedImp.getCalibration();

@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.postprocessing.visualisation.instruct
 
 import java.time.Duration;
 
+import net.haesleinhuepf.clij.CLIJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.RealType;
@@ -9,7 +10,6 @@ import bdv.tools.brightness.ConverterSetup;
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvOptions;
-import clearcl.imagej.ClearCLIJ;
 import clearcontrol.core.concurrent.timing.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
@@ -61,11 +61,9 @@ public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceConta
                                           .getOldestContainer(getStackInterfaceContainerClass());
     StackInterface stack = getImageFromContainer(lContainer);
 
-    ClearCLIJ clij = ClearCLIJ.getInstance();
+    CLIJ clij = CLIJ.getInstance();
 
-    RandomAccessibleInterval<P> newRai =
-                                       clij.converter(stack)
-                                           .getRandomAccessibleInterval();
+    RandomAccessibleInterval<P> newRai = clij.convert(stack, RandomAccessibleInterval.class);
 
     if (rai == null || rai.dimension(0) != newRai.dimension(0)
         || rai.dimension(1) != newRai.dimension(1)

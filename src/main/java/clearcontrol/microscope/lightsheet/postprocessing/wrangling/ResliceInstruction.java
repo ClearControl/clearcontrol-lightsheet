@@ -1,14 +1,13 @@
 package clearcontrol.microscope.lightsheet.postprocessing.wrangling;
 
-import clearcl.ClearCLImage;
-import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.ProcessAllStacksInCurrentContainerInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLImage;
 
 /**
  * ResliceInstruction
@@ -35,39 +34,39 @@ public class ResliceInstruction extends ProcessAllStacksInCurrentContainerInstru
 
     protected StackInterface processStack(StackInterface stack) {
 
-        ClearCLIJ clij = ClearCLIJ.getInstance();
-        ClearCLImage originalCL = clij.converter(stack).getClearCLImage();
+        CLIJ clij = CLIJ.getInstance();
+        ClearCLImage originalCL = clij.convert(stack, ClearCLImage.class);
         ClearCLImage reslicedCL = null;
 
         StackMetaData metaData = stack.getMetaData().clone();
         if (direction.get() == LEFT) {
             reslicedCL = clij.createCLImage(new long[] {originalCL.getHeight(), originalCL.getDepth(), originalCL.getWidth()}, originalCL.getChannelDataType());
-            Kernels.resliceLeft(clij, originalCL, reslicedCL);
+            clij.op().resliceLeft(originalCL, reslicedCL);
             double temp = metaData.getVoxelDimX();
             metaData.setVoxelDimX(metaData.getVoxelDimY());
             metaData.setVoxelDimY(metaData.getVoxelDimZ());
             metaData.setVoxelDimZ(temp);
         } else if (direction.get() == RIGHT) {
             reslicedCL = clij.createCLImage(new long[] {originalCL.getHeight(), originalCL.getDepth(), originalCL.getWidth()}, originalCL.getChannelDataType());
-            Kernels.resliceRight(clij, originalCL, reslicedCL);
+            clij.op().resliceRight(originalCL, reslicedCL);
             double temp = metaData.getVoxelDimX();
             metaData.setVoxelDimX(metaData.getVoxelDimY());
             metaData.setVoxelDimY(metaData.getVoxelDimZ());
             metaData.setVoxelDimZ(temp);
         } else if (direction.get() == TOP) {
             reslicedCL = clij.createCLImage(new long[] {originalCL.getWidth(), originalCL.getDepth(), originalCL.getHeight()}, originalCL.getChannelDataType());
-            Kernels.resliceTop(clij, originalCL, reslicedCL);
+            clij.op().resliceTop(originalCL, reslicedCL);
             double temp = metaData.getVoxelDimY();
             metaData.setVoxelDimY(metaData.getVoxelDimZ());
             metaData.setVoxelDimZ(temp);
         } else { // Bottom
             reslicedCL = clij.createCLImage(new long[] {originalCL.getWidth(), originalCL.getDepth(), originalCL.getHeight()}, originalCL.getChannelDataType());
-            Kernels.resliceBottom(clij, originalCL, reslicedCL);
+            clij.op().resliceBottom(originalCL, reslicedCL);
             double temp = metaData.getVoxelDimY();
             metaData.setVoxelDimY(metaData.getVoxelDimZ());
             metaData.setVoxelDimZ(temp);
         }
-        StackInterface resultStack = clij.converter(reslicedCL).getStack();
+        StackInterface resultStack = clij.convert(reslicedCL, StackInterface.class);
         resultStack.setMetaData(metaData);
         originalCL.close();
         reslicedCL.close();

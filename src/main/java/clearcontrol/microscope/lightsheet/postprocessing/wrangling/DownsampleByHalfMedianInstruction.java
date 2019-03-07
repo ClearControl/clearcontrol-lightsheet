@@ -1,12 +1,11 @@
 package clearcontrol.microscope.lightsheet.postprocessing.wrangling;
 
-import clearcl.ClearCLImage;
-import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
 import clearcontrol.microscope.lightsheet.postprocessing.ProcessAllStacksInCurrentContainerInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLImage;
 
 /**
  * DownsampleByHalfMedianInstruction
@@ -23,13 +22,13 @@ public class DownsampleByHalfMedianInstruction  extends ProcessAllStacksInCurren
 
     @Override
     protected StackInterface processStack(StackInterface stack) {
-        ClearCLIJ clij = ClearCLIJ.getInstance();
-        ClearCLImage inputCL = clij.converter(stack).getClearCLImage();
+        CLIJ clij = CLIJ.getInstance();
+        ClearCLImage inputCL = clij.convert(stack, ClearCLImage.class);
         ClearCLImage outputCL3D = clij.createCLImage(new long[]{inputCL.getWidth() / 2, inputCL.getHeight() / 2, inputCL.getDepth()}, inputCL.getChannelDataType());
 
-        Kernels.downsampleSliceBySliceHalfMedian(clij, inputCL, outputCL3D);
+        clij.op().downsampleSliceBySliceHalfMedian(inputCL, outputCL3D);
 
-        StackInterface resultStack = clij.converter(outputCL3D).getStack();
+        StackInterface resultStack = clij.convert(outputCL3D, StackInterface.class);
         StackMetaData metaData = stack.getMetaData().clone();
         if (metaData != null) {
             metaData.setVoxelDimX(metaData.getVoxelDimX() * 2);

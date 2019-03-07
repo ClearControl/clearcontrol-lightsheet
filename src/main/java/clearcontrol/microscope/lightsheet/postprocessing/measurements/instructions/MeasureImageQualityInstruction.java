@@ -6,15 +6,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLImage;
+import net.haesleinhuepf.clij.clearcl.enums.ImageChannelDataType;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import autopilot.image.DoubleArrayImage;
 import autopilot.measures.FocusMeasures;
-import clearcl.ClearCLImage;
-import clearcl.enums.ImageChannelDataType;
-import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
+
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.InstructionInterface;
@@ -124,20 +124,18 @@ public class MeasureImageQualityInstruction extends
       return false;
     }
 
-    ClearCLIJ clij = ClearCLIJ.getInstance();
+    CLIJ clij = CLIJ.getInstance();
 
     // todo: conversion without GPU should be faster...
-    ClearCLImage lUnsignedShortImage = clij.converter(lStack)
-                                           .getClearCLImage();
+    ClearCLImage lUnsignedShortImage = clij.convert(lStack, ClearCLImage.class);
     ClearCLImage lFloatImage =
                              clij.createCLImage(lUnsignedShortImage.getDimensions(),
                                                 ImageChannelDataType.Float);
 
-    Kernels.copy(clij, lUnsignedShortImage, lFloatImage);
+    clij.op().copy(lUnsignedShortImage, lFloatImage);
 
     RandomAccessibleInterval<FloatType> floatData =
-                                                  (RandomAccessibleInterval<FloatType>) clij.converter(lFloatImage)
-                                                                                            .getRandomAccessibleInterval();
+                                                  (RandomAccessibleInterval<FloatType>) clij.convert(lFloatImage, RandomAccessibleInterval.class);
 
     lUnsignedShortImage.close();
     lFloatImage.close();
