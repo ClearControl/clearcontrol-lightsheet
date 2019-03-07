@@ -1,8 +1,5 @@
 package clearcontrol.microscope.lightsheet.postprocessing.processing;
 
-import clearcl.ClearCLImage;
-import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
@@ -11,6 +8,8 @@ import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
 import clearcontrol.stack.StackInterface;
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 
 /**
  * The CropInstruction takes a StackInterfaceContainer from the DataWarehouse,
@@ -93,23 +92,21 @@ public class CropInstruction extends DataWarehouseInstructionBase
     {
       StackInterface lStack = lSourceContainer.get(key);
 
-      ClearCLIJ clij = ClearCLIJ.getInstance();
-      ClearCLImage src = clij.converter(lStack).getClearCLImage();
-      ClearCLImage dst = clij.createCLImage(new long[]
+      CLIJ clij = CLIJ.getInstance();
+      ClearCLBuffer src = clij.convert(lStack, ClearCLBuffer.class);
+      ClearCLBuffer dst = clij.createCLBuffer(new long[]
       { (long) mCropWidthVariable.get(),
         (long) mCropHeightVariable.get(),
-        (long) mCropDepthVariable.get() }, src.getChannelDataType());
+        (long) mCropDepthVariable.get() }, src.getNativeType());
 
-      Kernels.crop(clij,
-                   src,
+      clij.op().crop(src,
                    dst,
                    mCropXVariable.get(),
                    mCropYVariable.get(),
                    mCropZVariable.get());
       // clij.show(dst, "Processing Quality On");
 
-      StackInterface lCroppedStack = clij.converter(dst)
-                                         .getOffHeapPlanarStack();
+      StackInterface lCroppedStack = clij.convert(dst, StackInterface.class);
       lCroppedStack.copyMetaDataFrom(lStack);
       dst.close();
       src.close();

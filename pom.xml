@@ -120,6 +120,11 @@
 			<artifactId>clearclij</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>net.haesleinhuepf</groupId>
+			<artifactId>clij_</artifactId>
+			<version>0.18.1</version>
+		</dependency>
+		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-vistools</artifactId>
 		</dependency>
