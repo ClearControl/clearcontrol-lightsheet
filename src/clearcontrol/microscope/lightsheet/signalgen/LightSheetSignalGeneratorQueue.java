@@ -9,7 +9,7 @@ import clearcontrol.core.device.queue.QueueInterface;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.devices.signalgen.SignalGeneratorQueue;
-import clearcontrol.devices.signalgen.movement.Movement;
+import clearcontrol.devices.signalgen.measure.Measure;
 import clearcontrol.devices.signalgen.score.ScoreInterface;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArm;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmQueue;
@@ -39,8 +39,8 @@ public class LightSheetSignalGeneratorQueue implements
                                                              new Variable<Integer>("SelectedLightSheetIndex",
                                                                                    0);
 
-  private Movement mBeforeExposureMovement, mExposureMovement,
-      mFinalMovement;
+  private Measure mBeforeExposureMeasure, mExposureMeasure,
+      mFinalMeasure;
 
   private final ConcurrentHashMap<DetectionArm, DetectionArmStaves> mDetectionArmToStavesMap =
                                                                                              new ConcurrentHashMap<>();
@@ -116,24 +116,24 @@ public class LightSheetSignalGeneratorQueue implements
   }
 
   /**
-   * Setting up the two movements that are necessary for one image acquisition
+   * Setting up the two measures that are necessary for one image acquisition
    * and corresponding lightsheet scanning.
    */
   private void setupStagingAndFinalizsationScores()
   {
-    mBeforeExposureMovement = new Movement("BeforeExposure");
-    mExposureMovement = new Movement("Exposure");
-    mFinalMovement = new Movement("Final");
+    mBeforeExposureMeasure = new Measure("BeforeExposure");
+    mExposureMeasure = new Measure("Exposure");
+    mFinalMeasure = new Measure("Final");
 
     ScoreInterface lStagingScore = mDelegatedQueue.getStagingScore();
 
-    lStagingScore.addMovement(mBeforeExposureMovement);
-    lStagingScore.addMovement(mExposureMovement);
+    lStagingScore.addMeasure(mBeforeExposureMeasure);
+    lStagingScore.addMeasure(mExposureMeasure);
 
     ScoreInterface lFinalisationScore =
                                       mDelegatedQueue.getFinalizationScore();
 
-    lFinalisationScore.addMovement(mFinalMovement);
+    lFinalisationScore.addMeasure(mFinalMeasure);
   }
 
   /**
@@ -160,9 +160,9 @@ public class LightSheetSignalGeneratorQueue implements
     mDetectionArmToStavesMap.put(pDetectionArmQueue.getDetectionArm(),
                                  lDetectionArmStaves);
 
-    lDetectionArmStaves.addStavesToMovements(mBeforeExposureMovement,
-                                             mExposureMovement,
-                                             mFinalMovement);
+    lDetectionArmStaves.addStavesToMeasures(mBeforeExposureMeasure,
+                                             mExposureMeasure,
+                                             mFinalMeasure);
 
   }
 
@@ -182,9 +182,9 @@ public class LightSheetSignalGeneratorQueue implements
     mLightSheetToStavesMap.put(pLightSheetQueue.getLightSheet(),
                                lLightSheetStaves);
 
-    lLightSheetStaves.addStavesToMovements(mBeforeExposureMovement,
-                                           mExposureMovement,
-                                           mFinalMovement);
+    lLightSheetStaves.addStavesToMeasures(mBeforeExposureMeasure,
+                                           mExposureMeasure,
+                                           mFinalMeasure);
 
   }
 
@@ -203,9 +203,9 @@ public class LightSheetSignalGeneratorQueue implements
     mOpticalSwitchToStavesMap.put(pLightSheetOpticalSwitchQueue.getLightSheetOpticalSwitch(),
                                   lLightSheetOpticalSwitchStaves);
 
-    lLightSheetOpticalSwitchStaves.addStavesToMovements(mBeforeExposureMovement,
-                                                        mExposureMovement,
-                                                        mFinalMovement);
+    lLightSheetOpticalSwitchStaves.addStavesToMeasures(mBeforeExposureMeasure,
+                                                        mExposureMeasure,
+                                                        mFinalMeasure);
 
   }
 
@@ -226,7 +226,7 @@ public class LightSheetSignalGeneratorQueue implements
                                     mDelegatedQueue.getStagingScore());/**/
 
     // then add the current state to the queue which corresponds to adding the
-    // staging score to the actual movement that represents the queue.
+    // staging score to the actual measure that represents the queue.
     mDelegatedQueue.addCurrentStateToQueue();
   }
 
@@ -243,9 +243,9 @@ public class LightSheetSignalGeneratorQueue implements
       {
         DetectionArmStaves lDetectionStaves = lEntry.getValue();
 
-        lDetectionStaves.update(mBeforeExposureMovement,
-                                mExposureMovement,
-                                mFinalMovement);
+        lDetectionStaves.update(mBeforeExposureMeasure,
+                                mExposureMeasure,
+                                mFinalMeasure);
       }
 
       Variable<Boolean> lIsSharedLightSheetControl =
@@ -270,26 +270,26 @@ public class LightSheetSignalGeneratorQueue implements
         LightSheetStaves lLightSheetStaves =
                                            mLightSheetToStavesMap.get(lSelectedLightSheet);
 
-        lLightSheetStaves.update(mBeforeExposureMovement,
-                                 mExposureMovement,
-                                 mFinalMovement);
+        lLightSheetStaves.update(mBeforeExposureMeasure,
+                                 mExposureMeasure,
+                                 mFinalMeasure);
 
       }
       else
         for (Map.Entry<LightSheet, LightSheetStaves> lEntry : mLightSheetToStavesMap.entrySet())
         {
           LightSheetStaves lLightSheetStaves = lEntry.getValue();
-          lLightSheetStaves.update(mBeforeExposureMovement,
-                                   mExposureMovement,
-                                   mFinalMovement);
+          lLightSheetStaves.update(mBeforeExposureMeasure,
+                                   mExposureMeasure,
+                                   mFinalMeasure);
         }
 
       for (Entry<LightSheetOpticalSwitch, LightSheetOpticalSwitchStaves> lEntry : mOpticalSwitchToStavesMap.entrySet())
       {
         LightSheetOpticalSwitchStaves lLightSheetOpticalSwitchStaves =
                                                                      lEntry.getValue();
-        lLightSheetOpticalSwitchStaves.update(mBeforeExposureMovement,
-                                              mExposureMovement);
+        lLightSheetOpticalSwitchStaves.update(mBeforeExposureMeasure,
+                                              mExposureMeasure);
       }
 
     }

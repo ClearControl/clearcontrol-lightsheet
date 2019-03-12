@@ -11,7 +11,7 @@ import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.math.functions.UnivariateAffineFunction;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.devices.signalgen.movement.Movement;
+import clearcontrol.devices.signalgen.measure.Measure;
 import clearcontrol.devices.signalgen.staves.BezierStave;
 import clearcontrol.devices.signalgen.staves.ConstantStave;
 import clearcontrol.devices.signalgen.staves.EdgeStave;
@@ -138,120 +138,120 @@ public class LightSheetStaves implements LoggingFeature
     return mLightSheetQueue.getLightSheet();
   }
 
-  public void addStavesToMovements(Movement pBeforeExposureMovement,
-                                   Movement pExposureMovement,
-                                   Movement pFinalMovement)
+  public void addStavesToMeasures(Measure pBeforeExposureMeasure,
+                                   Measure pExposureMeasure,
+                                   Measure pFinalMeasure)
   {
-    ensureStavesAddedToBeforeExposureMovement(pBeforeExposureMovement);
-    ensureStavesAddedToExposureMovement(pExposureMovement);
-    ensureStavesAddedToFinalMovement(pFinalMovement);
+    ensureStavesAddedToBeforeExposureMeasure(pBeforeExposureMeasure);
+    ensureStavesAddedToExposureMeasure(pExposureMeasure);
+    ensureStavesAddedToFinalMeasure(pFinalMeasure);
   }
 
-  public void ensureStavesAddedToBeforeExposureMovement(Movement pBeforeExposureMovement)
+  public void ensureStavesAddedToBeforeExposureMeasure(Measure pBeforeExposureMeasure)
   {
 
     // Analog outputs before exposure:
     mBeforeExposureXStave =
-                          pBeforeExposureMovement.ensureSetStave(mStaveXIndex,
+                          pBeforeExposureMeasure.ensureSetStave(mStaveXIndex,
                                                                  mBeforeExposureXStave);
 
     mBeforeExposureYStave =
-                          pBeforeExposureMovement.ensureSetStave(mStaveYIndex,
+                          pBeforeExposureMeasure.ensureSetStave(mStaveYIndex,
                                                                  mBeforeExposureYStave);
 
     mBeforeExposureZStave =
-                          pBeforeExposureMovement.ensureSetStave(mStaveZIndex,
+                          pBeforeExposureMeasure.ensureSetStave(mStaveZIndex,
                                                                  mBeforeExposureZStave);
 
     mBeforeExposureBStave =
-                          pBeforeExposureMovement.ensureSetStave(mStaveBIndex,
+                          pBeforeExposureMeasure.ensureSetStave(mStaveBIndex,
                                                                  mBeforeExposureBStave);
 
     mBeforeExposureWStave =
-                          pBeforeExposureMovement.ensureSetStave(mStaveWIndex,
+                          pBeforeExposureMeasure.ensureSetStave(mStaveWIndex,
                                                                  mBeforeExposureWStave);
 
     mBeforeExposureLAStave =
-                           pBeforeExposureMovement.ensureSetStave(mStaveLAIndex,
+                           pBeforeExposureMeasure.ensureSetStave(mStaveLAIndex,
                                                                   mBeforeExposureLAStave);
 
     mBeforeExposureTStave =
-                          pBeforeExposureMovement.ensureSetStave(mStaveTIndex,
+                          pBeforeExposureMeasure.ensureSetStave(mStaveTIndex,
                                                                  mBeforeExposureTStave);
 
   }
 
-  public void ensureStavesAddedToExposureMovement(Movement pExposureMovement)
+  public void ensureStavesAddedToExposureMeasure(Measure pExposureMeasure)
   {
 
     // Analog outputs at exposure:
 
     mExposureXStave =
-                    pExposureMovement.ensureSetStave(mStaveXIndex,
+                    pExposureMeasure.ensureSetStave(mStaveXIndex,
                                                      mExposureXStave);
 
     mExposureYStave =
-                    pExposureMovement.ensureSetStave(mStaveYIndex,
+                    pExposureMeasure.ensureSetStave(mStaveYIndex,
                                                      mExposureYStave);
 
     mExposureZStave =
-                    pExposureMovement.ensureSetStave(mStaveZIndex,
+                    pExposureMeasure.ensureSetStave(mStaveZIndex,
                                                      mExposureZStave);
 
     mExposureBStave =
-                    pExposureMovement.ensureSetStave(mStaveBIndex,
+                    pExposureMeasure.ensureSetStave(mStaveBIndex,
                                                      mExposureBStave);
 
     mExposureWStave =
-                    pExposureMovement.ensureSetStave(mStaveWIndex,
+                    pExposureMeasure.ensureSetStave(mStaveWIndex,
                                                      mExposureWStave);
 
     mExposureLAStave =
-                     pExposureMovement.ensureSetStave(mStaveLAIndex,
+                     pExposureMeasure.ensureSetStave(mStaveLAIndex,
                                                       mExposureLAStave);
 
     mExposureTStave =
-                    pExposureMovement.ensureSetStave(mStaveTIndex,
+                    pExposureMeasure.ensureSetStave(mStaveTIndex,
                                                      mExposureTStave);
 
     for (int i =
                0; i < mLightSheetQueue.getNumberOfLaserDigitalControls(); i++)
       mNonSIIluminationLaserTriggerStave =
-                                         setLaserDigitalTriggerStave(pExposureMovement,
+                                         setLaserDigitalTriggerStave(pExposureMeasure,
                                                                      i,
                                                                      mNonSIIluminationLaserTriggerStave);/**/
 
   }
 
-  public void ensureStavesAddedToFinalMovement(Movement pFinalMovement)
+  public void ensureStavesAddedToFinalMeasure(Measure pFinalMeasure)
   {
 
-    pFinalMovement.ensureSetStave(mStaveXIndex,
+    pFinalMeasure.ensureSetStave(mStaveXIndex,
                                   mBeforeExposureXStave);
 
-    mFinalYStave = pFinalMovement.ensureSetStave(mStaveYIndex,
+    mFinalYStave = pFinalMeasure.ensureSetStave(mStaveYIndex,
                                                  mFinalYStave);
 
-    pFinalMovement.ensureSetStave(mStaveZIndex,
+    pFinalMeasure.ensureSetStave(mStaveZIndex,
                                   mBeforeExposureZStave);
 
-    pFinalMovement.ensureSetStave(mStaveBIndex,
+    pFinalMeasure.ensureSetStave(mStaveBIndex,
                                   mBeforeExposureBStave);
 
-    pFinalMovement.ensureSetStave(mStaveWIndex,
+    pFinalMeasure.ensureSetStave(mStaveWIndex,
                                   mBeforeExposureWStave);
 
-    pFinalMovement.ensureSetStave(mStaveLAIndex,
+    pFinalMeasure.ensureSetStave(mStaveLAIndex,
                                   mBeforeExposureLAStave);
 
-    mFinalTStave = pFinalMovement.ensureSetStave(mStaveTIndex,
+    mFinalTStave = pFinalMeasure.ensureSetStave(mStaveTIndex,
                                                  mFinalTStave);
 
   }
 
-  public void update(Movement pBeforeExposureMovement,
-                     Movement pExposureMovement,
-                     Movement pFinalMovement)
+  public void update(Measure pBeforeExposureMeasure,
+                     Measure pExposureMeasure,
+                     Measure pFinalMeasure)
   {
     synchronized (this)
     {
@@ -259,25 +259,25 @@ public class LightSheetStaves implements LoggingFeature
       // info("Updating: " + getLightSheet().getName());
 
       final double lReadoutTimeInMicroseconds =
-                                              getBeforeExposureMovementDuration(TimeUnit.MICROSECONDS);
-      final double lExposureMovementTimeInMicroseconds =
-                                                       getExposureMovementDuration(TimeUnit.MICROSECONDS);
+                                              getBeforeExposureMeasureDuration(TimeUnit.MICROSECONDS);
+      final double lExposureMeasureTimeInMicroseconds =
+                                                       getExposureMeasureDuration(TimeUnit.MICROSECONDS);
 
-      final double lFinalMovementTimeInMicroseconds =
-                                                    getFinalMovementDuration(TimeUnit.MICROSECONDS);
+      final double lFinalMeasureTimeInMicroseconds =
+                                                    getFinalMeasureDuration(TimeUnit.MICROSECONDS);
 
-      pBeforeExposureMovement.setDuration(round(lReadoutTimeInMicroseconds),
+      pBeforeExposureMeasure.setDuration(round(lReadoutTimeInMicroseconds),
                                           TimeUnit.MICROSECONDS);
 
-      pExposureMovement.setDuration(round(lExposureMovementTimeInMicroseconds),
+      pExposureMeasure.setDuration(round(lExposureMeasureTimeInMicroseconds),
                                     TimeUnit.MICROSECONDS);
 
-      pFinalMovement.setDuration(round(lFinalMovementTimeInMicroseconds),
+      pFinalMeasure.setDuration(round(lFinalMeasureTimeInMicroseconds),
                                  TimeUnit.MICROSECONDS);
 
       final double lLineExposureTimeInMicroseconds =
                                                    lReadoutTimeInMicroseconds
-                                                     + lExposureMovementTimeInMicroseconds;
+                                                     + lExposureMeasureTimeInMicroseconds;
       mLineExposureInMicrosecondsVariable.set(lLineExposureTimeInMicroseconds);
 
       UnivariateAffineFunction lYFunction =
@@ -427,9 +427,9 @@ public class LightSheetStaves implements LoggingFeature
                                                .doubleValue();
       double lMarginTimeInMicroseconds = (lOverscan - 1)
                                          / (2 * lOverscan)
-                                         * lExposureMovementTimeInMicroseconds;
+                                         * lExposureMeasureTimeInMicroseconds;
       final double lMarginTimeRelativeUnits =
-                                            microsecondsToRelative(lExposureMovementTimeInMicroseconds,
+                                            microsecondsToRelative(lExposureMeasureTimeInMicroseconds,
                                                                    lMarginTimeInMicroseconds);
 
       boolean lIsStepping = true;
@@ -457,7 +457,7 @@ public class LightSheetStaves implements LoggingFeature
                                                                 lStructuredIlluminatioPatternInterface.getStave(lMarginTimeRelativeUnits);
           lSIIlluminationLaserTriggerStave.setEnabled(lLaserBooleanVariable.get());
 
-          setLaserDigitalTriggerStave(pExposureMovement,
+          setLaserDigitalTriggerStave(pExposureMeasure,
                                       i,
                                       lSIIlluminationLaserTriggerStave);
         }
@@ -467,7 +467,7 @@ public class LightSheetStaves implements LoggingFeature
           mNonSIIluminationLaserTriggerStave.setStart((float) lMarginTimeRelativeUnits);
           mNonSIIluminationLaserTriggerStave.setStop((float) (1.0f
                                                               - lMarginTimeRelativeUnits));
-          setLaserDigitalTriggerStave(pExposureMovement,
+          setLaserDigitalTriggerStave(pExposureMeasure,
                                       i,
                                       mNonSIIluminationLaserTriggerStave);
         }
@@ -504,7 +504,7 @@ public class LightSheetStaves implements LoggingFeature
 
   }
 
-  private <O extends StaveInterface> O setLaserDigitalTriggerStave(Movement pExposureMovement,
+  private <O extends StaveInterface> O setLaserDigitalTriggerStave(Measure pExposureMeasure,
                                                                    int pLaserLineIndex,
                                                                    O pStave)
   {
@@ -517,11 +517,11 @@ public class LightSheetStaves implements LoggingFeature
                                                                              + pLaserLineIndex
                                                                              + ".index",
                                                                              8 + pLaserLineIndex);
-    return pExposureMovement.ensureSetStave(lLaserDigitalLineIndex,
+    return pExposureMeasure.ensureSetStave(lLaserDigitalLineIndex,
                                             pStave);
   }
 
-  public long getBeforeExposureMovementDuration(TimeUnit pTimeUnit)
+  public long getBeforeExposureMeasureDuration(TimeUnit pTimeUnit)
   {
     return pTimeUnit.convert((long) (mLightSheetQueue.getReadoutTimeInMicrosecondsPerLineVariable()
                                                      .get()
@@ -533,7 +533,7 @@ public class LightSheetStaves implements LoggingFeature
                              TimeUnit.MICROSECONDS);
   }
 
-  public long getExposureMovementDuration(TimeUnit pTimeUnit)
+  public long getExposureMeasureDuration(TimeUnit pTimeUnit)
   {
     return pTimeUnit.convert((long) (mLightSheetQueue.getEffectiveExposureInSecondsVariable()
                                                      .get()
@@ -542,7 +542,7 @@ public class LightSheetStaves implements LoggingFeature
                              TimeUnit.MICROSECONDS);
   }
 
-  public long getFinalMovementDuration(TimeUnit pTimeUnit)
+  public long getFinalMeasureDuration(TimeUnit pTimeUnit)
   {
     return pTimeUnit.convert((long) (mLightSheetQueue.getFinalisationTimeInSecondsVariable()
                                                      .get()

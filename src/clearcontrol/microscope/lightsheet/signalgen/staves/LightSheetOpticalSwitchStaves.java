@@ -1,7 +1,7 @@
 package clearcontrol.microscope.lightsheet.signalgen.staves;
 
 import clearcontrol.core.configuration.MachineConfiguration;
-import clearcontrol.devices.signalgen.movement.Movement;
+import clearcontrol.devices.signalgen.measure.Measure;
 import clearcontrol.devices.signalgen.staves.ConstantStave;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitch;
 import clearcontrol.microscope.lightsheet.component.opticalswitch.LightSheetOpticalSwitchQueue;
@@ -59,37 +59,37 @@ public class LightSheetOpticalSwitchStaves
   }
 
   /**
-   * Adds staves to staging movements.
+   * Adds staves to staging measures.
    * 
-   * @param pBeforeExposureMovement
-   *          before exposure movement
-   * @param pExposureMovement
-   *          exposure movement
-   * @param pFinalMovement
-   *          final movement
+   * @param pBeforeExposureMeasure
+   *          before exposure measure
+   * @param pExposureMeasure
+   *          exposure measure
+   * @param pFinalMeasure
+   *          final measure
    */
-  public void addStavesToMovements(Movement pBeforeExposureMovement,
-                                   Movement pExposureMovement,
-                                   Movement pFinalMovement)
+  public void addStavesToMeasures(Measure pBeforeExposureMeasure,
+                                   Measure pExposureMeasure,
+                                   Measure pFinalMeasure)
   {
     for (int i = 0; i < mBitStave.length; i++)
     {
-      pBeforeExposureMovement.setStave(mStaveIndex[i], mBitStave[i]);
-      pExposureMovement.setStave(mStaveIndex[i], mBitStave[i]);
-      pFinalMovement.setStave(mStaveIndex[i], mBitStave[i]);
+      pBeforeExposureMeasure.setStave(mStaveIndex[i], mBitStave[i]);
+      pExposureMeasure.setStave(mStaveIndex[i], mBitStave[i]);
+      pFinalMeasure.setStave(mStaveIndex[i], mBitStave[i]);
     }
   }
 
   /**
    * Updates staves
    * 
-   * @param pExposureMovement
-   *          exposure movement
-   * @param pBeforeExposureMovement
-   *          before exposure movement
+   * @param pExposureMeasure
+   *          exposure measure
+   * @param pBeforeExposureMeasure
+   *          before exposure measure
    */
-  public void update(Movement pBeforeExposureMovement,
-                     Movement pExposureMovement)
+  public void update(Measure pBeforeExposureMeasure,
+                     Measure pExposureMeasure)
   {
     synchronized (this)
     {

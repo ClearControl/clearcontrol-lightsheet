@@ -4,7 +4,7 @@ import clearcontrol.core.configuration.MachineConfiguration;
 import clearcontrol.core.math.functions.UnivariateAffineFunction;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
-import clearcontrol.devices.signalgen.movement.Movement;
+import clearcontrol.devices.signalgen.measure.Measure;
 import clearcontrol.devices.signalgen.staves.ConstantStave;
 import clearcontrol.microscope.lightsheet.component.detection.DetectionArmQueue;
 
@@ -54,42 +54,42 @@ public class DetectionArmStaves
   }
 
   /**
-   * Adds staves to movements
+   * Adds staves to measures
    * 
-   * @param pBeforeExposureMovement
-   *          before exp movement
-   * @param pExposureMovement
-   *          exposure movement
-   * @param pFinalMovement
-   *          final movement
+   * @param pBeforeExposureMeasure
+   *          before exp measure
+   * @param pExposureMeasure
+   *          exposure measure
+   * @param pFinalMeasure
+   *          final measure
    */
-  public void addStavesToMovements(Movement pBeforeExposureMovement,
-                                   Movement pExposureMovement,
-                                   Movement pFinalMovement)
+  public void addStavesToMeasures(Measure pBeforeExposureMeasure,
+                                   Measure pExposureMeasure,
+                                   Measure pFinalMeasure)
   {
     // Analog outputs before exposure:
-    pBeforeExposureMovement.setStave(mStaveIndex, mDetectionZStave);
+    pBeforeExposureMeasure.setStave(mStaveIndex, mDetectionZStave);
 
     // Analog outputs at exposure:
-    pExposureMovement.setStave(mStaveIndex, mDetectionZStave);
+    pExposureMeasure.setStave(mStaveIndex, mDetectionZStave);
 
     // Analog outputs at finalization:
-    pFinalMovement.setStave(mStaveIndex, mDetectionZStave);
+    pFinalMeasure.setStave(mStaveIndex, mDetectionZStave);
   }
 
   /**
    * Updates the staves based on the information from detection arm queue
    * 
-   * @param pBeforeExposureMovement
-   *          before exposure movement
-   * @param pExposureMovement
-   *          exposure movement
-   * @param pFinalMovement
-   *          final movement
+   * @param pBeforeExposureMeasure
+   *          before exposure measure
+   * @param pExposureMeasure
+   *          exposure measure
+   * @param pFinalMeasure
+   *          final measure
    */
-  public void update(Movement pBeforeExposureMovement,
-                     Movement pExposureMovement,
-                     Movement pFinalMovement)
+  public void update(Measure pBeforeExposureMeasure,
+                     Measure pExposureMeasure,
+                     Measure pFinalMeasure)
   {
 
     BoundedVariable<Number> lZVariable =
