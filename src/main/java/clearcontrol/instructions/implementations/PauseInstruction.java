@@ -64,12 +64,13 @@ public class PauseInstruction extends InstructionBase
     return new PauseInstruction(mPauseTimeInMilliseconds.get());
   }
 
+  /*
   @Override
   public String toString()
   {
     return "Timing: Pause "
            + Utilities.humanReadableTime(mPauseTimeInMilliseconds.get());
-  }
+  }*/
 
   @Override
   public String getName()

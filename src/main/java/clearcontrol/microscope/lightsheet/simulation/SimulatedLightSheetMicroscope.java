@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.simulation;
 import java.util.ArrayList;
 
 import clearcontrol.microscope.lightsheet.timelapse.instructionlist.InstructionList;
+import clearcontrol.microscope.lightsheet.timelapse.instructions.TimelapseStopAfterNIterationsInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.*;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
@@ -681,7 +682,7 @@ public class SimulatedLightSheetMicroscope extends
                 new MeasureTimeInstruction(timeMeasurementKeys[k]));
       for (int i = 0; i < pauseTimes.length; i++)
       {
-        addDevice(9,
+        addDevice(0,
                   new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKeys[k],
                                                                  pauseTimes[i]));
       }
@@ -728,6 +729,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new ChangeZRangeInstruction(this));
 
     addDevice(0, new TimelapseStopInstruction(this));
+    addDevice(0, new TimelapseStopAfterNIterationsInstruction(this));
 
     addDevice(0, new InstructionList(this));
 
