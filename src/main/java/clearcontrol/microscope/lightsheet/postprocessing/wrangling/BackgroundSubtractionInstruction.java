@@ -43,9 +43,9 @@ public class BackgroundSubtractionInstruction  extends ProcessAllStacksInCurrent
         */
         // OpenCL is broken :-(
 
-        ClearCLImage inputCLI = clij.convert(stack, ClearCLImage.class);
+        ClearCLBuffer inputCLI = clij.convert(stack, ClearCLBuffer.class);
         ClearCLBuffer inputCLB = clij.convert(stack, ClearCLBuffer.class);
-        ClearCLImage backgroundCLI = clij.create(inputCLI);
+        ClearCLBuffer backgroundCLI = clij.create(inputCLI);
         //ClearCLImage backgroundCL = clij.createCLImage(inputCL.getDimensions(), ImageChannelDataType.Float);
         //ClearCLImage backgroundCL2 = clij.createCLImage(inputCL.getDimensions(), ImageChannelDataType.Float);
         ClearCLBuffer outputCLB = clij.createCLBuffer(inputCLB);
