@@ -141,6 +141,11 @@
             <id>hslh</id>
             <url>http://dl.bintray.com/haesleinhuepf/snapshots</url>
         </repository>
+
+		<repository>
+			<id>clij</id>
+			<url>http://dl.bintray.com/haesleinhuepf/clij</url>
+		</repository>
     </repositories>
 
 	<distributionManagement>
