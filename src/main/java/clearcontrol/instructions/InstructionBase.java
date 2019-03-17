@@ -1,6 +1,7 @@
 package clearcontrol.instructions;
 
 import clearcontrol.core.device.VirtualDevice;
+import org.ojalgo.type.format.StringFormat;
 
 /**
  * The Instruction base is used to have a common class for all instructions.
@@ -15,6 +16,8 @@ import clearcontrol.core.device.VirtualDevice;
 public abstract class InstructionBase extends VirtualDevice
                                       implements InstructionInterface
 {
+  private Double duration = null;
+
   /**
    *
    * @param pInstructionName
@@ -23,5 +26,22 @@ public abstract class InstructionBase extends VirtualDevice
   public InstructionBase(String pInstructionName)
   {
     super(pInstructionName);
+  }
+
+  public void setDuration(Double milliSeconds){
+    this.duration = milliSeconds;
+  }
+
+  @Override
+  public String toString() {
+    if (duration != null) {
+      return super.toString() + " {" + String.format("%.1f", duration) + " ms}";
+    } else {
+      return super.toString();
+    }
+  }
+
+  public Double getDuration() {
+    return duration;
   }
 }

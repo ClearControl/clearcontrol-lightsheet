@@ -44,13 +44,14 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
                     .getFolder("ProgramTemplates");
 
     ExecutableInstructionList<M> managedProgram;
+    Label lLabel;
 
     public InstructionListBuilderGUI(ExecutableInstructionList<M> instructionList) {
         CustomGridPane lSchedulerChecklistGridPane = new CustomGridPane();
 
         managedProgram = instructionList;
 
-    TitledPane lTitledPane =
+        TitledPane lTitledPane =
             new TitledPane("Schedule",
                     lSchedulerChecklistGridPane);
       lTitledPane.setAnimated(false);
@@ -61,7 +62,7 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
 
     int lRow = 0;
     {
-        Label lLabel = new Label("Current program");
+        lLabel = new Label("Current program");
         lSchedulerChecklistGridPane.add(lLabel, 0, lRow);
         lRow++;
     }
@@ -215,22 +216,7 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
 
             Button lLoadScheduleTemplateBytton = new Button("Load");
             lLoadScheduleTemplateBytton.setMaxWidth(Double.MAX_VALUE);
-            lLoadScheduleTemplateBytton.setOnAction((e) -> {
-                try
-                {
-                    managedProgram.clear();
-                    new ScheduleReader<M>(managedProgram,
-                            managedProgram.getInstructionSource(),
-                            getFile(lExistingScheduleTemplates.getValue()
-                                    .toString())).read();
-                    mCurrentProgramScheduleListView.setItems(FXCollections.observableArrayList(instructionList));
-                    refreshPropertiesScrollPane();
-                }
-                catch (Exception e1)
-                {
-                    e1.printStackTrace();
-                }
-            });
+
 
             lSchedulerChecklistGridPane.add(lLoadScheduleTemplateBytton,
                     1,
@@ -239,9 +225,6 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
                     1);
             lRow++;
 
-        }
-
-        {
             // save
             Variable<String> lFileNameVariable =
                     new Variable<String>("filename",
@@ -250,19 +233,35 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
             TextField lFileNameTextField =
                     new TextField(lFileNameVariable.get());
             lFileNameTextField.setMaxWidth(Double.MAX_VALUE);
-            lFileNameTextField.textProperty()
-                    .addListener((obs, o, n) -> {
+            lFileNameTextField.textProperty().addListener((obs, o, n) -> {
                         String lName = n.trim();
-                        if (!lName.isEmpty())
+                        if (!lName.isEmpty()) {
                             lFileNameVariable.set(lName);
+                        }
                     });
-            lSchedulerChecklistGridPane.add(lFileNameTextField,
-                    0,
-                    lRow);
+            lSchedulerChecklistGridPane.add(lFileNameTextField, 0, lRow);
 
             Button lSaveProgramButton = new Button("Save");
             lSaveProgramButton.setAlignment(Pos.CENTER);
             lSaveProgramButton.setMaxWidth(Double.MAX_VALUE);
+
+
+
+            lLoadScheduleTemplateBytton.setOnAction((e) -> {
+                try
+                {
+                    managedProgram.clear();
+                    new ScheduleReader<M>(managedProgram, managedProgram.getInstructionSource(), getFile(lExistingScheduleTemplates.getValue().toString())).read();
+                    mCurrentProgramScheduleListView.setItems(FXCollections.observableArrayList(instructionList));
+                    refreshPropertiesScrollPane();
+                    lFileNameTextField.setText(lExistingScheduleTemplates.getValue().toString() + "_1");
+                }
+                catch (Exception e1)
+                {
+                    e1.printStackTrace();
+                }
+            });
+
             lSaveProgramButton.setOnAction((e) -> {
                 try
                 {
@@ -275,6 +274,8 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
                     e1.printStackTrace();
                 }
             });
+
+
             GridPane.setColumnSpan(lSaveProgramButton, 1);
             lSchedulerChecklistGridPane.add(lSaveProgramButton,
                     1,
@@ -543,5 +544,9 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
 
     public ListView<InstructionInterface> getCurrentProgramListView() {
         return mCurrentProgramScheduleListView;
+    }
+
+    public Labeled getTitledPane() {
+        return lLabel;
     }
 }

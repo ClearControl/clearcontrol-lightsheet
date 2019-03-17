@@ -215,16 +215,17 @@ public class LightSheetTimelapse<M extends HasInstructions> extends TimelapseBas
                                               lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
                                             });
       log("Finished " + lNextSchedulerToRun);
+      lNextSchedulerToRun.setDuration(duration);
 
       // store how long the execution took
-      InstructionDurationContainer lContainer =
-                                              new InstructionDurationContainer(getTimePointCounterVariable().get(),
-                                                                               lNextSchedulerToRun,
-                                                                               duration);
-      mLightSheetMicroscope.getDataWarehouse()
-                           .put("duration_"
-                                + getTimePointCounterVariable().get(),
-                                lContainer);
+      //InstructionDurationContainer lContainer =
+      //                                        new InstructionDurationContainer(getTimePointCounterVariable().get(),
+      //                                                                         lNextSchedulerToRun,
+      //                                                                         duration);
+      //mLightSheetMicroscope.getDataWarehouse()
+      //                     .put("duration_"
+      //                          + getTimePointCounterVariable().get(),
+      //                          lContainer);
     }
     catch (Throwable e)
     {

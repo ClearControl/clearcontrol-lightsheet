@@ -35,7 +35,7 @@ public class ScheduleWriter
                                    new BufferedWriter(new FileWriter(mTargetFile));
       for (InstructionInterface lScheduler : mScheduledList)
       {
-        lOutputStream.write(lScheduler.toString() + "::"
+        lOutputStream.write(lScheduler.getName() + "::"
                             + propertiesToString(lScheduler)
                             + "\n");
       }

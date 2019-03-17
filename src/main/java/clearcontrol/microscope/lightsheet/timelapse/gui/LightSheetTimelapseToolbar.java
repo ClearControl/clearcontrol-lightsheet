@@ -1,11 +1,9 @@
 package clearcontrol.microscope.lightsheet.timelapse.gui;
 
-import clearcontrol.core.device.change.ChangeListener;
-import clearcontrol.core.variable.Variable;
-import clearcontrol.core.variable.VariableSetListener;
 import clearcontrol.instructions.ExecutableInstructionList;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.gui.InstructionListBuilderGUI;
-import clearcontrol.microscope.timelapse.timer.TimelapseTimerInterface;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
@@ -28,8 +26,7 @@ import clearcontrol.microscope.timelapse.gui.TimelapseToolbar;
 public class LightSheetTimelapseToolbar extends TimelapseToolbar
                                         implements LoggingFeature
 {
-  private final ListView programListView;
-  LightSheetTimelapse mLightSheetTimelapse = null;
+    LightSheetTimelapse mLightSheetTimelapse = null;
 
 
   TextArea debugTextArea = new TextArea();
@@ -75,19 +72,35 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
     {
       int lRow = 0;
       ExecutableInstructionList<LightSheetMicroscope> list = pLightSheetTimelapse.getCurrentProgram();
-      CustomGridPane lSchedulerChecklistGridPane = new InstructionListBuilderGUI<LightSheetMicroscope>(list);
-      programListView = ((InstructionListBuilderGUI) lSchedulerChecklistGridPane).getCurrentProgramListView();
+      final CustomGridPane lSchedulerChecklistGridPane = new InstructionListBuilderGUI<LightSheetMicroscope>(list);
 
       pLightSheetTimelapse.getLastExecutedSchedulerIndexVariable().addSetListener((pCurrentValue, pNewValue) -> {
         {
           info("Timelapse is changing");
+
+          ListView programListView = ((InstructionListBuilderGUI) lSchedulerChecklistGridPane).getCurrentProgramListView();
           Integer index = (Integer) pLightSheetTimelapse.getLastExecutedSchedulerIndexVariable().get();
           if (index >= 0 && index < programListView.getItems().size()) {
             Object object = programListView.getItems().get(index);
             info("object : " + object);
             programListView.getSelectionModel().select(index.intValue());
-            //programListView.refresh();
+            programListView.refresh();
             //debugTextArea.setText(((LightSheetMicroscope)pLightSheetTimelapse.getMicroscope()).getDataWarehouse().debugText());
+            if ((Integer)pCurrentValue > (Integer)pNewValue) {
+              double sumDuration = 0;
+              for (Object o : programListView.getItems()) {
+                if (o instanceof InstructionInterface) {
+                  Double duration = ((InstructionInterface) o).getDuration();
+                  if (duration != null) {
+                    sumDuration += duration;
+                  }
+                }
+              }
+              final double duration = sumDuration;
+              Platform.runLater(() -> {
+                ((InstructionListBuilderGUI) lSchedulerChecklistGridPane).getTitledPane().setText("Schedule {" + String.format("%.1f", duration)  + " ms}");
+              });
+            }
           }
         }
       });
