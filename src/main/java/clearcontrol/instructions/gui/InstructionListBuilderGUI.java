@@ -540,4 +540,8 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
 
         return mExistingTemplateFileList;
     }
+
+    public ListView<InstructionInterface> getCurrentProgramListView() {
+        return mCurrentProgramScheduleListView;
+    }
 }

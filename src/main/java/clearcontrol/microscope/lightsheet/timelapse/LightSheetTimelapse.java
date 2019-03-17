@@ -12,6 +12,7 @@ import java.util.Date;
 import clearcontrol.core.concurrent.timing.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.gui.jfx.var.combo.enums.TimeUnitEnum;
 import clearcontrol.instructions.ExecutableInstructionList;
 import clearcontrol.instructions.HasInstructions;
 import clearcontrol.instructions.InstructionInterface;
@@ -49,6 +50,8 @@ public class LightSheetTimelapse<M extends HasInstructions> extends TimelapseBas
                                                                   new Variable<Integer>("Last executed instructions index",
                                                                                         -1);
 
+  private Variable<String> mDatasetComment = new Variable<String>("Comment", "");
+
   ArrayList<InstructionInterface> mInitializedInstructionsList;
 
   private BufferedWriter mLogFileWriter;
@@ -63,7 +66,8 @@ public class LightSheetTimelapse<M extends HasInstructions> extends TimelapseBas
     mCurrentProgram = new ExecutableInstructionList<M>((M)pLightSheetMicroscope);
     mLightSheetMicroscope = pLightSheetMicroscope;
 
-    this.getMaxNumberOfTimePointsVariable().set(999999L);
+    this.getMaxNumberOfTimePointsVariable().set(99999999L);
+    this.getTimelapseTimerVariable().get().getAcquisitionIntervalUnitVariable().set(TimeUnitEnum.Milliseconds);
   }
 
   @Override
@@ -71,6 +75,8 @@ public class LightSheetTimelapse<M extends HasInstructions> extends TimelapseBas
   {
     if (getTimePointCounterVariable().get() == 0)
     {
+      File lCommentFile = new File(getWorkingDirectory(),
+              "comment.txt");
 
       File lLogFile = new File(getWorkingDirectory(),
                                "scheduleLog.txt");
@@ -81,6 +87,10 @@ public class LightSheetTimelapse<M extends HasInstructions> extends TimelapseBas
 
       try
       {
+        BufferedWriter commentWriter = new BufferedWriter(new FileWriter(lCommentFile));
+        commentWriter.write(mDatasetComment.get());
+        commentWriter.close();
+
         if (mLogFileWriter != null)
         {
           mLogFileWriter.close();
@@ -316,4 +326,7 @@ public class LightSheetTimelapse<M extends HasInstructions> extends TimelapseBas
     return mLastExecutedInstructionIndexVariable;
   }
 
+  public Variable<String> getDatasetComment() {
+    return mDatasetComment;
+  }
 }
