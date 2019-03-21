@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.text.Font;
 
 public class BasicStagePanel extends CustomGridPane {
     public BasicStagePanel(BasicStageInterface stage) {
@@ -15,6 +16,7 @@ public class BasicStagePanel extends CustomGridPane {
         System.out.println("Setting up BasicStageInterface Panel");
 
         Label lCurPos = new Label();
+        lCurPos.setFont(new Font("Arial", 20));
         add(lCurPos, 0, lRow);
         lRow++;
 
@@ -51,6 +53,8 @@ public class BasicStagePanel extends CustomGridPane {
                     stage.moveBy(lStepVariable.get(), false);
                 }
             });
+            lButton.setPrefSize(100, 50);
+            lButton.setFont(new Font("Arial", 20));
             add(lButton, 1, lRow);
             lRow++;
         }
@@ -73,6 +77,8 @@ public class BasicStagePanel extends CustomGridPane {
                     stage.moveBy(-1 * lStepVariable.get(), false);
                 }
             });
+            lButton.setPrefSize(100, 50);
+            lButton.setFont(new Font("Arial", 20));
             add(lButton, 1, lRow);
             lRow++;
         }
