@@ -8,13 +8,13 @@
 	<parent>
 		<groupId>net.clearcontrol</groupId>
 		<artifactId>ClearParentPom</artifactId>
-		<version>0.8.4</version>
+		<version>0.9.0</version>
 		<relativePath />
 	</parent>
 
 	<groupId>net.clearcontrol</groupId>
 	<artifactId>clearcontrol-lightsheet</artifactId>
-	<version>1.34.2-m</version>
+	<version>${clearcontrol_lightsheet.version}</version>
 
 	<name>clearcontrol-lightsheet</name>
 	<description>clearcontrol-lightsheet</description>
@@ -126,7 +126,6 @@
 		<dependency>
 			<groupId>de.mpicbg.rhaase</groupId>
 			<artifactId>imagequalitymetrics-microscopeautopilot</artifactId>
-			<version>0.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -149,13 +148,11 @@
     </repositories>
 
 	<distributionManagement>
-
 		<repository>
 			<id>bintray-haesleinhuepf-snapshots</id>
 			<name>bintray-snapshots</name>
 			<url>https://api.bintray.com/maven/haesleinhuepf/snapshots/clearcontrol-lightsheet/;publish=1</url>
 		</repository>
-
 	</distributionManagement>
 
 
