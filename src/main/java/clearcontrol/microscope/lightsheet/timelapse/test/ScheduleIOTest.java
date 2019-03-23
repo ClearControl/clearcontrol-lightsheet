@@ -6,7 +6,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import clearcl.imagej.ClearCLIJ;
+import clearcl.ClearCL;
+import clearcl.ClearCLContext;
+import clearcl.ClearCLDevice;
+import clearcl.backend.ClearCLBackendInterface;
+import clearcl.backend.jocl.ClearCLBackendJOCL;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.simulation.SimulatedLightSheetMicroscope;
 import clearcontrol.instructions.io.ScheduleReader;
@@ -27,11 +31,19 @@ public class ScheduleIOTest
   @Test
   public void testReadWrite() throws IOException
   {
-    ClearCLIJ clij = ClearCLIJ.getInstance();
+    ClearCLBackendInterface
+            lClearCLBackend = new ClearCLBackendJOCL();
+
+    ClearCL clearCL = new ClearCL(lClearCLBackend);
+    ClearCLDevice lSimulationGPUDevice =
+            clearCL.getDeviceByName("HD");
+    ClearCLContext context = lSimulationGPUDevice.createContext();
+
+    //CLIJ clij = CLIJ.getInstance();
 
     SimulatedLightSheetMicroscope microscope =
                                              new SimulatedLightSheetMicroscope("microscope",
-                                                                               clij.getClearCLContext(),
+                                                                               context,
                                                                                32,
                                                                                32);
     microscope.addDevice(0, new TestInstruction());

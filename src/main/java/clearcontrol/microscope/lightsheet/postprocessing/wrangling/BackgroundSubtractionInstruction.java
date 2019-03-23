@@ -1,10 +1,5 @@
 package clearcontrol.microscope.lightsheet.postprocessing.wrangling;
 
-import clearcl.ClearCLBuffer;
-import clearcl.ClearCLImage;
-import clearcl.enums.ImageChannelDataType;
-import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
@@ -13,6 +8,9 @@ import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
 import ij.IJ;
 import ij.ImagePlus;
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
+import net.haesleinhuepf.clij.clearcl.ClearCLImage;
 
 /**
  * BackgroundSubtractionInstruction
@@ -32,7 +30,7 @@ public class BackgroundSubtractionInstruction  extends ProcessAllStacksInCurrent
 
     @Override
     protected StackInterface processStack(StackInterface stack) {
-        ClearCLIJ clij = ClearCLIJ.getInstance();
+        CLIJ clij = CLIJ.getInstance();
 
         /*
         System.out.println("A");
@@ -45,9 +43,9 @@ public class BackgroundSubtractionInstruction  extends ProcessAllStacksInCurrent
         */
         // OpenCL is broken :-(
 
-        ClearCLImage inputCLI = clij.converter(stack).getClearCLImage();
-        ClearCLBuffer inputCLB = clij.converter(stack).getClearCLBuffer();
-        ClearCLImage backgroundCLI = clij.createCLImage(inputCLI);
+        ClearCLBuffer inputCLI = clij.convert(stack, ClearCLBuffer.class);
+        ClearCLBuffer inputCLB = clij.convert(stack, ClearCLBuffer.class);
+        ClearCLBuffer backgroundCLI = clij.create(inputCLI);
         //ClearCLImage backgroundCL = clij.createCLImage(inputCL.getDimensions(), ImageChannelDataType.Float);
         //ClearCLImage backgroundCL2 = clij.createCLImage(inputCL.getDimensions(), ImageChannelDataType.Float);
         ClearCLBuffer outputCLB = clij.createCLBuffer(inputCLB);
@@ -55,18 +53,18 @@ public class BackgroundSubtractionInstruction  extends ProcessAllStacksInCurrent
         System.out.println("B");
 
         float sigma = backgroundDeterminationBlurSigmaXY.get().floatValue();
-        Kernels.blurSliceBySlice(clij, inputCLI, backgroundCLI, (int)(sigma * 2), (int)(sigma * 2), sigma, sigma);
+        clij.op().blurSliceBySlice(inputCLI, backgroundCLI, (int)(sigma * 2), (int)(sigma * 2), sigma, sigma);
 
-        ClearCLBuffer backgroundCLB = clij.converter(backgroundCLI).getClearCLBuffer();
+        ClearCLBuffer backgroundCLB = clij.convert(backgroundCLI, ClearCLBuffer.class);
         System.out.println("C");
         //Kernels.multiplyScalar(clij, backgroundCL, backgroundCL2, -1.0f);
         //System.out.println("Ca");
         //Kernels.addPixelwise(clij, inputCL, backgroundCL2, outputCL);
 
-        Kernels.addWeightedPixelwise(clij, inputCLB, backgroundCLB, outputCLB, 1.0f, -1.0f);
+        clij.op().addImagesWeighted(inputCLB, backgroundCLB, outputCLB, 1.0f, -1.0f);
 
         System.out.println("D");
-        StackInterface resultStack = clij.converter(outputCLB).getStack();
+        StackInterface resultStack = clij.convert(outputCLB, StackInterface.class);
         resultStack.setMetaData(stack.getMetaData().clone());
 
         System.out.println("E");

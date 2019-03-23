@@ -6,6 +6,7 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.stack.StackInterface;
 
 /**
  * The FilterStacksInStackInterfaceContainerInstruction allows removing stacks
@@ -67,7 +68,8 @@ public class FilterStacksInStackInterfaceContainerInstruction extends
 
     for (String keyToRemove : listKeysToRemove)
     {
-      container.remove(keyToRemove);
+      StackInterface stack = container.remove(keyToRemove);
+      stack.release();
     }
 
     return true;

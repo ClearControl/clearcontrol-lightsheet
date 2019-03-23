@@ -8,13 +8,13 @@
 	<parent>
 		<groupId>net.clearcontrol</groupId>
 		<artifactId>ClearParentPom</artifactId>
-		<version>0.7.0</version>
+		<version>0.9.0</version>
 		<relativePath />
 	</parent>
 
 	<groupId>net.clearcontrol</groupId>
 	<artifactId>clearcontrol-lightsheet</artifactId>
-	<version>1.33.0-m</version>
+	<version>${clearcontrol_lightsheet.version}</version>
 
 	<name>clearcontrol-lightsheet</name>
 	<description>clearcontrol-lightsheet</description>
@@ -116,8 +116,8 @@
 			<artifactId>simbryo</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.clearcontrol</groupId>
-			<artifactId>clearclij</artifactId>
+			<groupId>net.haesleinhuepf</groupId>
+			<artifactId>clij_</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
@@ -126,7 +126,6 @@
 		<dependency>
 			<groupId>de.mpicbg.rhaase</groupId>
 			<artifactId>imagequalitymetrics-microscopeautopilot</artifactId>
-			<version>0.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -141,16 +140,19 @@
             <id>hslh</id>
             <url>http://dl.bintray.com/haesleinhuepf/snapshots</url>
         </repository>
+
+		<repository>
+			<id>clij</id>
+			<url>http://dl.bintray.com/haesleinhuepf/clij</url>
+		</repository>
     </repositories>
 
 	<distributionManagement>
-
 		<repository>
 			<id>bintray-haesleinhuepf-snapshots</id>
 			<name>bintray-snapshots</name>
 			<url>https://api.bintray.com/maven/haesleinhuepf/snapshots/clearcontrol-lightsheet/;publish=1</url>
 		</repository>
-
 	</distributionManagement>
 
 

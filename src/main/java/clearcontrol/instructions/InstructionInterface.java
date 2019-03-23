@@ -34,4 +34,12 @@ public interface InstructionInterface extends NameableInterface
    * @return a copy of the current instruction
    */
   InstructionInterface copy();
+
+  /**
+   * Instructions know how long it took to execute them.
+   * @param ms duration in milliseconds
+   */
+  void setDuration(Double ms);
+
+  Double getDuration();
 }

@@ -11,9 +11,12 @@ import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
 import clearcontrol.gui.jfx.var.textfield.NumberVariableTextField;
 
 /**
+ * Deprecated: Use BasicStagePanel instead!
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) January 2018
  */
+@Deprecated
 public class KCubePane extends CustomGridPane
 {
   KCubeDevice mKCubeDevice;

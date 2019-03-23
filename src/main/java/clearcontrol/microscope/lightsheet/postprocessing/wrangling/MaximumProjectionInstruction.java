@@ -1,12 +1,11 @@
 package clearcontrol.microscope.lightsheet.postprocessing.wrangling;
 
-import clearcl.ClearCLImage;
-import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.ProcessAllStacksInCurrentContainerInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLImage;
 
 /**
  * MaximumProjectionInstruction
@@ -23,15 +22,15 @@ public class MaximumProjectionInstruction extends ProcessAllStacksInCurrentConta
 
     @Override
     protected StackInterface processStack(StackInterface stack) {
-        ClearCLIJ clij = ClearCLIJ.getInstance();
-        ClearCLImage inputCL = clij.converter(stack).getClearCLImage();
+        CLIJ clij = CLIJ.getInstance();
+        ClearCLImage inputCL = clij.convert(stack, ClearCLImage.class);
         ClearCLImage outputCL2D = clij.createCLImage(new long[]{inputCL.getWidth(), inputCL.getHeight()}, inputCL.getChannelDataType());
         ClearCLImage outputCL3D = clij.createCLImage(new long[]{inputCL.getWidth(), inputCL.getHeight(), 1}, inputCL.getChannelDataType());
 
-        Kernels.maxProjection(clij, inputCL, outputCL2D);
-        Kernels.copySlice(clij, outputCL2D, outputCL3D, 0);
+        clij.op().maximumZProjection(inputCL, outputCL2D);
+        clij.op().copySlice(outputCL2D, outputCL3D, 0);
 
-        StackInterface resultStack = clij.converter(outputCL3D).getStack();
+        StackInterface resultStack = clij.convert(outputCL3D, StackInterface.class);
         resultStack.setMetaData(stack.getMetaData().clone());
 
         inputCL.close();

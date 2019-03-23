@@ -1,8 +1,5 @@
 package clearcontrol.microscope.lightsheet.postprocessing.processing;
 
-import clearcl.ClearCLImage;
-import clearcl.imagej.ClearCLIJ;
-import clearcl.imagej.kernels.Kernels;
 import clearcontrol.core.variable.Variable;
 import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
@@ -10,6 +7,8 @@ import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
 import clearcontrol.stack.StackInterface;
+import net.haesleinhuepf.clij.CLIJ;
+import net.haesleinhuepf.clij.clearcl.ClearCLImage;
 
 /**
  * DownsampleInstructionPanel
@@ -74,9 +73,9 @@ public class DownsampleInstruction extends
     {
       StackInterface stack = lContainer.get(key);
 
-      ClearCLIJ clij = ClearCLIJ.getInstance();
+      CLIJ clij = CLIJ.getInstance();
 
-      ClearCLImage lCLImage = clij.converter(stack).getClearCLImage();
+      ClearCLImage lCLImage = clij.convert(stack, ClearCLImage.class);
       ClearCLImage lClImageScaled = clij.createCLImage(new long[]
       { (long) (lCLImage.getWidth()
                 * mDownSampleFactorX.get().floatValue()),
@@ -85,13 +84,13 @@ public class DownsampleInstruction extends
         (long) (lCLImage.getDepth()
                 * mDownSampleFactorZ.get().floatValue()) },
                                                        lCLImage.getChannelDataType());
-      Kernels.downsample(clij,
+      clij.op().downsample(
                          lCLImage,
                          lClImageScaled,
                          mDownSampleFactorX.get().floatValue(),
                          mDownSampleFactorY.get().floatValue(),
                          mDownSampleFactorZ.get().floatValue());
-      stack = clij.converter(lClImageScaled).getStack();
+      stack = clij.convert(lClImageScaled, StackInterface.class);
       lCLImage.close();
       lClImageScaled.close();
 

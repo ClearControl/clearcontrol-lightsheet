@@ -85,8 +85,20 @@ public class ScheduleReader<M extends HasInstructions>  implements LoggingFeatur
                               + lInstructionName.split(":")[1].replace("\r",
                                                                        "");
 
-      InstructionInterface lInstruction =
-                                        mLightSheetMicroscope.getInstruction(lSearchForName);
+      ArrayList<InstructionInterface> lInstructions =
+                                        mLightSheetMicroscope.getInstructions(lSearchForName);
+
+      InstructionInterface lInstruction = null;
+      if (lInstructions.size() > 0) {
+        lInstruction = lInstructions.get(0);
+        for (InstructionInterface instructionInterface : lInstructions) {
+          if (instructionInterface.getName().equals(lSearchForName)) {
+            lInstruction = instructionInterface;
+            break;
+          }
+        }
+      }
+
       if (lInstruction != null)
       {
         lInstruction = lInstruction.copy();

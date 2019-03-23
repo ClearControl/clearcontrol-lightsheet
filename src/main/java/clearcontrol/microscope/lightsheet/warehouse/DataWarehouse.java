@@ -152,4 +152,32 @@ public class DataWarehouse extends
     super.clear();
   }
 
+  public String debugText() {
+    ArrayList<DataContainerInterface> sortedContainers = new ArrayList<DataContainerInterface>();
+
+    for (String key : keySet()) {
+      DataContainerInterface container = get(key);
+      long timepoint = container.getTimepoint();
+
+      boolean added = false;
+      for (int i = 0; i < sortedContainers.size(); i++) {
+        if (timepoint > sortedContainers.get(i).getTimepoint()) {
+          sortedContainers.add(i, container);
+          added = true;
+          break;
+        }
+      }
+      if (!added) {
+        sortedContainers.add(container);
+      }
+    }
+
+    StringBuilder builder = new StringBuilder();
+    for (DataContainerInterface container : sortedContainers) {
+      builder.append(container.toString() + "\n");
+    }
+
+    return builder.toString();
+  }
+
 }

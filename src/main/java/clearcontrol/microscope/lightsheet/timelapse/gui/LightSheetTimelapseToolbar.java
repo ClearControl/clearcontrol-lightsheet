@@ -1,9 +1,9 @@
 package clearcontrol.microscope.lightsheet.timelapse.gui;
 
 import clearcontrol.instructions.ExecutableInstructionList;
-import clearcontrol.instructions.HasInstructions;
+import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.gui.InstructionListBuilderGUI;
-import javafx.geometry.Orientation;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
@@ -16,8 +16,6 @@ import clearcontrol.microscope.adaptive.AdaptiveEngine;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.configurationstate.gui.ConfigurationStatePanel;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
-import clearcontrol.instructions.io.ScheduleReader;
-import clearcontrol.instructions.io.ScheduleWriter;
 import clearcontrol.microscope.timelapse.gui.TimelapseToolbar;
 
 /**
@@ -28,9 +26,10 @@ import clearcontrol.microscope.timelapse.gui.TimelapseToolbar;
 public class LightSheetTimelapseToolbar extends TimelapseToolbar
                                         implements LoggingFeature
 {
-  LightSheetTimelapse mLightSheetTimelapse = null;
+    LightSheetTimelapse mLightSheetTimelapse = null;
 
 
+  TextArea debugTextArea = new TextArea();
 
   /**
    * Instanciates a lightsheet timelapse toolbar.
@@ -45,7 +44,8 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
 
     this.setAlignment(Pos.TOP_LEFT);
 
-    setPrefSize(400, 200);
+    //setPrefSize(400, 200);
+
 
     int[] lPercent = new int[]
     { 10, 40, 40, 10 };
@@ -56,6 +56,11 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       getColumnConstraints().add(lColumnConstraints);
     }
 
+
+    addStringField(pLightSheetTimelapse.getDatasetComment(), mRow);
+    mRow++;
+
+/*
     {
       Separator lSeparator = new Separator();
       lSeparator.setOrientation(Orientation.HORIZONTAL);
@@ -63,14 +68,55 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
       add(lSeparator, 0, mRow);
       mRow++;
     }
-
+*/
     {
       int lRow = 0;
       ExecutableInstructionList<LightSheetMicroscope> list = pLightSheetTimelapse.getCurrentProgram();
-      CustomGridPane lSchedulerChecklistGridPane = new InstructionListBuilderGUI<LightSheetMicroscope>(list);
+      final CustomGridPane lSchedulerChecklistGridPane = new InstructionListBuilderGUI<LightSheetMicroscope>(list);
 
-      add(lSchedulerChecklistGridPane, 0, mRow, 4, 1);
+      pLightSheetTimelapse.getLastExecutedSchedulerIndexVariable().addSetListener((pCurrentValue, pNewValue) -> {
+        {
+          info("Timelapse is changing");
 
+          ListView programListView = ((InstructionListBuilderGUI) lSchedulerChecklistGridPane).getCurrentProgramListView();
+          Integer index = (Integer) pLightSheetTimelapse.getLastExecutedSchedulerIndexVariable().get();
+          if (index >= 0 && index < programListView.getItems().size()) {
+            Object object = programListView.getItems().get(index);
+            info("object : " + object);
+            programListView.getSelectionModel().select(index.intValue());
+            programListView.refresh();
+            //debugTextArea.setText(((LightSheetMicroscope)pLightSheetTimelapse.getMicroscope()).getDataWarehouse().debugText());
+            if ((Integer)pCurrentValue > (Integer)pNewValue) {
+              double sumDuration = 0;
+              for (Object o : programListView.getItems()) {
+                if (o instanceof InstructionInterface) {
+                  Double duration = ((InstructionInterface) o).getDuration();
+                  if (duration != null) {
+                    sumDuration += duration;
+                  }
+                }
+              }
+              final double duration = sumDuration;
+              Platform.runLater(() -> {
+                ((InstructionListBuilderGUI) lSchedulerChecklistGridPane).getTitledPane().setText("Schedule {" + String.format("%.1f", duration)  + " ms}");
+              });
+            }
+          }
+        }
+      });
+
+      GridPane.setColumnSpan(lSchedulerChecklistGridPane, 3);
+      add(lSchedulerChecklistGridPane, 0, mRow);
+
+      CustomGridPane pane = new CustomGridPane();
+
+      pane.add(debugTextArea, 0, 0);
+
+      TitledPane debugPane = new TitledPane("Debug", pane);
+      GridPane.setFillHeight(debugPane, true);
+      GridPane.setFillWidth(debugPane, true);
+      add(debugPane, 3, mRow);
+      mRow++;
     }
 
     CustomGridPane lAdvancedOptionsGridPane =

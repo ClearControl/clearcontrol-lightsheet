@@ -3,6 +3,8 @@ package clearcontrol.microscope.lightsheet.simulation;
 import java.util.ArrayList;
 
 import clearcontrol.microscope.lightsheet.timelapse.instructionlist.InstructionList;
+import clearcontrol.microscope.lightsheet.timelapse.instructions.TimelapseStopAfterNIterationsInstruction;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.*;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import clearcl.ClearCLContext;
@@ -55,10 +57,6 @@ import clearcontrol.microscope.lightsheet.state.instructions.*;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.timelapse.instructions.TimelapseStopInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.ReadStackInterfaceContainerFromDiscInstruction;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteAllStacksAsRawToDiscInstruction;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteSpecificStackToSpecificRawFolderInstruction;
-import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsTifToDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DropOldestStackInterfaceContainerInstruction;
 import clearcontrol.microscope.state.AcquisitionStateManager;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
@@ -597,6 +595,7 @@ public class SimulatedLightSheetMicroscope extends
 
     // ------------------------------------------------------------------------
     // setup reades / simulated acquisition
+    addDevice(0, new ReadTIFSequenceFromDiscInstruction(this));
     addDevice(0,
               new ReadStackInterfaceContainerFromDiscInstruction(new String[]
               { "default" }, this));
@@ -683,7 +682,7 @@ public class SimulatedLightSheetMicroscope extends
                 new MeasureTimeInstruction(timeMeasurementKeys[k]));
       for (int i = 0; i < pauseTimes.length; i++)
       {
-        addDevice(9,
+        addDevice(0,
                   new PauseUntilTimeAfterMeasuredTimeInstruction(timeMeasurementKeys[k],
                                                                  pauseTimes[i]));
       }
@@ -730,6 +729,7 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0, new ChangeZRangeInstruction(this));
 
     addDevice(0, new TimelapseStopInstruction(this));
+    addDevice(0, new TimelapseStopAfterNIterationsInstruction(this));
 
     addDevice(0, new InstructionList(this));
 
