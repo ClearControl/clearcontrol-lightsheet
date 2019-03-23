@@ -17,3 +17,4 @@ settings.gradle
 /out/
 
 temp.txt
+/target/
