@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.instructions;
 
 import clearcontrol.instructions.InstructionBase;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
 
 /**
  * LightSheetMicroscopeInstructionBase
@@ -11,7 +12,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
  * Author: @haesleinhuepf 05 2018
  */
 public abstract class LightSheetMicroscopeInstructionBase extends
-                                                          InstructionBase
+        DataWarehouseInstructionBase
 {
   private final LightSheetMicroscope mLightSheetMicroscope;
 
@@ -24,7 +25,7 @@ public abstract class LightSheetMicroscopeInstructionBase extends
   public LightSheetMicroscopeInstructionBase(String pDeviceName,
                                              LightSheetMicroscope pLightSheetMicroscope)
   {
-    super(pDeviceName);
+    super(pDeviceName, pLightSheetMicroscope.getDataWarehouse());
     mLightSheetMicroscope = pLightSheetMicroscope;
   }
 

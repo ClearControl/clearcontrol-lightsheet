@@ -73,6 +73,11 @@ public class ReadAcquisitionStateFromDiscInstruction extends
     return copied;
   }
 
+  @Override
+  public String getDescription() {
+    return "Read acquisition state from disc.";
+  }
+
   public Variable<String> getFilename()
   {
     return mFilename;
@@ -83,5 +88,15 @@ public class ReadAcquisitionStateFromDiscInstruction extends
   {
     return new Variable[]
     { getFilename() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

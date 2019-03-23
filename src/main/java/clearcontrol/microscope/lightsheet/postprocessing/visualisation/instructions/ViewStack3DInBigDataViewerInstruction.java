@@ -139,6 +139,11 @@ public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceConta
                                                            getLightSheetMicroscope());
   }
 
+  @Override
+  public String getDescription() {
+    return "View a stack from a given container in the BigDataViewer.";
+  }
+
   public void resetBigDataViewer()
   {
     if (bdv != null)
@@ -147,5 +152,15 @@ public class ViewStack3DInBigDataViewerInstruction<T extends StackInterfaceConta
     }
     bdv = null;
     rai = null;
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
   }
 }

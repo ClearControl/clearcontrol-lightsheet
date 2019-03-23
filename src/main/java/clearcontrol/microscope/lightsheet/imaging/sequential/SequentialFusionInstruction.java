@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.imaging.sequential;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
@@ -68,5 +69,20 @@ public class SequentialFusionInstruction extends FusionInstruction
   public SequentialFusionInstruction copy()
   {
     return new SequentialFusionInstruction(getLightSheetMicroscope());
+  }
+
+  @Override
+  public String getDescription() {
+    return "Fuses image stacks acquired by sequential acquisition.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{FusedImageDataContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{SequentialImageDataContainer.class};
   }
 }

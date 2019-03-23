@@ -42,4 +42,6 @@ public interface InstructionInterface extends NameableInterface
   void setDuration(Double ms);
 
   Double getDuration();
+
+  String getDescription();
 }

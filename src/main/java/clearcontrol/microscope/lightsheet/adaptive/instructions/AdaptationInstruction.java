@@ -8,10 +8,13 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 
 /**
+ * Deprecated: Unused.
+ *
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) March 2018
  */
-public class AdaptationInstruction extends
+@Deprecated
+public abstract class AdaptationInstruction extends
                                    LightSheetMicroscopeInstructionBase
                                    implements
                                    InstructionInterface,
@@ -59,11 +62,28 @@ public class AdaptationInstruction extends
     return true;
   }
 
+  /*
   @Override
   public AdaptationInstruction copy()
   {
     return new AdaptationInstruction(getName(),
                                      mTargetAdapationModuleClass,
                                      getLightSheetMicroscope());
+  }
+  */
+
+  @Override
+  public String getDescription() {
+    return null;
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

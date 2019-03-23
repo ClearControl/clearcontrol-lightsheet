@@ -73,6 +73,11 @@ public class WriteAcquisitionStateToDiscInstruction extends
     return copied;
   }
 
+  @Override
+  public String getDescription() {
+    return "Write acquisition state to disc.";
+  }
+
   public Variable<String> getFilename()
   {
     return mFilename;
@@ -83,5 +88,15 @@ public class WriteAcquisitionStateToDiscInstruction extends
   {
     return new Variable[]
     { getFilename() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

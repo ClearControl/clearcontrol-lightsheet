@@ -61,4 +61,19 @@ public class DropAllContainersOfTypeInstruction extends
     return new DropAllContainersOfTypeInstruction(mContainerClassToDrop,
                                                   getDataWarehouse());
   }
+
+  @Override
+  public String getDescription() {
+    return "Recycle all containers of kind " + mContainerClassToDrop;
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{mContainerClassToDrop};
+  }
 }

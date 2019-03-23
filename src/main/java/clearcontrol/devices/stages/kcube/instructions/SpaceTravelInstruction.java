@@ -164,9 +164,24 @@ public class SpaceTravelInstruction extends
   }
 
   @Override
+  public String getDescription() {
+    return "Move an X/Y/Z stage to the next position in a given list of positions.";
+  }
+
+  @Override
   public Variable[] getProperties()
   {
     return new Variable[]
     { mTravelPath.getAsStringVariable() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

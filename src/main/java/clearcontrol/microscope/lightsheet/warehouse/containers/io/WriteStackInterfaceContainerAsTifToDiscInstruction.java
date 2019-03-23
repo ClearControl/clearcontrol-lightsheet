@@ -121,6 +121,11 @@ public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
                                                                   getLightSheetMicroscope());
   }
 
+  @Override
+  public String getDescription() {
+    return "Write a " + mContainerClass + " to disc.";
+  }
+
   private void saveStack(File lWorkingDirectory,
                          String pChannelName,
                          StackInterface lStack,
@@ -155,5 +160,15 @@ public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
                                    + ".tif");
     });
 
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[] {mContainerClass};
   }
 }

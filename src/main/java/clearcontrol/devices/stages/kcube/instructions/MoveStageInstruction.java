@@ -44,6 +44,11 @@ public class MoveStageInstruction extends InstructionBase implements PropertyIOa
     }
 
     @Override
+    public String getDescription() {
+        return "Move a linear stage according to a given distance.";
+    }
+
+    @Override
     public Variable[] getProperties() {
         return new Variable[] {
                 delta

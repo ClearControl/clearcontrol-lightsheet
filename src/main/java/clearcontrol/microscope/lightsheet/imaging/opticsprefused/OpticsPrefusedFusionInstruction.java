@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
@@ -63,5 +64,20 @@ public class OpticsPrefusedFusionInstruction extends FusionInstruction
   public OpticsPrefusedFusionInstruction copy()
   {
     return new OpticsPrefusedFusionInstruction(getLightSheetMicroscope());
+  }
+
+  @Override
+  public String getDescription() {
+    return "Fuses image stacks acquired by optics-prefused acquisition.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[] {OpticsPrefusedImageDataContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{FusedImageDataContainer.class};
   }
 }

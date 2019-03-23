@@ -87,6 +87,11 @@ public class ViewStack2DInstruction<T extends StackInterfaceContainer>
                                       getLightSheetMicroscope());
   }
 
+  @Override
+  public String getDescription() {
+    return "View stacks from a given container in the 2D viewer windows.";
+  }
+
   public BoundedVariable<Integer> getViewerIndexVariable()
   {
     return mViewerIndexVariable;
@@ -97,5 +102,15 @@ public class ViewStack2DInstruction<T extends StackInterfaceContainer>
   {
     return new Variable[]
     { getViewerIndexVariable(), getImageKeyToShowVariable() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
   }
 }

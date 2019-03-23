@@ -29,4 +29,19 @@ public class WriteFusedImageAsRawToDiscInstruction extends
     return new WriteFusedImageAsRawToDiscInstruction(mChannelName,
                                                      getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Write fused image data as raw to disc.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{FusedImageDataContainer.class};
+  }
 }

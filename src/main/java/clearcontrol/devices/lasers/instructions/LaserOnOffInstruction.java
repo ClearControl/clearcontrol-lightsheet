@@ -94,6 +94,11 @@ public class LaserOnOffInstruction extends InstructionBase implements
     return new LaserOnOffInstruction(mLaserDevice, mTurnOn);
   }
 
+  @Override
+  public String getDescription() {
+    return "DEPRECATED. Turn a laser on or off.";
+  }
+
   public Variable<Boolean> getDebugVariable()
   {
     return mDebugVariable;

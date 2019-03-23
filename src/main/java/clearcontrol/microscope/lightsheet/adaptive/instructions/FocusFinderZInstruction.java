@@ -411,6 +411,11 @@ public class FocusFinderZInstruction extends
   }
 
   @Override
+  public String getDescription() {
+    return "Automatically determine the optimal delta-Z of a given illumination arms individually for all control planes.";
+  }
+
+  @Override
   public Variable[] getProperties()
   {
     return new Variable[]
@@ -420,5 +425,15 @@ public class FocusFinderZInstruction extends
       getImageWidthVariable(),
       getNumberOfImagesToTakeVariable(),
       getResetAllTheTime() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

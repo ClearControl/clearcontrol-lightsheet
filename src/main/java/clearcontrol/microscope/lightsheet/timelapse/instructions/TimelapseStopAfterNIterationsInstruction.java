@@ -53,6 +53,11 @@ public class TimelapseStopAfterNIterationsInstruction extends
     return new TimelapseStopAfterNIterationsInstruction(getLightSheetMicroscope());
   }
 
+  @Override
+  public String getDescription() {
+    return "Stopthe timelapse after passing this instruction for a given number of times.";
+  }
+
   public BoundedVariable<Integer> getMaximumCount() {
     return maximumCount;
   }
@@ -62,5 +67,15 @@ public class TimelapseStopAfterNIterationsInstruction extends
     return new Variable[]{
       getMaximumCount()
     };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

@@ -5,6 +5,7 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.ProcessAllStacksInCurrentContainerInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
 import ij.IJ;
 import ij.ImagePlus;
@@ -85,6 +86,11 @@ public class BackgroundSubtractionInstruction  extends ProcessAllStacksInCurrent
         return copied;
     }
 
+    @Override
+    public String getDescription() {
+        return "Determine background using Gaussian blur and subtract it from the input image stacks.";
+    }
+
     public BoundedVariable<Double> getBackgroundDeterminationBlurSigmaXY() {
         return backgroundDeterminationBlurSigmaXY;
     }
@@ -94,5 +100,15 @@ public class BackgroundSubtractionInstruction  extends ProcessAllStacksInCurrent
         return new Variable[] {
                 backgroundDeterminationBlurSigmaXY
         };
+    }
+
+    @Override
+    public Class[] getProducedContainerClasses() {
+        return new Class[]{StackInterfaceContainer.class};
+    }
+
+    @Override
+    public Class[] getConsumedContainerClasses() {
+        return new Class[]{StackInterfaceContainer.class};
     }
 }

@@ -13,6 +13,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  *
  * Author: @haesleinhuepf June 2018
  */
+@Deprecated
 public class WriteSpecificStackToSpecificRawFolderInstruction extends
                                                               WriteStackInterfaceContainerAsRawToDiscInstructionBase
                                                               implements
@@ -75,6 +76,11 @@ public class WriteSpecificStackToSpecificRawFolderInstruction extends
                                                                 getLightSheetMicroscope());
   }
 
+  @Override
+  public String getDescription() {
+    return "Write just one specific image stack from a container as raw to disc.";
+  }
+
   public Variable<String> getSourceStackKeyVariable()
   {
     return mSourceStackKeyVariable;
@@ -99,5 +105,15 @@ public class WriteSpecificStackToSpecificRawFolderInstruction extends
   {
     return new Variable[]
     { getSourceStackKeyVariable(), getTargetRawFolderNameVariable() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[] {StackInterfaceContainer.class};
   }
 }

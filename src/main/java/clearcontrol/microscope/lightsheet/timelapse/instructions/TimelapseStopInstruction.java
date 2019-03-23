@@ -41,4 +41,19 @@ public class TimelapseStopInstruction extends
   {
     return new TimelapseStopInstruction(getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Stop the timelapse.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
+  }
 }

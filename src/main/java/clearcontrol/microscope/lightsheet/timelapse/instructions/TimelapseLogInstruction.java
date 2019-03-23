@@ -13,7 +13,7 @@ import clearcontrol.instructions.io.ScheduleWriter;
  *
  * Author: @haesleinhuepf 05 2018
  */
-public class TimelapseLogInstruction extends InstructionBase
+public class  TimelapseLogInstruction extends InstructionBase
 {
   private final LightSheetTimelapse mTimelapse;
 
@@ -45,5 +45,10 @@ public class TimelapseLogInstruction extends InstructionBase
   public TimelapseLogInstruction copy()
   {
     return new TimelapseLogInstruction((LightSheetMicroscope) mTimelapse.getMicroscope());
+  }
+
+  @Override
+  public String getDescription() {
+    return "Writes the current instruction list to disc.";
   }
 }

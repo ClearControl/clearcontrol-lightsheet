@@ -375,6 +375,11 @@ public class FocusFinderAlphaByVariationInstruction extends
   }
 
   @Override
+  public String getDescription() {
+    return "Automatically determine the optimal alpha of a given illumination arms individually for all control planes.";
+  }
+
+  @Override
   public Variable[] getProperties()
   {
     return new Variable[]
@@ -383,5 +388,15 @@ public class FocusFinderAlphaByVariationInstruction extends
       getImageHeightVariable(),
       getImageWidthVariable(),
       getNumberOfImagesToTakeVariable() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

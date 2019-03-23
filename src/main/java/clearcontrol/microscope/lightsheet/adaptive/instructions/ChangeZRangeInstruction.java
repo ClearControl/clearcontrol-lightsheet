@@ -80,6 +80,11 @@ public class ChangeZRangeInstruction extends
     return copied;
   }
 
+  @Override
+  public String getDescription() {
+    return "Change image stack size in Z and slice distance.";
+  }
+
   public BoundedVariable<Double> getMinZ()
   {
     return minZ;
@@ -100,5 +105,15 @@ public class ChangeZRangeInstruction extends
   {
     return new Variable[]
     { getMinZ(), getMaxZ(), getStepZ() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

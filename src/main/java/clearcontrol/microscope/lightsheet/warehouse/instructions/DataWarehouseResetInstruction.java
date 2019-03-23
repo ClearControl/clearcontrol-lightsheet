@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.warehouse.instructions;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.DataContainerInterface;
 
 /**
  * This instructions recycles or disposes all DataContainers in the
@@ -43,5 +44,20 @@ public class DataWarehouseResetInstruction extends
   public DataWarehouseResetInstruction copy()
   {
     return new DataWarehouseResetInstruction(getDataWarehouse());
+  }
+
+  @Override
+  public String getDescription() {
+    return "Empties the warehouse.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{DataContainerInterface.class};
   }
 }

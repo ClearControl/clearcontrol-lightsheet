@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.opticsprefused;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.imaging.interleaved.InterleavedImageDataContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstructionBase;
 
 /**
@@ -36,5 +37,20 @@ public class WriteOpticsPrefusedRawDataAsRawToDiscInstruction extends
   public WriteOpticsPrefusedRawDataAsRawToDiscInstruction copy()
   {
     return new WriteOpticsPrefusedRawDataAsRawToDiscInstruction(getLightSheetMicroscope());
+  }
+
+  @Override
+  public String getDescription() {
+    return "Write raw data from optics-prefused acquisition to disc.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{OpticsPrefusedImageDataContainer.class};
   }
 }

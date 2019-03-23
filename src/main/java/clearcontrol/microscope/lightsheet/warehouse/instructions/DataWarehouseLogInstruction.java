@@ -55,4 +55,19 @@ public class DataWarehouseLogInstruction extends
   {
     return new DataWarehouseLogInstruction(mLightSheetMicroscope);
   }
+
+  @Override
+  public String getDescription() {
+    return "Writes the index of the DataWarehouse to the console and the logfile.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
+  }
 }

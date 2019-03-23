@@ -288,4 +288,23 @@ public class SequentialAcquisitionInstruction extends
   {
     return new SequentialAcquisitionInstruction(getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Acquires an image stack per camera per light sheet. The " +
+            "image stacks are stored in the DataWarehouse in an " +
+            "SequentialImageDataContainer with keys like:\n" +
+            "\n" +
+            " C0L0 C1L0 C0L1 C1L1";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{SequentialImageDataContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
+  }
 }

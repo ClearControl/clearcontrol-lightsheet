@@ -52,6 +52,11 @@ class TestInstruction extends InstructionBase
   }
 
   @Override
+  public String getDescription() {
+    return "Test";
+  }
+
+  @Override
   public Variable[] getProperties()
   {
     return new Variable[]

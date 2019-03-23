@@ -64,6 +64,11 @@ public class PauseInstruction extends InstructionBase
     return new PauseInstruction(mPauseTimeInMilliseconds.get());
   }
 
+  @Override
+  public String getDescription() {
+    return "Pause instruction execution for a given time.";
+  }
+
   /*
   @Override
   public String toString()

@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.imaging.singleview;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.imaging.sequential.SequentialImageDataContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstructionBase;
 
@@ -44,5 +45,20 @@ public class WriteSingleLightSheetImageAsRawToDiscInstruction extends
     return new WriteSingleLightSheetImageAsRawToDiscInstruction(mDetectionArmIndex,
                                                                 mLightSheetIndex,
                                                                 getLightSheetMicroscope());
+  }
+
+  @Override
+  public String getDescription() {
+    return "Write sequential raw data from a single view acquisition to disc.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{SequentialImageDataContainer.class};
   }
 }

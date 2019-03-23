@@ -92,4 +92,19 @@ public class AcquisitionStateBackupRestoreInstruction extends
     return new AcquisitionStateBackupRestoreInstruction(mBackup,
                                                         getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Backup/restore acquisition state.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
+  }
 }

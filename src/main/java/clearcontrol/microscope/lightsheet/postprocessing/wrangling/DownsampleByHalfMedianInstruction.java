@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.postprocessing.wrangling;
 
 import clearcontrol.microscope.lightsheet.postprocessing.ProcessAllStacksInCurrentContainerInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
 import net.haesleinhuepf.clij.CLIJ;
@@ -45,5 +46,20 @@ public class DownsampleByHalfMedianInstruction  extends ProcessAllStacksInCurren
     @Override
     public DownsampleByHalfMedianInstruction copy() {
         return new DownsampleByHalfMedianInstruction(getDataWarehouse());
+    }
+
+    @Override
+    public String getDescription() {
+        return "Downsample all image stacks in a container by a factor of 2 in X/Y by taking the median of 2x2 pixel blocks.";
+    }
+
+    @Override
+    public Class[] getProducedContainerClasses() {
+        return new Class[]{StackInterfaceContainer.class};
+    }
+
+    @Override
+    public Class[] getConsumedContainerClasses() {
+        return new Class[]{StackInterfaceContainer.class};
     }
 }

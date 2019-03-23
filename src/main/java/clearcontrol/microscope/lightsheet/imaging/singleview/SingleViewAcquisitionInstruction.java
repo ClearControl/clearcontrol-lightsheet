@@ -78,4 +78,9 @@ public class SingleViewAcquisitionInstruction extends
                                                 mLightSheetIndex,
                                                 getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Acquire a sequential image stack from a single camera/lightsheet pair.";
+  }
 }

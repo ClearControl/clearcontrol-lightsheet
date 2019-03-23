@@ -29,4 +29,19 @@ public class WriteFusedImageAsTifToDiscInstructionBase extends
     return new WriteFusedImageAsTifToDiscInstructionBase(mChannelName,
                                                          getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Write fused image stack as TIF to disc.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{FusedImageDataContainer.class};
+  }
 }

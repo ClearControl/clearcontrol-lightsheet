@@ -54,4 +54,19 @@ public class DropNewestStackInterfaceContainerInstruction extends
     return new DropNewestStackInterfaceContainerInstruction(mContainerClassToDrop,
                                                             getDataWarehouse());
   }
+
+  @Override
+  public String getDescription() {
+    return "Recycle the most recently stored container of kind " + mContainerClassToDrop;
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{mContainerClassToDrop};
+  }
 }

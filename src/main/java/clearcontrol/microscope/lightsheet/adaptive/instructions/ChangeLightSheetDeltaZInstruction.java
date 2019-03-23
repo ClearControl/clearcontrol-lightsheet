@@ -76,6 +76,11 @@ public class ChangeLightSheetDeltaZInstruction extends
                 mLightSheetDeltaZ.get());
     }
 
+    @Override
+    public String getDescription() {
+        return "Change delta-Z of a given illumination-arm.";
+    }
+
     public BoundedVariable<Double> getLightSheetDeltaZ()
     {
         return mLightSheetDeltaZ;
@@ -93,4 +98,13 @@ public class ChangeLightSheetDeltaZInstruction extends
                 { getLightSheetDeltaZ(), getLightSheetIndex() };
     }
 
+    @Override
+    public Class[] getProducedContainerClasses() {
+        return new Class[0];
+    }
+
+    @Override
+    public Class[] getConsumedContainerClasses() {
+        return new Class[0];
+    }
 }

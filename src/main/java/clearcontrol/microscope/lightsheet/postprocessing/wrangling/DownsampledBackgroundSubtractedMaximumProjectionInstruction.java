@@ -5,6 +5,7 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.ProcessAllStacksInCurrentContainerInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
 import coremem.enums.NativeTypeEnum;
@@ -87,6 +88,11 @@ public class DownsampledBackgroundSubtractedMaximumProjectionInstruction extends
         return copied;
     }
 
+    @Override
+    public String getDescription() {
+        return "Subtract background from all image stacks in a container and generate maximum projections of it.";
+    }
+
 
     public BoundedVariable<Double> getBackgroundDeterminationBlurSigmaXY() {
         return backgroundDeterminationBlurSigmaXY;
@@ -97,5 +103,15 @@ public class DownsampledBackgroundSubtractedMaximumProjectionInstruction extends
         return new Variable[] {
                 backgroundDeterminationBlurSigmaXY
         };
+    }
+
+    @Override
+    public Class[] getProducedContainerClasses() {
+        return new Class[]{StackInterfaceContainer.class};
+    }
+
+    @Override
+    public Class[] getConsumedContainerClasses() {
+        return new Class[]{StackInterfaceContainer.class};
     }
 }

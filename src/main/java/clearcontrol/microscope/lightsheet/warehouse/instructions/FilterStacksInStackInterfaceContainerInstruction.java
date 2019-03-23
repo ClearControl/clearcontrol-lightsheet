@@ -84,6 +84,11 @@ public class FilterStacksInStackInterfaceContainerInstruction extends
     return copied;
   }
 
+  @Override
+  public String getDescription() {
+    return "Recycle stacks within a container which don't match a given pattern.";
+  }
+
   public Variable<String> getFilter()
   {
     return filter;
@@ -99,5 +104,15 @@ public class FilterStacksInStackInterfaceContainerInstruction extends
   {
     return new Variable[]
     { getFilter() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

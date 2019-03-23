@@ -75,4 +75,9 @@ public class PauseUntilTimeAfterMeasuredTimeInstruction extends
   {
     return mMeasuredTimeKeyVariable;
   }
+
+  @Override
+  public String getDescription() {
+    return "Pause instruction execution according to a given duration. The time which passed by since measurement " + mMeasuredTimeKeyVariable.get() + " is subtracted from the duration.";
+  }
 }

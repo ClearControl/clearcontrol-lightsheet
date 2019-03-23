@@ -4,6 +4,7 @@ import clearcontrol.core.variable.Variable;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.ProcessAllStacksInCurrentContainerInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
 import net.haesleinhuepf.clij.CLIJ;
@@ -76,8 +77,13 @@ public class ResliceInstruction extends ProcessAllStacksInCurrentContainerInstru
     @Override
     public ResliceInstruction copy() {
         ResliceInstruction copied = new ResliceInstruction(getDataWarehouse());
-
+        copied.direction.set(direction.get());
         return copied;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Reslices all image stacks in a given container.";
     }
 
     @Override
@@ -89,5 +95,15 @@ public class ResliceInstruction extends ProcessAllStacksInCurrentContainerInstru
 
     public Variable<Integer> getDirection() {
         return direction;
+    }
+
+    @Override
+    public Class[] getProducedContainerClasses() {
+        return new Class[]{StackInterfaceContainer.class};
+    }
+
+    @Override
+    public Class[] getConsumedContainerClasses() {
+        return new Class[]{StackInterfaceContainer.class};
     }
 }

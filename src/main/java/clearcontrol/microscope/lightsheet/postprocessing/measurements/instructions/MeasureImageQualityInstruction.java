@@ -294,6 +294,16 @@ public class MeasureImageQualityInstruction extends
     return copied;
   }
 
+  @Override
+  public String getDescription() {
+    return "Measures the image quality metrics published in\n" +
+            "\n" +
+            "Loic A. Royer, William C. Lemon, Raghav K. Chhetri, Yinan Wan, Michael " +
+            "Coleman, Eugene Myers and Philipp J. Keller.: Real-Time Adaptive Light-Sheet " +
+            "Microscopy Recovers High Resolution in Large Living Organisms. Nat " +
+            "Biotechnol. 2016";
+  }
+
   public HashMap<FocusMeasures.FocusMeasure, Variable<Boolean>> getSelectedFeaturesMap()
   {
     return mSelectedFeaturesMap;
@@ -318,5 +328,15 @@ public class MeasureImageQualityInstruction extends
     }
     variables[i] = mKeyMustContainString;
     return variables;
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{FocusMeasuresContainer.class};
   }
 }

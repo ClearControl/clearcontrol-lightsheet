@@ -122,6 +122,11 @@ public class AutoFocusSinglePlaneInstruction extends
     return copied;
   }
 
+  @Override
+  public String getDescription() {
+    return "Auto-focus the microscope at a given control plane. Therefore, deltaZ and alpha of a given illumination-arm are changed.";
+  }
+
   public BoundedVariable<Integer> getControlPlaneIndex()
   {
     return mControlPlaneIndex;
@@ -137,5 +142,15 @@ public class AutoFocusSinglePlaneInstruction extends
   {
     return new Variable[]
     { getControlPlaneIndex(), getDetectionArmIndex() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

@@ -48,4 +48,9 @@ public class MultipleExecutorInstruction extends InstructionBase
   {
     return new MultipleExecutorInstruction(schedulersToExecute);
   }
+
+  @Override
+  public String getDescription() {
+    return "DEPRECATED: Executes a list of instructions";
+  }
 }

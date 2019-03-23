@@ -55,4 +55,19 @@ public class RemovePredecessorInstructionsInstruction extends LightSheetMicrosco
         RemovePredecessorInstructionsInstruction copied = new RemovePredecessorInstructionsInstruction(getLightSheetMicroscope());
         return copied;
     }
+
+    @Override
+    public String getDescription() {
+        return "Removes the instruction before this one and itself in the instruction list.";
+    }
+
+    @Override
+    public Class[] getProducedContainerClasses() {
+        return new Class[0];
+    }
+
+    @Override
+    public Class[] getConsumedContainerClasses() {
+        return new Class[0];
+    }
 }

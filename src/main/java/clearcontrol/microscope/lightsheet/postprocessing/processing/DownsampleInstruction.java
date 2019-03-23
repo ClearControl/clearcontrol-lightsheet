@@ -117,6 +117,11 @@ public class DownsampleInstruction extends
   }
 
   @Override
+  public String getDescription() {
+    return "Downsamples all stacks in a given container from the warehouse and puts the results back to the warehouse.";
+  }
+
+  @Override
   public Variable[] getProperties()
   {
     return new Variable[]
@@ -136,5 +141,15 @@ public class DownsampleInstruction extends
   public BoundedVariable<Double> getDownSampleFactorZ()
   {
     return mDownSampleFactorZ;
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
   }
 }

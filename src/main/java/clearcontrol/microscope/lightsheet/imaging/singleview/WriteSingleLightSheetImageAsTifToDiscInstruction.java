@@ -41,4 +41,9 @@ public class WriteSingleLightSheetImageAsTifToDiscInstruction extends
                                                                 mLightSheetIndex,
                                                                 getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "DEPRECATED: " + super.getDescription();
+  }
 }

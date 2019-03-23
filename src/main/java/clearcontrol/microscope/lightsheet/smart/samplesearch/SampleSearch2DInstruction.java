@@ -137,4 +137,19 @@ public class SampleSearch2DInstruction extends
   {
     return new SampleSearch2DInstruction(getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Searches for samples in X/Y and saves the positions in a MoveStageInstruction.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
+  }
 }

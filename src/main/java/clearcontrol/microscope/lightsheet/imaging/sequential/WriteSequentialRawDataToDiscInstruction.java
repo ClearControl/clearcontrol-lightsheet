@@ -49,4 +49,19 @@ public class WriteSequentialRawDataToDiscInstruction extends
   {
     return new WriteSequentialRawDataToDiscInstruction(getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Save raw data from sequential acquisition to disc.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{SequentialImageDataContainer.class};
+  }
 }

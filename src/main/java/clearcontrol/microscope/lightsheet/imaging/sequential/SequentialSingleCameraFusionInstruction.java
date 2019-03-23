@@ -132,6 +132,11 @@ public class SequentialSingleCameraFusionInstruction extends
   }
 
   @Override
+  public String getDescription() {
+    return "DEPRECATED. Fuses images from cameras individually. No fusion of images from different cameras.";
+  }
+
+  @Override
   public Variable[] getProperties()
   {
     return new Variable[0];
@@ -140,5 +145,15 @@ public class SequentialSingleCameraFusionInstruction extends
   public BoundedVariable<Integer> getCameraIndex()
   {
     return cameraIndex;
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{FusedImageDataContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{SequentialImageDataContainer.class};
   }
 }

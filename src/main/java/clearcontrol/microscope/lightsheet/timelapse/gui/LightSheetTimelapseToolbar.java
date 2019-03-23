@@ -3,8 +3,12 @@ package clearcontrol.microscope.lightsheet.timelapse.gui;
 import clearcontrol.instructions.ExecutableInstructionList;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.gui.InstructionListBuilderGUI;
+import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.DataWarehouseUtilities;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -70,15 +74,60 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
     }
 */
     {
-      int lRow = 0;
+      final String defaultStyle = "-fx-background-color: #EEEEEE;";
+      final String defaultSelectedStyle = "-fx-background-color: #DDDDDD;";
+      final String imageProducerStyle = "-fx-background-color: #DDFFDD;";
+      final String imageProducerSelectedStyle = "-fx-background-color: #CCFFCC;";
+      final String imageConsumerStyle = "-fx-background-color: #FFDDDD;";
+      final String imageConsumerSelectedStyle = "-fx-background-color: #FFCCCC;";
+      final String imageProcessorStyle = "-fx-background-color: #FFFFDD;";
+      final String imageProcessorSelectedStyle = "-fx-background-color: #FFFFCC;";
+      final String imageAnalyserStyle = "-fx-background-color: #DDFFFF;";
+      final String imageAnalyserSelectedStyle = "-fx-background-color: #CCFFFF;";
+
       ExecutableInstructionList<LightSheetMicroscope> list = pLightSheetTimelapse.getCurrentProgram();
-      final CustomGridPane lSchedulerChecklistGridPane = new InstructionListBuilderGUI<LightSheetMicroscope>(list);
+      final InstructionListBuilderGUI<LightSheetMicroscope> lSchedulerChecklistGridPane = new InstructionListBuilderGUI<LightSheetMicroscope>(list);
+      lSchedulerChecklistGridPane.getCurrentProgramListView().setCellFactory(param -> new ListCell<InstructionInterface>() {
+        @Override
+        protected void updateItem(InstructionInterface item, boolean empty) {
+          super.updateItem(item, empty);
+
+          if (empty || item == null) {
+            setText(null);
+            setStyle(null);
+          } else if (!(item instanceof DataWarehouseInstructionBase)) {
+            setText(item.toString());
+            setStyle(defaultStyle);
+          } else {
+            setText(item.toString());
+            DataWarehouseInstructionBase instruction = (DataWarehouseInstructionBase) item;
+            Class[] consumedContainers = instruction.getConsumedContainerClasses();
+            Class[] producedContainers = instruction.getProducedContainerClasses();
+
+            if (DataWarehouseUtilities.containsImageContainer(producedContainers)) {// image producer
+              if (DataWarehouseUtilities.containsImageContainer(consumedContainers)) {// image consumer and producer, aka processor
+                setStyle(isSelected()?imageProcessorSelectedStyle:imageProcessorStyle);
+              } else { // image producer only
+                setStyle(isSelected()?imageProducerSelectedStyle:imageProducerStyle);
+              }
+            } else if (DataWarehouseUtilities.containsImageContainer(consumedContainers)) { // image consumer only
+              if (producedContainers.length > 0) { // image consumer, producing something else; aka analyser
+                setStyle(isSelected()?imageAnalyserSelectedStyle:imageAnalyserStyle);
+              } else { // image consumer only
+                setStyle(isSelected()?imageConsumerSelectedStyle:imageConsumerStyle);
+              }
+            } else {
+              setStyle(isSelected()?defaultSelectedStyle:defaultStyle);
+            }
+          }
+        }
+      });
 
       pLightSheetTimelapse.getLastExecutedSchedulerIndexVariable().addSetListener((pCurrentValue, pNewValue) -> {
         {
           info("Timelapse is changing");
 
-          ListView programListView = ((InstructionListBuilderGUI) lSchedulerChecklistGridPane).getCurrentProgramListView();
+          ListView programListView = lSchedulerChecklistGridPane.getCurrentProgramListView();
           Integer index = (Integer) pLightSheetTimelapse.getLastExecutedSchedulerIndexVariable().get();
           if (index >= 0 && index < programListView.getItems().size()) {
             Object object = programListView.getItems().get(index);
@@ -105,18 +154,48 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         }
       });
 
+
       GridPane.setColumnSpan(lSchedulerChecklistGridPane, 3);
+      GridPane.setRowSpan(lSchedulerChecklistGridPane, 2);
       add(lSchedulerChecklistGridPane, 0, mRow);
 
-      CustomGridPane pane = new CustomGridPane();
 
-      pane.add(debugTextArea, 0, 0);
+      { // instruction kind legend
+        CustomGridPane legend = new CustomGridPane();
 
-      TitledPane debugPane = new TitledPane("Debug", pane);
-      GridPane.setFillHeight(debugPane, true);
-      GridPane.setFillWidth(debugPane, true);
-      add(debugPane, 3, mRow);
-      mRow++;
+        String legendStyle = " -fx-border-width: 3px, 3px, 3px, 3px;";
+
+        Label producerLegend = new Label("Image producer\n[] -> [I]");
+        producerLegend.setStyle(imageProducerStyle + legendStyle);
+        legend.add(producerLegend, 0,0 );
+
+        Label processorLegend = new Label("Image processor\n[I] -> [I]");
+        processorLegend.setStyle(imageProcessorStyle + legendStyle);
+        legend.add(processorLegend, 0,1 );
+
+        Label analyserLegend = new Label("Image analyser\n[I] -> [A]");
+        analyserLegend.setStyle(imageAnalyserStyle + legendStyle);
+        legend.add(analyserLegend, 0,2 );
+
+        Label consumerLegend = new Label("Image consumer\n[I] -> []");
+        consumerLegend.setStyle(imageConsumerStyle + legendStyle);
+        legend.add(consumerLegend, 0,3 );
+
+        add(legend, 3, mRow, 2, 1);
+        mRow++;
+      }
+
+      {
+        CustomGridPane pane = new CustomGridPane();
+
+        pane.add(debugTextArea, 0, 0);
+
+        TitledPane debugPane = new TitledPane("Debug", pane);
+        GridPane.setFillHeight(debugPane, true);
+        GridPane.setFillWidth(debugPane, true);
+        add(debugPane, 3, mRow);
+        mRow++;
+      }
     }
 
     CustomGridPane lAdvancedOptionsGridPane =

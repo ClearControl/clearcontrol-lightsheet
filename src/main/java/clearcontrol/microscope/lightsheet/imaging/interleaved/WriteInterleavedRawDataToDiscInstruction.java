@@ -37,4 +37,19 @@ public class WriteInterleavedRawDataToDiscInstruction extends
   {
     return new WriteInterleavedRawDataToDiscInstruction(getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Write raw data from interleaved acquisition to disc.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{InterleavedImageDataContainer.class};
+  }
 }

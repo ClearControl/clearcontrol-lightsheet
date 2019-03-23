@@ -5,11 +5,14 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.containers.DefaultStackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
 import clearcontrol.stack.StackInterface;
 import net.haesleinhuepf.clij.CLIJ;
 import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
+
+import java.util.Stack;
 
 /**
  * The CropInstruction takes a StackInterfaceContainer from the DataWarehouse,
@@ -78,15 +81,7 @@ public class CropInstruction extends DataWarehouseInstructionBase
   {
     StackInterfaceContainer lSourceContainer =
                                              getDataWarehouse().getOldestContainer(StackInterfaceContainer.class);
-    StackInterfaceContainer lTargetContainer =
-                                             new StackInterfaceContainer(pTimePoint)
-                                             {
-                                               @Override
-                                               public boolean isDataComplete()
-                                               {
-                                                 return true;
-                                               }
-                                             };
+    StackInterfaceContainer lTargetContainer = new DefaultStackInterfaceContainer(pTimePoint);
 
     for (String key : lSourceContainer.keySet())
     {
@@ -126,6 +121,13 @@ public class CropInstruction extends DataWarehouseInstructionBase
                                mCropXVariable.get(),
                                mCropWidthVariable.get(),
                                mCropHeightVariable.get());
+  }
+
+  @Override
+  public String getDescription() {
+    return " The CropInstruction takes a StackInterfaceContainer from the DataWarehouse, " +
+            "crops all images in it according to its configuration and put the result back " +
+            "to the DataWarehouse in a new container.";
   }
 
   public BoundedVariable<Integer> getCropXVariable()
@@ -168,5 +170,15 @@ public class CropInstruction extends DataWarehouseInstructionBase
       getCropWidthVariable(),
       getCropHeightVariable(),
       getCropDepthVariable() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
   }
 }

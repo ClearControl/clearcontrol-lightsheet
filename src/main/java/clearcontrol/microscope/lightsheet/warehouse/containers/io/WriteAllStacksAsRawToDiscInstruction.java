@@ -49,4 +49,19 @@ public class WriteAllStacksAsRawToDiscInstruction extends
     return new WriteAllStacksAsRawToDiscInstruction(mContainerClass,
                                                     getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Write image stacks from a given container to disc.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
+  }
 }

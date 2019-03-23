@@ -48,4 +48,9 @@ public class SwitchLaserOnOffInstruction extends InstructionBase
   {
     return new SwitchLaserOnOffInstruction(mLaserDevice, mTurnOn);
   }
+
+  @Override
+  public String getDescription() {
+    return "Switch a laser on or off.";
+  }
 }

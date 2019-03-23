@@ -70,4 +70,19 @@ public class ViewStack3DInstruction<T extends StackInterfaceContainer>
     return new ViewStack3DInstruction(getStackInterfaceContainerClass(),
                                       getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "View stacks from a given container in the 3D viewer windows (ClearVolume).";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
+  }
 }

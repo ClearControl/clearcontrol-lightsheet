@@ -208,4 +208,22 @@ public class InterleavedAcquisitionInstruction extends
   {
     return new InterleavedAcquisitionInstruction(getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Acquire an image stack per camera where every slice is " +
+            "imaged several times for each light sheet. A stack might contain slices like:\n" +
+            "\n" +
+            "C0L0Z0 C0L1Z0 C0L2Z0 C0L3Z0 C0L0Z1 C0L1Z1 C0L2Z1 C0L3Z1 ...";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{InterleavedImageDataContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
+  }
 }

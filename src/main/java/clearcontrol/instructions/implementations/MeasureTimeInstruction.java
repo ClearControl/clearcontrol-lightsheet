@@ -53,6 +53,11 @@ public class MeasureTimeInstruction extends InstructionBase
     return new MeasureTimeInstruction(mMeasuredTimeKeyVariable.get());
   }
 
+  @Override
+  public String getDescription() {
+    return "Measures the current time and stores it under the name " + mMeasuredTimeKeyVariable.get() + " in a list.";
+  }
+
   public Variable<String> getMeasuredTimeKeyVariable()
   {
     return mMeasuredTimeKeyVariable;

@@ -72,6 +72,11 @@ public class ChangeLightSheetWidthInstruction extends
                                                 mLightSheetWidth.get());
   }
 
+  @Override
+  public String getDescription() {
+    return "Change the width of all illumination-arms to a given value.";
+  }
+
   public BoundedVariable<Double> getLightSheetWidth()
   {
     return mLightSheetWidth;
@@ -82,5 +87,15 @@ public class ChangeLightSheetWidthInstruction extends
   {
     return new Variable[]
     { getLightSheetWidth() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

@@ -75,6 +75,11 @@ public class ChangeLightSheetHeightInstruction extends
                                                  mLightSheetHeight.get());
   }
 
+  @Override
+  public String getDescription() {
+    return "Change the height of an illumination-arm to a given value.";
+  }
+
   public BoundedVariable<Double> getLightSheetHeight()
   {
     return mLightSheetHeight;
@@ -90,5 +95,15 @@ public class ChangeLightSheetHeightInstruction extends
   {
     return new Variable[]
     { getLightSheetHeight(), getLightSheetIndex() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

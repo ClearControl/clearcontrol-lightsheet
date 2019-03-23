@@ -188,6 +188,11 @@ public class BasicThreeAxesStageInstruction extends InstructionBase
   }
 
   @Override
+  public String getDescription() {
+    return "Move a X/Y/Z stage in small steps along a line.";
+  }
+
+  @Override
   public Variable[] getProperties()
   {
     return new Variable[]

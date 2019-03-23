@@ -27,4 +27,7 @@ public abstract class DataWarehouseInstructionBase extends
   {
     return mDataWarehouse;
   }
+
+  public abstract Class[] getProducedContainerClasses();
+  public abstract Class[] getConsumedContainerClasses();
 }

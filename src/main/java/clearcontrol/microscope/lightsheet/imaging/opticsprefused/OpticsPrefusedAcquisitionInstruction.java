@@ -198,4 +198,22 @@ public class OpticsPrefusedAcquisitionInstruction extends
   {
     return new OpticsPrefusedAcquisitionInstruction(getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Acquires an image stack per camera where all light sheets " +
+            "are on. The image stacks are stored in the DataWarehouse in an " +
+            "OpticsPrefusedImageDataContainer with keys like CXopticsprefused with X " +
+            "representing the camera number.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{OpticsPrefusedImageDataContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
+  }
 }

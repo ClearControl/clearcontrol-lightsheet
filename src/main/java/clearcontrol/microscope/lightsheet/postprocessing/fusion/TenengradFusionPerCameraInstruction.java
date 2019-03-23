@@ -199,6 +199,11 @@ public class TenengradFusionPerCameraInstruction extends
     return new TenengradFusionPerCameraInstruction(getLightSheetMicroscope());
   }
 
+  @Override
+  public String getDescription() {
+    return "Fuses all image stacks in a given container using Tenengrad fusion.";
+  }
+
   public BoundedVariable<Double> getBlurWeightSigmaX()
   {
     return blurWeightSigmaX;
@@ -227,5 +232,15 @@ public class TenengradFusionPerCameraInstruction extends
       getBlurWeightSigmaY(),
       getBlurWeightSigmaZ(),
       getWeightExponent() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{TenengradFusedStackInterfaceContainer.class};
   }
 }

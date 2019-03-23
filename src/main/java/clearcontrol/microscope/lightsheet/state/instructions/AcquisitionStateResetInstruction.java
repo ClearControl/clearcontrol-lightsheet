@@ -70,4 +70,19 @@ public class AcquisitionStateResetInstruction extends
   {
     return new AcquisitionStateResetInstruction(getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Reset the acquisition state (parameters of detection and illumnination arms).";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
+  }
 }

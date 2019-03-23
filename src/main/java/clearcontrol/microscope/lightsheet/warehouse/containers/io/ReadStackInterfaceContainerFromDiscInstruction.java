@@ -185,6 +185,11 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends
                                                               getLightSheetMicroscope());
   }
 
+  @Override
+  public String getDescription() {
+    return "Read raw image data from disc and store it in the DataWarehouse.";
+  }
+
   public BoundedVariable<Integer> getTimepointOffset()
   {
     return mTimepointOffset;
@@ -208,5 +213,15 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends
       getRootFolderVariable(),
       getTimepointOffset(),
       getTimepointStepSize() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{StackInterfaceContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

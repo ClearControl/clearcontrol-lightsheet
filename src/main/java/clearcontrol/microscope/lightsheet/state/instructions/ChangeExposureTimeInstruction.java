@@ -55,6 +55,11 @@ public class ChangeExposureTimeInstruction extends
                                              getLightSheetMicroscope());
   }
 
+  @Override
+  public String getDescription() {
+    return "Change the exposure time.";
+  }
+
   public BoundedVariable<Double> getExposureTimeInSecondsVariable()
   {
     return mExposureTimeInSecondsVariable;
@@ -65,5 +70,15 @@ public class ChangeExposureTimeInstruction extends
   {
     return new Variable[]
     { getExposureTimeInSecondsVariable() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

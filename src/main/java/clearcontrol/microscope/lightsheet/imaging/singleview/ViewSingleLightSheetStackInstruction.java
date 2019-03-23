@@ -78,4 +78,19 @@ public class ViewSingleLightSheetStackInstruction extends
                                                     mLightSheetIndex,
                                                     getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "DEPRECATED: View a stack acquired from a single camera/lightsheet pair.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
+  }
 }

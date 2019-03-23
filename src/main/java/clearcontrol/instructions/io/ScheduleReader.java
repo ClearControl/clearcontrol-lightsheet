@@ -128,6 +128,11 @@ public class ScheduleReader<M extends HasInstructions>  implements LoggingFeatur
           {
             return null;
           }
+
+          @Override
+          public String getDescription() {
+            return null;
+          }
         });
       }
     }

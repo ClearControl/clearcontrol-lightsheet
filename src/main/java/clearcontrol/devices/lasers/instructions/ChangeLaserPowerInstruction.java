@@ -63,6 +63,11 @@ public class ChangeLaserPowerInstruction extends InstructionBase
     return copied;
   }
 
+  @Override
+  public String getDescription() {
+    return "Set laser power to a given value.";
+  }
+
   public BoundedVariable<Double> getLaserPowerInMilliwatt()
   {
     return laserPowerInMilliwatt;

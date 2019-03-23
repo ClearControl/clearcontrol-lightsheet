@@ -158,6 +158,11 @@ public class MoveInBoundingBoxInstruction extends
     return copied;
   }
 
+  @Override
+  public String getDescription() {
+    return "Moves the stack along and X/Y/Z grid in a cube.";
+  }
+
   public BoundedVariable<Double> getMaxXPosition()
   {
     return maxXPosition;
@@ -216,5 +221,15 @@ public class MoveInBoundingBoxInstruction extends
       getStepsX(),
       getStepsY(),
       getStepsZ() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

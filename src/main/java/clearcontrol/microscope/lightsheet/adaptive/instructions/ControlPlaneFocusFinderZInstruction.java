@@ -77,4 +77,19 @@ public class ControlPlaneFocusFinderZInstruction extends
                                                    mControlPlaneIndex,
                                                    getLightSheetMicroscope());
   }
+
+  @Override
+  public String getDescription() {
+    return "Automatically determine the optimal delta-Z for a given illumination arm in a given control plane.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
+  }
 }

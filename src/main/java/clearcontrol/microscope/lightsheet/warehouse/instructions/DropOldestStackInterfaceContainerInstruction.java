@@ -54,4 +54,19 @@ public class DropOldestStackInterfaceContainerInstruction extends
     return new DropOldestStackInterfaceContainerInstruction(mContainerClassToDrop,
                                                             getDataWarehouse());
   }
+
+  @Override
+  public String getDescription() {
+    return "Recylce oldest container of kind " + mContainerClassToDrop;
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{mContainerClassToDrop};
+  }
 }

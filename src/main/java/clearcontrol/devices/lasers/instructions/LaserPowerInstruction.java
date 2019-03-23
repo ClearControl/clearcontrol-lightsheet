@@ -56,4 +56,9 @@ public class LaserPowerInstruction extends InstructionBase implements
   {
     return new LaserPowerInstruction(mLaser, mLaserPowerInPercent);
   }
+
+  @Override
+  public String getDescription() {
+    return "DEPRECATED. Set the power of a laser device.";
+  }
 }

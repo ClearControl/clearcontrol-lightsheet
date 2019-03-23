@@ -5,6 +5,7 @@ import clearcontrol.core.variable.bounded.BoundedVariable;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
 import clearcontrol.stack.StackInterface;
@@ -85,6 +86,11 @@ public class SingleCameraFusionInstruction extends FusionInstruction
                                              mCameraIndexVariable.get());
   }
 
+  @Override
+  public String getDescription() {
+    return "DEPRECATED. Fuses images from cameras individually. No fusion of images from different cameras.";
+  }
+
   public BoundedVariable<Integer> getCameraIndexVariable()
   {
     return mCameraIndexVariable;
@@ -95,5 +101,15 @@ public class SingleCameraFusionInstruction extends FusionInstruction
   {
     return new Variable[]
     { getCameraIndexVariable() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{FusedImageDataContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{SequentialImageDataContainer.class};
   }
 }

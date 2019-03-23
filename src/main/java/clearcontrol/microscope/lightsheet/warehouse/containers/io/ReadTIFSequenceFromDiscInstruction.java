@@ -165,6 +165,11 @@ public class ReadTIFSequenceFromDiscInstruction extends
     return new ReadTIFSequenceFromDiscInstruction(getLightSheetMicroscope());
   }
 
+  @Override
+  public String getDescription() {
+    return "Read Tif images from disc and store it image by image in the DataWarehouse.";
+  }
+
   public Variable<String> getDatasetName() {
     return mDatasetName;
   }
@@ -195,5 +200,15 @@ public class ReadTIFSequenceFromDiscInstruction extends
       getTimepointStepSize(),
       getDatasetName()
     };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

@@ -68,6 +68,11 @@ public class ChangeImageSizeInstruction extends
     return copied;
   }
 
+  @Override
+  public String getDescription() {
+    return "Change image size in X and Y.";
+  }
+
   public BoundedVariable<Integer> getImageWidth()
   {
     return imageWidth;
@@ -83,5 +88,15 @@ public class ChangeImageSizeInstruction extends
   {
     return new Variable[]
     { getImageWidth(), getImageHeight() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

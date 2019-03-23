@@ -74,6 +74,11 @@ public class ChangeLightSheetYInstruction extends
                                             mLightSheetY.get());
   }
 
+  @Override
+  public String getDescription() {
+    return "Change the Y-position of an illumination-arm to a given value.";
+  }
+
   public BoundedVariable<Double> getLightSheetY()
   {
     return mLightSheetY;
@@ -89,5 +94,15 @@ public class ChangeLightSheetYInstruction extends
   {
     return new Variable[]
     { getLightSheetIndex(), getLightSheetY() };
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[0];
   }
 }

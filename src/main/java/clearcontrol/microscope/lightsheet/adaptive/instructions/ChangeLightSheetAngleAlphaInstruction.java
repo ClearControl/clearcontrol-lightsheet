@@ -76,6 +76,11 @@ public class ChangeLightSheetAngleAlphaInstruction extends
                 mLightSheetAngle.get());
     }
 
+    @Override
+    public String getDescription() {
+        return "Change alpha of a given illumination-arm to a given value.";
+    }
+
     public BoundedVariable<Double> getLightSheetAngleAlpha()
     {
         return mLightSheetAngle;
@@ -93,4 +98,13 @@ public class ChangeLightSheetAngleAlphaInstruction extends
                 { getLightSheetAngleAlpha(), getLightSheetIndex() };
     }
 
+    @Override
+    public Class[] getProducedContainerClasses() {
+        return new Class[0];
+    }
+
+    @Override
+    public Class[] getConsumedContainerClasses() {
+        return new Class[0];
+    }
 }

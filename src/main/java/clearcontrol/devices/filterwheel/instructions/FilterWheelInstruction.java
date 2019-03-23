@@ -41,4 +41,9 @@ public class FilterWheelInstruction extends InstructionBase implements
   {
     return new FilterWheelInstruction(mFilterWheelDevice, mPosition);
   }
+
+  @Override
+  public String getDescription() {
+    return "Set a filter wheel to a given position.";
+  }
 }

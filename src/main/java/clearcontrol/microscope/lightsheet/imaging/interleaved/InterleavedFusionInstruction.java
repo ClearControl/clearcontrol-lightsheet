@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.imaging.interleaved;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
+import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.stack.StackInterface;
@@ -63,5 +64,20 @@ public class InterleavedFusionInstruction extends FusionInstruction
   public InterleavedFusionInstruction copy()
   {
     return new InterleavedFusionInstruction(getLightSheetMicroscope());
+  }
+
+  @Override
+  public String getDescription() {
+    return "Fuse image stacks acuired by interleaved acquisition.";
+  }
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[]{FusedImageDataContainer.class};
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    return new Class[]{InterleavedImageDataContainer.class};
   }
 }
