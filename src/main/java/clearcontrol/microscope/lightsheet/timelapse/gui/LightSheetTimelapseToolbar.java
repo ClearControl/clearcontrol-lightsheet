@@ -75,15 +75,19 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
 */
     {
       final String defaultStyle = "-fx-background-color: #EEEEEE;";
-      final String defaultSelectedStyle = "-fx-background-color: #DDDDDD;";
+      final String defaultSelectedStyle = "-fx-background-color: #CCCCCC; -fx-text-fill: #000000;";
+
       final String imageProducerStyle = "-fx-background-color: #DDFFDD;";
-      final String imageProducerSelectedStyle = "-fx-background-color: #CCFFCC;";
+      final String imageProducerSelectedStyle = "-fx-background-color: #BBFFBB; -fx-text-fill: #000000;";
+
       final String imageConsumerStyle = "-fx-background-color: #FFDDDD;";
-      final String imageConsumerSelectedStyle = "-fx-background-color: #FFCCCC;";
+      final String imageConsumerSelectedStyle = "-fx-background-color: #FFBBBB; -fx-text-fill: #000000;";
+
       final String imageProcessorStyle = "-fx-background-color: #FFFFDD;";
-      final String imageProcessorSelectedStyle = "-fx-background-color: #FFFFCC;";
+      final String imageProcessorSelectedStyle = "-fx-background-color: #FFFFBB; -fx-text-fill: #000000;";
+
       final String imageAnalyserStyle = "-fx-background-color: #DDFFFF;";
-      final String imageAnalyserSelectedStyle = "-fx-background-color: #CCFFFF;";
+      final String imageAnalyserSelectedStyle = "-fx-background-color: #BBFFFF; -fx-text-fill: #000000;";
 
       ExecutableInstructionList<LightSheetMicroscope> list = pLightSheetTimelapse.getCurrentProgram();
       final InstructionListBuilderGUI<LightSheetMicroscope> lSchedulerChecklistGridPane = new InstructionListBuilderGUI<LightSheetMicroscope>(list);
@@ -95,29 +99,35 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
           if (empty || item == null) {
             setText(null);
             setStyle(null);
-          } else if (!(item instanceof DataWarehouseInstructionBase)) {
-            setText(item.toString());
-            setStyle(defaultStyle);
-          } else {
-            setText(item.toString());
-            DataWarehouseInstructionBase instruction = (DataWarehouseInstructionBase) item;
-            Class[] consumedContainers = instruction.getConsumedContainerClasses();
-            Class[] producedContainers = instruction.getProducedContainerClasses();
+          } else if (item instanceof InstructionInterface) {
+            boolean isSelected = (lSchedulerChecklistGridPane.getSelectedInstruction() == item);
+            info("Selected: " + isSelected);
 
-            if (DataWarehouseUtilities.containsImageContainer(producedContainers)) {// image producer
-              if (DataWarehouseUtilities.containsImageContainer(consumedContainers)) {// image consumer and producer, aka processor
-                setStyle(isSelected()?imageProcessorSelectedStyle:imageProcessorStyle);
-              } else { // image producer only
-                setStyle(isSelected()?imageProducerSelectedStyle:imageProducerStyle);
-              }
-            } else if (DataWarehouseUtilities.containsImageContainer(consumedContainers)) { // image consumer only
-              if (producedContainers.length > 0) { // image consumer, producing something else; aka analyser
-                setStyle(isSelected()?imageAnalyserSelectedStyle:imageAnalyserStyle);
-              } else { // image consumer only
-                setStyle(isSelected()?imageConsumerSelectedStyle:imageConsumerStyle);
-              }
+             if (!(item instanceof DataWarehouseInstructionBase)) {
+              setText(item.toString());
+              setStyle(isSelected?defaultSelectedStyle:defaultStyle);
             } else {
-              setStyle(isSelected()?defaultSelectedStyle:defaultStyle);
+              setText(item.toString());
+              DataWarehouseInstructionBase instruction = (DataWarehouseInstructionBase) item;
+              Class[] consumedContainers = instruction.getConsumedContainerClasses();
+              Class[] producedContainers = instruction.getProducedContainerClasses();
+
+
+              if (DataWarehouseUtilities.containsImageContainer(producedContainers)) {// image producer
+                if (DataWarehouseUtilities.containsImageContainer(consumedContainers)) {// image consumer and producer, aka processor
+                  setStyle(isSelected ? imageProcessorSelectedStyle : imageProcessorStyle);
+                } else { // image producer only
+                  setStyle(isSelected ? imageProducerSelectedStyle : imageProducerStyle);
+                }
+              } else if (DataWarehouseUtilities.containsImageContainer(consumedContainers)) { // image consumer only
+                if (producedContainers.length > 0) { // image consumer, producing something else; aka analyser
+                  setStyle(isSelected ? imageAnalyserSelectedStyle : imageAnalyserStyle);
+                } else { // image consumer only
+                  setStyle(isSelected ? imageConsumerSelectedStyle : imageConsumerStyle);
+                }
+              } else {
+                setStyle(isSelected ? defaultSelectedStyle : defaultStyle);
+              }
             }
           }
         }
@@ -134,7 +144,10 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
             info("object : " + object);
             programListView.getSelectionModel().select(index.intValue());
             programListView.refresh();
-            //debugTextArea.setText(((LightSheetMicroscope)pLightSheetTimelapse.getMicroscope()).getDataWarehouse().debugText());
+            if (object instanceof InstructionInterface) {
+              info("Description: " + ((InstructionInterface) object).getDescription());
+              debugTextArea.setText(((InstructionInterface) object).getDescription());
+            }
             if ((Integer)pCurrentValue > (Integer)pNewValue) {
               double sumDuration = 0;
               for (Object o : programListView.getItems()) {

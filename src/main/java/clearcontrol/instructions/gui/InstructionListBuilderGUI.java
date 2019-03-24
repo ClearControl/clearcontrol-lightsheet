@@ -18,6 +18,8 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -45,6 +47,7 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
 
     ExecutableInstructionList<M> managedProgram;
     Label lLabel;
+    InstructionInterface selectedInstruction = null;
 
     public InstructionListBuilderGUI(ExecutableInstructionList<M> instructionList) {
         CustomGridPane lSchedulerChecklistGridPane = new CustomGridPane();
@@ -82,9 +85,21 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
             if (mouseEvent.getClickCount() > 0)
             {
                 refreshPropertiesScrollPane();
+                mCurrentProgramScheduleListView.refresh();
             }
         }
     });
+      mCurrentProgramScheduleListView.setOnKeyReleased(new EventHandler<KeyEvent>() {
+          @Override
+          public void handle(KeyEvent event) {
+              if (event.getCode() == KeyCode.UP ||
+                      event.getCode() == KeyCode.DOWN
+              ) {
+                  refreshPropertiesScrollPane();
+                  mCurrentProgramScheduleListView.refresh();
+              }
+          }
+      });
 
       lSchedulerChecklistGridPane.add(mCurrentProgramScheduleListView,
             0,
@@ -173,6 +188,7 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
             mCurrentProgramScheduleListView.setItems(FXCollections.observableArrayList(instructionList));
             mCurrentProgramScheduleListView.getSelectionModel()
                     .select(-1);
+            selectedInstruction = null;
             refreshPropertiesScrollPane();
         });
         GridPane.setValignment(lUnselectButton, VPos.BOTTOM);
@@ -330,8 +346,8 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
         lRow++;
 
         mPropertiesScrollPane = new ScrollPane();
+        mPropertiesScrollPane.setPrefWidth(1000);
         mPropertiesScrollPane.setMinHeight(150);
-        mPropertiesScrollPane.setMaxHeight(150);
         mPropertiesScrollPane.setMaxHeight(450);
         lSchedulerChecklistGridPane.add(mPropertiesScrollPane,
                 2,
@@ -430,9 +446,14 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
             InstructionInterface lInstruction =
                     instructionList.get(mCurrentProgramScheduleListView.getSelectionModel()
                             .getSelectedIndex());
+
+            selectedInstruction = instructionList.get(mCurrentProgramScheduleListView.getSelectionModel()
+                    .getSelectedIndex());
             System.out.println("Selected: "
-                    + instructionList.get(mCurrentProgramScheduleListView.getSelectionModel()
-                    .getSelectedIndex()));
+                    + selectedInstruction);
+
+            CustomGridPane pane = new CustomGridPane();
+
             try
             {
                 Class<?> lInstructionClass = lInstruction.getClass();
@@ -448,23 +469,36 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
                         lInstructionPanelClassName,
                         lInstructionClassName);
                 Class<?> lClass = Class.forName(lInstructionPanelClassName);
-                Constructor<?> lConstructor =
-                        lClass.getConstructor(lInstruction.getClass());
-                Node lPanel = (Node) lConstructor.newInstance(lInstruction);
 
-                mPropertiesScrollPane.setContent(lPanel);
+                if (lClass != null) {
+                    Constructor<?> lConstructor =
+                            lClass.getConstructor(lInstruction.getClass());
+
+                    Node propertiesPanel = (Node) lConstructor.newInstance(lInstruction);
+
+
+                    pane.add(propertiesPanel, 0, 0);
+                }
             }
             catch (ClassNotFoundException e)
             {
                 warning("Cannot find panel for module %s \n",
                         lInstruction.getClass().getSimpleName());
                 // e.printStackTrace();
-                mPropertiesScrollPane.setContent(null);
+                //mPropertiesScrollPane.setContent(null);
             }
             catch (Throwable e)
             {
-                e.printStackTrace();
+                warning("EE: " + e.getMessage());
+                //e.printStackTrace();
             }
+
+            Label descriptionLabel = new Label(lInstruction.getDescription());
+            descriptionLabel.wrapTextProperty().setValue(true);
+            descriptionLabel.setMaxWidth(300);
+            pane.add(descriptionLabel,0, 1);
+            mPropertiesScrollPane.setContent(pane);
+
         }
     }
 
@@ -548,5 +582,9 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
 
     public Labeled getTitledPane() {
         return lLabel;
+    }
+
+    public InstructionInterface getSelectedInstruction() {
+        return selectedInstruction;
     }
 }
