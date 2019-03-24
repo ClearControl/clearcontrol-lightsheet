@@ -204,7 +204,7 @@ public class ReadTIFSequenceFromDiscInstruction extends
 
   @Override
   public Class[] getProducedContainerClasses() {
-    return new Class[0];
+    return new Class[]{StackInterfaceContainer.class};
   }
 
   @Override
