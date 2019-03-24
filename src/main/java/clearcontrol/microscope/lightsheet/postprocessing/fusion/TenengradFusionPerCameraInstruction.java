@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.postprocessing.fusion;
 
 import java.util.ArrayList;
 
+import clearcontrol.microscope.lightsheet.warehouse.instructions.AutoRecyclerInstructionInterface;
 import net.haesleinhuepf.clij.CLIJ;
 import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij.clearcl.ClearCLImage;
@@ -38,7 +39,8 @@ public class TenengradFusionPerCameraInstruction extends
                                                  LightSheetMicroscopeInstructionBase
                                                  implements
                                                  LoggingFeature,
-                                                 PropertyIOableInstructionInterface
+                                                 PropertyIOableInstructionInterface,
+                                                 AutoRecyclerInstructionInterface
 {
 
   private BoundedVariable<Double> blurWeightSigmaX =
@@ -66,6 +68,8 @@ public class TenengradFusionPerCameraInstruction extends
                                                                              -Double.MAX_VALUE,
                                                                              Double.MAX_VALUE,
                                                                              0.001);
+
+  protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after fusing", true);
 
   /**
    * INstanciates a virtual device with a given name
@@ -231,16 +235,24 @@ public class TenengradFusionPerCameraInstruction extends
     { getBlurWeightSigmaX(),
       getBlurWeightSigmaY(),
       getBlurWeightSigmaZ(),
-      getWeightExponent() };
+      getWeightExponent(),
+      getRecycleSavedContainers()};
+  }
+
+  public Variable<Boolean> getRecycleSavedContainers() {
+    return recycleSavedContainers;
   }
 
   @Override
   public Class[] getProducedContainerClasses() {
-    return new Class[]{StackInterfaceContainer.class};
+    return new Class[]{TenengradFusedStackInterfaceContainer.class};
   }
 
   @Override
   public Class[] getConsumedContainerClasses() {
-    return new Class[]{TenengradFusedStackInterfaceContainer.class};
+    if (!recycleSavedContainers.get()) {
+      return new Class[0];
+    }
+    return new Class[]{StackInterfaceContainer.class};
   }
 }

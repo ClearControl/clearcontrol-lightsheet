@@ -40,6 +40,7 @@ public class ResliceInstructionPanel extends CustomGridPane {
 
         add(new Label("Direction"),0 ,0);
         add(directionComboBox, 1, 0);
+        addCheckbox(instruction.getRecycleSavedContainers(), 1);
 
 
     }

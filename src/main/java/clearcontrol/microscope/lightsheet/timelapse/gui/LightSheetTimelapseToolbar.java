@@ -5,6 +5,7 @@ import clearcontrol.instructions.InstructionInterface;
 import clearcontrol.instructions.gui.InstructionListBuilderGUI;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouseUtilities;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.AutoRecyclerInstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -100,8 +101,9 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
             setText(null);
             setStyle(null);
           } else if (item instanceof InstructionInterface) {
+            //info("Selected in: " + lSchedulerChecklistGridPane.getSelectedInstruction());
             boolean isSelected = (lSchedulerChecklistGridPane.getSelectedInstruction() == item);
-            info("Selected: " + isSelected);
+            //info("Selected: " + isSelected);
 
              if (!(item instanceof DataWarehouseInstructionBase)) {
               setText(item.toString());
@@ -110,6 +112,11 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
               setText(item.toString());
               DataWarehouseInstructionBase instruction = (DataWarehouseInstructionBase) item;
               Class[] consumedContainers = instruction.getConsumedContainerClasses();
+              // todo: this might be a temporary workaround. The classes should know by themselfes if they have
+              //       auto-recycling on or not.
+              if (!(instruction instanceof AutoRecyclerInstructionInterface)) {
+                consumedContainers = new Class[0];
+              }
               Class[] producedContainers = instruction.getProducedContainerClasses();
 
 
@@ -128,6 +135,9 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
               } else {
                 setStyle(isSelected ? defaultSelectedStyle : defaultStyle);
               }
+              if (instruction.getDescription().startsWith("DEPRECATED:")) {
+                setStyle(getStyle() + " -fx-strikethrough: true;");
+              }
             }
           }
         }
@@ -143,6 +153,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
             Object object = programListView.getItems().get(index);
             info("object : " + object);
             programListView.getSelectionModel().select(index.intValue());
+            lSchedulerChecklistGridPane.refreshPropertiesScrollPane();
             programListView.refresh();
             if (object instanceof InstructionInterface) {
               info("Description: " + ((InstructionInterface) object).getDescription());

@@ -10,8 +10,8 @@ import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
  * <p>
  * Author: @haesleinhuepf 05 2018
  */
-public abstract class DataWarehouseInstructionBase extends
-                                                   InstructionBase
+public abstract class DataWarehouseInstructionBase extends InstructionBase implements
+                                                   DataWarehouseInstructionInterface
 {
 
   private final DataWarehouse mDataWarehouse;

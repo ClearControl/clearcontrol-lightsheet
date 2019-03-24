@@ -2,6 +2,7 @@ package clearcontrol.microscope.lightsheet.imaging.interleaved;
 
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInterfaceContainerAsRawToDiscInstructionBase;
+import javafx.beans.DefaultProperty;
 
 /**
  * This instructions writes the raw data from the oldest interleaved acquisition
@@ -10,6 +11,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) April 2018
  */
+@Deprecated
 public class WriteInterleavedRawDataToDiscInstruction extends
                                                       WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
@@ -40,7 +42,7 @@ public class WriteInterleavedRawDataToDiscInstruction extends
 
   @Override
   public String getDescription() {
-    return "Write raw data from interleaved acquisition to disc.";
+    return "DEPRECATED: Write raw data from interleaved acquisition to disc.";
   }
 
   @Override

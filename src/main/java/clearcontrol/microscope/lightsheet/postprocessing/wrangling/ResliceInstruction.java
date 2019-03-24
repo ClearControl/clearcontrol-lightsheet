@@ -26,6 +26,7 @@ public class ResliceInstruction extends ProcessAllStacksInCurrentContainerInstru
     public final static Integer BOTTOM = 3;
 
     Variable<Integer> direction = new Variable<Integer>("Direction", 0);
+    protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after reslicing", true);
 
     public ResliceInstruction(DataWarehouse pDataWarehouse) {
         super("Post-processing: Reslicing", pDataWarehouse);
@@ -89,8 +90,13 @@ public class ResliceInstruction extends ProcessAllStacksInCurrentContainerInstru
     @Override
     public Variable[] getProperties() {
         return new Variable[] {
-                direction
+                direction,
+                recycleSavedContainers
         };
+    }
+
+    public Variable<Boolean> getRecycleSavedContainers() {
+        return recycleSavedContainers;
     }
 
     public Variable<Integer> getDirection() {
@@ -104,6 +110,9 @@ public class ResliceInstruction extends ProcessAllStacksInCurrentContainerInstru
 
     @Override
     public Class[] getConsumedContainerClasses() {
+        if (!recycleSavedContainers.get()) {
+            return new Class[0];
+        }
         return new Class[]{StackInterfaceContainer.class};
     }
 }

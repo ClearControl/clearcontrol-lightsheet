@@ -6,6 +6,7 @@ import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.ProcessAllStacksInCurrentContainerInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.AutoRecyclerInstructionInterface;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
 import coremem.enums.NativeTypeEnum;
@@ -22,9 +23,10 @@ import net.haesleinhuepf.clij.clearcl.enums.ImageChannelDataType;
  * Author: @haesleinhuepf
  * 11 2018
  */
-public class DownsampledBackgroundSubtractedMaximumProjectionInstruction extends ProcessAllStacksInCurrentContainerInstruction implements PropertyIOableInstructionInterface {
+public class DownsampledBackgroundSubtractedMaximumProjectionInstruction extends ProcessAllStacksInCurrentContainerInstruction implements PropertyIOableInstructionInterface, AutoRecyclerInstructionInterface {
 
     private BoundedVariable<Double> backgroundDeterminationBlurSigmaXY = new BoundedVariable<Double>("Sigma XY", 5.0, 0.0, Double.MAX_VALUE, 0.001);
+    protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after subtracting background", true);
 
     public DownsampledBackgroundSubtractedMaximumProjectionInstruction(DataWarehouse dataWarehouse) {
         super("Post-processing: Downsampled background subtracted maximum projection", dataWarehouse);
@@ -98,10 +100,15 @@ public class DownsampledBackgroundSubtractedMaximumProjectionInstruction extends
         return backgroundDeterminationBlurSigmaXY;
     }
 
+    public Variable<Boolean> getRecycleSavedContainers() {
+        return recycleSavedContainers;
+    }
+
     @Override
     public Variable[] getProperties() {
         return new Variable[] {
-                backgroundDeterminationBlurSigmaXY
+                backgroundDeterminationBlurSigmaXY,
+                recycleSavedContainers
         };
     }
 
@@ -112,6 +119,9 @@ public class DownsampledBackgroundSubtractedMaximumProjectionInstruction extends
 
     @Override
     public Class[] getConsumedContainerClasses() {
+        if (!recycleSavedContainers.get()) {
+            return new Class[0];
+        }
         return new Class[]{StackInterfaceContainer.class};
     }
 }

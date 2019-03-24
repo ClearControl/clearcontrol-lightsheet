@@ -11,6 +11,7 @@ import clearcontrol.microscope.gui.halcyon.MicroscopeNodeType;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.instructions.io.ScheduleReader;
 import clearcontrol.instructions.io.ScheduleWriter;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -376,7 +377,7 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
             TextField lSearchField = new TextField();
             lSchedulerChecklistGridPane.add(lSearchField, 3, lRow);
             lSchedulerChecklistGridPane.setOnKeyReleased((e) -> {
-                info("keyreleased");
+                //info("keyreleased");
                 tree.setRoot(buildInstructionTree(lFilters,
                         lSearchField.getText(),
                         lIcons));
@@ -433,7 +434,7 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
     }
 
 
-    private void refreshPropertiesScrollPane()
+    public void refreshPropertiesScrollPane()
     {
         /**
          * Dirty hack: Use Java reflections to discover a matching panel TODO:
@@ -497,7 +498,9 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
             descriptionLabel.wrapTextProperty().setValue(true);
             descriptionLabel.setMaxWidth(300);
             pane.add(descriptionLabel,0, 1);
-            mPropertiesScrollPane.setContent(pane);
+            Platform.runLater(() -> {
+                mPropertiesScrollPane.setContent(pane);
+            });
 
         }
     }

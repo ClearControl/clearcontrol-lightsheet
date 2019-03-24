@@ -14,6 +14,7 @@ import clearcontrol.stack.StackInterface;
  * 11 2018
  */
 public abstract class ProcessAllStacksInCurrentContainerInstruction extends DataWarehouseInstructionBase {
+
     public ProcessAllStacksInCurrentContainerInstruction(String instructionName, DataWarehouse dataWarehouse) {
         super(instructionName, dataWarehouse);
     }

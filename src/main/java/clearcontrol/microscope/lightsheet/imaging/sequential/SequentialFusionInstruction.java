@@ -83,6 +83,9 @@ public class SequentialFusionInstruction extends FusionInstruction
 
   @Override
   public Class[] getConsumedContainerClasses() {
+    if (!recycleSavedContainers.get()) {
+      return new Class[0];
+    }
     return new Class[]{SequentialImageDataContainer.class};
   }
 }

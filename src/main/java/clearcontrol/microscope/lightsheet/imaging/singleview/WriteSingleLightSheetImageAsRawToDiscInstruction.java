@@ -12,6 +12,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) April 2018
  */
+@Deprecated
 public class WriteSingleLightSheetImageAsRawToDiscInstruction extends
                                                               WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
@@ -49,7 +50,7 @@ public class WriteSingleLightSheetImageAsRawToDiscInstruction extends
 
   @Override
   public String getDescription() {
-    return "Write sequential raw data from a single view acquisition to disc.";
+    return "DEPRECATED: Write sequential raw data from a single view acquisition to disc.";
   }
 
   @Override
@@ -59,6 +60,9 @@ public class WriteSingleLightSheetImageAsRawToDiscInstruction extends
 
   @Override
   public Class[] getConsumedContainerClasses() {
+    if (recycleSavedContainers.get()) {
+      return new Class[0];
+    }
     return new Class[]{SequentialImageDataContainer.class};
   }
 }

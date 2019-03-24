@@ -13,7 +13,6 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceCon
  *
  * Author: @haesleinhuepf June 2018
  */
-@Deprecated
 public class WriteSpecificStackToSpecificRawFolderInstruction extends
                                                               WriteStackInterfaceContainerAsRawToDiscInstructionBase
                                                               implements
@@ -114,6 +113,9 @@ public class WriteSpecificStackToSpecificRawFolderInstruction extends
 
   @Override
   public Class[] getConsumedContainerClasses() {
+    if (recycleSavedContainers.get()) {
+      return new Class[0];
+    }
     return new Class[] {StackInterfaceContainer.class};
   }
 }

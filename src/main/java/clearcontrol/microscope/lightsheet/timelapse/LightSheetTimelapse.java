@@ -22,6 +22,7 @@ import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcesso
 import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.timelapse.containers.InstructionDurationContainer;
 import clearcontrol.instructions.io.ScheduleWriter;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.AutoRecyclerInstructionInterface;
 import clearcontrol.microscope.timelapse.TimelapseBase;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 
@@ -213,6 +214,9 @@ public class LightSheetTimelapse<M extends HasInstructions> extends TimelapseBas
       double duration = ElapsedTime.measure("instructions execution",
                                             () -> {
                                               lNextSchedulerToRun.enqueue(getTimePointCounterVariable().get());
+                                              if (lNextSchedulerToRun instanceof AutoRecyclerInstructionInterface) {
+                                                ((AutoRecyclerInstructionInterface) lNextSchedulerToRun).autoRecycle();
+                                              }
                                             });
       log("Finished " + lNextSchedulerToRun);
       lNextSchedulerToRun.setDuration(duration);

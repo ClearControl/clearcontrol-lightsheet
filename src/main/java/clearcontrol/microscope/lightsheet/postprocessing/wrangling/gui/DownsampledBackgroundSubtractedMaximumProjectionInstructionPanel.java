@@ -15,5 +15,6 @@ import clearcontrol.microscope.lightsheet.postprocessing.wrangling.DownsampledBa
 public class DownsampledBackgroundSubtractedMaximumProjectionInstructionPanel extends CustomGridPane {
     public DownsampledBackgroundSubtractedMaximumProjectionInstructionPanel(DownsampledBackgroundSubtractedMaximumProjectionInstruction instruction) {
         addDoubleField(instruction.getBackgroundDeterminationBlurSigmaXY(), 0);
+        addCheckbox(instruction.getRecycleSavedContainers(), 1);
     }
 }

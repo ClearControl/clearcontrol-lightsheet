@@ -11,6 +11,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) April 2018
  */
+@Deprecated
 public class WriteOpticsPrefusedRawDataAsRawToDiscInstruction extends
                                                               WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
@@ -41,7 +42,7 @@ public class WriteOpticsPrefusedRawDataAsRawToDiscInstruction extends
 
   @Override
   public String getDescription() {
-    return "Write raw data from optics-prefused acquisition to disc.";
+    return "DEPRECATED: Write raw data from optics-prefused acquisition to disc.";
   }
 
   @Override
@@ -51,6 +52,9 @@ public class WriteOpticsPrefusedRawDataAsRawToDiscInstruction extends
 
   @Override
   public Class[] getConsumedContainerClasses() {
+    if (recycleSavedContainers.get()) {
+      return new Class[0];
+    }
     return new Class[]{OpticsPrefusedImageDataContainer.class};
   }
 }

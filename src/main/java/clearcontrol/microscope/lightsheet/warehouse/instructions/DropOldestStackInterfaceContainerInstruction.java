@@ -16,7 +16,7 @@ public class DropOldestStackInterfaceContainerInstruction extends
                                                           DataWarehouseInstructionBase
                                                           implements
                                                           InstructionInterface,
-                                                          LoggingFeature
+                                                          LoggingFeature, AutoRecyclerInstructionInterface
 {
   Class mContainerClassToDrop;
 
@@ -44,7 +44,8 @@ public class DropOldestStackInterfaceContainerInstruction extends
     DataWarehouse lWarehouse = getDataWarehouse();
     StackInterfaceContainer lContainer =
                                        lWarehouse.getOldestContainer(mContainerClassToDrop);
-    lWarehouse.disposeContainer(lContainer);
+    // no longer necessary because of autorecycling
+    //lWarehouse.disposeContainer(lContainer);
     return true;
   }
 

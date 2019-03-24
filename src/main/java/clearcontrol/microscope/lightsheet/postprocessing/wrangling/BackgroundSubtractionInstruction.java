@@ -6,6 +6,7 @@ import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.postprocessing.ProcessAllStacksInCurrentContainerInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.AutoRecyclerInstructionInterface;
 import clearcontrol.stack.StackInterface;
 import ij.IJ;
 import ij.ImagePlus;
@@ -21,9 +22,10 @@ import net.haesleinhuepf.clij.clearcl.ClearCLImage;
  * Author: @haesleinhuepf
  * 11 2018
  */
-public class BackgroundSubtractionInstruction  extends ProcessAllStacksInCurrentContainerInstruction implements PropertyIOableInstructionInterface {
+public class BackgroundSubtractionInstruction  extends ProcessAllStacksInCurrentContainerInstruction implements PropertyIOableInstructionInterface, AutoRecyclerInstructionInterface {
 
     private BoundedVariable<Double> backgroundDeterminationBlurSigmaXY = new BoundedVariable<Double>("Sigma XY", 5.0, 0.0, Double.MAX_VALUE, 0.001);
+    protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after subtracting background", true);
 
     public BackgroundSubtractionInstruction(DataWarehouse dataWarehouse) {
         super("Post-processing: Subtract background", dataWarehouse);
@@ -98,8 +100,13 @@ public class BackgroundSubtractionInstruction  extends ProcessAllStacksInCurrent
     @Override
     public Variable[] getProperties() {
         return new Variable[] {
-                backgroundDeterminationBlurSigmaXY
+                backgroundDeterminationBlurSigmaXY,
+                recycleSavedContainers
         };
+    }
+
+    public Variable<Boolean> getRecycleSavedContainers() {
+        return recycleSavedContainers;
     }
 
     @Override
@@ -109,6 +116,9 @@ public class BackgroundSubtractionInstruction  extends ProcessAllStacksInCurrent
 
     @Override
     public Class[] getConsumedContainerClasses() {
+        if (!recycleSavedContainers.get()) {
+            return new Class[0];
+        }
         return new Class[]{StackInterfaceContainer.class};
     }
 }

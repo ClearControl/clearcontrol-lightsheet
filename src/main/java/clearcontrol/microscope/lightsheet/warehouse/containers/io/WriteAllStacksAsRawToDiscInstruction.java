@@ -52,7 +52,7 @@ public class WriteAllStacksAsRawToDiscInstruction extends
 
   @Override
   public String getDescription() {
-    return "Write image stacks from a given container to disc.";
+    return "DEPRECATED: Write image stacks from a given container to disc.";
   }
 
   @Override
@@ -62,6 +62,9 @@ public class WriteAllStacksAsRawToDiscInstruction extends
 
   @Override
   public Class[] getConsumedContainerClasses() {
+    if (recycleSavedContainers.get()) {
+      return new Class[0];
+    }
     return new Class[]{StackInterfaceContainer.class};
   }
 }

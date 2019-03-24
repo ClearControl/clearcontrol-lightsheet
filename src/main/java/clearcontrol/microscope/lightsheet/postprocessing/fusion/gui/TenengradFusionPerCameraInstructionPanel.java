@@ -19,5 +19,6 @@ public class TenengradFusionPerCameraInstructionPanel extends
     addDoubleField(instruction.getBlurWeightSigmaY(), 1);
     addDoubleField(instruction.getBlurWeightSigmaZ(), 2);
     addDoubleField(instruction.getWeightExponent(), 3);
+    addCheckbox(instruction.getRecycleSavedContainers(), 4);
   }
 }

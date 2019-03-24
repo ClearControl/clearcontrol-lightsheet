@@ -7,6 +7,7 @@ import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.DefaultStackInterfaceContainer;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.AutoRecyclerInstructionInterface;
 import clearcontrol.microscope.lightsheet.warehouse.instructions.DataWarehouseInstructionBase;
 import clearcontrol.stack.StackInterface;
 import net.haesleinhuepf.clij.CLIJ;
@@ -23,7 +24,8 @@ import java.util.Stack;
  */
 public class CropInstruction extends DataWarehouseInstructionBase
                              implements
-                             PropertyIOableInstructionInterface
+                             PropertyIOableInstructionInterface,
+                             AutoRecyclerInstructionInterface
 {
 
   private BoundedVariable<Integer> mCropXVariable =
@@ -56,6 +58,9 @@ public class CropInstruction extends DataWarehouseInstructionBase
                                                                                    1,
                                                                                    0,
                                                                                    Integer.MAX_VALUE);
+
+  protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after cropping", true);
+
 
   public CropInstruction(DataWarehouse pDataWarehouse,
                          int pCropX,
@@ -169,8 +174,15 @@ public class CropInstruction extends DataWarehouseInstructionBase
       getCropZVariable(),
       getCropWidthVariable(),
       getCropHeightVariable(),
-      getCropDepthVariable() };
+      getCropDepthVariable(),
+      getRecycleSavedContainers()};
   }
+
+
+  public Variable<Boolean> getRecycleSavedContainers() {
+    return recycleSavedContainers;
+  }
+
 
   @Override
   public Class[] getProducedContainerClasses() {
@@ -179,6 +191,9 @@ public class CropInstruction extends DataWarehouseInstructionBase
 
   @Override
   public Class[] getConsumedContainerClasses() {
+    if (!recycleSavedContainers.get()) {
+      return new Class[0];
+    }
     return new Class[]{StackInterfaceContainer.class};
   }
 }

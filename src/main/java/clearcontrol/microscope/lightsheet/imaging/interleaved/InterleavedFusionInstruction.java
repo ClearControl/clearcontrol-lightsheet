@@ -6,6 +6,7 @@ import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusedImageDataContainer;
 import clearcontrol.microscope.lightsheet.processor.fusion.FusionInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.AutoRecyclerInstructionInterface;
 import clearcontrol.stack.StackInterface;
 
 /**
@@ -78,6 +79,9 @@ public class InterleavedFusionInstruction extends FusionInstruction
 
   @Override
   public Class[] getConsumedContainerClasses() {
+    if (!recycleSavedContainers.get()) {
+      return new Class[0];
+    }
     return new Class[]{InterleavedImageDataContainer.class};
   }
 }

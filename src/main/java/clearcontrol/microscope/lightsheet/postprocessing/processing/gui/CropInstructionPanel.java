@@ -20,5 +20,6 @@ public class CropInstructionPanel extends CustomGridPane
     addIntegerField(pInstruction.getCropWidthVariable(), 3);
     addIntegerField(pInstruction.getCropHeightVariable(), 4);
     addIntegerField(pInstruction.getCropDepthVariable(), 5);
+    addCheckbox(pInstruction.getRecycleSavedContainers(), 6);
   }
 }

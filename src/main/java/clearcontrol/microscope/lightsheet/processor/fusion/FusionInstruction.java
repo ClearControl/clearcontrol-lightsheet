@@ -4,11 +4,14 @@ import java.util.Arrays;
 
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
+import clearcontrol.microscope.lightsheet.state.InterpolatedAcquisitionState;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.AutoRecyclerInstructionInterface;
 import clearcontrol.microscope.stacks.StackRecyclerManager;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.StackRequest;
@@ -26,10 +29,13 @@ import coremem.recycling.RecyclerInterface;
  */
 public abstract class FusionInstruction extends
                                         LightSheetMicroscopeInstructionBase
-                                        implements LoggingFeature
+                                        implements LoggingFeature,
+        AutoRecyclerInstructionInterface
 {
   private static Object mLock = new Object();
   private StackInterface mFusedStack = null;
+
+  protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after fusing", true);
 
   /**
    * INstanciates a virtual device with a given name
@@ -149,4 +155,10 @@ public abstract class FusionInstruction extends
   {
     return mFusedStack;
   }
+
+
+  public Variable<Boolean> getRecycleSavedContainers() {
+    return recycleSavedContainers;
+  }
 }
+

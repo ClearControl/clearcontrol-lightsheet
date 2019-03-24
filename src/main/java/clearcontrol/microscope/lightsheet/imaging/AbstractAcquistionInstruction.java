@@ -53,6 +53,7 @@ public abstract class AbstractAcquistionInstruction extends
                                        LightSheetMicroscope pLightSheetMicroscope)
   {
     super(pDeviceName, pLightSheetMicroscope);
+
   }
 
   protected InterpolatedAcquisitionState mCurrentState;

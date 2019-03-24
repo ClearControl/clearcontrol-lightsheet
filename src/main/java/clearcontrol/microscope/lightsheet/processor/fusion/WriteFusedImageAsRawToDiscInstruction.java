@@ -10,6 +10,7 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteStackInte
  * Author: Robert Haase (http://haesleinhuepf.net) at MPI CBG
  * (http://mpi-cbg.de) April 2018
  */
+@Deprecated
 public class WriteFusedImageAsRawToDiscInstruction extends
                                                    WriteStackInterfaceContainerAsRawToDiscInstructionBase
 {
@@ -32,7 +33,7 @@ public class WriteFusedImageAsRawToDiscInstruction extends
 
   @Override
   public String getDescription() {
-    return "Write fused image data as raw to disc.";
+    return "DEPRECATED: Write fused image data as raw to disc.";
   }
 
   @Override
@@ -42,6 +43,9 @@ public class WriteFusedImageAsRawToDiscInstruction extends
 
   @Override
   public Class[] getConsumedContainerClasses() {
+    if (recycleSavedContainers.get()) {
+      return new Class[0];
+    }
     return new Class[]{FusedImageDataContainer.class};
   }
 }

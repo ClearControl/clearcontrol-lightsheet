@@ -1,6 +1,7 @@
 package clearcontrol.microscope.lightsheet.warehouse.containers.io.gui;
 
 import clearcontrol.gui.jfx.custom.gridpane.CustomGridPane;
+import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteAllStacksAsRawToDiscInstruction;
 import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteSpecificStackToSpecificRawFolderInstruction;
 
 /**
@@ -10,13 +11,11 @@ import clearcontrol.microscope.lightsheet.warehouse.containers.io.WriteSpecificS
  * <p>
  * Author: @haesleinhuepf 06 2018
  */
-public class WriteSpecificStackToSpecificRawFolderInstructionPanel extends
+public class WriteAllStacksAsRawToDiscInstructionPanel extends
                                                                    CustomGridPane
 {
-  public WriteSpecificStackToSpecificRawFolderInstructionPanel(WriteSpecificStackToSpecificRawFolderInstruction pInstruction)
+  public WriteAllStacksAsRawToDiscInstructionPanel(WriteAllStacksAsRawToDiscInstruction pInstruction)
   {
-    addStringField(pInstruction.getSourceStackKeyVariable(), 0);
-    addStringField(pInstruction.getTargetRawFolderNameVariable(), 1);
-    addCheckbox(pInstruction.getRecycleSavedContainers(), 2);
+    addCheckbox(pInstruction.getRecycleSavedContainers(), 0);
   }
 }

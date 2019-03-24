@@ -17,5 +17,6 @@ public class DownsampleInstructionPanel extends CustomGridPane
     addDoubleField(pInstruction.getDownSampleFactorX(), 0);
     addDoubleField(pInstruction.getDownSampleFactorX(), 1);
     addDoubleField(pInstruction.getDownSampleFactorX(), 2);
+    addCheckbox(pInstruction.getRecycleSavedContainers(), 3);
   }
 }

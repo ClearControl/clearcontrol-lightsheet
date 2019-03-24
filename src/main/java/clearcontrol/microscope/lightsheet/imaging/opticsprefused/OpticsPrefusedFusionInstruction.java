@@ -73,11 +73,14 @@ public class OpticsPrefusedFusionInstruction extends FusionInstruction
 
   @Override
   public Class[] getProducedContainerClasses() {
-    return new Class[] {OpticsPrefusedImageDataContainer.class};
+    return new Class[] {FusedImageDataContainer.class};
   }
 
   @Override
   public Class[] getConsumedContainerClasses() {
-    return new Class[]{FusedImageDataContainer.class};
+    if (!recycleSavedContainers.get()) {
+      return new Class[0];
+    }
+    return new Class[]{OpticsPrefusedImageDataContainer.class};
   }
 }

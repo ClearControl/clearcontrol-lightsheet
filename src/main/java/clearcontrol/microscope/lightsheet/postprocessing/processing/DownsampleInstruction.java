@@ -42,6 +42,8 @@ public class DownsampleInstruction extends
                                                                                  1.0,
                                                                                  0.0001);
 
+  protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after downsampling", true);
+
   public DownsampleInstruction(DataWarehouse pDataWarehouse)
   {
     super("Post-processing: Downsampling", pDataWarehouse);
@@ -125,7 +127,7 @@ public class DownsampleInstruction extends
   public Variable[] getProperties()
   {
     return new Variable[]
-    { mDownSampleFactorX, mDownSampleFactorY, mDownSampleFactorZ };
+    { mDownSampleFactorX, mDownSampleFactorY, mDownSampleFactorZ, recycleSavedContainers };
   }
 
   public BoundedVariable<Double> getDownSampleFactorX()
@@ -143,6 +145,10 @@ public class DownsampleInstruction extends
     return mDownSampleFactorZ;
   }
 
+  public Variable<Boolean> getRecycleSavedContainers() {
+    return recycleSavedContainers;
+  }
+
   @Override
   public Class[] getProducedContainerClasses() {
     return new Class[]{StackInterfaceContainer.class};
@@ -150,6 +156,9 @@ public class DownsampleInstruction extends
 
   @Override
   public Class[] getConsumedContainerClasses() {
+    if (!recycleSavedContainers.get()) {
+      return new Class[0];
+    }
     return new Class[]{StackInterfaceContainer.class};
   }
 }

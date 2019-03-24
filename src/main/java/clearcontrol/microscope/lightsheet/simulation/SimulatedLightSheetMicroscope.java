@@ -380,8 +380,8 @@ public class SimulatedLightSheetMicroscope extends
     {
       program.add(new SequentialAcquisitionInstruction(this));
       program.add(new SequentialFusionInstruction(this));
-      program.add(new DropOldestStackInterfaceContainerInstruction(SequentialImageDataContainer.class,
-                                                                   getDataWarehouse()));
+      //program.add(new DropOldestStackInterfaceContainerInstruction(SequentialImageDataContainer.class,
+      //                                                             getDataWarehouse()));
       program.add(new WriteFusedImageAsRawToDiscInstruction("sequential",
                                                             this));
     }

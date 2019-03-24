@@ -2,11 +2,13 @@ package clearcontrol.microscope.lightsheet.warehouse.containers.io;
 
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.AutoRecyclerInstructionInterface;
 import clearcontrol.microscope.timelapse.TimelapseInterface;
 import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.sourcesink.sink.FileStackSinkInterface;
@@ -20,11 +22,13 @@ import clearcontrol.stack.sourcesink.sink.FileStackSinkInterface;
 public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase extends
                                                                              LightSheetMicroscopeInstructionBase
                                                                              implements
-                                                                             LoggingFeature
+                                                                             LoggingFeature, AutoRecyclerInstructionInterface
 {
   protected Class mContainerClass;
   protected String[] mImageKeys = null;
   protected String mChannelName = null;
+
+  protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after saving", true);
 
   /**
    * INstanciates a virtual device with a given name
@@ -98,5 +102,16 @@ public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase ext
                                    () -> lSinkInterface.appendStack(pChannelName,
                                                                     lStack));
 
+  }
+
+  public Variable<Boolean> getRecycleSavedContainers() {
+    return recycleSavedContainers;
+  }
+
+  @Override
+  public void autoRecycle() {
+    if (recycleSavedContainers.get()) {
+      AutoRecyclerInstructionInterface.super.autoRecycle();
+    }
   }
 }
