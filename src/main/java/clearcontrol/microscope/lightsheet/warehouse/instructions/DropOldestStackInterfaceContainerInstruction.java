@@ -57,7 +57,7 @@ public class DropOldestStackInterfaceContainerInstruction extends
 
   @Override
   public String getDescription() {
-    return "Recylce oldest container of kind " + mContainerClassToDrop;
+    return "Recycle oldest container of kind " + mContainerClassToDrop;
   }
 
   @Override
