@@ -2,6 +2,8 @@ package clearcontrol.microscope.lightsheet.gui;
 
 import java.util.ArrayList;
 
+import clearcontrol.devices.stages.BasicStageInterface;
+import clearcontrol.devices.stages.kcube.gui.BasicStagePanel;
 import clearcontrol.microscope.lightsheet.timelapse.instructionlist.InstructionList;
 import clearcontrol.microscope.lightsheet.timelapse.instructionlist.gui.InstructionListGUI;
 import javafx.stage.Stage;
@@ -114,6 +116,10 @@ public class LightSheetMicroscopeGUI extends MicroscopeGUI
     addPanelMappingEntry(LightSheetFastFusionProcessor.class,
                          LightSheetFastFusionProcessorPanel.class,
                          MicroscopeNodeType.Other);
+
+    addPanelMappingEntry(BasicStageInterface.class,
+            BasicStagePanel.class,
+            MicroscopeNodeType.Stage);
 
     addPanelMappingEntry(InstructionList.class,
             InstructionListGUI.class,
