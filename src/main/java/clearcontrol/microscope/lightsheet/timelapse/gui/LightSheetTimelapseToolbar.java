@@ -135,7 +135,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
               } else {
                 setStyle(isSelected ? defaultSelectedStyle : defaultStyle);
               }
-              if (instruction.getDescription().startsWith("DEPRECATED:")) {
+              if (instruction.getDescription() != null && instruction.getDescription().startsWith("DEPRECATED:")) {
                 setStyle(getStyle() + " -fx-strikethrough: true;");
               }
             }
