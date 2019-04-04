@@ -14,7 +14,7 @@ import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstr
  * (http://mpi-cbg.de) March 2018
  */
 @Deprecated
-public abstract class AdaptationInstruction extends
+public class AdaptationInstruction extends
                                    LightSheetMicroscopeInstructionBase
                                    implements
                                    InstructionInterface,
@@ -62,7 +62,7 @@ public abstract class AdaptationInstruction extends
     return true;
   }
 
-  /*
+
   @Override
   public AdaptationInstruction copy()
   {
@@ -70,7 +70,6 @@ public abstract class AdaptationInstruction extends
                                      mTargetAdapationModuleClass,
                                      getLightSheetMicroscope());
   }
-  */
 
   @Override
   public String getDescription() {
