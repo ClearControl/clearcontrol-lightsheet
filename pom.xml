@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>net.clearcontrol</groupId>
 		<artifactId>ClearParentPom</artifactId>
-		<version>0.10.0</version>
+		<version>0.12.0</version>
 		<relativePath />
 	</parent>
 
