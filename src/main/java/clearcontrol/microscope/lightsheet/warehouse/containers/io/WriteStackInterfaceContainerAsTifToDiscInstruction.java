@@ -4,11 +4,14 @@ import java.io.File;
 
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
+import clearcontrol.core.variable.Variable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
 import clearcontrol.microscope.lightsheet.warehouse.DataWarehouse;
 import clearcontrol.microscope.lightsheet.warehouse.containers.StackInterfaceContainer;
+import clearcontrol.microscope.lightsheet.warehouse.instructions.AutoRecyclerInstructionInterface;
 import clearcontrol.stack.StackInterface;
 import ij.IJ;
 import ij.ImagePlus;
@@ -24,11 +27,13 @@ import net.haesleinhuepf.clij.CLIJ;
 public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
                                                                 LightSheetMicroscopeInstructionBase
                                                                 implements
-                                                                LoggingFeature
+                                                                LoggingFeature, PropertyIOableInstructionInterface, AutoRecyclerInstructionInterface
 {
   protected Class mContainerClass;
   protected String[] mImageKeys = null;
   protected String mChannelName = null;
+
+  protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after saving", true);
 
   public WriteStackInterfaceContainerAsTifToDiscInstruction(Class pContainerClass,
                                                             LightSheetMicroscope pLightSheetMicroscope)
@@ -162,6 +167,11 @@ public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
 
   }
 
+  public Variable<Boolean> getRecycleSavedContainers() {
+    return recycleSavedContainers;
+  }
+
+
   @Override
   public Class[] getProducedContainerClasses() {
     return new Class[0];
@@ -169,6 +179,14 @@ public class WriteStackInterfaceContainerAsTifToDiscInstruction extends
 
   @Override
   public Class[] getConsumedContainerClasses() {
+    if (!recycleSavedContainers.get()) {
+      return new Class[0];
+    }
     return new Class[] {mContainerClass};
+  }
+
+  @Override
+  public Variable[] getProperties() {
+    return new Variable[]{recycleSavedContainers};
   }
 }
