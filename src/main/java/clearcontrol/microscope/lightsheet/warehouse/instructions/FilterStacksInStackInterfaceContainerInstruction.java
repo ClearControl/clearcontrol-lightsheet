@@ -98,6 +98,7 @@ public class FilterStacksInStackInterfaceContainerInstruction extends
   public Variable[] getProperties()
   {
     return new Variable[]
-    { getFilter() };
+    { getFilter(),
+    getMatchExactly()};
   }
 }
