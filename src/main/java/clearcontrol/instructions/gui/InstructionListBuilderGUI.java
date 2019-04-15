@@ -86,7 +86,6 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
             if (mouseEvent.getClickCount() > 0)
             {
                 refreshPropertiesScrollPane();
-                mCurrentProgramScheduleListView.refresh();
             }
         }
     });
@@ -97,7 +96,6 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
                       event.getCode() == KeyCode.DOWN
               ) {
                   refreshPropertiesScrollPane();
-                  mCurrentProgramScheduleListView.refresh();
               }
           }
       });
@@ -401,8 +399,9 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
                                 .compareTo("Instructions") != 0) {
                             int lSelectedIndexInMainList =
                                     mCurrentProgramScheduleListView.getSelectionModel()
-                                            .getSelectedIndex();
-                            if (lSelectedIndexInMainList < 0)
+                                            .getSelectedIndex() + 1;
+                            warning("index: " + lSelectedIndexInMainList);
+                            if (lSelectedIndexInMainList <= 0)
                                 lSelectedIndexInMainList = instructionList.size();
                             instructionList.add(lSelectedIndexInMainList,
                                     managedProgram.getInstructionSource().getInstructions(item.getParent()
@@ -503,6 +502,7 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
             });
 
         }
+        mCurrentProgramScheduleListView.refresh();
     }
 
     @NotNull
