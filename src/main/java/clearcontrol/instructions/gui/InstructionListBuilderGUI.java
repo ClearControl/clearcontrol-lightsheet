@@ -415,8 +415,7 @@ public class InstructionListBuilderGUI<M extends HasInstructions> extends Custom
                                     .getSelectedIndex() > -1) {
                                 mCurrentProgramScheduleListView.getSelectionModel()
                                         .select(mCurrentProgramScheduleListView.getSelectionModel()
-                                                .getSelectedIndex()
-                                                - 1);
+                                                .getSelectedIndex() + 1);
                             }
                             refreshPropertiesScrollPane();
                         }
