@@ -593,6 +593,9 @@ public class SimulatedLightSheetMicroscope extends
               new WriteAllStacksAsRawToDiscInstruction(StackInterfaceContainer.class,
                                                        this));
 
+    addDevice(0, new WriteAllStacksAsSQYToDiscInstruction(StackInterfaceContainer.class,
+            this));
+
     // ------------------------------------------------------------------------
     // setup reades / simulated acquisition
     addDevice(0, new ReadTIFSequenceFromDiscInstruction(this));
@@ -623,6 +626,8 @@ public class SimulatedLightSheetMicroscope extends
     addDevice(0,
               new ReadStackInterfaceContainerFromDiscInstruction(lInterleavedWaistStackKeys,
                                                                  this));
+
+    addDevice(0, new ReadSpecificRAWStacksFromDiscInstruction(this));
 
     // ------------------------------------------------------------------------
     // setup processing

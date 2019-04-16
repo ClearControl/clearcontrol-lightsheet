@@ -46,9 +46,9 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends
                                                                          0,
                                                                          Integer.MAX_VALUE);
 
-  private Variable<File> mRootFolderVariable;
+  Variable<File> mRootFolderVariable;
 
-  private Variable<Boolean> mRestartFromBeginningWhenReachingEnd =
+  Variable<Boolean> mRestartFromBeginningWhenReachingEnd =
                                                                  new Variable<Boolean>("Restart when reached final file",
                                                                                        false);
 
@@ -64,6 +64,17 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends
     mRootFolderVariable = new Variable("RootFolder",
                                        new File(System.getProperty("user.home")
                                                 + "/Desktop"));
+  }
+
+  ReadStackInterfaceContainerFromDiscInstruction(String name, String[] pDatasetNames,
+                                                 LightSheetMicroscope pLightSheetMicroscope)
+  {
+    super(name, pLightSheetMicroscope);
+    mDatasetNames = pDatasetNames;
+
+    mRootFolderVariable = new Variable("RootFolder",
+            new File(System.getProperty("user.home")
+                    + "/Desktop"));
   }
 
   @Override
@@ -181,8 +192,13 @@ public class ReadStackInterfaceContainerFromDiscInstruction extends
   @Override
   public ReadStackInterfaceContainerFromDiscInstruction copy()
   {
-    return new ReadStackInterfaceContainerFromDiscInstruction(mDatasetNames,
+    ReadStackInterfaceContainerFromDiscInstruction copied = new ReadStackInterfaceContainerFromDiscInstruction(mDatasetNames,
                                                               getLightSheetMicroscope());
+    copied.mRestartFromBeginningWhenReachingEnd.set(mRestartFromBeginningWhenReachingEnd.get());
+    copied.mTimepointOffset.set(mTimepointOffset.get());
+    copied.mTimepointStepSize.set(mTimepointStepSize.get());
+    copied.mRootFolderVariable.set(mRootFolderVariable.get());
+    return copied;
   }
 
   @Override

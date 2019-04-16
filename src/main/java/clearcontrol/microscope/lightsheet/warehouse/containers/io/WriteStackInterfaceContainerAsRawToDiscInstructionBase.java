@@ -28,6 +28,8 @@ public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase ext
   protected String[] mImageKeys = null;
   protected String mChannelName = null;
 
+  protected FileStackSinkInterface fileStackSinkInterface = null;
+
   protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after saving", true);
 
   /**
@@ -54,19 +56,20 @@ public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase ext
   @Override
   public boolean initialize()
   {
-    return false;
+    LightSheetTimelapse lTimelapse =
+            (LightSheetTimelapse) getLightSheetMicroscope().getDevice(TimelapseInterface.class,
+                    0);
+
+    fileStackSinkInterface =
+            lTimelapse.getCurrentFileStackSinkVariable()
+                    .get();
+
+    return true;
   }
 
   @Override
   public boolean enqueue(long pTimePoint)
   {
-    LightSheetTimelapse lTimelapse =
-                                   (LightSheetTimelapse) getLightSheetMicroscope().getDevice(TimelapseInterface.class,
-                                                                                             0);
-    FileStackSinkInterface lFileStackSinkInterface =
-                                                   lTimelapse.getCurrentFileStackSinkVariable()
-                                                             .get();
-
     DataWarehouse lDataWarehouse =
                                  ((LightSheetMicroscope) getLightSheetMicroscope()).getDataWarehouse();
 
@@ -84,11 +87,11 @@ public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase ext
       StackInterface lStack = lContainer.get(key);
       if (mChannelName != null)
       {
-        saveStack(lFileStackSinkInterface, mChannelName, lStack);
+        saveStack(fileStackSinkInterface, mChannelName, lStack);
       }
       else
       {
-        saveStack(lFileStackSinkInterface, key, lStack);
+        saveStack(fileStackSinkInterface, key, lStack);
       }
     }
     return true;
@@ -113,5 +116,19 @@ public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase ext
     if (recycleSavedContainers.get()) {
       AutoRecyclerInstructionInterface.super.autoRecycle();
     }
+  }
+
+
+  @Override
+  public Class[] getProducedContainerClasses() {
+    return new Class[0];
+  }
+
+  @Override
+  public Class[] getConsumedContainerClasses() {
+    if (!recycleSavedContainers.get()) {
+      return new Class[0];
+    }
+    return new Class[]{StackInterfaceContainer.class};
   }
 }

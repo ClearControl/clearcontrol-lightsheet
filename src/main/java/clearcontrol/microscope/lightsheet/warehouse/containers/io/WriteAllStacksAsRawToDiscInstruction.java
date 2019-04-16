@@ -24,6 +24,8 @@ public class WriteAllStacksAsRawToDiscInstruction extends
           pLightSheetMicroscope);
   }
 
+
+
   @Override
   public boolean enqueue(long pTimePoint)
   {
@@ -52,19 +54,7 @@ public class WriteAllStacksAsRawToDiscInstruction extends
 
   @Override
   public String getDescription() {
-    return "DEPRECATED: Write image stacks from a given container to disc.";
+    return "Write image stacks from a given container to disc.";
   }
 
-  @Override
-  public Class[] getProducedContainerClasses() {
-    return new Class[0];
-  }
-
-  @Override
-  public Class[] getConsumedContainerClasses() {
-    if (recycleSavedContainers.get()) {
-      return new Class[0];
-    }
-    return new Class[]{StackInterfaceContainer.class};
-  }
 }
