@@ -5,6 +5,7 @@ import java.util.Arrays;
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.processor.LightSheetFastFusionProcessor;
@@ -30,7 +31,7 @@ import coremem.recycling.RecyclerInterface;
 public abstract class FusionInstruction extends
                                         LightSheetMicroscopeInstructionBase
                                         implements LoggingFeature,
-        AutoRecyclerInstructionInterface
+        AutoRecyclerInstructionInterface, PropertyIOableInstructionInterface
 {
   private static Object mLock = new Object();
   private StackInterface mFusedStack = null;
@@ -142,6 +143,11 @@ public abstract class FusionInstruction extends
                                             new FusedImageDataContainer(lTimePoint);
     lFusedContainer.put("fused", lFusedStack);
     lDataWarehouse.put("fused_" + lTimePoint, lFusedContainer);
+  }
+
+  @Override
+  public Variable[] getProperties() {
+    return new Variable[] {recycleSavedContainers};
   }
 
   /**

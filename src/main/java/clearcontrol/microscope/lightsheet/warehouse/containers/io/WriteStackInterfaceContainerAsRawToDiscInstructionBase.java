@@ -3,6 +3,7 @@ package clearcontrol.microscope.lightsheet.warehouse.containers.io;
 import clearcl.util.ElapsedTime;
 import clearcontrol.core.log.LoggingFeature;
 import clearcontrol.core.variable.Variable;
+import clearcontrol.instructions.PropertyIOableInstructionInterface;
 import clearcontrol.microscope.lightsheet.LightSheetMicroscope;
 import clearcontrol.microscope.lightsheet.instructions.LightSheetMicroscopeInstructionBase;
 import clearcontrol.microscope.lightsheet.timelapse.LightSheetTimelapse;
@@ -22,7 +23,7 @@ import clearcontrol.stack.sourcesink.sink.FileStackSinkInterface;
 public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase extends
                                                                              LightSheetMicroscopeInstructionBase
                                                                              implements
-                                                                             LoggingFeature, AutoRecyclerInstructionInterface
+                                                                             LoggingFeature, AutoRecyclerInstructionInterface, PropertyIOableInstructionInterface
 {
   protected Class mContainerClass;
   protected String[] mImageKeys = null;
@@ -118,6 +119,10 @@ public abstract class WriteStackInterfaceContainerAsRawToDiscInstructionBase ext
     }
   }
 
+  @Override
+  public Variable[] getProperties() {
+    return new Variable[] {recycleSavedContainers};
+  }
 
   @Override
   public Class[] getProducedContainerClasses() {
