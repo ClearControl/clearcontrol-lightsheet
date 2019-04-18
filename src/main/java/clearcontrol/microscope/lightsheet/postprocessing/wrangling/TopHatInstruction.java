@@ -11,7 +11,6 @@ import clearcontrol.stack.StackInterface;
 import clearcontrol.stack.metadata.StackMetaData;
 import net.haesleinhuepf.clij.CLIJ;
 import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
-import net.haesleinhuepf.clij.clearcl.ClearCLImage;
 
 /**
  * DownsampleByHalfMedianInstruction
@@ -21,21 +20,26 @@ import net.haesleinhuepf.clij.clearcl.ClearCLImage;
  * Author: @haesleinhuepf
  * 11 2018
  */
-public class MedianInstruction extends ProcessAllStacksInCurrentContainerInstruction implements PropertyIOableInstructionInterface, AutoRecyclerInstructionInterface {
+public class TopHatInstruction extends ProcessAllStacksInCurrentContainerInstruction implements PropertyIOableInstructionInterface, AutoRecyclerInstructionInterface {
     protected Variable<Boolean> recycleSavedContainers = new Variable<Boolean> ("Recycle containers after filtering", true);
-    protected BoundedVariable<Integer> radius = new BoundedVariable<Integer>("Radius in pixels", 2, 1, Integer.MAX_VALUE);
+    protected BoundedVariable<Integer> radiusXY = new BoundedVariable<Integer>("Radius in XY in pixels", 2, 0, Integer.MAX_VALUE);
+    protected BoundedVariable<Integer> radiusZ = new BoundedVariable<Integer>("Radius in Z in pixels", 0, 0, Integer.MAX_VALUE);
 
-    public MedianInstruction(DataWarehouse dataWarehouse) {
-        super("Post-processing: Median filter in XY", dataWarehouse);
+    public TopHatInstruction(DataWarehouse dataWarehouse) {
+        super("Post-processing: Top-hat filter", dataWarehouse);
     }
 
     @Override
     protected StackInterface processStack(StackInterface stack) {
         CLIJ clij = CLIJ.getInstance();
         ClearCLBuffer inputCL = clij.convert(stack, ClearCLBuffer.class);
-        ClearCLBuffer outputCL3D = clij.create(new long[]{inputCL.getWidth(), inputCL.getHeight(), inputCL.getDepth()}, inputCL.getNativeType());
+        ClearCLBuffer tempCL3D = clij.create(inputCL);
+        ClearCLBuffer temp2CL3D = clij.create(inputCL);
+        ClearCLBuffer outputCL3D = clij.create(inputCL);
 
-        clij.op().medianSliceBySliceSphere(inputCL, outputCL3D, radius.get(), radius.get());
+        clij.op().minimumBox(inputCL, tempCL3D, radiusXY.get(), radiusXY.get(), radiusZ.get());
+        clij.op().maximumBox(tempCL3D, temp2CL3D, radiusXY.get(), radiusXY.get(), radiusZ.get());
+        clij.op().subtractImages(inputCL, temp2CL3D, outputCL3D);
 
         StackInterface resultStack = clij.convert(outputCL3D, StackInterface.class);
         StackMetaData metaData = stack.getMetaData().clone();
@@ -46,22 +50,25 @@ public class MedianInstruction extends ProcessAllStacksInCurrentContainerInstruc
         resultStack.setMetaData(metaData);
 
         inputCL.close();
+        tempCL3D.close();
+        temp2CL3D.close();
         outputCL3D.close();
 
         return resultStack;
     }
 
     @Override
-    public MedianInstruction copy() {
-        MedianInstruction copied = new MedianInstruction(getDataWarehouse());
+    public TopHatInstruction copy() {
+        TopHatInstruction copied = new TopHatInstruction(getDataWarehouse());
         copied.recycleSavedContainers.set(recycleSavedContainers.get());
-        copied.radius.set(radius.get());
+        copied.radiusXY.set(radiusXY.get());
+        copied.radiusZ.set(radiusZ.get());
         return copied;
     }
 
     @Override
     public String getDescription() {
-        return "Apply a median filter in XY.";
+        return "Apply a top-hat filter.";
     }
 
     public Variable<Boolean> getRecycleSavedContainers() {
@@ -82,10 +89,14 @@ public class MedianInstruction extends ProcessAllStacksInCurrentContainerInstruc
 
     @Override
     public Variable[] getProperties() {
-        return new Variable[]{getRecycleSavedContainers(), getRadius()};
+        return new Variable[]{getRecycleSavedContainers(), getRadiusXY(), getRadiusZ()};
     }
 
-    public BoundedVariable<Integer> getRadius() {
-        return radius;
+    public BoundedVariable<Integer> getRadiusXY() {
+        return radiusXY;
+    }
+
+    public BoundedVariable<Integer> getRadiusZ() {
+        return radiusZ;
     }
 }

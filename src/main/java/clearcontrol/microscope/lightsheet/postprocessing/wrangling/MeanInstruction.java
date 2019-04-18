@@ -26,7 +26,7 @@ public class MeanInstruction extends ProcessAllStacksInCurrentContainerInstructi
     protected BoundedVariable<Integer> radiusZ = new BoundedVariable<Integer>("Radius in Z in pixels", 0, 0, Integer.MAX_VALUE);
 
     public MeanInstruction(DataWarehouse dataWarehouse) {
-        super("Post-processing: Mean in XY", dataWarehouse);
+        super("Post-processing: Mean filter", dataWarehouse);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class MeanInstruction extends ProcessAllStacksInCurrentContainerInstructi
         ClearCLBuffer inputCL = clij.convert(stack, ClearCLBuffer.class);
         ClearCLBuffer outputCL3D = clij.create(new long[]{inputCL.getWidth(), inputCL.getHeight(), inputCL.getDepth()}, inputCL.getNativeType());
 
-        clij.op().meanBox(inputCL, outputCL3D, radiusXY.get(), radiusXY.get(), 0);
+        clij.op().meanBox(inputCL, outputCL3D, radiusXY.get(), radiusXY.get(), radiusZ.get());
 
         StackInterface resultStack = clij.convert(outputCL3D, StackInterface.class);
         StackMetaData metaData = stack.getMetaData().clone();
@@ -56,12 +56,13 @@ public class MeanInstruction extends ProcessAllStacksInCurrentContainerInstructi
         MeanInstruction copied = new MeanInstruction(getDataWarehouse());
         copied.recycleSavedContainers.set(recycleSavedContainers.get());
         copied.radiusXY.set(radiusXY.get());
+        copied.radiusZ.set(radiusZ.get());
         return copied;
     }
 
     @Override
     public String getDescription() {
-        return "Apply a median filter in XY.";
+        return "Apply a mean filter.";
     }
 
     public Variable<Boolean> getRecycleSavedContainers() {
@@ -82,7 +83,7 @@ public class MeanInstruction extends ProcessAllStacksInCurrentContainerInstructi
 
     @Override
     public Variable[] getProperties() {
-        return new Variable[]{getRecycleSavedContainers(), getRadiusXY()};
+        return new Variable[]{getRecycleSavedContainers(), getRadiusXY(), getRadiusZ()};
     }
 
     public BoundedVariable<Integer> getRadiusXY() {
