@@ -24,7 +24,9 @@ public class StackInterfaceToImagePlusConverter extends AbstractCLIJConverter<St
     @Override
     public ImagePlus convert(StackInterface source) {
         ClearCLBuffer buffer = clij.convert(source, ClearCLBuffer.class);
-        return clij.convert(buffer, ImagePlus.class);
+        ImagePlus result = clij.convert(buffer, ImagePlus.class);
+        buffer.close();
+        return result;
     }
 
     @Override
