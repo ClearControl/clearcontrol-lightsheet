@@ -34,7 +34,6 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
     LightSheetTimelapse mLightSheetTimelapse = null;
 
 
-  TextArea debugTextArea = new TextArea();
 
   /**
    * Instanciates a lightsheet timelapse toolbar.
@@ -155,10 +154,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
             programListView.getSelectionModel().select(index.intValue());
             lSchedulerChecklistGridPane.refreshPropertiesScrollPane();
             programListView.refresh();
-            if (object instanceof InstructionInterface) {
-              info("Description: " + ((InstructionInterface) object).getDescription());
-              debugTextArea.setText(((InstructionInterface) object).getDescription());
-            }
+
             if ((Integer)pCurrentValue > (Integer)pNewValue) {
               double sumDuration = 0;
               for (Object o : programListView.getItems()) {
@@ -171,6 +167,7 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
               }
               final double duration = sumDuration;
               Platform.runLater(() -> {
+                System.out.println("refreshing GUI");
                 ((InstructionListBuilderGUI) lSchedulerChecklistGridPane).getTitledPane().setText("Schedule {" + String.format("%.1f", duration)  + " ms}");
               });
             }
@@ -206,18 +203,6 @@ public class LightSheetTimelapseToolbar extends TimelapseToolbar
         legend.add(consumerLegend, 0,3 );
 
         add(legend, 3, mRow, 2, 1);
-        mRow++;
-      }
-
-      {
-        CustomGridPane pane = new CustomGridPane();
-
-        pane.add(debugTextArea, 0, 0);
-
-        TitledPane debugPane = new TitledPane("Debug", pane);
-        GridPane.setFillHeight(debugPane, true);
-        GridPane.setFillWidth(debugPane, true);
-        add(debugPane, 3, mRow);
         mRow++;
       }
     }
