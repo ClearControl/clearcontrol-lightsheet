@@ -64,4 +64,18 @@ public class ReadSpecificRAWStacksFromDiscInstruction extends ReadStackInterface
         copied.stackNames.set(stackNames.get());
         return copied;
     }
+
+
+    @Override
+    public Variable[] getProperties()
+    {
+        return new Variable[]
+                {
+                        getRestartFromBeginningWhenReachingEnd(),
+                        getRootFolderVariable(),
+                        getTimepointOffset(),
+                        getTimepointStepSize(),
+                        getStackNames()
+                };
+    }
 }
