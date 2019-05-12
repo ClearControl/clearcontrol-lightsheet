@@ -138,4 +138,10 @@ public abstract class StackInterfaceContainer extends
     return null;
   }
 
+  public StackInterface getStackByNamePart(String name) {
+    if (name.length() == 0) {
+      return get(keySet().iterator().next());
+    }
+    return get(getKeyContainingString(name));
+  }
 }
